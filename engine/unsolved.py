@@ -85,7 +85,7 @@ OPEN_TO_SCIENCE = (
 # The repo's own. Not unknown to science -- unknown to US, and each
 # could move out of this list by someone doing the work.
 OPEN_TO_US = (
-    ("Kleiber exponent", "engine/life.py in the expansion; asserted 0.75",
+    ("Kleiber exponent", "engine/life.py; asserted 0.75, and life.kleiber() carries check=NONE rather than a fake one",
      "a fractal-transport derivation, carried out here"),
     ("Lane-Emden n=3 constant", "engine/remnants.py; asserted 3.0984",
      "solving the Lane-Emden equation numerically in this repo"),

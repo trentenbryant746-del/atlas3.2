@@ -43,7 +43,7 @@ def originals():
 def modules():
     rows = []
     for m in ("qwenmap", "qwenmatter", "qwenaccounts", "remnants",
-              "eos", "bridge"):
+              "eos", "bridge", "unsolved", "life", "biomatter"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()
@@ -134,6 +134,20 @@ def main():
     bad += 1 if wrong else 0
     print(f"  curriculum      {ok:>5} correct  {wrong:>4} WRONG  "
           f"{abst:>4} abstained   of {n:,}")
+
+    from eval.heldout import verify as hv, wording_invariance
+    hvr = hv()
+    tv = sum(d["verified"] for d in hvr.values())
+    td = sum(d["disagree"] for d in hvr.values())
+    ind = sum(d["verified"] for d in hvr.values()
+              if d["kind"] == "INDEPENDENT")
+    bad += 1 if td else 0
+    n_, m_, p_, wbad = wording_invariance()
+    bad += 1 if wbad else 0
+    print(f"  held-out        {tv:>5} verified  {td:>4} DISAGREE  "
+          f"({ind} by an independent route)")
+    print(f"  wording         {m_:>5} answers with several wordings "
+          f"({p_} prompts), {len(wbad)} disagreeing")
 
     ho = held_out()
     if ho:

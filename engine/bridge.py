@@ -88,6 +88,27 @@ def _caps():
     C.append(Cap("expert_bytes", "expert_ids", "total_bytes",
                  _expert_bytes, "qwenaccounts",
                  "DERIVED, summed through atlas's parser"))
+    # the life ladder, which is where biology meets the cosmology
+    # above it: a nucleotide's epoch is a time after the Big Bang.
+    from engine import biomatter as bm, life as lf
+    C.append(Cap("nucleotide_epoch", "nucleotide", "epoch",
+                 lambda n: bm.nucleotide_epoch(n).value, "biomatter",
+                 "EXTERNAL, from the formula's elements"))
+    C.append(Cap("gene_bases", "codons", "bases",
+                 lambda n: bm.gene(n).value[0], "biomatter", "INVERSE"))
+    C.append(Cap("bases_bits", "bases", "bits",
+                 lambda b: b * 2.0, "biomatter", "2 bits per base"))
+    C.append(Cap("dna_volume", "genome_bp", "volume_m3",
+                 lambda bp: bm.dna_volume(bp).value, "biomatter",
+                 "INVERSE on the base pairs"))
+    C.append(Cap("cell_floor", "volume_m3", "floor_radius_m",
+                 lambda v: (v / (4 / 3 * 3.141592653589793)) ** (1 / 3),
+                 "biomatter", "the sphere that just contains it"))
+    C.append(Cap("diffusion_ceiling", "consumption", "ceiling_radius_m",
+                 lambda r: lf.diffusion_limit(r).value, "life", "INVERSE"))
+    C.append(Cap("sv_ratio", "floor_radius_m", "surface_to_volume",
+                 lambda r: lf.surface_to_volume(r).value, "life", "INVERSE"))
+
     C.append(Cap("isotopes_of", "expert_id", "isotope_count",
                  lambda e: len(qwenmatter.isotopes(e)), "qwenmatter",
                  "ENUMERATE"))

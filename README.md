@@ -1103,3 +1103,81 @@ discipline applied to space as well as time. Hand back a chunk key and
 that chunk alone regenerates and matches the head, with nothing else
 rebuilt. A key from a different universe is **refused** rather than
 matched to the same index.
+
+
+## 3.1.10 — Folding by enumeration, and a paradox that is about time
+
+### Every fold, not a search
+
+Structure prediction is refused and names what does it instead: AlphaFold,
+about 93 million learned parameters, with no rule to extract.
+
+What is not refused is **enumeration**. For a short chain on a lattice the
+set of folds is finite, so `engine/folding.py` walks all of them, scores
+each, and reports the minimum. No heuristic, no sampling — the answer is
+not the best fold found, it is the best fold there is.
+
+```
+FFFFWWFF     543 folds, best -27.00,  8 at the minimum
+GGGGSSGG     543 folds, best  -1.50,  4 at the minimum
+FGFGFGFG     543 folds, best  -6.00, 38 at the minimum
+MCGFWAIL     543 folds, best -12.25,  2 at the minimum
+```
+
+Degeneracy is reported rather than one fold picked. FGFGFGFG has **38
+distinct folds tied at the ground state** — which is a fact about that
+sequence, not an ambiguity to resolve.
+
+### Hydrophobicity derived, and the threshold that failed
+
+The usual lattice model sorts residues into H and P, which needs a cutoff
+someone chooses. This takes the ratio of carbon to polar atoms straight
+out of the formulas already in `biomatter.py` — glycine 0.67, phenylalanine
+3.00 — and uses it **continuously**.
+
+Trying to split it failed honestly and is recorded: the largest gap in the
+sorted ratios falls between tyrosine (2.25) and tryptophan (2.75), which
+would make **only F and W hydrophobic** and put lysine among them. That
+split is wrong, and the continuous form does not need it.
+
+**Hydrophobic collapse, plainly:** oily things stick together in water,
+the way oil beads up in a pan. Some residues are oily and some are not, so
+a chain in water tucks its oily parts inward and leaves the rest facing
+out. That tucking *is* the fold. Measured here: FFFFWWFF reaches −27.00
+and GGGGSSGG only −1.50 over the *same 543 shapes* — same geometry, very
+different cost, depending only on what the chain is made of.
+
+### Levinthal is about our universe's age, not about arithmetic
+
+```
+ 10 residues   5.90e+04 states   1.87e-15 yr   possible now
+ 50 residues   7.18e+23 states   2.27e+04 yr   possible now
+100 residues   5.15e+47 states   1.63e+28 yr   NOT possible now
+```
+
+A 100-residue chain has 3¹⁰⁰ conformations; trying them at a picosecond
+each takes **1.63e28 years**, which is 1.2e18 times the age of this
+universe. So folding here cannot be a search, and real proteins fold in
+milliseconds.
+
+**But heat death is around 1e100 years.** That is 6e71 times longer than
+an exhaustive fold needs. The search is impossible in a 13.8-billion-year
+universe and comfortable in one allowed to run to heat death — so
+Levinthal is a statement about *when you are*, not about proteins. That
+is exactly the kind of difference between universes this project exists
+to notice, and the check asserts both halves: the paradox must reproduce
+now, and must dissolve by heat death.
+
+### How many learned parameters, for the record
+
+```
+Qwen3.6-35B-A3B    35,000,000,000 learned
+AlphaFold2            ~93,000,000 learned
+Atlas 3.1                       0 learned
+                            1,081 written down, by hand, all visible
+```
+
+Every number the system holds is a module-level constant in 13,922 lines
+across 74 files — 32 million times fewer numbers than Qwen, and each one
+either a measurement with a source, a definition, or a fixture to score
+against. None was fitted, and none was learned.

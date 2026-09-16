@@ -61,12 +61,27 @@ sys.path.insert(0, str(ROOT))
 
 ANSWERED, REFUSED, PASS = "ANSWERED", "REFUSED", "PASS"
 
+# THE REPO CARRIES ITS OWN DATA. data/qwen holds every artifact
+# these modules read, verified against data/qwen/MANIFEST.json by
+# tools/get_qwen.py. The Codex tree is a fallback for a working copy
+# that has not run the assembler yet, and nothing depends on it.
+QDIR = ROOT / "data" / "qwen"
 CODEX = Path("/Users/trentenbryant/Documents/Codex/2026-09-14/"
              "files-mentioned-by-the-user-atlas")
 ATLASDIR = CODEX / "outputs/qwen-local/atlas"
-TENSOR_MAP = ATLASDIR / "expert-tensor-map.json"
-RESULTS = (ATLASDIR / "benchmark-runs/"
-                      "qwen-topical-specialization-20x10.json")
+
+
+def _pick(local, remote):
+    return local if local.exists() else remote
+
+
+TENSOR_MAP = _pick(QDIR / "expert-tensor-map.json",
+                   ATLASDIR / "expert-tensor-map.json")
+RESULTS = _pick(QDIR / "qwen-topical-specialization-20x10.json",
+                ATLASDIR / "benchmark-runs/"
+                           "qwen-topical-specialization-20x10.json")
+GGUF_META = _pick(QDIR / "gguf-metadata.json",
+                  ATLASDIR / "qwen-complete-map/gguf-metadata.json")
 MODEL = CODEX / "outputs/models/Qwen3.6-35B-A3B-UD-Q4_K_M.gguf"
 
 # bytes per 256-weight superblock. These define the formats; they are
@@ -87,9 +102,6 @@ def _load(p, what):
             raise FileNotFoundError(f"{what} not found at {p}")
         _C[p] = json.loads(p.read_text())
     return _C[p]
-
-
-GGUF_META = ATLASDIR / "qwen-complete-map" / "gguf-metadata.json"
 
 
 def arch_used():

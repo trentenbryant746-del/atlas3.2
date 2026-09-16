@@ -1,6 +1,9 @@
 __pycache__/
 *.pyc
 vendor/
-data/qwen/*.jsonl
-data/qwen/*.json
-!data/qwen/MANIFEST.json
+
+# route-events.jsonl is 106.1 MiB and GitHub refuses anything over
+# 100 MB, so the two PARTS are committed and the joined file is not.
+# tools/get_qwen.py rebuilds it and verifies the whole against its
+# pinned hash.
+data/qwen/route-events.jsonl

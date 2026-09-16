@@ -67,7 +67,9 @@ sys.path.insert(0, str(ROOT))
 
 from engine import qwenmap                                   # noqa: E402
 
-ROUTES = qwenmap.ATLASDIR / "qwen-complete-map" / "route-events.jsonl"
+ROUTES = qwenmap._pick(
+    qwenmap.QDIR / "route-events.jsonl",
+    qwenmap.ATLASDIR / "qwen-complete-map" / "route-events.jsonl")
 
 RUNGS = ("element", "isotope", "compound", "material", "sequence")
 

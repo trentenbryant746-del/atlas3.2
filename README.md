@@ -806,3 +806,64 @@ real, and if the goal were to reproduce *our* universe those would be
 failures. The change is that the goal is not that, so they are
 measurements rather than verdicts — and the things that genuinely cannot
 be violated are now checked separately and named.
+
+
+## 3.1.6 — Auditing what was still handwritten
+
+You asked me to look for anything else I had typed in rather than
+derived. I audited every module-level literal in the eleven modules
+added since Atlas 2.
+
+**Most are correct as they stand**, and the distinction matters:
+
+- **Measured constants** — ħ, c, G, mₕ, oxygen diffusivity, bone
+  compressive strength, B-DNA geometry, the 83 solar abundances, the
+  four pulsar and merger observations, the genetic code, the nucleotide
+  formulas. These are measurements of the world. Asserting them with a
+  source is right; deriving them is not possible.
+- **Definitions** — the Q4_K/Q5_K/Q6_K superblock sizes, the rung names,
+  the registries of which functions to run. Naming is not inference.
+
+**Two were inferences I had typed**, and both are now derived:
+
+```
+MAN_MADE_ABOVE = 92      ->  the smallest Z from which EVERY heavier
+                             element is unstable, read off the periodic
+                             table's own UNSTABLE set
+ABSENT = {Tc, Pm}        ->  every element at or below that boundary
+                             with no stable isotope, same source
+```
+
+The boundary derives to 92 exactly, and the check confirms nothing above
+it is stable and 92 itself is not.
+
+### And the derivation that failed, kept as a refusal
+
+I also tried to derive the *reason* each element is missing: an unstable
+element between the heaviest stable one and the heaviest primordial one
+should be fed by a uranium or thorium chain and present in traces, while
+one below has no parent and is genuinely absent.
+
+**It runs and returns nothing**, because the premise is false in the
+source data. `experts.UNSTABLE` means *"has no stable isotope"* — and
+that is not the same property. Uranium and thorium have no stable
+isotope and are primordial anyway; their half-lives are comparable to
+the age of the Earth. The table does not mark them unstable, so the
+heaviest stable element comes out as Z=92 and the window collapses.
+
+So `trace_by_decay()` **refuses**, and says what would settle it:
+half-lives. An element is primordial if some isotope survives a
+reasonable fraction of the age of the Earth, and trace if a long-lived
+parent decays through it. `engine/isotopes.HALF_LIVES` exists for
+exactly this and is empty. Both are one measurement away, and neither is
+guessed.
+
+Protactinium falls in the same gap — no stable isotope, not marked
+unstable, no abundance — and the coverage check names it rather than
+rounding it away.
+
+**This is the better outcome than the handwritten version.** The typed
+`ABSENT = {Tc, Pm}` was confidently wrong about six elements: polonium
+through actinium are not absent, they are trace-present, and I had
+silently excluded them. The derivation cannot tell those apart either —
+but it says so.

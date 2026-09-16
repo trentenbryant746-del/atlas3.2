@@ -76,14 +76,94 @@ DEX = {
 DEX_SOURCE = ("solar photospheric and meteoritic abundances, Asplund "
               "et al. compilation, on the A(X) = log10(N_X/N_H) + 12 scale")
 
-# Absent from nature in any quantity, and why. Recorded rather than
-# omitted, so the gap is a statement instead of a hole.
-ABSENT = {
-    "Tc": "Z=43, no stable isotope; the longest-lived decays in ~4 Myr, "
-          "so it is not present in the solar photosphere",
-    "Pm": "Z=61, no stable isotope; same reason",
-}
-MAN_MADE_ABOVE = 92   # anything heavier than uranium is synthetic
+# WHICH ELEMENTS NATURE MAKES, DERIVED FROM THE TABLE THAT ALREADY
+# KNOWS. This was two hand-written entries and the number 92, typed
+# by me -- an inference supplied instead of computed. engine/experts
+# already records UNSTABLE, the set of atomic numbers with no stable
+# isotope, and everything needed follows from it:
+#
+#   man-made boundary   the smallest Z from which EVERY heavier
+#                       element is unstable. Below it nature still
+#                       manages something; at and above it, nothing
+#                       survives long enough to be found.
+#   heaviest stable     the largest Z not in UNSTABLE below that.
+#   trace by decay      unstable, but lying BETWEEN the heaviest
+#                       stable element and the heaviest primordial
+#                       one -- so a uranium or thorium chain passes
+#                       through it and keeps replenishing it.
+#   truly absent        unstable and BELOW the heaviest stable
+#                       element, so no long-lived parent decays into
+#                       it and nothing keeps it topped up.
+#
+# That last distinction is the interesting one and it comes out of
+# position alone: technetium and promethium are absent because
+# nothing upstream makes them, while polonium through actinium exist
+# in traces because they sit on the way down from uranium.
+def _boundary():
+    from engine.experts import UNSTABLE, PT
+    top = len(PT)
+    z = top
+    while z > 1 and (z - 1) in UNSTABLE:
+        z -= 1
+    return z - 1
+
+
+def heaviest_stable():
+    from engine.experts import UNSTABLE
+    b = _boundary()
+    return max(z for z in range(1, b + 1) if z not in UNSTABLE)
+
+
+def without_stable_isotope():
+    """-> {symbol: why}. Everything the table marks unstable below 93."""
+    from engine.experts import UNSTABLE, BY_Z
+    b = _boundary()
+    return {BY_Z[z][0]: f"Z={z} has no stable isotope"
+            for z in sorted(UNSTABLE) if z <= b}
+
+
+def trace_by_decay():
+    """REFUSED. The table cannot tell trace-present from truly absent.
+
+    This tried to derive the split by position: an unstable element
+    between the heaviest stable one and the heaviest primordial one
+    is fed by a uranium or thorium chain, and one below has no
+    parent. The derivation runs and returns nothing, because the
+    premise is false in the source data.
+
+    engine/experts.UNSTABLE means "has no stable isotope", and that
+    is not the same property. Uranium and thorium have no stable
+    isotope and are nevertheless primordial -- their half-lives are
+    comparable to the age of the Earth, so they are still here. The
+    table does not mark them unstable, which makes the heaviest
+    stable element come out as Z=92 and collapses the window to
+    nothing.
+
+    So the split is not derivable from what this repo records, and
+    polonium through actinium are reported as "no stable isotope"
+    rather than as trace-present, which is the weaker claim the data
+    supports. What would settle it is HALF-LIVES:
+    engine/isotopes.HALF_LIVES exists for exactly this and is empty.
+    An element is primordial if some isotope's half-life is a
+    reasonable fraction of the age of the Earth, and trace if a
+    long-lived parent decays through it. Both are one measurement
+    away and neither is guessed here.
+    """
+    return {}
+
+
+ABSENT_REASON = ("no stable isotope; whether an element is genuinely "
+                 "absent or present in traces from a decay chain needs "
+                 "half-lives, which engine/isotopes.HALF_LIVES would hold "
+                 "and does not")
+
+
+def absent_naturally():
+    return without_stable_isotope()
+
+
+ABSENT = absent_naturally()
+MAN_MADE_ABOVE = _boundary()
 
 
 def naturally_occurring():
@@ -234,6 +314,7 @@ def check():
     t("declines_with_z", _decl)
     t("iron_peak", _fe)
     t("metallicity", _met)
+    t("natural_boundary_derived", _nat)
     t("channels_are_derived", _chan)
     t("fusion_stops_at_the_peak", _stop)
     return all(o[1] for o in out), out
@@ -247,10 +328,11 @@ def _cov():
     if extra:
         raise ArithmeticError(f"abundances for non-natural elements: {extra}")
     return (f"{len(have)} elements with abundances; {len(nat)} occur "
-            f"naturally up to Z={MAN_MADE_ABOVE}; {len(missing)} without a "
-            f"value ({missing[:8]}{'...' if len(missing) > 8 else ''}) -- "
-            f"trace decay products between bismuth and thorium, plus "
-            f"{sorted(ABSENT)} which have no stable isotope")
+            f"naturally up to Z={MAN_MADE_ABOVE} by the derived boundary; "
+            f"{len(missing)} without a value ({missing}) -- protactinium, "
+            f"which has no stable isotope and is not marked unstable by "
+            f"the periodic table, so it falls in the same gap "
+            f"trace_by_decay() refuses to resolve")
 
 
 def _oh():
@@ -284,6 +366,33 @@ def _fe():
             f"Ti-Zn and {over_mean:.2f} above their mean -- a factor of "
             f"{10 ** over_mean:.0f}, which is the binding-energy peak "
             f"showing up in a table of counts")
+
+
+def _nat():
+    """The boundary and the gaps must come from the table, not from me."""
+    from engine.experts import UNSTABLE, BY_Z
+    b, hs = MAN_MADE_ABOVE, heaviest_stable()
+    if any(z not in UNSTABLE for z in range(b + 1, len(BY_Z) + 1)):
+        raise ArithmeticError(f"something above Z={b} is stable, so it is "
+                              f"not the man-made boundary")
+    if b in UNSTABLE:
+        raise ArithmeticError(f"Z={b} is itself unstable")
+    gone = ABSENT
+    # every element with an abundance must be one nature actually makes
+    for sym in DEX:
+        z = BY_SYM[sym][0]
+        if z > b:
+            raise ArithmeticError(f"{sym} is past the man-made boundary")
+        if sym in gone:
+            raise ArithmeticError(f"{sym} has an abundance but nothing "
+                                  f"replenishes it")
+    return (f"everything above Z={b} is man-made, derived: it is the "
+            f"smallest Z from which every heavier element is unstable. "
+            f"{len(gone)} elements at or below it have no stable isotope "
+            f"({sorted(gone)}). Whether each is truly absent or present "
+            f"in traces is REFUSED -- see trace_by_decay(); the table "
+            f"records 'no stable isotope', which uranium also satisfies "
+            f"while being primordial")
 
 
 def _chan():

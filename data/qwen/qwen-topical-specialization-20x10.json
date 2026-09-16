@@ -1,0 +1,879 @@
+{
+  "format": "QWEN-TOPICAL-SPECIALIZATION-20X10-1",
+  "design": {
+    "subjects": 20,
+    "wordings_per_subject": 10,
+    "samples": 200,
+    "subject_position": "last user-prompt token before fixed seven-token chat suffix",
+    "evaluation": "leave-one-wording-out nearest-centroid subject classification after unsupervised wording-mean removal",
+    "chance_accuracy": 0.05
+  },
+  "capture": {
+    "state_blob_bytes": 1227545055,
+    "route_reconstruction_matches": 8000,
+    "route_reconstruction_total": 8000,
+    "maximum_gate_weight_error": 7.152557373046875e-07
+  },
+  "layer_20": {
+    "router_input_representation": {
+      "accuracy": 1.0,
+      "folds": [
+        {
+          "wording": 1,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 2,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 3,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 4,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 5,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 6,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 7,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 8,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 9,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 10,
+          "correct": 20,
+          "total": 20
+        }
+      ],
+      "permutation": {
+        "permutations": 500,
+        "null_mean_accuracy": 0.04905,
+        "null_standard_deviation": 0.025409423007126907,
+        "p_value_one_sided": 0.001996007984031936,
+        "z_score": 37.42509224759944
+      }
+    },
+    "gate_probability_vector": {
+      "accuracy": 1.0,
+      "folds": [
+        {
+          "wording": 1,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 2,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 3,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 4,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 5,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 6,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 7,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 8,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 9,
+          "correct": 20,
+          "total": 20
+        },
+        {
+          "wording": 10,
+          "correct": 20,
+          "total": 20
+        }
+      ],
+      "permutation": {
+        "permutations": 500,
+        "null_mean_accuracy": 0.04856,
+        "null_standard_deviation": 0.02398910908536244,
+        "p_value_one_sided": 0.001996007984031936,
+        "z_score": 39.66133117384276
+      }
+    },
+    "top_enriched_experts_by_subject": {
+      "astronomy": [
+        {
+          "expert": 229,
+          "mean_probability": 0.037377048283815384,
+          "enrichment_over_global": 5.5223541259765625
+        },
+        {
+          "expert": 0,
+          "mean_probability": 0.019956618547439575,
+          "enrichment_over_global": 3.4584853649139404
+        },
+        {
+          "expert": 85,
+          "mean_probability": 0.0038231697399169207,
+          "enrichment_over_global": 2.302191734313965
+        },
+        {
+          "expert": 83,
+          "mean_probability": 0.004034529440104961,
+          "enrichment_over_global": 2.21449613571167
+        },
+        {
+          "expert": 99,
+          "mean_probability": 0.002474882872775197,
+          "enrichment_over_global": 2.171597957611084
+        }
+      ],
+      "biology": [
+        {
+          "expert": 39,
+          "mean_probability": 0.05977374315261841,
+          "enrichment_over_global": 7.590074062347412
+        },
+        {
+          "expert": 46,
+          "mean_probability": 0.01071987859904766,
+          "enrichment_over_global": 2.816488265991211
+        },
+        {
+          "expert": 176,
+          "mean_probability": 0.006597827188670635,
+          "enrichment_over_global": 2.4953432083129883
+        },
+        {
+          "expert": 70,
+          "mean_probability": 0.00894218124449253,
+          "enrichment_over_global": 2.2068986892700195
+        },
+        {
+          "expert": 248,
+          "mean_probability": 0.006662762723863125,
+          "enrichment_over_global": 2.1854758262634277
+        }
+      ],
+      "chemistry": [
+        {
+          "expert": 255,
+          "mean_probability": 0.03091813251376152,
+          "enrichment_over_global": 5.179934501647949
+        },
+        {
+          "expert": 90,
+          "mean_probability": 0.014471161179244518,
+          "enrichment_over_global": 3.3011746406555176
+        },
+        {
+          "expert": 14,
+          "mean_probability": 0.01117020659148693,
+          "enrichment_over_global": 3.0831334590911865
+        },
+        {
+          "expert": 247,
+          "mean_probability": 0.012552606873214245,
+          "enrichment_over_global": 2.527412176132202
+        },
+        {
+          "expert": 241,
+          "mean_probability": 0.007949618622660637,
+          "enrichment_over_global": 2.3620269298553467
+        }
+      ],
+      "computer_science": [
+        {
+          "expert": 148,
+          "mean_probability": 0.0450129359960556,
+          "enrichment_over_global": 8.360093116760254
+        },
+        {
+          "expert": 53,
+          "mean_probability": 0.05795053392648697,
+          "enrichment_over_global": 7.913090229034424
+        },
+        {
+          "expert": 133,
+          "mean_probability": 0.018119219690561295,
+          "enrichment_over_global": 4.33579683303833
+        },
+        {
+          "expert": 1,
+          "mean_probability": 0.0126638887450099,
+          "enrichment_over_global": 3.4109432697296143
+        },
+        {
+          "expert": 233,
+          "mean_probability": 0.013177995570003986,
+          "enrichment_over_global": 2.9382948875427246
+        }
+      ],
+      "cybersecurity": [
+        {
+          "expert": 71,
+          "mean_probability": 0.030671942979097366,
+          "enrichment_over_global": 6.192229747772217
+        },
+        {
+          "expert": 7,
+          "mean_probability": 0.015762990340590477,
+          "enrichment_over_global": 4.266635894775391
+        },
+        {
+          "expert": 95,
+          "mean_probability": 0.017657499760389328,
+          "enrichment_over_global": 3.919748067855835
+        },
+        {
+          "expert": 188,
+          "mean_probability": 0.008382236585021019,
+          "enrichment_over_global": 3.043424129486084
+        },
+        {
+          "expert": 181,
+          "mean_probability": 0.01183381024748087,
+          "enrichment_over_global": 2.9966506958007812
+        }
+      ],
+      "ecology": [
+        {
+          "expert": 165,
+          "mean_probability": 0.04682029038667679,
+          "enrichment_over_global": 4.275123119354248
+        },
+        {
+          "expert": 136,
+          "mean_probability": 0.016645438969135284,
+          "enrichment_over_global": 3.774336338043213
+        },
+        {
+          "expert": 242,
+          "mean_probability": 0.007474283687770367,
+          "enrichment_over_global": 3.302379608154297
+        },
+        {
+          "expert": 215,
+          "mean_probability": 0.014242662116885185,
+          "enrichment_over_global": 2.74100661277771
+        },
+        {
+          "expert": 250,
+          "mean_probability": 0.016441021114587784,
+          "enrichment_over_global": 2.634824752807617
+        }
+      ],
+      "economics": [
+        {
+          "expert": 189,
+          "mean_probability": 0.056338172405958176,
+          "enrichment_over_global": 7.5069756507873535
+        },
+        {
+          "expert": 244,
+          "mean_probability": 0.014535556547343731,
+          "enrichment_over_global": 2.711620330810547
+        },
+        {
+          "expert": 132,
+          "mean_probability": 0.009902448393404484,
+          "enrichment_over_global": 2.6776068210601807
+        },
+        {
+          "expert": 242,
+          "mean_probability": 0.005884428508579731,
+          "enrichment_over_global": 2.5999302864074707
+        },
+        {
+          "expert": 226,
+          "mean_probability": 0.01050396915525198,
+          "enrichment_over_global": 2.4753916263580322
+        }
+      ],
+      "engineering": [
+        {
+          "expert": 126,
+          "mean_probability": 0.04552425444126129,
+          "enrichment_over_global": 9.452646255493164
+        },
+        {
+          "expert": 182,
+          "mean_probability": 0.03597019240260124,
+          "enrichment_over_global": 7.347853183746338
+        },
+        {
+          "expert": 60,
+          "mean_probability": 0.012395643629133701,
+          "enrichment_over_global": 3.9073386192321777
+        },
+        {
+          "expert": 151,
+          "mean_probability": 0.01908232644200325,
+          "enrichment_over_global": 3.6834423542022705
+        },
+        {
+          "expert": 91,
+          "mean_probability": 0.01512719877064228,
+          "enrichment_over_global": 3.5885422229766846
+        }
+      ],
+      "geology": [
+        {
+          "expert": 170,
+          "mean_probability": 0.008762827143073082,
+          "enrichment_over_global": 2.683150053024292
+        },
+        {
+          "expert": 215,
+          "mean_probability": 0.012928892858326435,
+          "enrichment_over_global": 2.488171100616455
+        },
+        {
+          "expert": 229,
+          "mean_probability": 0.01675834134221077,
+          "enrichment_over_global": 2.4759979248046875
+        },
+        {
+          "expert": 103,
+          "mean_probability": 0.005397974047809839,
+          "enrichment_over_global": 2.3981502056121826
+        },
+        {
+          "expert": 35,
+          "mean_probability": 0.001924559473991394,
+          "enrichment_over_global": 2.368712902069092
+        }
+      ],
+      "history": [
+        {
+          "expert": 228,
+          "mean_probability": 0.04678214341402054,
+          "enrichment_over_global": 6.314990997314453
+        },
+        {
+          "expert": 158,
+          "mean_probability": 0.01643119379878044,
+          "enrichment_over_global": 3.7873406410217285
+        },
+        {
+          "expert": 98,
+          "mean_probability": 0.013782383874058723,
+          "enrichment_over_global": 3.255265474319458
+        },
+        {
+          "expert": 82,
+          "mean_probability": 0.01774613931775093,
+          "enrichment_over_global": 2.900587558746338
+        },
+        {
+          "expert": 96,
+          "mean_probability": 0.017789367586374283,
+          "enrichment_over_global": 2.54201602935791
+        }
+      ],
+      "law": [
+        {
+          "expert": 36,
+          "mean_probability": 0.029055777937173843,
+          "enrichment_over_global": 3.1672475337982178
+        },
+        {
+          "expert": 153,
+          "mean_probability": 0.017626281827688217,
+          "enrichment_over_global": 3.142832040786743
+        },
+        {
+          "expert": 211,
+          "mean_probability": 0.015849681571125984,
+          "enrichment_over_global": 3.0157437324523926
+        },
+        {
+          "expert": 190,
+          "mean_probability": 0.006922586355358362,
+          "enrichment_over_global": 2.943985939025879
+        },
+        {
+          "expert": 253,
+          "mean_probability": 0.019288169220089912,
+          "enrichment_over_global": 2.940329074859619
+        }
+      ],
+      "linguistics": [
+        {
+          "expert": 3,
+          "mean_probability": 0.026132896542549133,
+          "enrichment_over_global": 5.209221363067627
+        },
+        {
+          "expert": 40,
+          "mean_probability": 0.028600037097930908,
+          "enrichment_over_global": 4.443295001983643
+        },
+        {
+          "expert": 114,
+          "mean_probability": 0.0302676260471344,
+          "enrichment_over_global": 3.014779567718506
+        },
+        {
+          "expert": 61,
+          "mean_probability": 0.00892852433025837,
+          "enrichment_over_global": 2.280123233795166
+        },
+        {
+          "expert": 250,
+          "mean_probability": 0.013416357338428497,
+          "enrichment_over_global": 2.150094747543335
+        }
+      ],
+      "literature": [
+        {
+          "expert": 28,
+          "mean_probability": 0.03185870498418808,
+          "enrichment_over_global": 5.277857780456543
+        },
+        {
+          "expert": 19,
+          "mean_probability": 0.03386087343096733,
+          "enrichment_over_global": 5.2698283195495605
+        },
+        {
+          "expert": 129,
+          "mean_probability": 0.017851945012807846,
+          "enrichment_over_global": 4.3050618171691895
+        },
+        {
+          "expert": 36,
+          "mean_probability": 0.03273696079850197,
+          "enrichment_over_global": 3.5685176849365234
+        },
+        {
+          "expert": 184,
+          "mean_probability": 0.010768122971057892,
+          "enrichment_over_global": 3.4677820205688477
+        }
+      ],
+      "mathematics": [
+        {
+          "expert": 204,
+          "mean_probability": 0.026210475713014603,
+          "enrichment_over_global": 6.077966213226318
+        },
+        {
+          "expert": 198,
+          "mean_probability": 0.01607813499867916,
+          "enrichment_over_global": 5.31576681137085
+        },
+        {
+          "expert": 185,
+          "mean_probability": 0.007139892783015966,
+          "enrichment_over_global": 3.27634596824646
+        },
+        {
+          "expert": 220,
+          "mean_probability": 0.016559164971113205,
+          "enrichment_over_global": 3.141160011291504
+        },
+        {
+          "expert": 8,
+          "mean_probability": 0.006919608451426029,
+          "enrichment_over_global": 3.063246726989746
+        }
+      ],
+      "medicine": [
+        {
+          "expert": 166,
+          "mean_probability": 0.038392018526792526,
+          "enrichment_over_global": 8.008655548095703
+        },
+        {
+          "expert": 37,
+          "mean_probability": 0.03587264567613602,
+          "enrichment_over_global": 6.920071125030518
+        },
+        {
+          "expert": 7,
+          "mean_probability": 0.023939305916428566,
+          "enrichment_over_global": 6.4797539710998535
+        },
+        {
+          "expert": 38,
+          "mean_probability": 0.01335168071091175,
+          "enrichment_over_global": 5.577353477478027
+        },
+        {
+          "expert": 155,
+          "mean_probability": 0.024851951748132706,
+          "enrichment_over_global": 4.799015522003174
+        }
+      ],
+      "music": [
+        {
+          "expert": 100,
+          "mean_probability": 0.06057749316096306,
+          "enrichment_over_global": 8.466835975646973
+        },
+        {
+          "expert": 208,
+          "mean_probability": 0.01410010177642107,
+          "enrichment_over_global": 4.143893241882324
+        },
+        {
+          "expert": 64,
+          "mean_probability": 0.017031598836183548,
+          "enrichment_over_global": 3.9976954460144043
+        },
+        {
+          "expert": 156,
+          "mean_probability": 0.01855017989873886,
+          "enrichment_over_global": 3.8115856647491455
+        },
+        {
+          "expert": 18,
+          "mean_probability": 0.005138023290783167,
+          "enrichment_over_global": 3.125950574874878
+        }
+      ],
+      "philosophy": [
+        {
+          "expert": 114,
+          "mean_probability": 0.03751712664961815,
+          "enrichment_over_global": 3.7368595600128174
+        },
+        {
+          "expert": 244,
+          "mean_probability": 0.015588566660881042,
+          "enrichment_over_global": 2.908060312271118
+        },
+        {
+          "expert": 88,
+          "mean_probability": 0.01330923568457365,
+          "enrichment_over_global": 2.413792371749878
+        },
+        {
+          "expert": 201,
+          "mean_probability": 0.012002052739262581,
+          "enrichment_over_global": 2.3379158973693848
+        },
+        {
+          "expert": 142,
+          "mean_probability": 0.009763514623045921,
+          "enrichment_over_global": 2.0749926567077637
+        }
+      ],
+      "physics": [
+        {
+          "expert": 102,
+          "mean_probability": 0.04501776024699211,
+          "enrichment_over_global": 6.783344745635986
+        },
+        {
+          "expert": 223,
+          "mean_probability": 0.005824074149131775,
+          "enrichment_over_global": 3.341165781021118
+        },
+        {
+          "expert": 115,
+          "mean_probability": 0.011130614206194878,
+          "enrichment_over_global": 2.5991439819335938
+        },
+        {
+          "expert": 207,
+          "mean_probability": 0.004802210722118616,
+          "enrichment_over_global": 2.3072495460510254
+        },
+        {
+          "expert": 184,
+          "mean_probability": 0.006912495009601116,
+          "enrichment_over_global": 2.2261099815368652
+        }
+      ],
+      "political_science": [
+        {
+          "expert": 96,
+          "mean_probability": 0.0326300747692585,
+          "enrichment_over_global": 4.662682056427002
+        },
+        {
+          "expert": 92,
+          "mean_probability": 0.002682063262909651,
+          "enrichment_over_global": 3.181243658065796
+        },
+        {
+          "expert": 253,
+          "mean_probability": 0.01878494955599308,
+          "enrichment_over_global": 2.863617181777954
+        },
+        {
+          "expert": 8,
+          "mean_probability": 0.006167532876133919,
+          "enrichment_over_global": 2.7303099632263184
+        },
+        {
+          "expert": 247,
+          "mean_probability": 0.01318283099681139,
+          "enrichment_over_global": 2.6543049812316895
+        }
+      ],
+      "psychology": [
+        {
+          "expert": 165,
+          "mean_probability": 0.0608249232172966,
+          "enrichment_over_global": 5.553874969482422
+        },
+        {
+          "expert": 34,
+          "mean_probability": 0.015940925106406212,
+          "enrichment_over_global": 3.5543861389160156
+        },
+        {
+          "expert": 155,
+          "mean_probability": 0.015605625696480274,
+          "enrichment_over_global": 3.0135114192962646
+        },
+        {
+          "expert": 224,
+          "mean_probability": 0.019665095955133438,
+          "enrichment_over_global": 2.914288282394409
+        },
+        {
+          "expert": 194,
+          "mean_probability": 0.011496620252728462,
+          "enrichment_over_global": 2.733808994293213
+        }
+      ]
+    },
+    "top1_expert_counts": {
+      "165": 20,
+      "172": 14,
+      "36": 11,
+      "229": 11,
+      "39": 10,
+      "255": 10,
+      "102": 10,
+      "228": 10,
+      "189": 10,
+      "53": 10,
+      "126": 10,
+      "96": 10,
+      "100": 10,
+      "204": 8,
+      "114": 8,
+      "166": 6,
+      "56": 6,
+      "19": 6,
+      "71": 5,
+      "40": 5,
+      "37": 4,
+      "121": 3,
+      "253": 1,
+      "107": 1,
+      "28": 1
+    }
+  },
+  "all_layers": {
+    "0": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "1": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "2": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "3": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "4": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "5": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "6": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "7": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "8": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "9": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "10": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "11": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "12": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.995
+    },
+    "13": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "14": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "15": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "16": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "17": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "18": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "19": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.995
+    },
+    "20": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "21": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "22": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "23": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.98
+    },
+    "24": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.995
+    },
+    "25": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "26": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.99
+    },
+    "27": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "28": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "29": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.99
+    },
+    "30": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "31": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "32": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "33": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "34": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "35": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "36": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "37": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "38": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 1.0
+    },
+    "39": {
+      "representation_accuracy": 1.0,
+      "gate_probability_accuracy": 0.995
+    }
+  },
+  "limitations": [
+    "Expert labels are routing associations, not causal semantic descriptions.",
+    "The experiment tests cross-wording topical discrimination for these 20 subjects.",
+    "Causal specialization requires expert ablation or intervention tests."
+  ]
+}

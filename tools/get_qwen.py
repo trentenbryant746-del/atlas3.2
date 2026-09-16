@@ -4,23 +4,40 @@ Assemble and VERIFY the Qwen artifacts. Same discipline as
 tools/get_godot.py: pin the hash, check the bytes, refuse on
 mismatch.
 
-WHY ANY OF THIS. Two artifacts do not fit in a git repository the
-ordinary way, for two different reasons, and they are handled
-differently because the reasons differ.
+WHY ANY OF THIS. The repository carries source, not data. The Qwen
+artifacts are 117 MiB and the model they describe is 21 GB, and
+neither belongs in git -- so the repo carries their HASHES and this
+tool goes and gets them.
 
-    route-events.jsonl   106.1 MiB, and GitHub refuses ANY file over
-                         100 MB outright -- not a warning, a refused
-                         push. It is SPLIT into two parts of 45.7 and
-                         60.4 MiB, both committed, and reassembled
-                         here. The repo therefore contains the data.
+    the artifacts     expert-tensor-map.json, route-events.jsonl,
+                      the GGUF header and the experiment results.
+                      117 MiB. Every module here reads them, so the
+                      tool must produce them or nothing runs.
 
-    the 21 GB GGUF       far past anything git should hold, and
-                         NOTHING IN THIS REPO OPENS IT. The expert
-                         map is byte offsets, not weights. So it is
-                         PINNED by SHA-256 and not fetched at all
-                         unless you want the one check that needs
-                         it -- comparing the map's claimed bytes
-                         against the real file's size.
+    the 21 GB GGUF    NOTHING IN THIS REPO OPENS IT. The expert map
+                      is byte offsets, not weights. Pinned and never
+                      fetched unless you want the one check that
+                      needs it -- comparing the map's claimed bytes
+                      against the real file's size.
+
+A NOTE ON THE 100 MB LIMIT, because it is easy to misremember.
+GitHub refuses any single FILE over 100 MB; there is no such cap on
+the repository as a whole. The largest artifact here is 106.1 MiB,
+which is why it is stored split in two. That split is kept because
+it makes each piece uploadable anywhere, not because the total
+would have been refused.
+
+WHERE THEY COME FROM. Three sources are tried in order, and each is
+verified the same way:
+
+    1. already in data/qwen and hashing correctly -> use it
+    2. a local directory, if you have the originals (ATLAS_QWEN_DIR)
+    3. a URL base (ATLAS_QWEN_URL or --url), for a GitHub Release
+       asset or any other host
+
+A Release asset takes files up to 2 GB and does not count against
+the repository, which is the natural home for these. Until one is
+published, the local directory path is what works.
 
 WHAT "PINNED" MEANS, EXACTLY. data/qwen/MANIFEST.json records the
 SHA-256 and byte length of every artifact, including the reassembled
@@ -41,6 +58,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -80,6 +98,70 @@ def verify_committed(m):
             bad.append((name, f"sha {got[:16]} against pinned "
                               f"{spec['sha256'][:16]}"))
     return bad
+
+
+def _local_dirs():
+    """Where the originals might already be, in order of preference."""
+    out = []
+    env = os.environ.get("ATLAS_QWEN_DIR")
+    if env:
+        out.append(Path(env))
+    out += [Path("/Users/trentenbryant/Documents/Codex/2026-09-14/"
+                 "files-mentioned-by-the-user-atlas/outputs/qwen-local/"
+                 "atlas"),
+            Path("/Users/trentenbryant/Documents/Codex/2026-09-14/"
+                 "files-mentioned-by-the-user-atlas/outputs/qwen-local/"
+                 "atlas/qwen-complete-map"),
+            Path("/Users/trentenbryant/Documents/Codex/2026-09-14/"
+                 "files-mentioned-by-the-user-atlas/outputs/qwen-local/"
+                 "atlas/benchmark-runs")]
+    return [d for d in out if d.is_dir()]
+
+
+def _fetch_one(name, spec, url_base):
+    """-> (path, how). Verified, or it does not return a path."""
+    QDIR.mkdir(parents=True, exist_ok=True)
+    dest = QDIR / name
+    if dest.exists() and sha256(dest) == spec["sha256"]:
+        return dest, "already present and verified"
+
+    for d in _local_dirs():
+        src = d / name
+        if src.exists() and src.stat().st_size == spec["bytes"]:
+            if sha256(src) == spec["sha256"]:
+                dest.write_bytes(src.read_bytes())
+                return dest, f"copied from {d}"
+
+    if url_base:
+        import urllib.request
+        url = url_base.rstrip("/") + "/" + name
+        tmp = dest.with_suffix(dest.suffix + ".part")
+        try:
+            urllib.request.urlretrieve(url, tmp)
+        except Exception as e:
+            if tmp.exists():
+                tmp.unlink()
+            return None, f"download failed: {e}"
+        got = sha256(tmp)
+        if got != spec["sha256"]:
+            tmp.unlink()
+            return None, (f"REFUSED: downloaded {name} hashes "
+                          f"{got[:16]}..., pinned {spec['sha256'][:16]}...")
+        tmp.rename(dest)
+        return dest, f"downloaded from {url_base}"
+
+    return None, ("not found locally and no URL given -- set "
+                  "ATLAS_QWEN_URL or pass --url")
+
+
+def fetch(url_base=None):
+    """Get every pinned part, from wherever it can be had."""
+    m = manifest()
+    got, failed = [], []
+    for name, spec in m["committed"].items():
+        p, how = _fetch_one(name, spec, url_base)
+        (got if p else failed).append((name, how))
+    return got, failed
 
 
 def assemble(force=False):
@@ -140,9 +222,19 @@ def main(argv=None):
                     help="report what is present and whether it verifies")
     ap.add_argument("--force", action="store_true",
                     help="reassemble even if a verified copy exists")
+    ap.add_argument("--url", default=os.environ.get("ATLAS_QWEN_URL"),
+                    help="base URL holding the pinned artifacts, e.g. a "
+                         "GitHub Release asset directory")
     a = ap.parse_args(argv)
     if a.check:
         return report()
+    got, failed = fetch(a.url)
+    for n, how in got:
+        print(f"ok  {n:<42}{how}")
+    for n, how in failed:
+        print(f"FAIL  {n}: {how}")
+    if failed:
+        return 1
     m = manifest()
     bad = verify_committed(m)
     if bad:

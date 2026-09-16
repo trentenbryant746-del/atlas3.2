@@ -2,8 +2,10 @@ __pycache__/
 *.pyc
 vendor/
 
-# route-events.jsonl is 106.1 MiB and GitHub refuses anything over
-# 100 MB, so the two PARTS are committed and the joined file is not.
-# tools/get_qwen.py rebuilds it and verifies the whole against its
-# pinned hash.
-data/qwen/route-events.jsonl
+# The Qwen artifacts are NOT carried in the repo. They are pinned by
+# SHA-256 in data/qwen/MANIFEST.json and fetched by tools/get_qwen.py.
+# GitHub's hard limit is 100 MB PER FILE, which none of them exceeds --
+# they are out of the tree because 117 MiB of data does not belong in a
+# source repository, not because it would be refused.
+data/qwen/*
+!data/qwen/MANIFEST.json

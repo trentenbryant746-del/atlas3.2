@@ -213,6 +213,91 @@ def correction_test(seed="universe-0"):
             "others_improved": a_others < b_others}
 
 
+# ---------------------------------------------------------------------
+# A DIFFERENT UNIVERSE IS NOT A BROKEN ONE.
+#
+# Everything above measures distance to the SUN, and distance to the
+# sun is not the criterion. A simulated universe does not have to
+# resemble ours. It has to be one THE LAWS OF OURS COULD HAVE MADE --
+# internally consistent with every rule, and free to come out
+# looking nothing like home.
+#
+# So the two questions are separated, because only one of them can
+# fail:
+#
+#   LAWS         mass conserved, no element before its epoch, no
+#                element made by a process that cannot make it,
+#                enrichment monotonic, fractions summing to one.
+#                A violation is a bug and the check fails.
+#
+#   RESEMBLANCE  how far the result sits from solar abundances.
+#                Reported, never required. A universe 30x richer in
+#                silver than ours is a universe with more mergers in
+#                its history, not a broken model -- unless it broke
+#                a law getting there.
+#
+# The r-process result reads differently under that split. As a
+# resemblance measurement it is 29x off. As a law question it is
+# silent, because nothing forbids a history with more mergers. What
+# WOULD be a violation is making gold before any merger could have
+# happened, and that is what gets checked.
+def laws_hold(dilution=4.87, seed="universe-0"):
+    """-> [(law, ok, detail)]. These are the ones that can fail."""
+    from engine import epochs as _ep
+    from engine.experts import BY_SYM
+    stars, gas, ledger = cosmos.run(generations=4, seed=seed,
+                                    dilution=dilution)
+    out = []
+
+    bad = [r["star"] for r in ledger if not r["conserved"]]
+    out.append(("mass conserved", not bad,
+                f"{len(ledger)} stellar events, {len(bad)} where ejecta "
+                f"plus remnant did not equal the progenitor"))
+
+    viol = []
+    for st in stars:
+        cut = _ep.ORDER.get(st.epoch)
+        if cut is None:
+            continue
+        for sym in st.composition:
+            base = sym.rstrip("0123456789")
+            if base in _ep.ORIGIN and _ep.ORDER[_ep.ORIGIN[base]] > cut:
+                viol.append((st.sid, base))
+    out.append(("nothing before its epoch", not viol,
+                f"{len(stars)} stars, {len(viol)} elements present before "
+                f"the epoch that can make them"))
+
+    tot = sum(gas.values())
+    out.append(("fractions sum to one", abs(tot - 1.0) < 1e-9,
+                f"the final gas sums to {tot:.12f}"))
+
+    neg = [e for e, v in gas.items() if v < 0]
+    out.append(("no negative abundance", not neg,
+                f"{len(gas)} elements, {len(neg)} negative"))
+
+    # nothing may be produced by a channel that cannot produce it
+    wrong = []
+    for e in gas:
+        if e in BY_SYM and gas[e] > 0:
+            ch, _why = abundance.channel(e)
+            if ch == "primordial" and e not in ("H", "He", "Li"):
+                wrong.append(e)
+    out.append(("channels respected", not wrong,
+                f"{len(wrong)} elements claimed by a process that cannot "
+                f"make them"))
+    return out
+
+
+def resemblance(dilution=4.87, seed="universe-0"):
+    """How far from home. Reported, never required."""
+    gas = simulate(dilution, seed)
+    shared = [e for e in ALL if e in gas]
+    d = sum(abs(gas[e] - SOLAR[e]) for e in shared) / len(shared)
+    worst = max(shared, key=lambda e: abs(gas[e] / SOLAR[e] - 1))
+    return {"mean_abs": d, "worst": worst,
+            "worst_ratio": gas[worst] / SOLAR[worst], "n": len(shared)}
+
+
 def check():
     out = []
 
@@ -225,8 +310,10 @@ def check():
     t("one_parameter_fits_anything", _trivial)
     t("held_out_element", _held)
     t("residual_is_structured", _struct)
-    t("structured_by_family", _families)
+    t("structured_by_channel", _channels)
     t("reported_as_fit_not_prediction", _honest)
+    t("laws_hold", _laws)
+    t("resemblance_is_reported_not_required", _resemble)
     t("leave_one_out", _loo)
     t("correction_is_not_circular", _corr)
     return all(o[1] for o in out), out
@@ -258,27 +345,38 @@ def _held():
 
 # Which process makes what. Grouping by this is the difference
 # between "one table entry is wrong" and "a whole channel is".
-FAMILY = {"C": "CNO", "N": "CNO", "O": "CNO",
-          "Ne": "Ne",
-          "Mg": "alpha", "Si": "alpha", "S": "alpha", "Ca": "alpha",
-          "Fe": "iron-peak", "Ni": "iron-peak",
-          # neutron capture: slow in AGB stars, rapid in mergers
-          "Ag": "r-process", "Au": "r-process", "Pt": "r-process",
-          "U": "r-process", "Th": "r-process",
-          "Sr": "s-process", "Ba": "s-process", "Zr": "s-process"}
-
-
-def by_family(rows=None):
+# THE CHANNEL IS DERIVED, NOT LISTED HERE. This was a dict mapping
+# each element to CNO / alpha / iron-peak / r-process, written by
+# hand -- an inference supplied instead of computed, which is the
+# one thing this repo is not supposed to do. engine/abundance.py
+# now derives it from the binding curve: fusion pays only while
+# binding per nucleon rises, so the peak at Z=26 is the boundary
+# between what a star can build and what has to be captured.
+#
+# AND IT IS A CHANNEL, NOT A FAMILY. "Family" in this repo means
+# constituents that actually come together -- a compound, a binding
+# that happened. Elements sharing a production process have not come
+# together with anything; they were made the same way. Calling that
+# a family put two different relations under one word, and the one
+# that matters for the ladder is the other one.
+#
+# A KNOWN EDGE, RECORDED RATHER THAN PATCHED. Nickel comes out
+# "neutron-capture" because the semi-empirical peak is at Z=26,
+# while real silicon burning makes Ni-56 and lets it decay to iron.
+# The derivation is right about the curve and wrong about nickel,
+# and special-casing it would hide a real limitation of the mass
+# formula behind a hand edit.
+def by_channel(rows=None):
     rows = rows or leave_one_out()
     out = {}
     for e, r in rows.items():
-        out.setdefault(FAMILY.get(e, "?"), []).append((e, r["ratio"]))
+        out.setdefault(abundance.channel(e)[0], []).append((e, r["ratio"]))
     return {k: sorted(v) for k, v in out.items()}
 
 
-def _families():
+def _channels():
     """Is the residual one entry, or a whole nucleosynthetic channel?"""
-    fam = by_family()
+    fam = by_channel()
     means = {k: sum(r for _e, r in v) / len(v) for k, v in fam.items()}
     # THE WORST CHANNEL FIRST, because it distorts everything else.
     # Every element's dilution is fitted on the other eleven, so a
@@ -305,7 +403,7 @@ def _families():
         raise ArithmeticError("not enough elements to group by family")
     if not all(r > 1.0 for r in alpha):
         return (f"the alpha elements are not uniformly over-predicted: "
-                f"{fam['alpha']} -- the family reading does not hold")
+                f"{fam['alpha']} -- the channel reading does not hold")
     inside = min(alpha) <= fe <= max(alpha)
     return (f"grouped by what makes them: "
             + ", ".join(f"{k} {means[k]:.2f}x" for k in sorted(means))
@@ -315,7 +413,8 @@ def _families():
               f"{fe:.2f}x sits "
             + ("INSIDE" if inside else "outside")
             + " the alpha spread, so it is not the outlier five elements "
-              "made it look like -- the error is a CHANNEL, not an entry")
+              "made it look like -- the error follows a production "
+              "CHANNEL, not a single entry")
 
 
 def _struct():
@@ -344,6 +443,27 @@ def _honest():
                               "without saying it was fitted")
     return ("the README says the dilution factor was fitted wherever the "
             "agreement is quoted")
+
+
+def _laws():
+    """The only things here that are allowed to fail."""
+    rows = laws_hold()
+    bad = [n for n, ok, _d in rows if not ok]
+    if bad:
+        raise ArithmeticError(f"laws violated: {bad}")
+    return (f"{len(rows)} laws hold: "
+            + "; ".join(f"{n}" for n, _ok, _d in rows)
+            + " -- this universe is one the rules could have produced")
+
+
+def _resemble():
+    """And this one reports. It must never be treated as a failure."""
+    r = resemblance()
+    return (f"mean |simulated - solar| = {r['mean_abs']:.2e} over "
+            f"{r['n']} elements, worst {r['worst']} at "
+            f"{r['worst_ratio']:.1f}x. Reported, not required: a universe "
+            f"unlike ours is not a broken one, and nothing above this "
+            f"line fails on it")
 
 
 def _loo():

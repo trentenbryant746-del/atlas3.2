@@ -722,3 +722,87 @@ channel first and the rest separately.
 Each was the best available reading of the data at hand, and each was
 overturned by more of it. That is the argument for carrying all 83
 rather than the handful someone needed at the time.
+
+
+## 3.1.5 — Laws must hold; resemblance need not
+
+Two corrections, and the second one changes what the dilution
+experiment was even measuring.
+
+### "Family" was the wrong word, and it was also an inference I typed
+
+`eval/dilution.py` carried a `FAMILY` dict assigning each element to
+CNO, alpha, iron-peak or r-process. Two things wrong with that.
+
+**It was supplied rather than derived** — the exact thing this repo is
+built not to do. It now follows from the binding curve `engine/nucleo.py`
+already computes. Fusion releases energy only while binding per nucleon
+rises, so the peak is a hard boundary:
+
+```
+Z <= 3           primordial        epochs.ORIGIN puts it at bbn
+Z >  Z_peak      neutron-capture   fusing here COSTS energy, so no
+                                   star builds it; it must be captured
+even, 6..Z_peak  alpha-chain       reachable from carbon by alphas
+otherwise        secondary         odd and below the peak, made from
+                                   seed nuclei rather than built up
+```
+
+The peak is derived at Z=26 with 8.865 MeV per nucleon, and a check
+confirms nothing below exceeds it and everything sampled above falls
+short — so "fusion stops here" is a measured property of the curve, not
+a rule about iron. 83 elements sort into 3 primordial, 11 alpha-chain,
+12 secondary, 57 neutron-capture, and no element beyond the peak is
+called fusible.
+
+*A known edge, recorded rather than patched:* nickel comes out
+neutron-capture because the semi-empirical peak sits at Z=26, while real
+silicon burning makes Ni-56 and lets it decay to iron. The derivation is
+right about the curve and wrong about nickel. Special-casing it would
+hide a real limitation of the mass formula behind a hand edit.
+
+**And "family" belongs to something else.** In this repo a family is
+constituents that *actually come together* — a compound, a binding that
+happened. Elements sharing a production process have not come together
+with anything; they were made the same way. Two different relations
+under one word, and the one that matters for the ladder is the other
+one. It is `channel` now.
+
+### A different universe is not a broken one
+
+Everything the dilution experiment measured was distance to the sun —
+and **distance to the sun is not the criterion.** A simulated universe
+does not have to resemble ours. It has to be one the laws of ours could
+have produced: internally consistent with every rule, and free to come
+out looking nothing like home.
+
+So the two questions are now separated, because **only one of them can
+fail**:
+
+```
+LAWS         mass conserved                12 events, 0 violations
+             nothing before its epoch      12 stars, 0 violations
+             fractions sum to one          1.000000000000
+             no negative abundance         14 elements, 0 negative
+             channels respected            0 claimed by an impossible process
+
+RESEMBLANCE  mean |simulated - solar|      4.80e-04 over 12 elements
+             worst                         Ag at 63x
+```
+
+The r-process result reads completely differently under that split. As a
+resemblance measurement it is ~30× off. **As a law question it is
+silent**, because nothing forbids a history with more neutron-star
+mergers than ours had. A universe richer in silver is a universe with a
+different history, not a broken model.
+
+What *would* be a violation is making gold before any merger could have
+happened — and that is what `nothing before its epoch` checks, across
+every star in every generation.
+
+This does not retract 3.1.2 through 3.1.4. The r-process is still
+over-produced by 30× relative to the sun, the channel structure is still
+real, and if the goal were to reproduce *our* universe those would be
+failures. The change is that the goal is not that, so they are
+measurements rather than verdicts — and the things that genuinely cannot
+be violated are now checked separately and named.

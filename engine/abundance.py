@@ -115,6 +115,73 @@ def metallicity():
     return sum(v for s, v in mf.items() if s not in ("H", "He"))
 
 
+# ------------------------------------- which process made it, DERIVED
+# THE CHANNEL IS NOT A TABLE I WROTE. An earlier version of the
+# dilution experiment carried a FAMILY dict assigning each element
+# to CNO, alpha, iron-peak or r-process, and that was an inference
+# typed in by hand -- exactly the thing this repo is supposed to
+# derive and then confirm, rather than supply.
+#
+# It follows from the binding curve engine/nucleo.py already
+# computes. Fusion releases energy only while binding per nucleon is
+# rising, so the peak is a hard boundary:
+#
+#   Z <= 3            made in the Big Bang; epochs.ORIGIN says so
+#   Z >  Z_peak       fusion COSTS energy here, so no star makes it
+#                     by fusing -- it has to be neutron capture
+#   even, 6..Z_peak   reachable from carbon by adding alpha
+#                     particles, which is the alpha chain
+#   otherwise         a secondary product, made from seed nuclei
+#                     rather than built up directly
+#
+# Every branch is a consequence of the curve and of parity. The only
+# thing asserted is the arithmetic of what an alpha particle is.
+_PEAK = None
+
+
+def peak_z():
+    """Where fusion stops paying, from engine/nucleo.py. DERIVED."""
+    global _PEAK
+    if _PEAK is None:
+        from engine.nucleo import iron_peak
+        _PEAK = iron_peak()["Z"]
+    return _PEAK
+
+
+def channel(sym):
+    """-> (name, why). What process can have made this element."""
+    if sym not in BY_SYM:
+        raise KeyError(f"{sym} is not an element")
+    z = BY_SYM[sym][0]
+    pk = peak_z()
+    from engine import epochs as _ep
+    if sym in _ep.ORIGIN and _ep.ORIGIN[sym] == "bbn":
+        return "primordial", (f"epochs.ORIGIN puts {sym} at bbn, so it "
+                              f"predates any star")
+    if z <= 3:
+        return "primordial", f"Z={z} is light enough to be made in the bang"
+    if z > pk:
+        return "neutron-capture", (
+            f"Z={z} is past the binding peak at Z={pk}, so fusing up to it "
+            f"absorbs energy instead of releasing it -- no star builds it "
+            f"by fusion, and it must be captured onto a seed")
+    if z % 2 == 0 and z >= 6:
+        return "alpha-chain", (
+            f"Z={z} is even and at or below the peak, so it is reachable "
+            f"from carbon by adding alpha particles")
+    return "secondary", (
+        f"Z={z} is odd and below the peak, so it is not on the alpha "
+        f"chain -- it is made from seed nuclei rather than built up")
+
+
+def channels():
+    """-> {channel: [symbols]} over everything with an abundance."""
+    out = {}
+    for sym in DEX:
+        out.setdefault(channel(sym)[0], []).append(sym)
+    return {k: sorted(v, key=lambda s: BY_SYM[s][0]) for k, v in out.items()}
+
+
 # ------------------------------------------------- checks on the table
 def oddo_harkins(tol=0):
     """-> (violations, tested). Even Z should beat its odd neighbours."""
@@ -167,6 +234,8 @@ def check():
     t("declines_with_z", _decl)
     t("iron_peak", _fe)
     t("metallicity", _met)
+    t("channels_are_derived", _chan)
+    t("fusion_stops_at_the_peak", _stop)
     return all(o[1] for o in out), out
 
 
@@ -215,6 +284,45 @@ def _fe():
             f"Ti-Zn and {over_mean:.2f} above their mean -- a factor of "
             f"{10 ** over_mean:.0f}, which is the binding-energy peak "
             f"showing up in a table of counts")
+
+
+def _chan():
+    ch = channels()
+    pk = peak_z()
+    # The classifier must put things where physics does, and the
+    # test of that is not a list of expected answers -- it is that
+    # no element beyond the peak is called fusible and none below it
+    # is called captured.
+    for sym in ch.get("neutron-capture", []):
+        if BY_SYM[sym][0] <= pk:
+            raise ArithmeticError(f"{sym} is at or below the peak and was "
+                                  f"called neutron-capture")
+    for name in ("alpha-chain", "secondary"):
+        for sym in ch.get(name, []):
+            if BY_SYM[sym][0] > pk:
+                raise ArithmeticError(f"{sym} is past the peak and was "
+                                      f"called {name}")
+    return (", ".join(f"{k} {len(v)}" for k, v in sorted(ch.items()))
+            + f"; the split is the binding peak at Z={pk}, derived in "
+              f"engine/nucleo.py and not written down here")
+
+
+def _stop():
+    """The boundary has to be real: binding must fall past the peak."""
+    from engine.nucleo import binding_per_nucleon
+    pk = peak_z()
+
+    def best(z):
+        return max(binding_per_nucleon(z, n) for n in range(0, 3 * z + 4))
+    top = best(pk)
+    rising = [z for z in range(6, pk) if best(z) > top]
+    falling = all(best(z) < top for z in range(pk + 1, 93, 6))
+    if rising or not falling:
+        raise ArithmeticError(f"the peak is not a peak: {rising} exceed it")
+    return (f"binding per nucleon tops out at {top:.3f} MeV at Z={pk}; "
+            f"nothing below exceeds it and everything sampled above falls "
+            f"short, so 'fusion stops here' is a measured property of the "
+            f"curve rather than a rule about iron")
 
 
 def _met():

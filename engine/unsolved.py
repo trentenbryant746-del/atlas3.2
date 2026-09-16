@@ -104,6 +104,14 @@ OPEN_TO_US = (
      "turning the fit into a prediction or breaking it"),
     ("initial-final mass relation", "engine/remnants.py; asserted anchors",
      "stellar-evolution modelling, which this repo does not do"),
+    ("the mass formula's own error bar",
+     "engine/transitions.SEMF_MeV = 3.0, taken from the literature. "
+     "It is the threshold every decay refusal turns on, so a wrong "
+     "value silently changes what the repo will and will not say",
+     "per-isotope masses to score the formula against -- standard "
+     "atomic weights are abundance-weighted averages and give a "
+     "spurious 80 MeV median residual, measuring the isotope mix "
+     "rather than the formula"),
     ("nuclear shell closures",
      "engine/nucleo.py is a liquid drop with no shell structure, so "
      "the magic numbers are invisible to it -- provenance.py walks "

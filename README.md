@@ -1354,3 +1354,76 @@ same rules, and the rules say which chemistries are possible before
 anything is simulated. Combined with 3.1.5's laws-versus-resemblance
 split, a biochemistry unlike ours is not a broken one — it is a different
 point in a space the ladder can already walk.
+
+
+## 3.1.14 — Two things that were typed in, checked
+
+You asked whether the mass formula's 3 MeV was something we set. It was.
+And you were right that a ten-element valence table is too small.
+
+### The error bar is asserted, and cannot currently be measured here
+
+`SEMF_MeV = 3.0` is typed. It is the threshold every decay refusal turns
+on, so a wrong value silently changes what the repo will and will not
+say — which makes it worth knowing exactly what kind of number it is.
+
+I tried to measure it and the attempt failed instructively. Scoring the
+formula against the periodic table's atomic weights gives a **median
+residual of 80 MeV**, which looks catastrophic and is an artefact: a
+standard atomic weight is the **abundance-weighted average over an
+element's isotopes**, not the mass of any one nuclide. For iron the
+formula predicts 55.935 u — Fe-56 to three decimals — while the
+tabulated weight is 55.845 because Fe-54 pulls it down. Comparing a
+single-nuclide prediction to a multi-isotope average measures the
+isotope mix, not the formula.
+
+So it stays asserted, with the source named, and it is now on the
+`unsolved.py` list with what would close it: **per-isotope masses**,
+which this repo does not carry. Six things are on that list now.
+
+### Valence, derived instead of typed
+
+`engine/valence.py`. Not eighty more numbers — the same shell capacities
+that gave the noble gases:
+
+```
+shells hold   2, 8, 8, 18, 18, 32
+outer count   Z above its noble core, less the d and f already filled
+valence       that count if 4 or fewer, else 8 minus it
+```
+
+**50 elements instead of 10**, and silicon — the element `variantlife.py`
+had to refuse — comes out bonding four ways without anyone deciding.
+
+The ten hand-written valences are kept as a **fixture**, and the
+derivation is scored against them rather than fitted to them. That
+fixture earned its keep twice:
+
+**Germanium came out −6.** Subtracting whole shells in order counted the
+ten 3d electrons as outer ones. After argon the period holds 4s, then
+ten 3d, then 4p — eighteen elements, of which only the eight s and p
+ones set the bonding.
+
+**Then iodine came out with no valence at all.** Bounding the d-block
+count at the start but not the end meant iodine counted the 21–30
+d-block, which is *already inside* its krypton core.
+
+Both were caught by ten numbers a person wrote down, which is what a
+fixture is for.
+
+**And where it refuses:** 68 d- and f-block elements are **not**
+assigned. Iron is +2 and +3, manganese runs +2 to +7, and which appears
+depends on the partner. That is not a number waiting to be looked up —
+it is a property the main-group rule does not describe, so it says so
+and names what it would take.
+
+### A latent bug the wider table reached
+
+Feeding 50 valences into `transitions.bind_edge` crashed with a division
+by zero. While the table held ten hand-picked elements **every entry
+bonded**, so nothing ever guarded against a valence of zero — and two
+noble gases give `gcd(0, 0)`.
+
+A zero valence is not a small one. The bug had been there since the
+module was written and only a table wide enough to contain an inert
+element could reach it.

@@ -63,14 +63,55 @@ from engine.experts import BY_Z, BY_SYM                      # noqa: E402
 from engine.nucleo import binding_energy_MeV                 # noqa: E402
 
 DERIVED = "DERIVED"
-SEMF_MeV = 3.0          # the formula's own accuracy, in MeV
+# SEMF_MeV: ASSERTED, source: the accepted accuracy of the
+# semi-empirical mass formula, a few MeV for medium and heavy
+# nuclei. IT IS NOT DERIVED HERE AND CANNOT CURRENTLY BE.
+#
+# The obvious measurement fails, and the reason is worth writing
+# down. Scoring the formula against engine/experts' atomic weights
+# gives a median residual of 80 MeV, which looks like a catastrophe
+# and is an artefact: a standard atomic weight is the
+# ABUNDANCE-WEIGHTED AVERAGE over an element's isotopes, not the
+# mass of any one nuclide. For iron the formula predicts 55.935 u,
+# which is Fe-56 to three decimals, while the tabulated weight is
+# 55.845 because Fe-54 pulls it down. Comparing a single-nuclide
+# prediction to a multi-isotope average measures the isotope mix,
+# not the formula.
+#
+# Measuring it properly needs PER-ISOTOPE masses, which this repo
+# does not carry. Listed in engine/unsolved.py with that as the
+# thing that would close it. Until then the number is taken from
+# the literature and says so -- and it is load-bearing, because it
+# is the threshold decay_of() refuses inside.
+SEMF_MeV = 3.0
+SEMF_SOURCE = ("accepted liquid-drop accuracy, a few MeV; not measured "
+               "in this repo for want of per-isotope masses")
 B_ALPHA = 28.296        # measured binding of He-4
 
 # Valences, for the binding half. ASSERTED: which bonds an element
 # forms is chemistry, not something derived here.
-VALENCE = {"H": 1, "C": 4, "N": 3, "O": 2, "S": 2, "P": 3,
-           "F": 1, "Cl": 1, "Br": 1, "I": 1}
+# The ten hand-written valences are kept as a FIXTURE -- the thing
+# engine/valence.py's derivation is scored against, and the reason
+# its Ge/As/Se/Br and iodine bugs were caught. The table actually
+# used is derived from shell filling and covers every main-group
+# element rather than ten.
+VALENCE_FIXTURE = {"H": 1, "C": 4, "N": 3, "O": 2, "S": 2, "P": 3,
+                   "F": 1, "Cl": 1, "Br": 1, "I": 1}
 VAL_SOURCE = "common valences of the main-group elements"
+
+
+def _valence_table():
+    try:
+        from engine import valence as _v
+        t = _v.table()
+        if all(t.get(k) == v for k, v in VALENCE_FIXTURE.items()):
+            return t
+    except Exception:
+        pass
+    return dict(VALENCE_FIXTURE)
+
+
+VALENCE = _valence_table()
 
 
 @dataclass
@@ -188,6 +229,13 @@ def bind_edge(a, b):
     if a not in VALENCE or b not in VALENCE:
         return None
     va, vb = VALENCE[a], VALENCE[b]
+    # A ZERO VALENCE IS NOT A SMALL ONE. While the table held ten
+    # hand-picked elements every entry bonded, so nothing guarded
+    # against zero. Deriving valence brought in the noble gases at
+    # zero, and two of them gave gcd(0, 0) and a division by zero --
+    # a latent bug that only a wider table could reach.
+    if va == 0 or vb == 0:
+        return None
     g = math.gcd(va, vb)
     na, nb = vb // g, va // g
     f = "".join(f"{s}{k}" if k > 1 else s

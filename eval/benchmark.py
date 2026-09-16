@@ -47,7 +47,7 @@ def modules():
               "eos", "bridge", "unsolved", "life", "biomatter",
               "polytrope", "abundance", "transitions",
               "cosmoschunks", "folding", "provenance",
-              "halflife", "variantlife"):
+              "halflife", "variantlife", "valence"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()

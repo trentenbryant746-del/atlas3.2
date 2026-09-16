@@ -272,8 +272,15 @@ def _back():
                               f"shells at {noble_z()}")
     if "P" not in v["chains"] or "S" not in v["chains"]:
         raise ArithmeticError(f"phosphorus or sulphur refused: {v}")
-    if set(v["unknown"]) != {"Si", "Fe"}:
+    # Silicon used to sit here for want of a table entry. It is
+    # derived now, chains four ways, and has moved. Iron stays
+    # unknown for a real reason: the d-block has several valences
+    # and the main-group rule describes one.
+    if set(v["unknown"]) != {"Fe"}:
         raise ArithmeticError(f"unknown came out {v['unknown']}")
+    if "Si" not in v["chains"]:
+        raise ArithmeticError("silicon should chain now that valence is "
+                              "derived rather than looked up")
     b = backbones()
     gates = sorted({b[e][1] for e in v["chains"]})
     return (f"chains {v['chains']} gated at {gates}; inert {v['inert']}, "
@@ -289,7 +296,7 @@ def _ref():
               "are noble gases"),
              (Biochemistry("caps only", 4, 20, 1, ("H", "F")),
               "there is no chain"),
-             (Biochemistry("unmeasured", 4, 20, 1, ("C", "H", "Si")),
+             (Biochemistry("unmeasured", 4, 20, 1, ("C", "H", "Fe")),
               "no valence on record"),
              (Biochemistry("unreal", 4, 20, 1, ("C", "Zz")),
               "not elements")]

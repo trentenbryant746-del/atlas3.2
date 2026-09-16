@@ -1,0 +1,42 @@
+{
+  "committed": {
+    "expert-tensor-map.json": {
+      "sha256": "4d7b330556fa37ad3a2c2710d4909f12efdcba120b2718ff28aa39028af0b66d",
+      "bytes": 11134167
+    },
+    "gguf-metadata.json": {
+      "sha256": "a1418d04f4c3d6b4bb89f9c2892ecd359445d137c91688429e512b89b6b13d75",
+      "bytes": 15821
+    },
+    "qwen-topical-specialization-20x10.json": {
+      "sha256": "1fe6176afb09331522ba66938df93e0d6dac8001e46ffe08c2ff10fd358b6e1e",
+      "bytes": 23456
+    },
+    "route-events.part1.jsonl": {
+      "sha256": "bdebc17d34d815e5d84b805bc3e87306672464c4e02ff684f698056912519e3e",
+      "bytes": 47896572
+    },
+    "route-events.part2.jsonl": {
+      "sha256": "f8b01fb27b507f280546297bbc124a742c5a2d4928ae0133bac985008f4ec30f",
+      "bytes": 63317792
+    }
+  },
+  "assembled": {
+    "route-events.jsonl": {
+      "sha256": "246f23ebcbb702a232c5615ed58de5b0134ef92266c0b5872ae3e24a053da0e5",
+      "bytes": 111214364,
+      "from": [
+        "route-events.part1.jsonl",
+        "route-events.part2.jsonl"
+      ],
+      "why_split": "106.1 MiB, and GitHub refuses any file over 100 MB"
+    }
+  },
+  "not_committed": {
+    "Qwen3.6-35B-A3B-UD-Q4_K_M.gguf": {
+      "sha256": "ac0e2c1189e055faa36eff361580e79c5bd6f8e76bffb4ce547f167d53e31a61",
+      "bytes": 22134528992,
+      "why": "21 GB. Nothing in this repo opens it -- the expert map is offsets, not weights -- so it is PINNED by hash and fetched only if you want the external file-size check in qwenaccounts.experts_against_the_file()"
+    }
+  }
+}

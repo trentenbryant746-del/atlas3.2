@@ -653,3 +653,72 @@ structural absences, and neither is closable by a number.
 
 This is what "more observables" buys. Five could not tell a bad entry
 from a bad channel. Nine can, and it says the earlier answer was wrong.
+
+
+## 3.1.4 — Every naturally occurring element, and what it exposed
+
+Nine was not the number of elements. It was the size of the overlap
+between two small tables, and it had already produced one wrong answer.
+
+`engine/abundance.py` now carries **all 83 naturally occurring elements**
+— hydrogen through uranium, minus technetium and promethium, which have
+no stable isotope, and minus everything above uranium, which is
+man-made and not part of any universe simulated here. The seven trace
+decay products between bismuth and thorium are recorded as absent with
+the reason rather than left as a hole.
+
+**Asserted in dex, derived in mass.** Abundances are quoted the way they
+are measured: A(X) = log₁₀(N_X/N_H) + 12. Those are the assertion. Mass
+fractions are **derived** from them using the atomic weights already in
+the periodic table, so the conversion is arithmetic this repo performs
+rather than a second table to get wrong.
+
+**Eighty-three asserted numbers is a liability, so they are checked
+against patterns they must satisfy for reasons independent of their
+values:**
+
+| check | result |
+|---|---|
+| Oddo-Harkins — even Z beats its odd neighbours, because paired protons bind tighter | **39 of 39, no exceptions** |
+| abundance falls with Z | 0.088 dex per proton, ~8× per ten elements |
+| the iron peak stands above Ti–Zn | **534× above their mean** — the binding-energy peak showing up in a table of counts |
+| X, Y, Z derived from the dex values | **0.7374 / 0.2492 / 0.0134** against accepted 0.7381 / 0.2485 / 0.0134 |
+
+That last row is the strongest evidence the table is not mistyped: three
+numbers derived from all 83 entries, landing on an independently known
+result to about 0.1%.
+
+### The dilution test, now on twelve elements
+
+```
+CNO        C 0.77x   N 1.10x   O 0.74x               mean 0.87x
+Ne         Ne 0.91x                                  mean 0.91x
+alpha      Mg 1.35x  Si 1.63x  S 1.17x  Ca 2.67x     mean 1.70x
+iron-peak  Fe 1.62x                                  mean 1.62x
+r-process  Ag 47.8x  Au 5.5x   U 32.7x               mean 28.7x
+```
+
+**The r-process channel is out by ~30×**, and that is not a subtlety —
+it is the model handing every late-generation star a neutron-star
+merger's worth of silver, gold and uranium, when mergers are rare
+events. Per-element fitted dilutions now span 4.97 (C) to 60.0 (Ag), a
+factor of 12.
+
+And it exposed something methodological worth keeping: **a badly wrong
+channel is not only wrong about itself.** Every element's dilution is
+fitted on the other eleven, so a channel off by 30× drags every other
+fit with it — which is why the alpha and CNO numbers moved when the
+r-process elements entered the set. The check now reports the dominant
+channel first and the rest separately.
+
+### Three conclusions, each one overturning the last
+
+- **five elements** → "the iron yield is wrong by 0.577×"
+- **nine elements** → wrong; iron sits inside the alpha spread, the error
+  is a whole channel
+- **twelve elements** → the alpha story is real but second-order; the
+  r-process is out by 30× and was distorting everything else
+
+Each was the best available reading of the data at hand, and each was
+overturned by more of it. That is the argument for carrying all 83
+rather than the handful someone needed at the time.

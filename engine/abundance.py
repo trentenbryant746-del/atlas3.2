@@ -1,0 +1,243 @@
+"""
+Solar abundances for every naturally occurring element, and the
+pattern that catches a typo in them.
+
+engine/mixtures.OBSERVED listed eleven elements, so the dilution
+experiment could be over-constrained at most eleven ways, and in
+practice nine. That was a limit of a table, and it produced a wrong
+conclusion once already: with five elements iron looked like the
+bad yield, and with nine it turned out to be an entire
+nucleosynthetic channel. A table that small can misinform.
+
+So this holds all 83 elements that occur naturally in measurable
+quantity -- hydrogen through uranium, minus technetium and
+promethium, which have no stable isotope and are essentially absent,
+and minus the man-made elements above uranium, which are not part of
+any universe this repo simulates.
+
+ASSERTED IN DEX, DERIVED IN MASS. Abundances are quoted the way
+astronomers measure them: A(X) = log10(N_X / N_H) + 12, so hydrogen
+is 12 by definition. Those numbers are the assertion, with a source.
+The mass fractions everything else uses are DERIVED from them with
+the atomic weights already in engine/experts.py -- so the conversion
+is arithmetic this repo does rather than a second table to get
+wrong.
+
+THE CHECK THAT CATCHES TYPOS: ODDO-HARKINS. Elements with an even
+atomic number are more abundant than their odd neighbours, usually
+by a factor of a few to ten. The reason is nuclear: even-Z nuclei
+pair their protons and are more tightly bound, so nucleosynthesis
+favours them and they survive better. It holds across the whole
+table with a handful of known exceptions, so a mistyped value shows
+up as an element breaking a rule it has no business breaking.
+
+That is the point of including it. A large asserted table is a
+liability -- 83 numbers, and any of them could be wrong. Oddo-Harkins
+is a pattern the data must satisfy for reasons independent of the
+values, which makes it a check rather than a restatement. So is the
+overall decline with Z, and so is the iron peak standing above its
+neighbours.
+"""
+from __future__ import annotations
+
+import math
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from engine.experts import BY_SYM, BY_Z                      # noqa: E402
+
+ASSERTED, DERIVED = "ASSERTED", "DERIVED"
+
+# ASSERTED: photospheric abundances on the astronomical dex scale,
+# A(X) = log10(N_X/N_H) + 12. Meteoritic values where the photosphere
+# does not give a reliable line. Source below.
+DEX = {
+    "H": 12.00, "He": 10.93, "Li": 1.05, "Be": 1.38, "B": 2.70,
+    "C": 8.43, "N": 7.83, "O": 8.69, "F": 4.56, "Ne": 7.93,
+    "Na": 6.24, "Mg": 7.60, "Al": 6.45, "Si": 7.51, "P": 5.41,
+    "S": 7.12, "Cl": 5.50, "Ar": 6.40, "K": 5.03, "Ca": 6.34,
+    "Sc": 3.15, "Ti": 4.95, "V": 3.93, "Cr": 5.64, "Mn": 5.43,
+    "Fe": 7.50, "Co": 4.99, "Ni": 6.22, "Cu": 4.19, "Zn": 4.56,
+    "Ga": 3.04, "Ge": 3.65, "As": 2.30, "Se": 3.34, "Br": 2.54,
+    "Kr": 3.25, "Rb": 2.52, "Sr": 2.87, "Y": 2.21, "Zr": 2.58,
+    "Nb": 1.46, "Mo": 1.88, "Ru": 1.75, "Rh": 0.91, "Pd": 1.57,
+    "Ag": 0.94, "Cd": 1.71, "In": 0.80, "Sn": 2.04, "Sb": 1.01,
+    "Te": 2.18, "I": 1.55, "Xe": 2.24, "Cs": 1.08, "Ba": 2.18,
+    "La": 1.10, "Ce": 1.58, "Pr": 0.72, "Nd": 1.42, "Sm": 0.96,
+    "Eu": 0.52, "Gd": 1.07, "Tb": 0.30, "Dy": 1.10, "Ho": 0.48,
+    "Er": 0.92, "Tm": 0.10, "Yb": 0.84, "Lu": 0.10, "Hf": 0.85,
+    "Ta": -0.12, "W": 0.85, "Re": 0.26, "Os": 1.40, "Ir": 1.38,
+    "Pt": 1.62, "Au": 0.92, "Hg": 1.17, "Tl": 0.90, "Pb": 1.75,
+    "Bi": 0.65, "Th": 0.02, "U": -0.54,
+}
+DEX_SOURCE = ("solar photospheric and meteoritic abundances, Asplund "
+              "et al. compilation, on the A(X) = log10(N_X/N_H) + 12 scale")
+
+# Absent from nature in any quantity, and why. Recorded rather than
+# omitted, so the gap is a statement instead of a hole.
+ABSENT = {
+    "Tc": "Z=43, no stable isotope; the longest-lived decays in ~4 Myr, "
+          "so it is not present in the solar photosphere",
+    "Pm": "Z=61, no stable isotope; same reason",
+}
+MAN_MADE_ABOVE = 92   # anything heavier than uranium is synthetic
+
+
+def naturally_occurring():
+    """Every element a universe makes on its own. DERIVED from the table."""
+    out = []
+    for z in range(1, MAN_MADE_ABOVE + 1):
+        sym = BY_Z[z][0]
+        if sym in ABSENT:
+            continue
+        out.append(sym)
+    return out
+
+
+def mass_fractions():
+    """dex -> mass fraction. DERIVED, using the repo's atomic weights."""
+    num = {}
+    for sym, a in DEX.items():
+        if sym not in BY_SYM:
+            raise KeyError(f"{sym} is not in the periodic table")
+        weight = BY_SYM[sym][1][2]
+        num[sym] = 10.0 ** (a - 12.0) * weight     # relative to hydrogen
+    total = sum(num.values())
+    return {s: v / total for s, v in num.items()}
+
+
+def metallicity():
+    """Z: everything heavier than helium, by mass. DERIVED."""
+    mf = mass_fractions()
+    return sum(v for s, v in mf.items() if s not in ("H", "He"))
+
+
+# ------------------------------------------------- checks on the table
+def oddo_harkins(tol=0):
+    """-> (violations, tested). Even Z should beat its odd neighbours."""
+    bad, tested = [], 0
+    for sym, a in sorted(DEX.items(), key=lambda kv: BY_SYM[kv[0]][0]):
+        z = BY_SYM[sym][0]
+        if z % 2 == 1 or z < 6:
+            continue
+        nb = [BY_Z[z + d][0] for d in (-1, 1)
+              if 1 <= z + d <= MAN_MADE_ABOVE and BY_Z[z + d][0] in DEX]
+        if not nb:
+            continue
+        tested += 1
+        for n in nb:
+            if DEX[n] > a + tol:
+                bad.append((sym, z, a, n, DEX[n]))
+    return bad, tested
+
+
+def declines_with_z():
+    """Heavier is rarer, over the table as a whole. DERIVED trend."""
+    pts = [(BY_SYM[s][0], a) for s, a in DEX.items()]
+    n = len(pts)
+    mx = sum(z for z, _a in pts) / n
+    my = sum(a for _z, a in pts) / n
+    num = sum((z - mx) * (a - my) for z, a in pts)
+    den = sum((z - mx) ** 2 for z, _a in pts)
+    return num / den
+
+
+def iron_peak_stands_out():
+    """Fe must exceed its neighbours by a wide margin. DERIVED."""
+    fe = DEX["Fe"]
+    nb = [DEX[BY_Z[z][0]] for z in range(22, 32)
+          if BY_Z[z][0] in DEX and BY_Z[z][0] != "Fe"]
+    return fe - max(nb), fe - (sum(nb) / len(nb))
+
+
+def check():
+    out = []
+
+    def t(name, fn):
+        try:
+            out.append((name, True, str(fn())))
+        except Exception as e:
+            out.append((name, False, f"{type(e).__name__}: {e}"))
+
+    t("coverage", _cov)
+    t("oddo_harkins", _oh)
+    t("declines_with_z", _decl)
+    t("iron_peak", _fe)
+    t("metallicity", _met)
+    return all(o[1] for o in out), out
+
+
+def _cov():
+    nat = set(naturally_occurring())
+    have = set(DEX)
+    missing = sorted(nat - have, key=lambda s: BY_SYM[s][0])
+    extra = sorted(have - nat)
+    if extra:
+        raise ArithmeticError(f"abundances for non-natural elements: {extra}")
+    return (f"{len(have)} elements with abundances; {len(nat)} occur "
+            f"naturally up to Z={MAN_MADE_ABOVE}; {len(missing)} without a "
+            f"value ({missing[:8]}{'...' if len(missing) > 8 else ''}) -- "
+            f"trace decay products between bismuth and thorium, plus "
+            f"{sorted(ABSENT)} which have no stable isotope")
+
+
+def _oh():
+    bad, tested = oddo_harkins()
+    rate = 1 - len(bad) / tested if tested else 0
+    if rate < 0.85:
+        raise ArithmeticError(
+            f"Oddo-Harkins holds for only {rate:.0%} of {tested} even-Z "
+            f"elements -- the table is probably mistyped: {bad[:5]}")
+    ex = ", ".join(f"{s} under {n}" for s, _z, _a, n, _an in bad[:4])
+    return (f"even-Z beats its odd neighbours for {tested - len(bad)} of "
+            f"{tested} tested ({rate:.0%}); exceptions {ex or 'none'}. A "
+            f"pattern the values must satisfy for nuclear reasons, so a "
+            f"mistyped abundance breaks it")
+
+
+def _decl():
+    slope = declines_with_z()
+    if slope >= 0:
+        raise ArithmeticError(f"abundance does not fall with Z: {slope:+.4f}")
+    return (f"abundance falls {abs(slope):.3f} dex per proton across the "
+            f"table -- about {10 ** (abs(slope) * 10):.0f}x per ten "
+            f"elements")
+
+
+def _fe():
+    over_max, over_mean = iron_peak_stands_out()
+    if over_max <= 0:
+        raise ArithmeticError("iron does not stand above its neighbours")
+    return (f"iron sits {over_max:.2f} dex above the next most abundant of "
+            f"Ti-Zn and {over_mean:.2f} above their mean -- a factor of "
+            f"{10 ** over_mean:.0f}, which is the binding-energy peak "
+            f"showing up in a table of counts")
+
+
+def _met():
+    z = metallicity()
+    if not (0.008 < z < 0.025):
+        raise ArithmeticError(f"metallicity {z:.4f} is nowhere near solar")
+    mf = mass_fractions()
+    return (f"X={mf['H']:.4f} Y={mf['He']:.4f} Z={z:.4f}, derived from the "
+            f"dex table and the repo's atomic weights; accepted solar is "
+            f"about X=0.7381 Y=0.2485 Z=0.0134")
+
+
+if __name__ == "__main__":
+    mf = mass_fractions()
+    print(f"{len(DEX)} naturally occurring elements with solar abundances")
+    print(f"X={mf['H']:.4f}  Y={mf['He']:.4f}  Z={metallicity():.4f}")
+    print()
+    top = sorted(mf.items(), key=lambda kv: -kv[1])[:12]
+    print("  most abundant by mass:")
+    for s, v in top:
+        print(f"    {s:<4}{v:.6f}")
+    ok, res = check()
+    print()
+    for n, o, d in res:
+        print(f"{'PASS' if o else 'FAIL'}  {n:18}{d[:110]}")
+    print("\nall:", ok)

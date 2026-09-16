@@ -41,6 +41,7 @@ a missing mechanism, and the pattern names it.
 """
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -48,9 +49,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from engine import cosmos                                    # noqa: E402
-from engine.mixtures import OBSERVED                         # noqa: E402
+from engine import abundance                                 # noqa: E402
 
-SOLAR = OBSERVED["sun"][0]
+# EVERY NATURALLY OCCURRING ELEMENT, not the eleven a hand table
+# listed. engine/abundance.py carries all 83 on the dex scale and
+# derives mass fractions from them, so the testable set is now
+# bounded by what cosmos YIELDS rather than by what anyone wrote
+# down to compare against.
+SOLAR = abundance.mass_fractions()
 # EVERY ELEMENT BOTH SIDES KNOW ABOUT, rather than a chosen few.
 # cosmos yields twelve; the solar table lists eleven; the overlap is
 # what can be tested, and it is now nine instead of five. Computing
@@ -60,7 +66,7 @@ def _testable():
     tracked = set()
     for _pop, (y, _e, _f) in cosmos.YIELDS.items():
         tracked |= set(y)
-    return tuple(sorted(tracked & (set(SOLAR) - {"other"})))
+    return tuple(sorted(tracked & set(SOLAR)))
 
 
 ALL = _testable()
@@ -255,7 +261,11 @@ def _held():
 FAMILY = {"C": "CNO", "N": "CNO", "O": "CNO",
           "Ne": "Ne",
           "Mg": "alpha", "Si": "alpha", "S": "alpha", "Ca": "alpha",
-          "Fe": "iron-peak"}
+          "Fe": "iron-peak", "Ni": "iron-peak",
+          # neutron capture: slow in AGB stars, rapid in mergers
+          "Ag": "r-process", "Au": "r-process", "Pt": "r-process",
+          "U": "r-process", "Th": "r-process",
+          "Sr": "s-process", "Ba": "s-process", "Zr": "s-process"}
 
 
 def by_family(rows=None):
@@ -270,6 +280,24 @@ def _families():
     """Is the residual one entry, or a whole nucleosynthetic channel?"""
     fam = by_family()
     means = {k: sum(r for _e, r in v) / len(v) for k, v in fam.items()}
+    # THE WORST CHANNEL FIRST, because it distorts everything else.
+    # Every element's dilution is fitted on the other eleven, so a
+    # channel that is wrong by 30x drags every other fit with it --
+    # which is why the alpha and CNO numbers move when r-process
+    # elements enter the set. A badly wrong channel is not just wrong
+    # about itself.
+    worst = max(means, key=lambda k: abs(math.log10(means[k])))
+    if abs(math.log10(means[worst])) > 0.7:
+        detail = " ".join(f"{e} {r:.1f}x" for e, r in fam[worst])
+        return (f"the {worst} channel is out by {means[worst]:.0f}x "
+                f"({detail}) and dominates everything: each element is "
+                f"fitted on the other eleven, so a channel this wrong "
+                f"drags every other fit. Physically it is the model "
+                f"giving every late-generation star a neutron-star "
+                f"merger's worth of heavy elements, when mergers are "
+                f"rare. Remaining channels: "
+                + ", ".join(f"{k} {means[k]:.2f}x" for k in sorted(means)
+                            if k != worst))
     alpha = [r for _e, r in fam.get("alpha", [])]
     cno = [r for e, r in fam.get("CNO", []) if e in ("C", "O")]
     fe = dict(fam.get("iron-peak", [])).get("Fe")

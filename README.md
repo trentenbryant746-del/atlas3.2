@@ -1278,3 +1278,79 @@ And the design lesson for `eval/commit.py` sharpens. A bare hash of a
 **by accident rather than by design**. Neither is a commitment. Security
 by unguessable formatting is not security — it is an obstacle that
 happens to have held for a while.
+
+
+## 3.1.13 — Variant biochemistry: what moves and what stays forced
+
+`engine/biomatter.py` builds one biochemistry — four bases, twenty
+residues, a phosphate backbone, water. Every number in it is ours, and
+nothing in the derivations required that: `codon_length()` already took
+the alphabet size as an argument, and the epoch gate is whatever the
+backbone's elements demand. **The constants were the only thing tying
+the ladder to Earth.**
+
+`engine/variantlife.py` makes the biochemistry a parameter and re-runs
+the derivations.
+
+```
+ bases  sites   codes  spare    bits
+     2      5      32     11    5.00
+     3      3      27      6    4.75
+     4      3      64     43    6.00     <- ours
+     5      2      25      4    4.64
+     6      2      36     15    5.17
+     8      2      64     43    6.00
+```
+
+**What moves:** code length, table size, spare codons, bits per site.
+Six bases need only two positions; two bases need five. **What is
+forced:** the code must be the shortest that names everything, and one
+site shorter never suffices — checked for every alphabet from 2 to 8.
+One rule, different outputs.
+
+Our 43 spare codons are not a fact about life. They are what four bases
+and twenty-one meanings *leave over*, and a five-base biochemistry would
+have four.
+
+### Earth has to come back, or the generalisation is wrong
+
+The strongest check here: instantiate Earth through the general
+machinery and it must reproduce **codon length 3, 64 codes, 43 spare,
+supernova gate** — exactly what `biomatter.py` gets by hard-coding them.
+A generalisation that cannot return its own special case has generalised
+the wrong thing.
+
+### Three verdicts on a backbone, because two were not enough
+
+```
+chains   C, N, P, S    gated at stellar_c and supernova
+inert    He, Ne        closed shells -- refused
+unknown  Si, Fe        no valence on record -- refused, differently
+```
+
+Two failures got it there, both worth keeping:
+
+**It refused Earth.** The first rule demanded every backbone element bond
+at least twice. Hydrogen bonds once — it is a *cap*, not a link, and a
+backbone needs both. Fixed by requiring that at least one element chain
+rather than all of them.
+
+**Then it refused silicon.** The second treated absence from the valence
+table as zero valence. Silicon bonds four ways; the table holds ten
+elements and is not a census. **Absence of data is not evidence of
+inertness.** So the verdicts split three ways: a noble gas genuinely
+cannot bond and is refused; an element with a known valence is judged on
+it; an element with no entry is refused *for want of data* and says so.
+
+And the noble gases are derived, not listed. The aufbau shells hold
+2, 8, 8, 18, 18, 32 electrons, so the running totals — **2, 10, 18, 36,
+54, 86** — are exactly the closed-shell elements. Computed from the
+capacities rather than typed out.
+
+### What this buys
+
+A universe with different chemistry now grows different life through the
+same rules, and the rules say which chemistries are possible before
+anything is simulated. Combined with 3.1.5's laws-versus-resemblance
+split, a biochemistry unlike ours is not a broken one — it is a different
+point in a space the ladder can already walk.

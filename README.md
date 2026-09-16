@@ -867,3 +867,90 @@ rounding it away.
 through actinium are not absent, they are trace-present, and I had
 silently excluded them. The derivation cannot tell those apart either —
 but it says so.
+
+
+## 3.1.7 — Proteins, and what the benchmark hashes will and will not give up
+
+### The protein rung
+
+`engine/biomatter.py` now runs nucleotide → codon → gene → **protein** →
+genome → cell → organism. 13/13 checks.
+
+```
+ATGTGTGGATAA  ->  MCG, stop at codon 4
+MCG           ->  C10H19N3O4S2, 309.399 g/mol, epoch supernova
+              ->  8 possible genes, 3.0 bits lost in translation
+```
+
+**Mass two ways, and the atoms arbitrate.** A chain of n residues is the
+n free amino acids minus n−1 waters, one per peptide bond. Route one
+weighs each acid and subtracts the waters; route two builds the
+polymer's atom counts and weighs that once. They share the atomic
+weights and nothing else — different operation order, different rounding
+path — and they agree to 0.0e+00 on a 20-residue chain. The atom route
+also supports a check mass cannot: the chain must hold **exactly three
+fewer atoms per bond** than its parts.
+
+**All 64 codons translated singly rebuild the table**, and the
+degeneracies partition all 64 exactly — so the map is onto and not
+one-to-one, which is why `back_translation_count` enumerates the
+preimages and then **refuses** to name a gene. Three residues already
+have 8.
+
+**Sulphur sets the epoch.** Cysteine and methionine carry S at Z=16, so
+any chain containing either waits for supernovae. Everything else is
+CHNO and earlier. Same mechanism as DNA and phosphorus, reached from a
+different molecule.
+
+Refusals: a sequence that is not a whole number of codons, a base
+outside ACGT, a codon absent from the table, a residue with no formula.
+Each raises with the reason that makes it malformed.
+
+### Can the held-out answer format be recovered? Measured, not guessed
+
+Two things are now established rather than assumed.
+
+**The hash is a function of the answer, and injective.** Over 40 distinct
+computed arithmetic answers: zero values map to two hashes, zero hashes
+are shared by two values. So recomputation is right about what the
+answers are — 137 + 11 really is 148 — and the only unknown is the
+serialisation.
+
+**And the serialisation is not any obvious one.** Searched and failed:
+
+```
+251 template forms       prefixes, suffixes, JSON, repr, float formats,
+                         UTF-16, int-to-bytes, double-SHA, HMAC with
+                         eight plausible keys — tested against six pairs
+                         simultaneously
+2,200,000 integers       sha256 of every bare integer string from
+                         -200,000 to 2,000,000 — no expected hash is one
+1,742,015 affixes        every constant prefix or suffix up to 3
+                         printable characters, plus 1-char both sides
+```
+
+So whatever wraps the answer is longer than three characters, or a
+different encoding, or the answer text is prose rather than a number.
+
+**Ways to make it recoverable, cheapest first:**
+
+1. **Ask the publisher for the serialisation.** One line unlocks all 165
+   permanently. Everything else is a workaround for not having it.
+2. **Publish answers beside hashes** in future benchmark files. The hash
+   is worth keeping — it is what makes the file tamper-evident — but a
+   commitment nobody can open is a commitment nobody can check.
+3. **Release a key after evaluation.** Keep answers hidden while the
+   benchmark is live by hashing `key + answer`, then publish the key.
+   Verifiable *and* recoverable, in that order.
+4. **Publish a Merkle root plus per-item openings.** Same property with
+   finer grain: each answer can be opened individually without revealing
+   the rest.
+5. **Widen the brute force.** Well-posed now — find constant `F` with
+   `sha256(F(answer))` matching — but the space past three characters is
+   large and it is guessing at someone else's convention.
+
+Meanwhile the hashes already earn their keep without being opened:
+prompts sharing a hash must share an answer, which is **46 equivalence
+classes over 98 prompts**, and Atlas gives one answer in every class.
+That is a wording-invariance test taken from the benchmark's own
+commitments without ever learning what the answers are.

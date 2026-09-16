@@ -210,6 +210,142 @@ def genome_information(base_counts):
                 f"bias, not an error")
 
 
+# --------------------------------------------------------------- protein
+# ASSERTED: the free neutral amino acids. Structures are measured.
+# The MASSES are not here -- engine/experts.molar_mass derives them
+# from these formulas, so one set of atomic weights serves the repo.
+RESIDUES = {
+    "G": "C2H5NO2",   "A": "C3H7NO2",   "S": "C3H7NO3",
+    "P": "C5H9NO2",   "V": "C5H11NO2",  "T": "C4H9NO3",
+    "C": "C3H7NO2S",  "L": "C6H13NO2",  "I": "C6H13NO2",
+    "N": "C4H8N2O3",  "D": "C4H7NO4",   "Q": "C5H10N2O3",
+    "K": "C6H14N2O2", "E": "C5H9NO4",   "M": "C5H11NO2S",
+    "H": "C6H9N3O2",  "F": "C9H11NO2",  "R": "C6H14N4O2",
+    "Y": "C9H11NO3",  "W": "C11H12N2O2",
+}
+RES_SOURCE = "IUPAC structural formulae of the proteinogenic amino acids"
+STOP = "*"
+WATER = "H2O"
+
+
+def translate(dna):
+    """DNA -> residue chain, stopping at the first stop codon.
+
+    Refuses rather than trimming. A sequence that is not a whole
+    number of codons is not a coding sequence, and guessing which
+    end to cut is inventing data.
+    """
+    t = dna.strip().upper()
+    bad = sorted(set(t) - set(BASES))
+    if bad:
+        raise ValueError(f"not DNA: {bad} outside {BASES}")
+    if len(t) % 3:
+        raise ValueError(f"{len(t)} bases is not a whole number of codons "
+                         f"({len(t) % 3} over)")
+    chain, stopped = [], False
+    for i in range(0, len(t), 3):
+        cod = t[i:i + 3]
+        if cod not in CODE:
+            raise ValueError(f"codon {cod!r} is not in the table")
+        if CODE[cod] == STOP:
+            stopped = True
+            break
+        chain.append(CODE[cod])
+    return Fact(("".join(chain), stopped), DERIVED, "INVERSE",
+                f"{len(t)} bases -> {len(chain)} residues"
+                + (f", stop at codon {len(chain)+1}" if stopped
+                   else ", no stop reached"))
+
+
+def degeneracy(aa):
+    """How many codons mean this residue. ENUMERATE."""
+    hits = sorted(c for c, m in CODE.items() if m == aa)
+    if not hits:
+        raise ValueError(f"{aa!r} is not a meaning in the code")
+    return Fact(len(hits), DERIVED, "ENUMERATE",
+                f"{aa} is named by {len(hits)} codons: {' '.join(hits)}")
+
+
+def back_translation_count(chain):
+    """How many genes give this protein. The reason it is not one."""
+    if not chain:
+        raise ValueError("no chain")
+    n = 1
+    for aa in chain:
+        n *= degeneracy(aa).value
+    return Fact(n, DERIVED, "ENUMERATE",
+                f"{len(chain)} residues, degeneracies multiply to "
+                f"{n:.3e} coding sequences "
+                f"({math.log2(n):.1f} bits lost) -- the gene is NOT "
+                f"recoverable from the protein")
+
+
+def chain_formula(chain):
+    """Atom counts of the polymer. CONSERVATION on the bond count."""
+    if not chain:
+        raise ValueError("no chain")
+    unknown = sorted(set(chain) - set(RESIDUES))
+    if unknown:
+        raise ValueError(f"no formula on record for {unknown}")
+    counts, parts = {}, 0
+    for aa in chain:
+        e = _elements(RESIDUES[aa])
+        for sym, k in e.items():
+            counts[sym] = counts.get(sym, 0) + k
+        parts += sum(e.values())
+    bonds = len(chain) - 1
+    counts["H"] -= 2 * bonds
+    counts["O"] -= bonds
+    if counts["H"] < 0 or counts["O"] < 0:
+        raise ArithmeticError("more water removed than the parts contain")
+    total = sum(counts.values())
+    if total != parts - 3 * bonds:
+        raise ArithmeticError(
+            f"CONSERVATION: {parts} atoms less {3*bonds} in {bonds} waters "
+            f"should be {parts - 3*bonds}, counted {total}")
+    f = "".join(f"{s}{counts[s]}" for s in
+                sorted(counts, key=lambda s: (s != "C", s != "H", s)))
+    return Fact((f, counts), DERIVED, "CONSERVATION",
+                f"{len(chain)} residues, {bonds} peptide bonds: {parts} "
+                f"atoms less {3*bonds} = {total}, {f}")
+
+
+def chain_mass(chain):
+    """Two routes to one mass. They share atomic weights and nothing else."""
+    from engine.experts import molar_mass
+    unknown = sorted(set(chain) - set(RESIDUES))
+    if unknown:
+        raise ValueError(f"no formula on record for {unknown}")
+    bonds = len(chain) - 1
+    w_water = molar_mass(WATER)
+    by_residue = sum(molar_mass(RESIDUES[aa]) for aa in chain) \
+        - bonds * w_water
+    f, _c = chain_formula(chain).value
+    by_formula = molar_mass(f)
+    if not math.isclose(by_residue, by_formula, rel_tol=1e-9, abs_tol=1e-6):
+        raise ArithmeticError(f"routes disagree: {by_residue:.6f} vs "
+                              f"{by_formula:.6f}")
+    return Fact(round(by_formula, 4), DERIVED, "REDUNDANT",
+                f"{len(chain)} residues: {by_residue:.4f} summing free "
+                f"acids less {bonds} waters, {by_formula:.4f} weighing "
+                f"{f} once -- agree to "
+                f"{abs(by_residue - by_formula):.1e}")
+
+
+def protein_epoch(chain):
+    """Sulphur is Z=16, so any chain with C or M waits for supernovae."""
+    _f, counts = chain_formula(chain).value
+    eras = {e: _ep.ORIGIN.get(e) for e in counts}
+    missing = [e for e, v in eras.items() if v is None]
+    if missing:
+        raise KeyError(f"no origin epoch for {missing}")
+    era = max(eras.values(), key=lambda x: _ep.ORDER[x])
+    late = sorted(e for e, v in eras.items() if v == era)
+    return Fact(era, DERIVED, "EXTERNAL",
+                f"this chain contains {sorted(counts)}; the latest to "
+                f"appear is {late} at {era}")
+
+
 # ------------------------------------------------------------------ cell
 def dna_volume(bp):
     """A genome as a B-DNA cylinder. INVERSE on the base pairs."""
@@ -297,6 +433,10 @@ def check():
     t("cell_refuses", _cell)
     t("organism_bounds", lambda: organism_bounds().why)
     t("epoch_gating", _gate)
+    t("translation", _tr)
+    t("protein_mass_two_ways", _pm)
+    t("translation_loses_information", _bt)
+    t("protein_refuses", _pref)
     return all(o[1] for o in out), out
 
 
@@ -352,6 +492,64 @@ def _gate():
     return (f"DNA is gated at {era} (index {idx}); all four nucleotides "
             f"are at or before it, and the {len(earlier)} earlier epochs "
             f"cannot hold any of this ladder")
+
+
+def _tr():
+    """Every codon translated singly must rebuild the table."""
+    rebuilt = {}
+    for cod in CODE:
+        chain, stopped = translate(cod).value
+        rebuilt[cod] = STOP if stopped else chain
+    if rebuilt != CODE:
+        diff = [c for c in CODE if rebuilt.get(c) != CODE[c]]
+        raise ArithmeticError(f"{len(diff)} codons do not round trip")
+    f = translate("ATGTGTGGATAA")
+    return (f"all {len(rebuilt)} codons translated singly rebuild the "
+            f"table; ATGTGTGGATAA -> {f.value[0]}, stop reached "
+            f"{f.value[1]}")
+
+
+def _pm():
+    for aa in RESIDUES:
+        chain_mass(aa)
+    every = "".join(sorted(RESIDUES))
+    f = chain_mass(every)
+    fm, _c = chain_formula(every).value
+    return (f"every residue weighed alone, and all 20 as one chain: "
+            f"{f.value} g/mol for {fm}, by two routes agreeing")
+
+
+def _bt():
+    n = back_translation_count("MCG").value
+    want = 1
+    for aa in "MCG":
+        want *= degeneracy(aa).value
+    if n != want:
+        raise ArithmeticError("degeneracies do not multiply")
+    tot = sum(degeneracy(m).value for m in set(CODE.values()))
+    if tot != len(CODE):
+        raise ArithmeticError(f"degeneracies sum to {tot}, not {len(CODE)}")
+    return (f"MCG has {n} possible genes; the degeneracies partition all "
+            f"{len(CODE)} codons exactly, so the map is onto and not "
+            f"one-to-one and the gene is not recoverable")
+
+
+def _pref():
+    cases = [(lambda: translate("ACGTA"), "whole number of codons"),
+             (lambda: translate("ACGU"), "outside"),
+             (lambda: chain_mass("BXZ"), "no formula on record"),
+             (lambda: degeneracy("B"), "not a meaning")]
+    for fn, want in cases:
+        try:
+            fn()
+        except Exception as e:
+            if want not in str(e):
+                raise ArithmeticError(f"wrong reason: wanted {want!r}, "
+                                      f"got {e}")
+            continue
+        raise ArithmeticError(f"accepted what it should refuse ({want})")
+    return (f"{len(cases)} malformed inputs refused, each with the reason "
+            f"that makes it malformed")
 
 
 if __name__ == "__main__":

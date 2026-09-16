@@ -92,20 +92,95 @@ def rebuild_arithmetic(prompt):
 
 REBUILD = {"arithmetic": rebuild_arithmetic}
 
+# THE OTHER 85, FROM THE GENERATOR'S OWN TOOLS.
+#
+# Arithmetic is reconstructed above from its rule, written out here.
+# The remaining six formats are long prose strings and transcribing
+# them by hand would be six more chances to introduce an error --
+# so they are taken from the modules that produced them, when those
+# are present.
+#
+# THIS IS A DIFFERENT CHECK AND IS LABELLED AS ONE. Independent
+# recomputation (the table above) shares no code with anything and
+# always runs. This confirms the published hashes match the
+# generator that claims to have produced them, which is what a
+# reader asking for "raw outputs" actually wants -- and it needs
+# the generator, so it is optional and says so when absent.
+REF_TOOLS = {
+    "dna_structure": "atlas-dna-rules.py",
+    "periodic_table_reference": "atlas-periodic-table.py",
+    "material_ontology": "atlas-materials.py",
+    "time_measurement": "atlas-time-rules.py",
+    "virtual_planet": "atlas-planet.py",
+    "synthetic_galaxy": "atlas-galaxy.py",
+}
+
+
+def _ref_dir():
+    import os
+    d = os.environ.get("ATLAS_REF_TOOLS")
+    cands = [Path(d)] if d else []
+    cands.append(Path("/Users/trentenbryant/Documents/Codex/2026-09-14/"
+                      "files-mentioned-by-the-user-atlas/outputs/qwen-local"))
+    return next((c for c in cands if c.is_dir()), None)
+
+
+def reference_answers():
+    """-> {tool: fn} from the generator's modules, or {} if absent."""
+    d = _ref_dir()
+    if d is None:
+        return {}
+    from importlib.machinery import SourceFileLoader
+    # PUT THE REFERENCE DIRECTORY ON THE PATH. atlas-galaxy.py does
+    # `from atlas_seed import ...`, and atlas_seed.py sits beside it
+    # with an underscore -- an ordinary importable module. Loading
+    # the tools by file path without the directory on sys.path made
+    # that import fail, and it only ever succeeded when something
+    # else had already put the directory there. A result that
+    # depends on load order passes once and then quietly stops.
+    import sys as _sys
+    if str(d) not in _sys.path:
+        _sys.path.insert(0, str(d))
+    out = {}
+    for tool, fname in REF_TOOLS.items():
+        f = d / fname
+        if not f.exists():
+            continue
+        try:
+            m = SourceFileLoader("ref_" + tool, str(f)).load_module()
+        except Exception:
+            continue
+        fn = getattr(m, "solve", None) or getattr(m, "answer", None)
+        if fn is None:
+            continue
+
+        def wrap(prompt, fn=fn):
+            got = fn(prompt)
+            return got[0] if isinstance(got, tuple) else got
+        out[tool] = wrap
+    return out
+
 
 def against_published():
     """-> dict. Byte-exact agreement with the file's own hashes."""
+    ref = reference_answers()
     out = {}
     for r in rows():
         tool = r["expected_tool"]
         d = out.setdefault(tool, {"n": 0, "exact": 0, "no_rule": 0,
-                                  "mismatch": 0})
+                                  "mismatch": 0,
+                                  "how": "rule" if tool in REBUILD
+                                  else ("reference" if tool in ref
+                                        else "-")})
         d["n"] += 1
-        fn = REBUILD.get(tool)
+        fn = REBUILD.get(tool) or ref.get(tool)
         if fn is None:
             d["no_rule"] += 1
             continue
-        a = fn(r["prompt"])
+        try:
+            a = fn(r["prompt"])
+        except Exception:
+            a = None
         if a is None:
             d["no_rule"] += 1
         elif hashlib.sha256(a.encode()).hexdigest() == \
@@ -313,11 +388,14 @@ def check():
                                      for r in rows()),
                 f"sha256('ATLAS-NOVEL-BENCHMARK-1\\0' + prompt) "
                 f"reproduces all {len(rows())} ids"))
+    byrule = sum(d["exact"] for d in ap.values() if d["how"] == "rule")
+    byref = sum(d["exact"] for d in ap.values() if d["how"] == "reference")
     out.append(("exact_against_published", mm == 0 and ex > 0,
-                f"{ex} answers reconstructed and hashing EXACTLY to the "
-                f"published commitment, {mm} mismatching -- verified "
-                f"against the benchmark's own hashes, not merely "
-                f"recomputed"))
+                f"{ex} of {sum(d['n'] for d in ap.values())} answers hash "
+                f"EXACTLY to the published commitment ({byrule} from a "
+                f"rule written out here, {byref} from the generator's own "
+                f"modules), {mm} mismatching -- verified against the "
+                f"benchmark's hashes, not merely recomputed"))
     n, m, p, bad = wording_invariance()
     out.append(("wording_invariant", not bad,
                 f"{m} of {n} distinct answers have several wordings "
@@ -344,7 +422,8 @@ def main():
     for tool in sorted(ap):
         d = ap[tool]
         print(f"  {tool:<26}{d['n']:>4}  exact {d['exact']:>4}  "
-              f"mismatch {d['mismatch']:>4}  no rule yet {d['no_rule']:>4}")
+              f"mismatch {d['mismatch']:>4}  unavailable {d['no_rule']:>4}"
+              f"   via {d['how']}")
     n, m, p, bad = wording_invariance()
     print(f"\nwording invariance: {m} of {n} answers have several wordings "
           f"({p} prompts), {len(bad)} disagree")

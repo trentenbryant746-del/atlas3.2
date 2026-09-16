@@ -46,7 +46,12 @@ def modules():
     for m in ("qwenmap", "qwenmatter", "qwenaccounts", "remnants",
               "eos", "bridge", "unsolved", "life", "biomatter",
               "polytrope", "abundance", "transitions",
-              "cosmoschunks", "folding", "provenance"):
+<<<<<<< HEAD
+              "cosmoschunks", "folding", "provenance",
+              "halflife"):
+=======
+              "cosmoschunks", "folding"):
+>>>>>>> 489f1207f9b4bb31b163015664ff3806d53917b0
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()

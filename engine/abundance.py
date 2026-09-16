@@ -146,10 +146,24 @@ def trace_by_decay():
     engine/isotopes.HALF_LIVES exists for exactly this and is empty.
     An element is primordial if some isotope's half-life is a
     reasonable fraction of the age of the Earth, and trace if a
-    long-lived parent decays through it. Both are one measurement
-    away and neither is guessed here.
+    long-lived parent decays through it.
+
+    PARTIALLY WITHDRAWN. engine/halflife.py now loads measured
+    half-lives and does exactly that, and it resolves some of it:
+    radium and radon come out trace on alpha steps alone, and
+    technetium comes out absent with the search run to completion.
+    What is still refused is the rest -- actinium, astatine,
+    francium, polonium, promethium -- because reaching them needs
+    beta steps whose Q-values are 0.02 to 2.3 MeV, under the mass
+    formula's own 3 MeV resolution. The refusal is narrower and its
+    reason is now specific.
     """
-    return {}
+    try:
+        from engine import halflife
+        return {k: v[1] for k, v in halflife.trace_or_absent().items()
+                if v[0] == "trace"}
+    except Exception:
+        return {}
 
 
 ABSENT_REASON = ("no stable isotope; whether an element is genuinely "

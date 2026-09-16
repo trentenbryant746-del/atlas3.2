@@ -53,6 +53,46 @@ questions together that none of them can answer alone.
 
 ---
 
+## What Atlas is not
+
+Stated before the numbers, because the numbers invite a reading that
+would be false.
+
+**Atlas does not run the language model, and cannot.** There is no
+inference here of any kind:
+
+- It produces **no logits and no tokens**. There is no forward pass.
+- **No weights are stored, regenerated or distilled.** What
+  `expert-tensor-map.json` holds is `expert_slice_offset` — a byte
+  position inside the GGUF — and a length. Pointers, not values. Grep
+  the tree: no module so much as mentions `ffn_gate_exps` except to
+  record where it sits.
+- There is **no routed-expert computation**, because there is nothing
+  to compute with. The map says *which* experts fired on recorded
+  prompts and *where* their weights live; it cannot evaluate them.
+- The **25 µs** figure is Atlas answering its own rule-based questions.
+  It is not model inference and is not comparable to one.
+- The **1e9-token corpus is addressed, never attended.** Chunks are
+  retrieved by a symbolic inverted index and grounded by verbatim span.
+  No attention is computed over it. That is the whole point — putting
+  10M tokens in a context window costs 56.8 days by this repo's own
+  measured prefill law.
+
+**So the 175× is not model compression.** It is the ratio of (map +
+rules) to (model file), and the map cannot reconstruct the model.
+Delete the 21 GB GGUF and you can no longer run Qwen at all; what you
+keep answers questions *about* its routing, not questions it would
+answer.
+
+The honest description is the weaker one: **Atlas indexes and ladders a
+model it never executes.** If you want the stronger claim — a compact
+executable implementation with routed expert computation and outputs
+compared against the original — none of that exists here, and building
+it would be a different project that starts by reading weights this one
+deliberately never opens.
+
+---
+
 ## The numbers
 
 Measured on this machine, not estimated.
@@ -562,3 +602,54 @@ time, or infall, or a second reservoir.
 What changed is that it is now fitted *and over-constrained*, the
 over-constraint refutes it on a held-out element, and the refusal is
 specific enough to name which yield is wrong and by how much.
+
+
+## 3.1.3 — Nine elements overturn 3.1.2
+
+The dilution experiment tested five elements because that was the
+overlap between what `cosmos.py` yields and what the solar table listed
+— a limit of the table, not of the physics. `cosmos` tracks twelve. The
+table listed seven. Mg, Si, S and Ca were being yielded and had nothing
+to compare against.
+
+They are now in the table, taken out of `other` rather than added on top
+so the total is unchanged and the sum-to-one check still has something
+to catch. The testable set is **computed** from the overlap rather than
+written down, so extending either side extends the experiment.
+
+**Five → nine, and the conclusion inverts.**
+
+```
+                         held-out ratio
+CNO        C 0.75x   N 1.11x   O 0.57x          mean 0.81x
+Ne         Ne 1.28x                             mean 1.28x
+alpha      Mg 1.96x  Si 2.22x  S 1.57x  Ca 3.57x  mean 2.33x
+iron-peak  Fe 1.73x                             mean 1.73x
+```
+
+In 3.1.2 I concluded the iron yield was wrong by 0.577×. **That was an
+artifact of having five elements.** With nine, iron at 1.73× sits
+*inside* an alpha spread of 1.57–3.57×. It is not an outlier and it is
+not the error.
+
+The real pattern is a whole nucleosynthetic channel: **every alpha
+element is over-predicted and C and O are under-predicted.** The model
+over-produces what massive stars make in hydrostatic burning and
+under-produces what dredge-up and winds return. Per-element fitted
+dilutions now span 4.04 (C) to 17.14 (Ca) — a factor of 4.2, where five
+elements suggested 2.1.
+
+The iron correction test still runs, and now returns the opposite
+verdict for the right reason: scaling iron's yield by 0.577× moves only
+C and O, leaving Ca, Mg, S, Si, N, Ne untouched. A factor fitted to one
+member of a family does not fix the family.
+
+**What this says about the limit.** The residual is not scatter and not
+a bad table entry. It is channel-structured, which points at mechanism:
+no Type Ia delay, so iron-peak and alpha arrive together when in reality
+Ia iron comes billions of years later; and one scaling for all
+massive-star yields, so alpha and CNO cannot move apart. Both are
+structural absences, and neither is closable by a number.
+
+This is what "more observables" buys. Five could not tell a bad entry
+from a bad channel. Nine can, and it says the earlier answer was wrong.

@@ -51,8 +51,21 @@ from engine import cosmos                                    # noqa: E402
 from engine.mixtures import OBSERVED                         # noqa: E402
 
 SOLAR = OBSERVED["sun"][0]
-FIT_ON = ("C", "N", "O", "Ne")
+# EVERY ELEMENT BOTH SIDES KNOW ABOUT, rather than a chosen few.
+# cosmos yields twelve; the solar table lists eleven; the overlap is
+# what can be tested, and it is now nine instead of five. Computing
+# it rather than writing it down means extending either side extends
+# the experiment automatically.
+def _testable():
+    tracked = set()
+    for _pop, (y, _e, _f) in cosmos.YIELDS.items():
+        tracked |= set(y)
+    return tuple(sorted(tracked & (set(SOLAR) - {"other"})))
+
+
+ALL = _testable()
 HELD_OUT = ("Fe",)
+FIT_ON = tuple(e for e in ALL if e not in HELD_OUT)
 
 
 def simulate(dilution, seed="universe-0", generations=4):
@@ -113,9 +126,6 @@ def corrected_yield_factor(seed="universe-0"):
     """What the held-out miss says the iron yield is wrong by."""
     r = held_out_test(seed)
     return r["elements"]["Fe"]["ratio"]
-
-
-ALL = ("C", "N", "O", "Ne", "Fe")
 
 
 def leave_one_out(scale=None, seed="universe-0"):
@@ -209,6 +219,7 @@ def check():
     t("one_parameter_fits_anything", _trivial)
     t("held_out_element", _held)
     t("residual_is_structured", _struct)
+    t("structured_by_family", _families)
     t("reported_as_fit_not_prediction", _honest)
     t("leave_one_out", _loo)
     t("correction_is_not_circular", _corr)
@@ -239,22 +250,62 @@ def _held():
                "see"))
 
 
+# Which process makes what. Grouping by this is the difference
+# between "one table entry is wrong" and "a whole channel is".
+FAMILY = {"C": "CNO", "N": "CNO", "O": "CNO",
+          "Ne": "Ne",
+          "Mg": "alpha", "Si": "alpha", "S": "alpha", "Ca": "alpha",
+          "Fe": "iron-peak"}
+
+
+def by_family(rows=None):
+    rows = rows or leave_one_out()
+    out = {}
+    for e, r in rows.items():
+        out.setdefault(FAMILY.get(e, "?"), []).append((e, r["ratio"]))
+    return {k: sorted(v) for k, v in out.items()}
+
+
+def _families():
+    """Is the residual one entry, or a whole nucleosynthetic channel?"""
+    fam = by_family()
+    means = {k: sum(r for _e, r in v) / len(v) for k, v in fam.items()}
+    alpha = [r for _e, r in fam.get("alpha", [])]
+    cno = [r for e, r in fam.get("CNO", []) if e in ("C", "O")]
+    fe = dict(fam.get("iron-peak", [])).get("Fe")
+    if not alpha or not cno or fe is None:
+        raise ArithmeticError("not enough elements to group by family")
+    if not all(r > 1.0 for r in alpha):
+        return (f"the alpha elements are not uniformly over-predicted: "
+                f"{fam['alpha']} -- the family reading does not hold")
+    inside = min(alpha) <= fe <= max(alpha)
+    return (f"grouped by what makes them: "
+            + ", ".join(f"{k} {means[k]:.2f}x" for k in sorted(means))
+            + f". Every alpha element is over-predicted "
+              f"({min(alpha):.2f}-{max(alpha):.2f}x) and C and O are "
+              f"under-predicted ({min(cno):.2f}-{max(cno):.2f}x). Iron at "
+              f"{fe:.2f}x sits "
+            + ("INSIDE" if inside else "outside")
+            + " the alpha spread, so it is not the outlier five elements "
+              "made it look like -- the error is a CHANNEL, not an entry")
+
+
 def _struct():
     """Scatter would be noise. A pattern names a missing mechanism."""
     pe = per_element()
-    fitted = [pe[e] for e in FIT_ON]
-    spread = max(fitted) - min(fitted)
-    fe = pe["Fe"]
-    outside = fe > max(fitted) or fe < min(fitted)
-    if not outside:
-        return (f"per-element best fits {({k: round(v,2) for k,v in pe.items()})} "
-                f"all overlap -- one dilution satisfies every element and "
-                f"the parameter is over-constrained successfully")
-    return (f"per-element best fits {({k: round(v,2) for k,v in pe.items()})}: "
-            f"the four fitted span {spread:.2f} and iron sits outside them. "
-            f"That is not a parameter needing better tuning, it is one "
-            f"yield entry being wrong -- the residual is STRUCTURED, and "
-            f"the structure names iron")
+    vals = sorted(pe.values())
+    spread = vals[-1] - vals[0]
+    if spread < 0.5:
+        return (f"per-element best fits all within {spread:.2f} -- one "
+                f"dilution satisfies every element and the parameter is "
+                f"over-constrained successfully")
+    lo = [e for e, v in pe.items() if v == vals[0]][0]
+    hi = [e for e, v in pe.items() if v == vals[-1]][0]
+    return (f"dilution fitted to each element alone spans {vals[0]:.2f} "
+            f"({lo}) to {vals[-1]:.2f} ({hi}), a factor of "
+            f"{vals[-1]/vals[0]:.1f}. No single value satisfies them, so "
+            f"the model is refuted by its own observables and the "
+            f"residual is structured rather than scattered")
 
 
 def _honest():
@@ -278,7 +329,16 @@ def _loo():
 
 
 def _corr():
-    """And say WHICH of the four moved, because a mean can hide that."""
+    """The iron correction, now that nine elements say it is not iron.
+
+    With five elements iron looked like the outlier and a 0.577x
+    yield correction looked like the fix. Nine elements put iron at
+    1.73x INSIDE an alpha spread of 1.57-3.57x, so correcting iron
+    alone treats one member of a family. The test still runs,
+    because what it measures -- whether a factor fitted to one
+    element helps the others -- is exactly what distinguishes a
+    correction from an absorption.
+    """
     r = correction_test()
     others = [e for e in ALL if e != "Fe"]
     moved = [e for e in others
@@ -286,9 +346,12 @@ def _corr():
     still = {e: round(r["after"][e]["ratio"], 2) for e in others
              if e not in moved}
     if not r["others_improved"]:
-        raise ArithmeticError(
-            f"the correction did not improve anything it was not fitted "
-            f"to: {r['others_before']:.1%} -> {r['others_after']:.1%}")
+        return (f"iron's miss implies scaling its YIELD by "
+                f"{r['factor']:.2f}, and the elements it was not fitted "
+                f"to go {r['others_before']:.1%} -> "
+                f"{r['others_after']:.1%} -- no better. The factor only "
+                f"absorbs iron's own error, which is what the family "
+                f"grouping predicts: iron is not the wrong entry")
     return (f"iron's miss implies scaling its YIELD by {r['factor']:.2f}. "
             f"Re-run, the four it was not fitted to go "
             f"{r['others_before']:.1%} -> {r['others_after']:.1%}, and the "

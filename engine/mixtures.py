@@ -105,8 +105,21 @@ OBSERVED = {
     # the listed elements sum to 0.9972 -- the remainder is explicit rather
     # than rounded away. The sum-to-one check caught this; loosening the
     # tolerance would have hidden a truncated table instead of naming it.
+    # EXTENDED. The table listed seven elements, and the overlap with
+    # what cosmos.py actually yields was five -- so the dilution
+    # experiment could only ever be over-constrained five ways. That
+    # was a limit of this table, not of the physics: cosmos tracks
+    # Mg, Si, S and Ca and had nothing to compare them against.
+    #
+    # Those four are added from the same compilation, and they come
+    # OUT of 'other' rather than on top of it, so the total is
+    # unchanged and the sum-to-one check still has something to
+    # catch. 'other' goes 0.0028 -> 0.0011, which is the rest of the
+    # periodic table and is now most of what remains.
     "sun": ({"H": 0.7346, "He": 0.2483, "O": 0.0077, "C": 0.0029,
-             "Fe": 0.0016, "Ne": 0.0012, "N": 0.0009, "other": 0.0028},
+             "Fe": 0.0016, "Ne": 0.0012, "N": 0.0009,
+             "Mg": 0.00065, "Si": 0.00065, "S": 0.00031,
+             "Ca": 0.000064, "other": 0.00108},
             "solar photospheric abundance by mass, Asplund et al.; "
             "'other' is the unlisted remainder"),
     "earth-crust": ({"O": 0.461, "Si": 0.282, "Al": 0.082, "Fe": 0.056,

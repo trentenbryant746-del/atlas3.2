@@ -33,7 +33,8 @@ def _run(mod):
 def originals():
     rows = []
     for m in ("eval.audit", "eval.integration", "eval.gate", "eval.controls",
-              "eval.compress", "eval.induction", "eval.dilution"):
+              "eval.compress", "eval.induction", "eval.dilution",
+              "eval.commit"):
         ok, dt, out = _run(m)
         last = out.splitlines()[-1][:58] if out else ""
         rows.append((m.split(".")[1], ok, dt, last))
@@ -44,7 +45,7 @@ def modules():
     rows = []
     for m in ("qwenmap", "qwenmatter", "qwenaccounts", "remnants",
               "eos", "bridge", "unsolved", "life", "biomatter",
-              "polytrope", "abundance"):
+              "polytrope", "abundance", "transitions"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()

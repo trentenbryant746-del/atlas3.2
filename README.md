@@ -954,3 +954,85 @@ prompts sharing a hash must share an answer, which is **46 equivalence
 classes over 98 prompts**, and Atlas gives one answer in every class.
 That is a wording-invariance test taken from the benchmark's own
 commitments without ever learning what the answers are.
+
+
+## 3.1.8 — Atoms breaking and binding, and a commitment that can be opened
+
+### Transitions: where the answer set changes
+
+The ladder was static — an element sat at a rung and stayed there. Atoms
+do not. `engine/transitions.py` tracks both things they actually do, as
+**events in time that change which experts can answer**.
+
+```
+decay  Re -> Ta at supernova    +[element:Ta]  -[element:Re]
+bind   C+H -> CH4 at stellar_c  +[compound, formula:CH4]
+```
+
+A transition is a **continuation of a prompt that needs a different set
+of experts than the one before it**. That is the reason to track them:
+each edge is a place where the answer set changes, so the reachable
+contexts grow with the edges rather than with the atoms. Measured: **27
+atoms take part, and the transitions between them reach 53 distinct
+expert sets.**
+
+Nothing here is a decay table. Which way a nuclide goes is the sign of
+its Q-value — the products are more bound in total, or they are not —
+and for alpha the escaping particle's own 28.3 MeV counts toward it.
+Taking each element's **best-bound** isotope: 44 come out stable, 27
+undetermined, 21 decay with a determined mode.
+
+**It refuses inside its own error bar.** Q is a difference of two
+semi-empirical binding energies and the formula is good to a few MeV, so
+when |Q| is smaller than that the *sign* is not determined — and the
+sign is the whole prediction. 49 nuclides land there and get
+`undetermined` rather than a confident guess.
+
+Binding is computed, not listed: valences close at the lowest common
+multiple, giving H2O, CH4, H3N and CO2 from arithmetic. And every edge
+carries a time — stamped with the later of its inputs' epochs, with a
+check that none runs before something it needs.
+
+**Rendered and read back in Godot**, the fourth verification level: 36
+transitions emitted as a scene, walked headlessly, and every one
+recovered with its kind, epoch and expert counts intact.
+
+*Two checks failed first and were right to.* The first version gave
+every element the same generic tags, so most transitions changed nothing
+— 39 answer sets from 92 atoms, fewer contexts than nodes. The fix was
+not a longer tag list: **an atom is itself an expert**, so `element:Z` is
+in the set by construction and a decay necessarily changes it. And the
+first version scanned isotopes upward and took the first with a
+determined decay, which reported 91 of 92 elements as beta-plus
+emitters — an artifact of the scan, not physics. An element's
+representative is the isotope that binds best.
+
+### A commitment that can actually be opened
+
+`eval/commit.py`. The held-out benchmark commits to its answers with a
+bare SHA-256, which hides them and also makes them **unrecoverable
+forever** — this repo measured exactly how unrecoverable. A commitment
+nobody can open is a commitment nobody can check.
+
+```
+commit   h = hmac-sha256(key, answer)     publish h only
+hide     the key stays out of the repo and out of the system
+open     publish the key; every answer becomes checkable
+```
+
+While the key is withheld this is exactly as hidden as a bare hash —
+verified: none of the published commitments matches the plain SHA-256 of
+its own answer. Once released, everything reopens, which the bare-hash
+version cannot do at any price. And because the hashes were published
+first, it also proves the answers were not chosen after seeing results.
+
+**HMAC rather than `sha256(key + answer)`**, deliberately. SHA-256 leaks
+enough internal state that publishing `sha256(m)` lets someone compute
+`sha256(m || x)` for a chosen `x`. HMAC exists for exactly this and is
+used instead of hand-rolling the concatenation.
+
+**The system never sees the key.** It is in no module, it is not written
+to the repo, and a check greps the tree to confirm the name appears
+nowhere but the implementation — and confirms it was unset in the
+environment the test ran in. It arrives at verification time and nothing
+stores it.

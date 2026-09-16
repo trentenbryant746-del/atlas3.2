@@ -122,3 +122,18 @@ Five things this repo asserts and does not derive are listed in
 `engine/unsolved.py` with what would close each: the Kleiber
 exponent, the Lane-Emden constant, the fitted dilution factor, the
 initial-final mass relation, and the held-out answer format.
+
+---
+
+## Atlas 3.1 — current
+
+Starts byte-identical to Atlas 3 and carries every one of its numbers
+forward. Atlas 3 is frozen as the artifact of that version; everything
+after it is committed here, so each version stays something you can
+check out and run rather than a stage that got overwritten.
+
+Inherited at the branch point, all still passing:
+
+    21/21 audited claims          5,737/5,737 curriculum, 0 wrong
+    165/165 held-out VERIFIED     132 of them independently
+    62 module self-checks         0 dependencies, 14 MiB, 25 us/query

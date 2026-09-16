@@ -69,6 +69,9 @@ LANE_EMDEN_C = 3.0984
 LE_SOURCE = "Lane-Emden n=3 polytrope, (sqrt(3 pi)/2) * omega_3 with omega_3 = 2.018"
 
 
+_LE_CACHE = None
+
+
 def lane_emden_c():
     """The polytrope constant, DERIVED if it can be, asserted if not.
 
@@ -78,11 +81,19 @@ def lane_emden_c():
     against -- they agree to 1.4e-04 -- but it is no longer what the
     Chandrasekhar mass is built on.
     """
-    try:
-        from engine import polytrope
-        return polytrope.chandrasekhar_constant().value, "DERIVED"
-    except Exception:
-        return LANE_EMDEN_C, "ASSERTED"
+    # CACHED, because it is now an ODE solve rather than a lookup.
+    # chandrasekhar() is called from classify(), which is called per
+    # remnant, and the module's own checks went from instant to 30
+    # seconds. The integration is deterministic and depends on
+    # nothing, so it runs once.
+    global _LE_CACHE
+    if _LE_CACHE is None:
+        try:
+            from engine import polytrope
+            _LE_CACHE = (polytrope.chandrasekhar_constant().value, "DERIVED")
+        except Exception:
+            _LE_CACHE = (LANE_EMDEN_C, "ASSERTED")
+    return _LE_CACHE
 
 # ASSERTED and UNCERTAIN: the neutron-star maximum depends on the
 # nuclear equation of state, which is unknown. Both ends are carried

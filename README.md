@@ -1036,3 +1036,70 @@ to the repo, and a check greps the tree to confirm the name appears
 nowhere but the implementation — and confirms it was unset in the
 environment the test ran in. It arrives at verification time and nothing
 stores it.
+
+
+## 3.1.9 — Universes in chunks, so they can hold enough matter
+
+`engine/cosmos.py` runs four generations of three stars: twelve stars,
+251 solar masses, about 1e56 atoms. That is a model of a mechanism, not
+a universe — and it cannot be made denser by adding stars to a list,
+because the list is what it costs.
+
+`engine/cosmoschunks.py` partitions a universe the way `engine/chunks.py`
+partitions a corpus too large to prefill. Each chunk is an independent
+region with its own derived seed; the universe is the ordered set.
+
+### Density comes from counting, not from storing
+
+A chunk holds a mass and a composition. The atom count follows:
+
+```
+N(element) = M_chunk × f(element) / (A × u)
+```
+
+So a chunk contains 2e59 atoms whether or not anyone writes them down.
+Same rule the 1e9-token corpus runs on — derive, do not materialise —
+applied to matter instead of text.
+
+```
+            10 chunks  ->  1.949e+60 atoms,  2.041e+03 Msun
+         1,000 chunks  ->  1.949e+62 atoms,  2.041e+05 Msun
+     1,000,000 chunks  ->  1.949e+65 atoms,  2.041e+08 Msun
+ 1,000,000,000 chunks  ->  1.949e+68 atoms,  2.041e+11 Msun
+```
+
+The last line is reported **without running it**. One chunk is enough to
+know the rest, because the partition rule is identical in each and the
+seed only changes which star masses come up — so the density of a
+universe is a multiplication rather than a simulation. A check confirms
+the projection is linear in chunk count to within one part in a million.
+
+### Consistent across universes, and measurably so
+
+A chunking is only worth anything if chunk *k* of one universe means the
+same thing as chunk *k* of another. The partition rule is fixed and
+derived, never sampled: **chunk k's seed is `hmac(universe key, k)`** —
+reproducible from the key alone, independent of its neighbours, and
+different in every universe.
+
+Across three universes at five chunks each:
+
+```
+same chunk count            5, 5, 5
+laws hold in every chunk    15 chunks, all mass conserved
+heads differ                3 distinct heads from 3 keys
+comparable scale            total mass varies under 50%
+same elements present       identical element set in every one
+```
+
+Same structure, different history — which is the pair of properties
+that makes two universes comparable at all rather than merely different.
+
+### Every chunk is keyed, and the keys chain
+
+A chunk key is `hmac(universe key, index)`, and the chunk digests link
+into one 256-bit head for the whole universe — `engine/chain.py`'s
+discipline applied to space as well as time. Hand back a chunk key and
+that chunk alone regenerates and matches the head, with nothing else
+rebuilt. A key from a different universe is **refused** rather than
+matched to the same index.

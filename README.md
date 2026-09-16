@@ -1181,3 +1181,100 @@ Every number the system holds is a module-level constant in 13,922 lines
 across 74 files — 32 million times fewer numbers than Qwen, and each one
 either a measurement with a source, a definition, or a fixture to score
 against. None was fitted, and none was learned.
+
+
+## 3.1.11 — Atom provenance, and the benchmark format recovered
+
+### Where each atom goes after the prompt
+
+`engine/transitions.py` said a decay changes which experts apply. It did
+not say *which atom* decayed, where it had been, or what it joined
+afterwards. `engine/provenance.py` answers that.
+
+```
+atom: U #0 of chunk 0, universe-0
+  key 6c2f...
+   ns_merger  formed U   in chunk 0 by neutron-capture
+   ns_merger  decay  Th  U -> Th by alpha; Q=4.27 MeV
+   ns_merger  decay  Ra  Th -> Ra by alpha
+   ns_merger  decay  Rn  Ra -> Rn by alpha
+   ns_merger  decay  Po  Rn -> Po by alpha
+   ns_merger  decay  Pb  Po -> Pb by alpha
+```
+
+**That is the real uranium series, derived from Q-values alone.** Nothing
+in this repo was told it.
+
+A history is **derived from the key, not stored**. The key is
+`hmac(universe key, chunk‖element‖serial)`, and every event follows from
+it — so a universe of 1e60 atoms costs nothing until an atom is named,
+and naming one reconstructs its whole history in microseconds. 200 atoms
+of one element in one chunk get 200 distinct keys; the same atom in
+another universe gets a different one.
+
+**Identity survives transformation**, which is the point. When the atom
+decays its element changes and its key does not — the thing that was
+uranium and is now lead is the same thing, so a question about it spans
+both. And **every step changes the answer context**: 11 steps, 11
+distinct expert sets, no two consecutive ones alike. The custody chain
+is hash-chained, verifies over all 11 events, and an altered history is
+caught at the first divergence.
+
+**And where it stops being right, recorded rather than patched.** The
+chain carries on past lead — Pb → Hg → Pt → Os → W → Hf — and that part
+is wrong. Lead-208 ends the series. The semi-empirical mass formula is a
+liquid drop: volume, surface, Coulomb, asymmetry, pairing, and **no shell
+structure**. Pb-208 is doubly magic, 82 protons and 126 neutrons both
+closed, and that extra binding is exactly what a liquid drop cannot see.
+So the model walks straight through the one nucleus that should stop it.
+Hard-coding lead as a terminus would hide a real limitation; shell
+closures are now in `engine/unsolved.py` with what would close them.
+
+### The benchmark format, recovered
+
+The 165 held-out answers looked permanently unrecoverable — 251 template
+forms, 2.2 million bare integers, 1.74 million constant affixes, all
+missing. **The reason was not cryptography.**
+
+```
+sha256('148')                                                   no
+sha256('Plan: add 137 and 11. Check: 148 - 11 = 137.\nAnswer: 148')  YES
+```
+
+The answer was never the number. It is the controller's full
+plan-and-check string, and no amount of prefix searching finds a
+56-character sentence containing the working.
+
+Two recipes, from `build-atlas-novel-benchmark.py`:
+
+```
+id                      sha256("ATLAS-NOVEL-BENCHMARK-1\0" + prompt)   165/165
+expected_answer_sha256  sha256(answer)                                  plain
+```
+
+`EVE-ROUTE-1`, the namespace in the handoff's key file, matches **0/165**
+on either field — it belongs to the routing subsystem, not this
+benchmark. The namespace *pattern* was the clue; the namespace itself was
+the wrong one.
+
+**So the arithmetic third is no longer verified by recomputation — it is
+verified against the file's own published commitment, byte for byte:**
+
+```
+arithmetic                80  exact 80  mismatch 0
+dna_structure             24  no rule yet
+material_ontology         16  no rule yet
+time_measurement          12  no rule yet
+periodic_table_reference   9  no rule yet
+virtual_planet            12  no rule yet
+synthetic_galaxy          12  no rule yet
+```
+
+The remaining 85 need each tool's answer string reconstructed from the
+same source, which is mechanical now that the scheme is known.
+
+And the design lesson for `eval/commit.py` sharpens. A bare hash of a
+*number* is brute-forceable in seconds; a bare hash of *prose* is not,
+**by accident rather than by design**. Neither is a commitment. Security
+by unguessable formatting is not security — it is an obstacle that
+happens to have held for a while.

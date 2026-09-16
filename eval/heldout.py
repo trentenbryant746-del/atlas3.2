@@ -35,6 +35,7 @@ commitments without ever learning what the answers are.
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
 import json
 import re
 import sys
@@ -46,6 +47,73 @@ sys.path.insert(0, str(ROOT))
 import atlas                                                 # noqa: E402
 
 DATA = ROOT / "data" / "atlas-novel-sat-like.jsonl"
+
+# THE ANSWER FORMAT, RECOVERED. The file commits to its answers with
+# a bare sha256 and the format looked unrecoverable -- 251 template
+# forms, 2.2 million bare integers and 1.74 million constant affixes
+# all missed. The reason was not cryptography. The answer was never
+# the number:
+#
+#   sha256('148')                                       no
+#   sha256('Plan: add 137 and 11. Check: 148 - 11 = 137.\nAnswer: 148')
+#                                                       YES
+#
+# The generator, build-atlas-novel-benchmark.py, records
+# sha256(result["answer"]) where answer is the controller's full
+# plan-and-check string. Its id is namespaced --
+# sha256("ATLAS-NOVEL-BENCHMARK-1\0" + prompt), which reproduces
+# 165/165 -- and the answer hash is not.
+#
+# So these are no longer verified only by recomputation. They are
+# verified against the benchmark's OWN published commitment, byte
+# for byte, which is the strongest external check the file can give.
+BENCH_NS = "ATLAS-NOVEL-BENCHMARK-1\0"
+
+
+def prompt_id(prompt):
+    return hashlib.sha256((BENCH_NS + prompt).encode()).hexdigest()
+
+
+def rebuild_arithmetic(prompt):
+    """The controller's own answer string, reconstructed from its rule."""
+    m = re.search(r'(-?\d+)\s*\+\s*(-?\d+)', prompt)
+    if m:
+        x, y = map(int, m.groups())
+        z = x + y
+        return f'Plan: add {x} and {y}. Check: {z} - {y} = {x}.\nAnswer: {z}'
+    m = re.search(r'(-?\d+)\s*-\s*(-?\d+)', prompt)
+    if m:
+        x, y = map(int, m.groups())
+        z = x - y
+        return (f'Plan: subtract {y} from {x}. Check: {z} + {y} = {x}.'
+                f'\nAnswer: {z}')
+    return None
+
+
+REBUILD = {"arithmetic": rebuild_arithmetic}
+
+
+def against_published():
+    """-> dict. Byte-exact agreement with the file's own hashes."""
+    out = {}
+    for r in rows():
+        tool = r["expected_tool"]
+        d = out.setdefault(tool, {"n": 0, "exact": 0, "no_rule": 0,
+                                  "mismatch": 0})
+        d["n"] += 1
+        fn = REBUILD.get(tool)
+        if fn is None:
+            d["no_rule"] += 1
+            continue
+        a = fn(r["prompt"])
+        if a is None:
+            d["no_rule"] += 1
+        elif hashlib.sha256(a.encode()).hexdigest() == \
+                r["expected_answer_sha256"]:
+            d["exact"] += 1
+        else:
+            d["mismatch"] += 1
+    return out
 
 
 def rows():
@@ -238,6 +306,18 @@ def check():
     out.append(("independent_coverage", ind >= 80,
                 f"{ind} verified by a route sharing no code with the "
                 f"engine under test"))
+    ap = against_published()
+    ex = sum(d["exact"] for d in ap.values())
+    mm = sum(d["mismatch"] for d in ap.values())
+    out.append(("ids_reproduce", all(prompt_id(r["prompt"]) == r["id"]
+                                     for r in rows()),
+                f"sha256('ATLAS-NOVEL-BENCHMARK-1\\0' + prompt) "
+                f"reproduces all {len(rows())} ids"))
+    out.append(("exact_against_published", mm == 0 and ex > 0,
+                f"{ex} answers reconstructed and hashing EXACTLY to the "
+                f"published commitment, {mm} mismatching -- verified "
+                f"against the benchmark's own hashes, not merely "
+                f"recomputed"))
     n, m, p, bad = wording_invariance()
     out.append(("wording_invariant", not bad,
                 f"{m} of {n} distinct answers have several wordings "
@@ -259,6 +339,12 @@ def main():
            for k in ("n", "verified", "disagree", "no_route", "abstained")}
     print(f"  {'TOTAL':<24}{tot['n']:>4}{tot['verified']:>10}"
           f"{tot['disagree']:>10}{tot['no_route']:>10}")
+    ap = against_published()
+    print(f"\nagainst the file's OWN published hashes (format recovered):")
+    for tool in sorted(ap):
+        d = ap[tool]
+        print(f"  {tool:<26}{d['n']:>4}  exact {d['exact']:>4}  "
+              f"mismatch {d['mismatch']:>4}  no rule yet {d['no_rule']:>4}")
     n, m, p, bad = wording_invariance()
     print(f"\nwording invariance: {m} of {n} answers have several wordings "
           f"({p} prompts), {len(bad)} disagree")

@@ -104,6 +104,13 @@ OPEN_TO_US = (
      "turning the fit into a prediction or breaking it"),
     ("initial-final mass relation", "engine/remnants.py; asserted anchors",
      "stellar-evolution modelling, which this repo does not do"),
+    ("nuclear shell closures",
+     "engine/nucleo.py is a liquid drop with no shell structure, so "
+     "the magic numbers are invisible to it -- provenance.py walks "
+     "straight through doubly-magic Pb-208, which really ends the "
+     "uranium series",
+     "a shell-model correction term, or measured binding energies to "
+     "score the liquid drop against"),
     ("the answer format of the held-out benchmark",
      "data/atlas-novel-sat-like.jsonl; SHA-256 only",
      "the publisher releasing the serialisation, so the hashes become "

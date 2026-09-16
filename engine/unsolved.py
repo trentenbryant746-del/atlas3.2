@@ -84,11 +84,21 @@ OPEN_TO_SCIENCE = (
 
 # The repo's own. Not unknown to science -- unknown to US, and each
 # could move out of this list by someone doing the work.
+# CLOSED. Kept with the date, because an entry that simply vanishes
+# from a list of open problems leaves no evidence it was ever open.
+CLOSED_BY_US = (
+    ("Lane-Emden n=3 constant",
+     "was: engine/remnants.py asserted C = 3.0984 from a table",
+     "engine/polytrope.py integrates the Lane-Emden equation to its "
+     "first zero and derives omega_3 = 2.01824, giving C = 3.09797 -- "
+     "1.4e-04 from the value that was asserted. The Chandrasekhar mass "
+     "is now DERIVED rather than DERIVED_FROM_ASSERTED"),
+)
+
+
 OPEN_TO_US = (
     ("Kleiber exponent", "engine/life.py; asserted 0.75, and life.kleiber() carries check=NONE rather than a fake one",
      "a fractal-transport derivation, carried out here"),
-    ("Lane-Emden n=3 constant", "engine/remnants.py; asserted 3.0984",
-     "solving the Lane-Emden equation numerically in this repo"),
     ("cosmos dilution factor", "engine/cosmos.py; FITTED to solar data",
      "more observables -- alpha-element ratios, age-metallicity -- "
      "turning the fit into a prediction or breaking it"),
@@ -128,6 +138,7 @@ def check():
     t("abstains_on_the_unsolved", _abstain)
     t("bounded_where_data_bounds", _bounded)
     t("our_own_gaps_listed", _ours)
+    t("closed_stay_closed", _closed)
     return all(o[1] for o in out), out
 
 
@@ -160,6 +171,21 @@ def _bounded():
             f"{lo}-{hi} by observation and still refused inside it, while "
             f"{lo - 0.1:.2f} resolves to {below}. Bounded where data "
             f"bounds it, refused where it does not")
+
+
+def _closed():
+    """Anything claimed closed must actually be derived now."""
+    from engine import polytrope, remnants
+    c = polytrope.chandrasekhar_constant().value
+    _v, how = remnants.lane_emden_c()
+    if how != "DERIVED":
+        raise ArithmeticError("the polytrope constant is still asserted")
+    if remnants.chandrasekhar().kind != "DERIVED":
+        raise ArithmeticError("the Chandrasekhar mass still inherits an "
+                              "assertion")
+    return (f"{len(CLOSED_BY_US)} closed: the polytrope constant is "
+            f"{c:.5f}, integrated rather than looked up, and the "
+            f"Chandrasekhar mass built on it is now DERIVED")
 
 
 def _ours():

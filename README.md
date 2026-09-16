@@ -364,3 +364,106 @@ README-log.md       the development narrative, including every failure
 the results that were wrong and what corrected them. It is longer than
 this file and more useful if you want to know whether to believe any of
 it.
+
+
+---
+
+# Atlas 3.1 — changes since 3
+
+Atlas 3 is frozen as the artifact of its version. Everything below is
+new in 3.1, documented as it lands.
+
+## 3.1.1 — The Lane-Emden constant stops being asserted
+
+**What was wrong with it.** `engine/remnants.chandrasekhar()` computes
+the white-dwarf ceiling from measured constants and one number that was
+not measured and not derived:
+
+```
+M_Ch = C · (ħc/G)^(3/2) / (μₑ mₕ)²        C = 3.0984
+```
+
+ħ, c, G and mₕ are measurements this repo cites. **C came from a table.**
+It is the structure of a star that holds itself up by degenerate electron
+pressure, and structure is the solution of a differential equation nobody
+here was solving. It was listed in `engine/unsolved.py` among the five
+things this repo asserts and does not derive, with the entry saying
+exactly what would close it: *"solving the Lane-Emden equation
+numerically in this repo."*
+
+That is now done, so the entry comes off the list.
+
+**The equation.** A self-gravitating sphere whose pressure goes as
+ρ^(1+1/n) obeys, in dimensionless form:
+
+```
+(1/ξ²) d/dξ (ξ² dθ/dξ) + θⁿ = 0        θ(0) = 1,  θ′(0) = 0
+```
+
+n = 3 is the relativistic degenerate case, which is why it is the one the
+Chandrasekhar mass needs. At n = 3 there is no closed-form solution — it
+is integrated. What the mass needs is a single number from it,
+
+```
+ω₃ = −ξ₁² θ′(ξ₁)
+```
+
+at the first zero ξ₁, after which `C = (√(3π)/2)·ω₃`, and the √(3π)/2 is
+algebra rather than structure.
+
+**Two things the method had to get right.**
+
+*The singularity at the origin.* The 2/ξ term is undefined at ξ = 0, so
+the integration does not start there. The series solution near the
+origin, θ = 1 − ξ²/6 + nξ⁴/120, steps off the singularity, and plain RK4
+runs from there. The step-off distance is not tuned: halving the step
+must not move the answer, and a check requires it.
+
+*Finding the surface.* The first version interpolated linearly across the
+step that brackets the zero. That left n = 0 wrong by 1.8e-6 — small, and
+**larger than the 1e-6 the closed forms are checked against**. Loosening
+that tolerance would have been tuning the test to the method. Instead the
+root is polished by Newton, taking each trial step with the same RK4 from
+the last good state, so the surface is found by *integrating to it*
+rather than by drawing a line across it. n = 0 now lands 2.2e-12 from
+exact.
+
+**Three checks, and the second is the one that matters.**
+
+| check | what it does |
+|---|---|
+| `step_independent` | halving the step moves ξ₁ by 1.4e-10 and ω by 8.6e-11 — the answer is about the equation, not the integrator |
+| `closed_forms` | n = 0 and n = 1 have exact solutions, so the same integrator is scored against algebra it cannot influence |
+| `reproduces_the_assertion` | the derived C must reproduce the number that was asserted |
+
+**The control caught the control.** n = 0 has θ = 1 − ξ²/6, so ξ₁ = √6 and
+ω₀ = −ξ₁²θ′(ξ₁) = 2√6. I had written √6 in the reference table. The check
+failed — **against itself, not against the integrator**, which had already
+matched ξ₁ to ten figures and reproduced the literature's n = 3 values of
+6.89685 and 2.01824 to six. A positive control that can only ever indict
+the thing under test is not much of a control; this one indicted the
+reference value, which is the other outcome it exists to produce.
+
+**Result.**
+
+```
+n=0    ξ₁ = 2.449490   ω = 4.898979      exact 2.449490, 4.898979
+n=1    ξ₁ = 3.141593   ω = 3.141593      exact π, π
+n=3    ξ₁ = 6.896849   ω = 2.018236      literature 6.89685, 2.01824
+
+C  = √(3π)/2 · ω₃ = 3.09797     asserted was 3.0984, 1.4e-04 apart
+M_Ch = 1.4353 M☉                accepted 1.4
+```
+
+The asserted 3.0984 was right, and is now unnecessary. It stays in the
+source as a fallback and as the thing the derivation is scored against,
+but it is no longer what the Chandrasekhar mass is built on.
+`chandrasekhar()` now reports **DERIVED** where it reported
+DERIVED_FROM_ASSERTED, and `unsolved.py` carries a `CLOSED_BY_US` entry
+with a check that fails if it ever silently reverts — because an entry
+that simply vanishes from a list of open problems leaves no evidence it
+was ever open.
+
+**Four remain** on the asserted list: the Kleiber exponent, the fitted
+dilution factor, the initial-final mass relation, and the held-out answer
+format.

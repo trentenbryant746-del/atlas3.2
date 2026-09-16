@@ -43,7 +43,8 @@ def originals():
 def modules():
     rows = []
     for m in ("qwenmap", "qwenmatter", "qwenaccounts", "remnants",
-              "eos", "bridge", "unsolved", "life", "biomatter"):
+              "eos", "bridge", "unsolved", "life", "biomatter",
+              "polytrope"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()

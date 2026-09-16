@@ -68,6 +68,22 @@ MU_E = 2.0                  # electrons per nucleon in a C/O dwarf
 LANE_EMDEN_C = 3.0984
 LE_SOURCE = "Lane-Emden n=3 polytrope, (sqrt(3 pi)/2) * omega_3 with omega_3 = 2.018"
 
+
+def lane_emden_c():
+    """The polytrope constant, DERIVED if it can be, asserted if not.
+
+    This was a table value and is now the output of integrating the
+    Lane-Emden equation in engine/polytrope.py. The asserted number
+    stays as a fallback and as the thing the derivation is scored
+    against -- they agree to 1.4e-04 -- but it is no longer what the
+    Chandrasekhar mass is built on.
+    """
+    try:
+        from engine import polytrope
+        return polytrope.chandrasekhar_constant().value, "DERIVED"
+    except Exception:
+        return LANE_EMDEN_C, "ASSERTED"
+
 # ASSERTED and UNCERTAIN: the neutron-star maximum depends on the
 # nuclear equation of state, which is unknown. Both ends are carried
 # so the rule can refuse between them.
@@ -85,18 +101,23 @@ class Fact:
 
 def chandrasekhar(mu_e=MU_E):
     """The white-dwarf ceiling, from constants. INVERSE-checked."""
+    C, how = lane_emden_c()
     base = (HBAR * C_LIGHT / G_NEWTON) ** 1.5 / (mu_e * M_H) ** 2
-    kg = LANE_EMDEN_C * base
+    kg = C * base
     msun = kg / M_SUN
-    back = (kg / LANE_EMDEN_C * (mu_e * M_H) ** 2) ** (2 / 3) * G_NEWTON \
+    back = (kg / C * (mu_e * M_H) ** 2) ** (2 / 3) * G_NEWTON \
         / C_LIGHT
     if not math.isclose(back, HBAR, rel_tol=1e-9):
         raise ArithmeticError("Chandrasekhar mass does not invert to hbar")
-    return Fact(msun, INHERITED, "INVERSE",
+    kind = DERIVED if how == "DERIVED" else INHERITED
+    return Fact(msun, kind, "INVERSE",
                 f"{msun:.3f} solar masses from hbar, c, G and the hydrogen "
-                f"mass at mu_e={mu_e}; the polytrope constant "
-                f"{LANE_EMDEN_C} is ASSERTED ({LE_SOURCE}), so this "
-                f"inherits it. Accepted value 1.4")
+                f"mass at mu_e={mu_e}; the polytrope constant {C:.5f} is "
+                f"{how}"
+                + (" -- integrated from the Lane-Emden equation in "
+                   "engine/polytrope.py, not looked up"
+                   if how == "DERIVED" else f" ({LE_SOURCE})")
+                + ". Accepted value 1.4")
 
 
 def classify(remnant_msun, mu_e=MU_E, universe=None):

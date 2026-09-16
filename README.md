@@ -1181,7 +1181,6 @@ Every number the system holds is a module-level constant in 13,922 lines
 across 74 files — 32 million times fewer numbers than Qwen, and each one
 either a measurement with a source, a definition, or a fixture to score
 against. None was fitted, and none was learned.
-<<<<<<< HEAD
 
 
 ## 3.1.11 — Atom provenance, and the benchmark format recovered
@@ -1279,5 +1278,3 @@ And the design lesson for `eval/commit.py` sharpens. A bare hash of a
 **by accident rather than by design**. Neither is a commitment. Security
 by unguessable formatting is not security — it is an obstacle that
 happens to have held for a while.
-=======
->>>>>>> 489f1207f9b4bb31b163015664ff3806d53917b0

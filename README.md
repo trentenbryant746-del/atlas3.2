@@ -467,3 +467,98 @@ was ever open.
 **Four remain** on the asserted list: the Kleiber exponent, the fitted
 dilution factor, the initial-final mass relation, and the held-out answer
 format.
+
+
+## 3.1.2 — The dilution factor, over-constrained
+
+`engine/cosmos.py` has exactly one free parameter: `dilution`, the mass
+of pristine gas each unit of stellar ejecta mixes into. It was tuned
+until the simulated composition matched the sun, and the repo has always
+said the resulting agreement is a **fit**, not a prediction. This is the
+experiment that decides which it can become.
+
+### Why a fit is not evidence
+
+One parameter tuned against one number will always match, because there
+is nothing left over to disagree with. Measured here, deliberately:
+fitting dilution to oxygen alone lands it to **1.7e-08**. That number
+looks spectacular and demonstrates nothing except that one knob matches
+one number. A model with as many knobs as observations cannot be wrong,
+and a model that cannot be wrong has told you nothing.
+
+### What "more observables" means
+
+Observations the *same single parameter* must satisfy **without being
+re-tuned**. The cheapest version, and the one run here: hold an element
+out of the fit entirely, then compute it. It had no way to influence the
+parameter, so if it lands, the model predicted it. Same move
+`eval/induction.py` already makes for rules — fit on six examples, score
+on the rest — applied to a physical parameter.
+
+### Leave-one-out: each element predicted by the other four
+
+```
+element   dilution   predicted      solar     ratio
+C           4.87      0.00241      0.00290     0.83x
+N           4.87      0.00100      0.00090     1.11x
+O           6.19      0.00600      0.00770     0.78x
+Ne          4.87      0.00154      0.00120     1.28x
+Fe          4.87      0.00277      0.00160     1.73x
+```
+
+**It breaks, and it breaks informatively.** Iron, predicted by a
+parameter four other elements chose, comes back **1.73× the solar value**.
+Fitting dilution to each element *alone* shows the same thing from the
+other side: C 4.04, N 5.43, O 4.87, Ne 6.19, **Fe 8.44**. Iron sits
+outside the others.
+
+That is not a parameter that needs better tuning. A parameter too small
+for one element and too large for another is a **yield table with an
+error in a specific entry**, and the per-element fits localise it.
+
+### Fixing it, without the fix being circular
+
+A factor fitted to iron will of course fix iron. So the correction is
+applied to the **yield table** — a hypothesis about nucleosynthesis —
+and then judged on the elements it was *not* fitted to.
+
+```
+iron yield x0.577          the four it was NOT fitted to: 19.5% -> 14.0%
+
+C    0.83x  ->  0.83x
+N    1.11x  ->  1.11x
+O    0.78x  ->  1.00x
+Ne   1.28x  ->  1.28x
+Fe   1.73x  ->  1.00x
+```
+
+The mean improves, and **the mean hides where it came from**. Only oxygen
+moved — the one element whose own fitting set contained the corrected
+iron, so its fit had been contaminated by the bad entry. C, N and Ne are
+unchanged. The check now says so explicitly rather than reporting the
+19.5% → 14.0% and letting it read as a broad improvement.
+
+So the result splits cleanly in two:
+
+- **Iron's error is a yield error**, worth 0.577×, and removing it also
+  removes the contamination it was causing in other elements' fits.
+- **C at 0.83×, N at 1.11×, Ne at 1.28× are not iron's fault.** They are
+  what is left once the structured error is gone.
+
+### The theoretical limit
+
+That residual is the point. This model has four generations, one
+reservoir, instantaneous mixing, no infall, no outflow and no Type Ia
+delay. Even with perfect yields it cannot do better than its structure
+allows, so the useful question is not how close it gets but whether the
+remaining error is **structured or scatter**.
+
+At ~17–28% per element with no ordering by mass or by nucleosynthetic
+family, C/N/Ne look like the structure rather than like more bad
+entries. Closing that needs a mechanism, not a number: a Type Ia delay
+time, or infall, or a second reservoir.
+
+**The dilution factor stays on the asserted list.** It is still fitted.
+What changed is that it is now fitted *and over-constrained*, the
+over-constraint refutes it on a held-out element, and the refusal is
+specific enough to name which yield is wrong and by how much.

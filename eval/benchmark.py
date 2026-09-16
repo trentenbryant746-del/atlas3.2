@@ -33,7 +33,7 @@ def _run(mod):
 def originals():
     rows = []
     for m in ("eval.audit", "eval.integration", "eval.gate", "eval.controls",
-              "eval.compress", "eval.induction"):
+              "eval.compress", "eval.induction", "eval.dilution"):
         ok, dt, out = _run(m)
         last = out.splitlines()[-1][:58] if out else ""
         rows.append((m.split(".")[1], ok, dt, last))

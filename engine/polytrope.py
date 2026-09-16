@@ -177,19 +177,110 @@ def chandrasekhar_constant(h=1e-5):
 
 # n=0 and n=1 have closed forms. ASSERTED only in the sense that
 # algebra is asserted -- they are what the integrator is scored on.
-# n=0: theta = 1 - xi^2/6, so theta' = -xi/3, xi_1 = sqrt(6) and
-#      omega_0 = -xi_1^2 theta'(xi_1) = -6 * (-sqrt(6)/3) = 2 sqrt(6)
-# n=1: theta = sin(xi)/xi, theta'(pi) = -1/pi, so omega_1 = pi
+# THE CLOSED FORMS ARE FUNCTIONS, NOT NUMBERS I TYPED IN.
 #
-# The first of those was written here as sqrt(6) and the control
-# failed on it -- correctly, and against ITSELF rather than the
-# integrator, which had matched xi_1 to ten figures and n=3 to the
-# literature's 6.89685 and 2.01824. A positive control that can only
-# ever indict the thing under test is not much of a control; this one
-# indicted the reference value, which is the other outcome it exists
-# to produce.
-EXACT = {0.0: (math.sqrt(6.0), 2.0 * math.sqrt(6.0)),
-         1.0: (math.pi, math.pi)}
+# The first version of this control held a table: n=0 -> (sqrt(6),
+# sqrt(6)), n=1 -> (pi, pi). The second entry of the first row was
+# wrong, the check caught it, and catching it was luck of the right
+# kind -- but the arrangement was backwards. A reference value I
+# write down is a thing the system has to be checked against, and I
+# am the least reliable part of that loop.
+#
+# So nothing here is a reference value. For n=0 and n=1 a candidate
+# SOLUTION is written as a function, and it earns the name by
+# SUBSTITUTION: put it into the Lane-Emden equation and the residual
+# must vanish everywhere, which is checkable without knowing what
+# the answer is. Then xi_1 is found by root-finding ON THAT
+# FUNCTION and omega from its derivative. Both come out of the
+# closed form; neither is asserted.
+#
+# The integrator then has to agree. Two routes, and the only inputs
+# are the equation itself and a candidate that proves it satisfies
+# it. If I had written the wrong candidate, substitution would have
+# rejected it rather than a table entry disagreeing with a number.
+def _closed_n0(xi):
+    """Candidate for n=0. theta, theta', theta''."""
+    return 1.0 - xi * xi / 6.0, -xi / 3.0, -1.0 / 3.0
+
+
+def _closed_n1(xi):
+    """Candidate for n=1. theta, theta', theta''."""
+    s_, c_ = math.sin(xi), math.cos(xi)
+    th = s_ / xi
+    dth = (xi * c_ - s_) / (xi * xi)
+    d2 = (-xi * xi * s_ - 2.0 * xi * c_ + 2.0 * s_) / (xi ** 3)
+    return th, dth, d2
+
+
+CANDIDATES = {0.0: _closed_n0, 1.0: _closed_n1}
+
+
+def residual(n, fn, xi):
+    """theta'' + (2/xi) theta' + theta^n. Zero iff it solves it."""
+    th, dth, d2 = fn(xi)
+    return d2 + 2.0 * dth / xi + _theta_pow(th, n)
+
+
+def verify_candidate(n, fn, lo=1e-3, hi=None, samples=400):
+    """-> (max |residual|, where). A candidate earns its name here.
+
+    SAMPLED ON THE OPEN INTERVAL. The equation holds INSIDE the
+    star; the surface is where theta reaches zero and is a boundary
+    condition, not a point to evaluate a residual at. Including the
+    endpoint reported a residual of exactly 1.0 for n=0 -- because
+    theta^0 is 1 for every positive theta and the integration's
+    clamp returns 0 at theta=0, which is right for stopping and
+    wrong for substituting. The clamp is a property of the walk, not
+    of the equation, so the verification does not go there.
+    """
+    hi = (hi or first_zero(n, fn)) * (1.0 - 1e-9)
+    worst, at = 0.0, None
+    for i in range(samples):
+        xi = lo + (hi - lo) * i / (samples - 1)
+        r = abs(residual(n, fn, xi))
+        if r > worst:
+            worst, at = r, xi
+    return worst, at
+
+
+def first_zero(n, fn, hi=50.0, tol=1e-15):
+    """The surface of the closed form, found rather than stated."""
+    lo = 1e-6
+    a, b = lo, None
+    x = lo
+    step = 1e-3
+    while x < hi:
+        if fn(x)[0] <= 0.0:
+            b = x
+            break
+        a = x
+        x += step
+    if b is None:
+        raise ArithmeticError(f"closed form for n={n:g} has no zero below "
+                              f"{hi}")
+    for _ in range(200):
+        m = 0.5 * (a + b)
+        if fn(m)[0] > 0.0:
+            a = m
+        else:
+            b = m
+        if b - a < tol:
+            break
+    return 0.5 * (a + b)
+
+
+def closed_form(n):
+    """-> (xi_1, omega) from the verified closed form. DERIVED."""
+    fn = CANDIDATES.get(n)
+    if fn is None:
+        raise KeyError(f"no closed form written for n={n:g}")
+    worst, at = verify_candidate(n, fn)
+    if worst > 1e-9:
+        raise ArithmeticError(
+            f"the candidate for n={n:g} does NOT solve the equation: "
+            f"residual {worst:.2e} at xi={at:.4f}")
+    xi1 = first_zero(n, fn)
+    return xi1, -xi1 * xi1 * fn(xi1)[1]
 
 
 def check():
@@ -209,19 +300,28 @@ def check():
 
 
 def _exact():
-    """The positive control: two cases where algebra knows the answer."""
+    """Integrator against closed form, neither of them a typed-in number.
+
+    The closed form is a candidate function that first has to prove
+    it solves the equation, by substitution. Then its surface is
+    found by root-finding and its omega taken from its derivative.
+    Only then is the integrator asked, and the two must agree.
+    """
     rows = []
-    for n, (xi_e, w_e) in EXACT.items():
-        xi, w = solve(n, h=1e-5)
-        dx, dw = abs(xi - xi_e) / xi_e, abs(w - w_e) / w_e
+    for n in sorted(CANDIDATES):
+        worst, at = verify_candidate(n, CANDIDATES[n])
+        xi_c, w_c = closed_form(n)
+        xi_i, w_i = solve(n, h=1e-5)
+        dx = abs(xi_i - xi_c) / xi_c
+        dw = abs(w_i - w_c) / abs(w_c)
         if dx > 1e-6 or dw > 1e-6:
             raise ArithmeticError(
-                f"n={n:g}: xi_1 {xi:.6f} vs exact {xi_e:.6f}, omega {w:.6f} "
-                f"vs {w_e:.6f}")
-        rows.append(f"n={n:g} xi_1={xi:.6f} (exact {xi_e:.6f}, "
-                    f"{dx:.1e} out)")
-    return ("the same integrator on the two cases with closed forms: "
-            + "; ".join(rows))
+                f"n={n:g}: integrator {xi_i:.9f}/{w_i:.9f}, closed form "
+                f"{xi_c:.9f}/{w_c:.9f}")
+        rows.append(f"n={n:g} residual {worst:.1e}, xi_1 agrees to {dx:.1e}, "
+                    f"omega to {dw:.1e}")
+    return ("closed forms verified by substitution, then compared to the "
+            "integrator: " + "; ".join(rows))
 
 
 def _conv():
@@ -260,8 +360,12 @@ def _mass():
 if __name__ == "__main__":
     for n in (0.0, 1.0, 1.5, 3.0):
         xi, w = solve(n)
-        ex = EXACT.get(n)
-        note = (f"   exact xi_1={ex[0]:.6f} omega={ex[1]:.6f}" if ex else "")
+        note = ""
+        if n in CANDIDATES:
+            worst, _at = verify_candidate(n, CANDIDATES[n])
+            xc, wc = closed_form(n)
+            note = (f"   closed form (residual {worst:.0e}) "
+                    f"xi_1={xc:.6f} omega={wc:.6f}")
         print(f"  n={n:<4} xi_1={xi:.6f}  omega={w:.6f}{note}")
     print()
     print(" ", omega(3.0))

@@ -1,0 +1,167 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>atlas2</title>
+<style>
+  :root{
+    --bg:#f7f6f3; --panel:#fff; --ink:#1d1d1f; --mut:#6b6b70;
+    --line:#e2e0da; --accent:#2f6f4f;
+    --derived:#2f6f4f; --asserted:#8a5a1f; --refused:#8d3b3b;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+    --bg:#16161a; --panel:#1e1e23; --ink:#eceaf0; --mut:#9a99a4;
+    --line:#2e2e36; --accent:#6bbf90;
+    --derived:#6bbf90; --asserted:#d8a55c; --refused:#e0797b;}}
+  :root[data-theme=dark]{--bg:#16161a;--panel:#1e1e23;--ink:#eceaf0;
+    --mut:#9a99a4;--line:#2e2e36;--accent:#6bbf90;
+    --derived:#6bbf90;--asserted:#d8a55c;--refused:#e0797b;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",sans-serif}
+  header{padding:22px 16px 10px;max-width:1180px;margin:0 auto}
+  h1{font-size:19px;margin:0;letter-spacing:-.01em}
+  .sub{color:var(--mut);font-size:13px;margin-top:4px}
+  .wrap{display:grid;gap:16px;grid-template-columns:1fr 1fr;
+    max-width:1180px;margin:0 auto;padding:6px 16px 40px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:16px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--mut);margin:0 0 12px;font-weight:600}
+  form{display:flex;gap:8px}
+  input[type=text]{flex:1;min-width:0;padding:10px 12px;border-radius:8px;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink);
+    font:14px ui-sans-serif,sans-serif}
+  button{padding:10px 14px;border-radius:8px;border:1px solid var(--line);
+    background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
+  button.ghost{background:transparent;color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+  .chip{font-size:12px;padding:4px 9px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--line);color:var(--mut);background:transparent}
+  .chip:hover{color:var(--ink);border-color:var(--accent)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;
+    padding:3px 8px;border-radius:999px;border:1px solid currentColor}
+  .DERIVED,.DERIVATION{color:var(--derived)} .ASSERTED{color:var(--asserted)}
+  .ABSTAINED,.AMBIGUOUS,.CONTRADICTED{color:var(--refused)}
+  pre{white-space:pre-wrap;word-break:break-word;margin:12px 0 0;
+    font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    padding:12px;overflow-x:auto}
+  .meta{margin-top:10px;font-size:13px;color:var(--mut)}
+  .meta b{color:var(--ink);font-weight:600}
+  svg{width:100%;height:auto;display:block;margin-top:6px}
+  .atom{font:600 13px ui-monospace,monospace}
+  .tok{font:10px ui-monospace,monospace;fill:var(--mut)}
+  .ok{color:var(--derived)} .bad{color:var(--refused)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .spin{color:var(--mut);font-size:13px}
+</style>
+
+<header>
+  <h1>atlas2</h1>
+  <div class="sub">Every answer carries the check that would catch it being
+    wrong. Anything that cannot be checked is refused.</div>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <h2>Ask</h2>
+    <form id="f">
+      <input id="q" type="text" autocomplete="off"
+             placeholder="what is the radius of earth">
+      <button>Ask</button>
+    </form>
+    <div class="chips" id="chips"></div>
+    <div id="out"></div>
+  </section>
+
+  <section class="card">
+    <h2>Godot generation</h2>
+    <div class="sub" style="margin:0 0 8px">An induced compound, laid out as
+      the atom tree Godot renders. Each node is named by its provenance
+      token &mdash; the same id labels the corresponding line of Python, Ruby
+      and GDScript.</div>
+    <div id="expr" class="meta"></div>
+    <svg id="tree" viewBox="0 0 640 360" role="img"
+         aria-label="atom tree of the induced compound"></svg>
+    <div class="row">
+      <button class="ghost" id="rt">Run Godot round-trip</button>
+      <button class="ghost" id="bk">Check three backends</button>
+      <span id="rtout" class="spin"></span>
+    </div>
+    <pre id="tscn" hidden></pre>
+  </section>
+</div>
+
+<script>
+const EX = ["what is the radius of earth","convert 6371 km to meters",
+  "how many days between 2026-01-01 and 2026-09-15",
+  "why is a quarter of the universe helium?","why does fusion stop at iron?",
+  "Evaluate: (100 + 27) × -9 - 96","what is the flurb of earth",
+  "convert 5 meters to kilograms"];
+const $=s=>document.querySelector(s);
+EX.forEach(e=>{const b=document.createElement("button");
+  b.className="chip";b.textContent=e;
+  b.onclick=()=>{$("#q").value=e;go();};$("#chips").append(b);});
+
+async function go(){
+  const q=$("#q").value.trim(); if(!q)return;
+  $("#out").innerHTML='<div class="spin">thinking…</div>';
+  try{
+    const r=await (await fetch("/api/ask?q="+encodeURIComponent(q))).json();
+    const k=(r.kind||"-").split(" ")[0];
+    $("#out").innerHTML=
+      `<div class="meta" style="margin-top:14px">
+         <span class="tag ${k}">${r.kind}</span>
+         &nbsp;check: <b>${r.check}</b>
+         ${r.call?`&nbsp;·&nbsp;call: <b>${r.call}</b>`:""}
+       </div>
+       <pre>${(r.english||r.answer||"(no answer)")
+         .replace(/[<>&]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]))}</pre>`;
+  }catch(e){$("#out").innerHTML=`<pre class="bad">${e}</pre>`;}
+}
+$("#f").onsubmit=e=>{e.preventDefault();go();};
+
+const OPC={add:"var(--derived)",mul:"var(--asserted)",
+  neg:"var(--refused)",inv:"#7a6ccf",leaf:"var(--accent)"};
+async function drawTree(){
+  const d=await (await fetch("/api/compound")).json();
+  $("#expr").innerHTML=`induced: <b>${d.expr}</b> &nbsp;·&nbsp; ${d.nodes.length} atoms`;
+  const W=640,H=360,maxd=Math.max(...d.nodes.map(n=>n.depth));
+  const xs=d.nodes.map(n=>n.x), lo=Math.min(...xs), hi=Math.max(...xs);
+  const px=v=>60+((v-lo)/((hi-lo)||1))*(W-120);
+  const py=v=>40+(v/(maxd||1))*(H-90);
+  const by={}; d.nodes.forEach(n=>by[n.id]=n);
+  let g="";
+  d.nodes.forEach(n=>{ if(n.parent){const p=by[n.parent];
+    g+=`<line x1="${px(p.x)}" y1="${py(p.depth)}" x2="${px(n.x)}" y2="${py(n.depth)}"
+        stroke="var(--line)" stroke-width="1.5"/>`;}});
+  d.nodes.forEach(n=>{
+    g+=`<circle cx="${px(n.x)}" cy="${py(n.depth)}" r="17"
+         fill="${OPC[n.op]||"var(--accent)"}" opacity=".18"
+         stroke="${OPC[n.op]||"var(--accent)"}" stroke-width="1.5"/>
+        <text class="atom" x="${px(n.x)}" y="${py(n.depth)+5}"
+         text-anchor="middle" fill="currentColor">${n.label}</text>
+        <text class="tok" x="${px(n.x)}" y="${py(n.depth)+31}"
+         text-anchor="middle">${n.token}</text>`;});
+  $("#tree").innerHTML=g;
+  $("#tscn").textContent=d.tscn;
+}
+$("#rt").onclick=async()=>{
+  $("#rtout").textContent="running Godot headless…";
+  const r=await (await fetch("/api/godot")).json();
+  $("#rtout").innerHTML=r.ok
+    ?`<span class="ok">round-trip verified — ${r.detail}</span>`
+    :`<span class="bad">${r.detail}</span>`;
+  $("#tscn").hidden=false;
+};
+$("#bk").onclick=async()=>{
+  $("#rtout").textContent="running three backends…";
+  const r=await (await fetch("/api/backends")).json();
+  const t=Object.entries(r.traces).map(([k,v])=>`${k.padEnd(9)} ${v}`).join("\n");
+  $("#rtout").innerHTML=r.agree
+    ?`<span class="ok">all ${r.executable.length} backends agree</span>`
+    :`<span class="bad">backends disagree</span>`;
+  $("#tscn").hidden=false; $("#tscn").textContent=t;
+};
+drawTree();
+</script>

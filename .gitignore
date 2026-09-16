@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+vendor/
+data/qwen/*.jsonl
+data/qwen/*.json
+!data/qwen/MANIFEST.json

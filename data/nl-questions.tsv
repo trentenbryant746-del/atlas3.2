@@ -1,0 +1,58 @@
+# Natural-language questions -> the CORRECT ANSWER (not a key).
+# Ground truth is the arithmetic value, so labels cannot be argued with.
+# REFUSE means the system must decline; answering is a failure.
+#
+# Written to include the cases that break routers: operand-order traps,
+# distractor numbers, word problems, and near-miss phrasings.
+question	expect
+whats 59 plus 78	137
+add 59 and 78	137
+what is the sum of 59 and 78	137
+59 + 78 = ?	137
+i have 12 apples and get 30 more, how many now	42
+total of 140 and 260	400
+what is 327 minus 20	307
+subtract 20 from 327	307
+take 20 away from 327	307
+what is the difference between 327 and 20	307
+i had 500 and spent 125, what is left	375
+327 - 20	307
+what is 427 times 76	32452
+multiply 427 by 76	32452
+the product of 427 and 76	32452
+427 × 76	32452
+what is 11470 divided by 74	155
+divide 11470 by 74	155
+the quotient of 11470 and 74	155
+split 11470 into 74 equal shares	155
+convert 602 meters to centimeters	60200
+how many centimeters in 602 meters	60200
+602 m in cm	60200
+a quantity is 640, increase it by 20 percent	768
+what is 640 increased by 20%	768
+raise 640 by 20 percent	768
+solve for x: -9x + -6 = -348	38
+solve -9x + -6 = -348 for the unknown x	38
+find x in the equation -9x + -6 = -348	38
+what is 10/19 + 9/4 as a simplified fraction	211/76
+add the fractions 10/19 and 9/4 and simplify	211/76
+simplify 10/19 + 9/4	211/76
+evaluate the expression (100 + 27) × -9 - 96	-1239
+evaluate: (100 + 27) × -9 - 96	-1239
+what is 7 plus 3	10
+what is 1000 minus 1	999
+multiply 12 by 12	144
+divide 144 by 12	12
+convert 3 meters to centimeters	300
+increase 200 by 50 percent	300
+# --- must decline ---------------------------------------------------
+who wrote Hamlet	REFUSE
+what is the capital of France	REFUSE
+integrate x squared dx	REFUSE
+what is 5 and 7	REFUSE
+prove the collatz conjecture	REFUSE
+what is 10 divided by 0	REFUSE
+solve for y: 3y squared + 2 = 50	REFUSE
+what is the square root of 144	REFUSE
+what is 2 to the power of 10	REFUSE
+tell me about 59 and 78	REFUSE

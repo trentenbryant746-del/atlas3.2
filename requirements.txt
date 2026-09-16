@@ -1,0 +1,6 @@
+# atlas2 has no Python dependencies beyond the standard library.
+#
+# Optional external runtimes, each of which ADDS a verification path and
+# is degraded-gracefully if absent:
+#   ruby    second executable backend for cross-verification
+#   godot   third executable backend + scene round-trip (4.7.2)

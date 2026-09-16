@@ -164,20 +164,47 @@ def fetch(url_base=None):
     return got, failed
 
 
-def assemble(force=False):
-    """Join the parts and verify the WHOLE, not just the pieces."""
+def assemble(force=False, url_base=None):
+    """Produce the whole file, and verify the WHOLE, not just pieces.
+
+    THE PARTS ARE A TRANSPORT FORMAT, NOT THE SOURCE. A cold start
+    found this: the split halves exist only where this tool wrote
+    them, while the original 106.1 MiB file sits intact in the
+    directory the experiment produced. Looking only for parts meant
+    a machine holding the real thing could not use it. So the whole
+    file is looked for first, and the split is what gets it ONTO a
+    host with a per-file limit, not what defines it.
+    """
     m = manifest()
     name, spec = next(iter(m["assembled"].items()))
     out = QDIR / name
     if out.exists() and not force:
-        got = sha256(out)
-        if got == spec["sha256"]:
+        if sha256(out) == spec["sha256"]:
             return out, "already assembled and verified"
         out.unlink()
+
+    # 1. the whole file, sitting somewhere local
+    for d in _local_dirs():
+        src = d / name
+        if src.exists() and src.stat().st_size == spec["bytes"]:
+            if sha256(src) == spec["sha256"]:
+                QDIR.mkdir(parents=True, exist_ok=True)
+                out.write_bytes(src.read_bytes())
+                return out, f"copied whole from {d}"
+
+    # 2. failing that, the parts -- fetched if a URL was given
     parts = [QDIR / p for p in spec["from"]]
+    if url_base and not all(p.exists() for p in parts):
+        for pname in spec["from"]:
+            _fetch_one(pname, m["committed"][pname], url_base)
+        parts = [QDIR / p for p in spec["from"]]
     missing = [p.name for p in parts if not p.exists()]
     if missing:
-        raise SystemExit(f"cannot assemble: missing {missing}")
+        raise SystemExit(
+            f"cannot assemble {name}: no whole copy in {len(_local_dirs())} "
+            f"local directories and missing parts {missing}. Set "
+            f"ATLAS_QWEN_DIR to a directory holding it, or ATLAS_QWEN_URL "
+            f"to a host serving the parts.")
     with open(out, "wb") as w:
         for p in parts:
             w.write(p.read_bytes())
@@ -228,20 +255,19 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.check:
         return report()
+    m = manifest()
+    split = set(next(iter(m["assembled"].values()))["from"])
     got, failed = fetch(a.url)
     for n, how in got:
         print(f"ok  {n:<42}{how}")
+    # A missing PART is not a failure if the whole file can be had --
+    # the parts exist to cross a per-file size limit, nothing more.
+    hard = [(n, w) for n, w in failed if n not in split]
     for n, how in failed:
-        print(f"FAIL  {n}: {how}")
-    if failed:
+        print(f"{'FAIL' if n in dict(hard) else 'note'}  {n}: {how}")
+    if hard:
         return 1
-    m = manifest()
-    bad = verify_committed(m)
-    if bad:
-        for n, w in bad:
-            print(f"FAIL  {n}: {w}")
-        return 1
-    out, why = assemble(force=a.force)
+    out, why = assemble(force=a.force, url_base=a.url)
     print(f"ok  {out.relative_to(ROOT)}  {why}")
     return 0
 

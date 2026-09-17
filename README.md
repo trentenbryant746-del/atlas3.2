@@ -4592,3 +4592,59 @@ been met from a second direction, which is the strongest evidence yet
 that it is the single real gap.
 
     ontogeny 6/6    23/23 published numbers reproduce
+
+### 3.1.71 — follow the root, do not re-run the world
+
+Verifying an answer here has meant running everything: 5,737 curriculum
+items, every module's checks, every published number recomputed. That
+is the right instinct in the wrong shape, because **it re-establishes
+the past on every question, and the past does not move.** Once
+seed → nebula → planet → ocean is settled for a universe, no later work
+revises it. Only the forward end goes anywhere.
+
+So a root is now stored the way it actually behaves. Each stage is
+hashed over its rule, its output, and **its parent's hash** — so a
+stage's hash commits to the whole of its past.
+
+    constants   67281352f4fbae87   6.7e-11
+    star        c3f2ce09e1dd2a9d   3.838e+26
+    band        49ad772e4592f164   [1.000203, 1.901041]
+    planet      540ddb35a4f56092   Al 0.0060, Ca ...
+    surface     9a8b29c2090a5b4f   236.195 W/m2
+    producers   c199865f0ee075b9   2.362 W/m2
+    canopy      aa65ce653ed2768b   11.436 m
+    levels      d64dd3e7786a5a88   4
+    bodies      c49053a9f22dcc40   True
+    brain       7a39675f2a587395   1.0857
+    child       e82cc34fc55ae351   3.0363
+
+Three things follow, and none is a policy anyone has to remember.
+
+**A solid prefix is free.** Five questions, 45 stages between them —
+**11 computed, 34 reused.** Every question after the first pays for
+exactly one new stage, because it shares the others' history byte for
+byte.
+
+**Consistency is structural.** Two answers standing on the same prefix
+cannot disagree about it — not because a test compared them, but
+because they *are the same bytes*. That is what the full suite was
+buying at enormous cost.
+
+**The past cannot be edited quietly.** Change a rule near the root and
+every hash downstream changes with it.
+
+    full suite, warm      17.3 s
+    follow roots, warm     0.33 ms          ~52,000x
+
+**And a break is located, not merely reported.** Moving
+`PHOTOSYNTHETIC_EFFICIENCY` by a tenth was caught at stage
+`'producers'` — the exact point that constant enters — with the five
+questions standing on it named. A suite says *something failed*. A root
+says **where it failed and what rests on it**, which is the part that
+was being paid for by running everything.
+
+The condition on all of it is one universe. `universe_id()` hashes
+every constant, so moving gravity in the twelfth place shares no prefix
+at all — correct, because those are not answers to the same question.
+
+    roots 5/5     the suite still exists; it is no longer the default

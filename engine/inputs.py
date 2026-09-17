@@ -139,6 +139,8 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "roots.SUITE_WARM_S": (
+        MEASURED, "the full suite warm, timed on this machine"),
     "ontogeny.ONTOGENY": (
         MEASURED, "one human's body and brain mass by age"),
     "ontogeny.NEURAL": (

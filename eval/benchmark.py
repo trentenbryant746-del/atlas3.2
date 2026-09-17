@@ -127,6 +127,13 @@ def main():
     print("=" * 72)
     print("MODULES ADDED SINCE")
     print("=" * 72)
+    try:
+        import eval.claims as _cl
+        cok, cres = _cl.check()
+        print(f"  {'PASS' if cok else 'FAIL'}  {'published-claims':16}"
+              f"      {sum(1 for r in cres if r[1])}/{len(cres)} checks")
+    except Exception as _e:
+        print(f"  FAIL  published-claims      {_e}")
     for name, ok, dt, detail in modules():
         bad += 0 if ok else 1
         print(f"  {'PASS' if ok else 'FAIL'}  {name:<13}{dt:6.1f}s  {detail}")

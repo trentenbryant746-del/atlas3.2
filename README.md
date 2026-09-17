@@ -2482,6 +2482,12 @@ interact, so reading the code will not tell you either.
 
 **Run on the decay target it immediately reversed a conclusion.**
 
+> **SUPERSEDED — the numbers in this section are history.** 3.1.31
+> changed the rule being measured and the same command now prints
+> 8 right, 0 wrong, 6 refused. The table below was correct when
+> written and describes a system that no longer exists. Registered in
+> `eval/claims.py` so it cannot be mistaken for a current result.
+
     all rules on                          1 right, 1 WRONG, 12 refused
     without shell-corrections             1 right, 1 WRONG, 12 refused
     without liquid-drop-domain            4 right, 2 WRONG,  8 refused
@@ -2580,3 +2586,57 @@ which gives **0.0866 MeV**, and nothing is chosen.
 
     5,737 correct, 0 wrong   audit 21/21   heldout 165/165 byte-exact
     lab 26 experiments: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED
+
+### 3.1.32 — every published number, recomputed
+
+A number written into this README is a claim the repository is still
+making. Nothing here was checking them: the benchmark checks the code
+against itself, the audit checks it against its own invariants, and
+neither reads the document.
+
+**It had already gone wrong once.** 3.1.30 published an ablation table
+reading 1 right, 1 wrong, 12 refused. 3.1.31 changed the rule being
+measured, and the same command now prints 8, 0, 6. The table was correct
+when written and is false as a present-tense claim, and only a reader who
+ran the code would have known.
+
+`eval/claims.py` registers each load-bearing published number with the
+computation that produced it:
+
+    3.1.31  decay score 8 right, 0 wrong, 6 refused          ok
+    3.1.27  magic numbers 2,8,20,28,40,50,82,126             ok
+    3.1.27  4.2% of the (kappa, mu) plane                    ok
+    3.1.21  Stefan-Boltzmann to 3.25e-11                     ok
+    3.1.28  liquid drop refused below A=13                   ok
+    3.1.29  mass bar 1.850 in domain, 6.249 outside          ok
+    3.1.31  measured-Q precision 0.0866 MeV                  ok
+    3.1.31  unified binding table, 29 nuclides               ok
+    3.1.18  folding survival rate 0.573                      ok
+    3.1.23  unfitted climate: Earth -3.2, Venus -495.6       ok
+    3.1.31  lab 23 HOLDS / 1 CLASH / 1 MISSING / 1 REFUSED   ok
+
+**Eleven of eleven still reproduce.** A claim that stops reproducing has
+two honest repairs — correct the document, or mark the number as
+superseded history. Leaving it is not one of them.
+
+Three numbers are now recorded as **history rather than current**, each
+saying what replaced it: 3.1.30's ablation table, 3.1.26's eight-right
+(which rested on two cancelling errors), and 3.1.19's Mercury result. The
+3.1.30 section carries an inline superseded notice so it cannot be read
+as a live result.
+
+**Full soundness sweep, everything at once:**
+
+    engine modules        166/166 checks across 26 modules
+    lab                   26 experiments: 23 HOLDS, 1 CLASH,
+                          1 MISSING_RULE, 1 REFUSED
+    published claims      11/11 reproduce
+    curriculum            5,737 correct, 0 WRONG, 0 abstained
+    held-out              165/165 byte-exact, 132 by an independent route
+    wording               46 answers with several phrasings, 0 disagreeing
+    audit                 21/21
+    decay                 8 right, 0 WRONG, 6 refused
+
+The two open items are unchanged and both are named: the far-wing
+**CLASH** at layer 2, and the CO₂ ceiling **MISSING_RULE** at layer 3.
+Neither is hidden and neither is patched.

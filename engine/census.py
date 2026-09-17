@@ -1,5 +1,12 @@
 """
-Many worlds generated, and a search through them for life.
+Many worlds generated, and a search through them for HABITABILITY.
+
+This looked for "life" and it did not. It tested liquid water, the
+presence of CHNOPS, and a long enough window -- and not one line of
+that is about a cell, a membrane, replication or metabolism. The
+word was doing work it had not earned, and a world that passes here
+is HABITABLE, which is a statement about a place and not about
+anything living in it.
 
 Everything else here asks whether one rule is right. This asks a
 different question: run the whole chain over many seeds, and see
@@ -71,7 +78,7 @@ def _one(args):
             "au": p["au"], "mass_earths": p["mass_earths"],
             "elements": have, "window_gyr": window,
             "has_water": p["composition"].get("H", 0) > 1e-4,
-            "life": (len(have) == len(CHNOPS)
+            "habitable": (len(have) == len(CHNOPS)
                      and window >= MIN_WINDOW_GYR
                      and p["composition"].get("H", 0) > 1e-4),
         })
@@ -100,15 +107,15 @@ def deconstruct(results):
     alive, dead = [], []
     for r in results:
         for wd in r["worlds"]:
-            (alive if wd["life"] else dead).append((r, wd))
+            (alive if wd["habitable"] else dead).append((r, wd))
     out = {"n_systems": len(results),
            "n_worlds": len(alive) + len(dead),
-           "n_alive": len(alive)}
+           "n_habitable": len(alive)}
     if alive:
         def spread(key, rows):
             v = [k(x) for x in rows for k in (key,)]
             return (min(v), max(v)) if v else (0, 0)
-        out["living"] = [
+        out["habitable_worlds"] = [
             {"star_msun": round(r["star_msun"], 2),
              "au": w["au"], "mass_earths": round(w["mass_earths"], 2),
              "window_gyr": round(w["window_gyr"], 1),
@@ -147,13 +154,13 @@ def check():
 
     t("many_worlds_run_and_differ", _many)
     t("the_census_says_why_not", _why)
-    t("living_worlds_share_something_real", _share)
+    t("habitable_worlds_share_something_real", _share)
     return all(o[1] for o in out), out
 
 
 def _share():
     d = deconstruct(_run())
-    if not d.get("living"):
+    if not d.get("habitable_worlds"):
         return ("nothing is alive in this sample, so there is nothing to "
                 "deconstruct; the census reports the commonest failure "
                 "instead")
@@ -164,7 +171,7 @@ def _share():
     if (hi - lo) >= 0.5 * (ahi - alo):
         raise ArithmeticError("the living worlds are spread as widely as "
                               "the population, so they share nothing")
-    return (f"{len(d['living'])} living worlds, and every one orbits a "
+    return (f"{len(d['habitable_worlds'])} habitable worlds, and every one orbits a "
             f"star between {lo:.2f} and {hi:.2f} solar masses out of a "
             f"population spanning {alo:.2f} to {ahi:.2f}. Metallicity "
             f"runs {zlo:.4f} to {zhi:.4f}, the whole range, so it is not "
@@ -198,8 +205,8 @@ def _many():
 
 def _why():
     d = deconstruct(_run())
-    if d["n_alive"] > 0:
-        return (f"{d['n_alive']} of {d['n_worlds']} worlds pass all three "
+    if d["n_habitable"] > 0:
+        return (f"{d['n_habitable']} of {d['n_worlds']} worlds pass all three "
                 f"conditions. Deconstruct them: the result is what they "
                 f"share")
     w = d["why_not"]
@@ -227,7 +234,7 @@ if __name__ == "__main__":
     r = census(40)
     d = deconstruct(r)
     print(f"  {d['n_systems']} systems, {d['n_worlds']} worlds, "
-          f"{d['n_alive']} with life   ({time.time()-t0:.1f}s)")
+          f"{d['n_habitable']} habitable   ({time.time()-t0:.1f}s)")
     if d.get("why_not"):
         print("\n  why not:")
         for k, v in d["why_not"].items():

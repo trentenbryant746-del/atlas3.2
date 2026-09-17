@@ -192,11 +192,51 @@ def checks_do_not_grep_themselves():
     """Written after making the same mistake three times."""
     import inspect
     import engine.lab as me
+    # A RULE THAT COVERS ONE FILE IS NOT A RULE. This scanned only
+    # lab.py's experiments, so engine/watch.py wrote a fourth
+    # self-grepping check and nothing stopped it -- it searched the
+    # census for the word "membrane" and matched the sentence saying
+    # the census does not test membranes. Now every module's check
+    # functions are scanned.
+    import ast as _ast
+    from pathlib import Path as _P
     bad = []
     for e in EXPERIMENTS:
         src = inspect.getsource(e.fn)
         if "read_text()" in src and "ast" not in src and "glob" not in src:
             bad.append(e.name)
+    eng = _P(__file__).resolve().parent
+    for f in sorted(eng.glob("*.py")):
+        txt = f.read_text()
+        try:
+            tree = _ast.parse(txt)
+        except Exception:
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.FunctionDef):
+                continue
+            if not node.name.startswith("_"):
+                continue
+            seg = _ast.get_source_segment(txt, node) or ""
+            if "getsource" not in seg and "read_text()" not in seg:
+                continue
+            if "ast" in seg or "signature" in seg:
+                continue
+            # PRECISE: the danger is searching source for a literal
+            # the searcher itself contains. A function that reads a
+            # data file, or matches names from a table, cannot find
+            # itself. Flagging those too would make the rule noise,
+            # and a rule with false positives gets ignored.
+            # A function that explicitly skips its own file cannot
+            # find itself, however it searches. constants._dupes
+            # does exactly that and was a false positive.
+            if "== here" in seg or "!= here" in seg or "f == here" in seg:
+                continue
+            lits = [n.value for n in _ast.walk(node)
+                    if isinstance(n, _ast.Constant)
+                    and isinstance(n.value, str) and len(n.value) > 3]
+            if any(seg.count(l) > 1 for l in lits):
+                bad.append(f"{f.name}:{node.name}")
     if bad:
         return CLASH, ("these read a source file as text and may match "
                        "their own wording: " + ", ".join(bad))

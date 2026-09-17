@@ -20,7 +20,7 @@
   "ok": true
  },
  "census": {
-  "key": "21fd09c071e9cd07",
+  "key": "99f38957cbbc5a42",
   "n": 3,
   "ok": true
  },
@@ -46,42 +46,42 @@
  },
  "eval.audit": {
   "detail": "21/21 claims verified",
-  "key": "c07d4925390cdc03",
+  "key": "9640ffe741fc0fdb",
   "ok": true
  },
  "eval.commit": {
   "detail": "all: True",
-  "key": "126017b111767a91",
+  "key": "2f141243a0e15ed8",
   "ok": true
  },
  "eval.compress": {
   "detail": "  crippled basis fails on 1894 records -- the check has te",
-  "key": "d5ab074a160c33d0",
+  "key": "fc81d7163fc28895",
   "ok": true
  },
  "eval.controls": {
   "detail": "  1 ASSERTED rule(s) correctly reported as unverifiable ra",
-  "key": "4674483cac00e3de",
+  "key": "37177621cacc1358",
   "ok": true
  },
  "eval.dilution": {
   "detail": "PASS  correction_is_not_circular      iron's miss implies ",
-  "key": "25da5f3685760cfa",
+  "key": "53a83da798fd8aba",
   "ok": true
  },
  "eval.gate": {
   "detail": "   all refused -- the gate can tell coverage from competen",
-  "key": "b07e491563d6831a",
+  "key": "5000bdc6f36c28a3",
   "ok": true
  },
  "eval.induction": {
   "detail": "held-out means the induced rule never saw these prompts.",
-  "key": "0e60ba9747ab9fd9",
+  "key": "a12091a1aa51f064",
   "ok": true
  },
  "eval.integration": {
   "detail": "PASS",
-  "key": "c1f78f9a50bb4213",
+  "key": "d0352a445c8638f4",
   "ok": true
  },
  "evolve": {
@@ -105,7 +105,7 @@
   "ok": true
  },
  "lab": {
-  "key": "2def7157048ae396",
+  "key": "8244949008bd5ce5",
   "n": 5,
   "ok": true
  },
@@ -195,8 +195,8 @@
   "ok": true
  },
  "watch": {
-  "key": "a7b8e8cdf8c186ef",
-  "n": 2,
+  "key": "991bb1c0c9f15328",
+  "n": 4,
   "ok": true
  }
 }

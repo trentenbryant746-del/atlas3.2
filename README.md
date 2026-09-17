@@ -3363,3 +3363,56 @@ around a small star is its star brightening, not dying.
 
     watch 2/2   cache 4/4   suite 3:11 -> 0:32 warm
     5,737 correct, 0 wrong   claims 14/14   audit 21/21
+
+### 3.1.46 — habitable is not inhabited
+
+**No. Nothing made a cell, and calling it "life" was wrong.** The census
+tested liquid water, the presence of CHNOPS, and a long enough window.
+Not one line of that is about a membrane, replication, or metabolism.
+The word was doing work it had not earned, and it is now `habitable`
+everywhere — a statement about a *place*, not about anything living in
+it. `habitable_is_not_inhabited` checks structurally that the census
+sets no key claiming otherwise.
+
+**The step from chemistry to a self-copying compartment is
+abiogenesis, and this repository does not derive it.** It is absent,
+not implied.
+
+**What can be asked from rules already present is whether a cell could
+persist**, and how big. `engine/life.py` derives the diffusion limit —
+a sphere consuming oxygen supplies its own centre only out to
+`sqrt(6 D C0 / R)`, past which the middle suffocates — and diffusion
+scales with temperature over viscosity, so the ceiling moves with
+climate:
+
+    275 K   39.5 micron ceiling
+    310 K   64.9 micron ceiling
+
+    world at 0.35 AU   262 K, 30% wet   ceiling 33.0 um
+    world at 0.57 AU   260 K, 22% wet   ceiling 32.0 um
+
+Those are colder worlds than Earth, so they permit only smaller cells.
+It is a statement about what *could* persist, not about anything that
+did.
+
+**And as for the rule the habitable worlds revealed — there was none to
+add.** "Every habitable world orbits a 0.51–0.54 M☉ star" is not a new
+rule; it is a *consequence* of two already present, the mass-luminosity
+relation and lifetime going as M⁻²·⁵. A small star's band lingers over
+one orbit for tens of billions of years. That the census found it
+without being told is the point: the rules were sufficient, and the
+run made the consequence visible.
+
+**A fourth self-grepping check, and the rule that should have caught
+it.** `habitable_is_not_inhabited` first searched `census.py` for the
+word "membrane" and matched the sentence explaining that the census
+does *not* test membranes. `checks_do_not_grep_themselves` existed
+precisely to forbid this — but scanned only `lab.py`. **A rule that
+covers one file is not a rule.** It now scans every module, and was
+made precise: it flags a function only when it searches source for a
+string literal it itself contains, so a function reading a data file
+or skipping its own file is not caught. A rule with false positives
+gets ignored.
+
+    watch 4/4   census 3/3   cache 4/4   suite 0:32 warm
+    5,737 correct, 0 wrong   claims 14/14   audit 21/21

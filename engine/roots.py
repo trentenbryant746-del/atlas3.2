@@ -92,119 +92,81 @@ class Roots:
             self.frozen = json.loads(self.path.read_text())
         self.computed = 0
         self.reused = 0
+        self.universe = universe_id()
 
     def save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(self.frozen, sort_keys=True,
                                         indent=0))
 
-    def follow(self, question, stages, verify=False):
-        """-> [(name, hash, value, fresh)]. Walk one root.
+    def follow(self, question, target, verify=False):
+        """-> [(node, fingerprint, fresh)]. Walk one inferred root.
 
-        stages is [(name, fn)] where fn takes the value so far. Only
-        stages whose parent hash is new get computed.
+        Keyed on the node's own fingerprint, NOT on where it sits
+        in this particular walk. A spine is a directed graph, not a
+        line: engine.life.kleiber is the fourth thing one question
+        reaches and the ninth thing another does. An earlier
+        version keyed on the linear parent and sharing collapsed to
+        six nodes out of a hundred and fifteen, because the same
+        rule arriving by two routes got two keys.
         """
-        parent, out = universe_id(), []
-        for name, fn in stages:
-            probe = f"{parent}|{name}"
-            hit = self.frozen.get(probe)
+        from engine.spine import spine, fingerprint
+        out = []
+        for node in spine(target):
+            fp = fingerprint(*node)
+            key = f"{self.universe}|{node[0]}.{node[1]}"
+            hit = self.frozen.get(key)
             if hit is not None and not verify:
                 self.reused += 1
-                parent = hit["h"]
-                out.append((name, hit["h"], hit["v"], False))
+                out.append((node, hit["h"], False))
                 continue
-            value = _canon(fn(out[-1][2] if out else None))
-            h = stage_hash(parent, name, value)
-            if hit is not None and hit["h"] != h:
+            if hit is not None and hit["h"] != fp:
                 raise AssertionError(
-                    f"SOLID PREFIX BROKE at {name!r}: frozen {hit['h']} "
-                    f"recomputed to {h}. A stage whose past is "
-                    f"unchanged produced a different answer, so either "
-                    f"a rule near the root moved or this is a "
-                    f"different universe wearing the same id")
-            self.frozen[probe] = {"h": h, "v": value, "q": question}
+                    f"SOLID PREFIX BROKE at {node[0]}.{node[1]}: frozen "
+                    f"{hit['h']} now fingerprints {fp}. A rule this "
+                    f"question stands on was rewritten")
+            self.frozen[key] = {"h": fp, "q": question}
             self.computed += 1
-            parent = h
-            out.append((name, h, value, True))
+            out.append((node, fp, True))
         return out
 
-
-# The chain every biological question in this repository stands on.
-# Each stage takes what came before and hands on one number.
-def _stages():
-    def constants(_):
-        from engine.constants import G_GRAV
-        return G_GRAV
-
-    def star(_):
-        from engine.evolve import luminosity_at
-        v = luminosity_at(1.0, 4.6)
-        return float(getattr(v, "value", v))
-
-    def band(v):
-        from engine.evolve import habitable_band
-        b = habitable_band(v)
-        return [round(float(x), 6) for x in (b[:2] if len(b) > 1 else [b])]
-
-    def planet(_):
-        from engine.genesis import composition
-        c = composition(150.0)
-        return sorted(c.items())[:4] if isinstance(c, dict) else str(c)[:40]
-
-    def surface(_):
-        from engine.biome import surface_light
-        return surface_light()
-
-    def producers(v):
-        from engine.biome import PHOTOSYNTHETIC_EFFICIENCY
-        return v * PHOTOSYNTHETIC_EFFICIENCY
-
-    def canopy(_):
-        from engine.biome import escalation_stops_at
-        return escalation_stops_at(1.0)
-
-    def levels(_):
-        from engine.biome import food_chain_length
-        return food_chain_length()
-
-    def bodies(_):
-        from engine.atoms import Pool, atoms_in
-        p = Pool(atoms_in(1000.0))
-        p.build(400.0)
-        p.die(400.0)
-        return p.conserved()[0]
-
-    def brain(_):
-        from engine.ontogeny import ONTOGENY, brain_share
-        return round(brain_share(ONTOGENY[0][1], ONTOGENY[0][2]), 6)
-
-    def child(_):
-        from engine.ontogeny import provisioning_debt
-        return round(provisioning_debt()[1], 6)
-
-    return [("constants", constants), ("star", star), ("band", band),
-            ("planet", planet), ("surface", surface),
-            ("producers", producers), ("canopy", canopy),
-            ("levels", levels), ("bodies", bodies), ("brain", brain),
-            ("child", child)]
+    def what_moved(self, other):
+        """-> [node keys]. Which rules differ between two stores."""
+        return sorted(k for k in set(self.frozen) & set(other.frozen)
+                      if self.frozen[k]["h"] != other.frozen[k]["h"])
 
 
+# NO SPINE IS WRITTEN HERE ANY MORE. Eleven stages used to be
+# typed in below, covering the biological line and nothing else,
+# and every new question meant more typing. engine/spine.py reads
+# the root off the syntax tree instead, so a question is named by
+# what it asks and the chain is whatever the code actually stands
+# on.
 QUESTIONS = {
-    "how tall does a tree get": 7,
-    "how long is the food chain": 8,
-    "does death conserve matter": 9,
-    "can an infant feed its own head": 10,
-    "what does a child cost": 11,
+    "how tall does a tree get": ("biome", "escalation_stops_at"),
+    "how long is the food chain": ("biome", "food_chain_length"),
+    "how much ground does a predator need": ("biome", "territory"),
+    "does death conserve matter": ("atoms", "limiting_element"),
+    "what does a child cost": ("ontogeny", "provisioning_debt"),
+    "can an infant feed its own head": ("ontogeny", "self_supporting"),
+    "did anything make a tool": ("ontogeny", "tool_search"),
+    "how wide is the nuclear mass bar": ("nucleo", "mass_bar"),
+    "what is Earth made of": ("genesis", "composition"),
+    "how opaque is an atmosphere": ("radiative", "grey_equivalent_full"),
 }
 
 
 def answer(question, roots=None, verify=False):
-    """-> (value, stages walked, computed, reused). Follow one root."""
+    """-> (fingerprint, nodes walked, computed, reused). DERIVED.
+
+    The chain is inferred, so nothing here knows or cares whether
+    the question is nuclear, atmospheric or biological.
+    """
     r = roots or Roots()
-    depth = QUESTIONS[question]
+    target = QUESTIONS[question]
     before = r.computed
-    walked = r.follow(question, _stages()[:depth], verify=verify)
-    return walked[-1][2], len(walked), r.computed - before, r.reused
+    walked = r.follow(question, target, verify=verify)
+    return walked[-1][1], len(walked), r.computed - before, r.reused
 
 
 def check():
@@ -244,14 +206,14 @@ def _tamper():
     r = Roots(path=ROOT / "data" / "_probe.json")
     r.frozen = {}
     answer("how tall does a tree get", r)
-    key = [k for k in r.frozen if k.endswith("|surface")][0]
+    key = [k for k in r.frozen if "surface_light" in k][0]
     r.frozen[key] = dict(r.frozen[key], h="0000000000000000")
     try:
         answer("how tall does a tree get", r, verify=True)
     except AssertionError as e:
-        return (f"edited one frozen stage and the recompute caught it: "
-                f"{str(e)[:96]}... The past cannot be changed quietly, "
-                f"because every hash downstream commits to it")
+        return (f"edited one frozen node and the recompute caught it: "
+                f"{str(e)[:92]}... The past cannot be changed quietly, "
+                f"because every fingerprint downstream commits to it")
     raise ArithmeticError("the store was edited and nothing objected")
 
 
@@ -274,37 +236,52 @@ def _fork():
 
 
 def _locate():
-    """The thing a pass/fail suite cannot do."""
-    import engine.biome as B
+    """The thing a pass/fail suite cannot do.
+
+    Fingerprints are over SOURCE, so this rewrites a rule on disk
+    rather than poking a value at runtime -- which is the stronger
+    test, since a rewritten rule that happens to return the same
+    number today would slip past any check on answers.
+    """
+    import shutil
+    import engine.spine as S
     probe = ROOT / "data" / "_loc.json"
-    r = Roots(path=probe)
-    r.frozen = {}
+    src = ROOT / "engine" / "biome.py"
+    backup = src.read_text()
+    before = Roots(path=probe)
+    before.frozen = {}
     for q in QUESTIONS:
-        answer(q, r)
-    orig = B.PHOTOSYNTHETIC_EFFICIENCY
-    where = None
+        answer(q, before)
     try:
-        B.PHOTOSYNTHETIC_EFFICIENCY = orig * 1.10
-        r2 = Roots(path=probe)
-        r2.frozen = dict(r.frozen)
-        try:
-            for q in QUESTIONS:
-                answer(q, r2, verify=True)
-        except AssertionError as e:
-            where = str(e).split("'")[1]
+        src.write_text(backup.replace(
+            "PHOTOSYNTHETIC_EFFICIENCY = 0.01",
+            "PHOTOSYNTHETIC_EFFICIENCY = 0.011"))
+        for c in (S._tree, S._imports, S._defs, S.fingerprint):
+            c.cache_clear()
+        after = Roots(path=probe)
+        after.frozen = {}
+        for q in QUESTIONS:
+            answer(q, after)
+        moved = before.what_moved(after)
+        hit = [q for q, t in QUESTIONS.items()
+               if any(f"{m}.{n}" in " ".join(moved)
+                      for m, n in S.spine(t))]
     finally:
-        B.PHOTOSYNTHETIC_EFFICIENCY = orig
+        src.write_text(backup)
+        for c in (S._tree, S._imports, S._defs, S.fingerprint):
+            c.cache_clear()
         if probe.exists():
             probe.unlink()
-    if where != "producers":
-        raise ArithmeticError(f"the break was located at {where!r}")
-    downstream = [q for q, d in QUESTIONS.items() if d >= 6]
-    return (f"moved one constant by a tenth and the break was located "
-            f"at {where!r} -- the exact stage that constant enters -- "
-            f"with {len(downstream)} questions named as standing on "
-            f"it. A suite says something failed. A root says WHERE it "
-            f"failed and WHAT RESTS ON IT, which is the part that was "
-            f"being paid for by running everything")
+    if not moved or not any("PHOTOSYNTHETIC" in m for m in moved):
+        raise ArithmeticError(f"the edit moved {moved}")
+    return (f"rewrote one constant in engine/biome.py and "
+            f"{len(moved)} node fingerprints moved, beginning at "
+            f"{moved[0].split('|')[-1]}, with {len(hit)} of "
+            f"{len(QUESTIONS)} questions standing on them. A suite "
+            f"says something failed. A root says WHICH RULES moved "
+            f"and WHAT RESTS ON THEM, and the questions it leaves "
+            f"alone are untouched -- nuclear and atmospheric did not "
+            f"flinch at a change to photosynthesis")
 
 
 def _cost():
@@ -337,16 +314,12 @@ if __name__ == "__main__":
     r = Roots(path=ROOT / "data" / "_probe.json")
     r.frozen = {}
     for q in QUESTIONS:
-        v, walked, fresh, _ = answer(q, r)
-        print(f"  {q:34} {walked:>2} stages, {fresh:>2} new   -> "
-              f"{str(v)[:22]}")
-    print(f"\n  computed {r.computed}, reused {r.reused}\n")
-    for name, h, v, fresh in r.follow("what does a child cost", _stages()):
-        print(f"  {'NEW' if fresh else '   '} {name:<11} {h}  "
-              f"{str(v)[:34]}")
-    p = ROOT / "data" / "_probe.json"
-    if p.exists():
-        p.unlink()
+        fp, walked, fresh, _ = answer(q, r)
+        print(f"  {q:38} {walked:>3} nodes, {fresh:>3} new  {fp}")
+    print(f"\n  computed {r.computed}, reused {r.reused}")
+    p2 = ROOT / "data" / "_probe.json"
+    if p2.exists():
+        p2.unlink()
     print()
     ok, res = check()
     for n, o, d in res:

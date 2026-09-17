@@ -143,6 +143,18 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _toolcount():
+    from engine.ontogeny import tool_search
+    _, rows = tool_search()
+    return len([r for r in rows if r[2] > 0 and r[1] > 0]), len(rows)
+
+
+def _rootdepth():
+    from engine.spine import depth
+    return (depth(("ontogeny", "tool_search")),
+            depth(("radiative", "grey_equivalent_full")))
+
+
 def _infantshare():
     from engine.ontogeny import ONTOGENY, brain_share
     return round(100 * brain_share(ONTOGENY[0][1], ONTOGENY[0][2]))
@@ -183,6 +195,10 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.72", "21 of 28 tool configurations pay, none are made",
+     _toolcount, (21, 28), CURRENT),
+    ("3.1.72", "the tool root is 2 nodes deep against 37 for radiative",
+     _rootdepth, (2, 37), CURRENT),
     ("3.1.70", "a newborn's brain is 109% of its own budget",
      _infantshare, 109, CURRENT),
     ("3.1.70", "growth bottoms at age 5 where the brain is 71%",

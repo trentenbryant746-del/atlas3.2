@@ -4581,7 +4581,7 @@ cellulose; a brain gets this. No recipe here is a default anyone can
 fall into.
 
 **Tools: searched, not assumed.** 28 combinations of brain size and
-intake gain; **26 of them pay**, the cheapest at a 5% gain. A tool is
+intake gain; **21 of them pay**, the cheapest at a 5% gain. A tool is
 affordable across nearly the whole space.
 
 **Zero were made.** Nothing in this repository generates a tool, a
@@ -4648,3 +4648,75 @@ every constant, so moving gravity in the twelfth place shares no prefix
 at all — correct, because those are not answers to the same question.
 
     roots 5/5     the suite still exists; it is no longer the default
+
+### 3.1.72 — the spine is read, not written
+
+3.1.71 solidified the past so a question need not re-run the world, and
+it worked — but the chain it walked was **eleven stages typed in by
+hand**. That is the same error this repository keeps catching in other
+clothes: a thing nobody derived, except the thing is a structure. A
+hand-written spine says what the author *believes* the dependencies
+are. It cannot say what they **are**, it silently omits anything
+forgotten, and every new question means more typing.
+
+So the spine is inferred. Name a target and its root is recovered by
+reading the syntax tree — what the function calls, what those call, out
+through the imports, until it bottoms out in constants. Each node is
+fingerprinted over **its own source text** and its dependencies'
+fingerprints, which is strictly stronger than hashing answers: a rule
+can be rewritten and still return the same number today, and the
+fingerprint moves anyway.
+
+**Questions nobody wired now have roots.** The hand list covered the
+biological line and nothing else.
+
+    how opaque is an atmosphere        37 nodes
+    how tall does a tree get           19
+    how wide is the nuclear mass bar   15
+    what does a child cost             11
+    how much ground does a predator    10
+    what is Earth made of               7
+    does death conserve matter          6
+    did anything make a tool            2
+
+**Two bugs found by building it.** `_defs` walked into function bodies,
+so locals — `lo`, `mid`, `hi` from a bisection — appeared as rules in
+the root of "how tall does a tree get". And the store keyed each node
+on its *linear* parent, but a spine is a **graph, not a line**:
+`kleiber` is the fourth thing one question reaches and the ninth thing
+another does, so sharing collapsed to 6 nodes out of 115. Keyed on the
+node's own fingerprint instead.
+
+**A check asserted a link the code had dropped.** It claimed a tree and
+a child share `engine.life.kleiber`. They do not — 3.1.68 took Kleiber
+*out* of the tree, because pricing heartwood as though it breathed was
+an animal rule on a plant. The graph tracked that; a hand-written list
+would still be claiming it. The check now **discovers** shared prefixes
+rather than asserting them: 4 of 15 question pairs share history nobody
+declared.
+
+    full suite, warm      17.3 s
+    follow roots, warm     6.3 ms        ~2,700x
+
+**A break is located by rewriting a rule on disk, not poking a value.**
+Changing `PHOTOSYNTHETIC_EFFICIENCY` in the source moved the
+fingerprints that stand on it and left nuclear and atmospheric
+untouched.
+
+### root depth says which questions are being answered
+
+The inference produced a diagnostic nobody designed. **A question the
+rules derive reaches tens of nodes back through constants, stars and
+chemistry. A question the rules only price stands on almost nothing.**
+
+`tool_search` reaches **2 nodes — one constant and itself**, the
+shallowest of every question asked. That is the answer about tools, and
+it is structural rather than a matter of opinion: **nothing feeds it
+because nothing here produces a tool to feed it.**
+
+**A published number was wrong.** 3.1.70 reported "26 of 28
+configurations pay"; the rule says **21**. It was typed into the README
+by hand instead of read from the check, and no claim was registered to
+catch it. Both tool numbers are now registered.
+
+    spine 6/6    roots 5/5    25/25 published numbers reproduce

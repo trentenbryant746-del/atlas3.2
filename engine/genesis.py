@@ -333,8 +333,18 @@ def generate(seed, radii=None):
             # composition is the reservoir averaged over it -- and
             # only the cold end carries carbon.
             frac = d / p["mass_kg"] if p["mass_kg"] else 0.0
+            # THE SOURCE HAS TO REACH THE CO LINE OR CARBON NEVER
+            # ARRIVES. Sampling 3 to 45 AU spans 170 K down to 41,
+            # and CO condenses at 25 -- which for this star is 124
+            # AU. Every sample was too warm, so delivery carried
+            # water and ammonia and no carbon, and the elements gate
+            # in engine/earthlab.py shut on C alone.
+            #
+            # Comets are not a belt, they are a range: the Kuiper
+            # population at 30-50 AU and the Oort cloud far beyond,
+            # and the cold end is the only part that carries carbon.
             src, n = {}, 0
-            for rr in (3.0, 6.0, 12.0, 25.0, 45.0):
+            for rr in (3.0, 6.0, 12.0, 25.0, 45.0, 90.0, 150.0, 300.0):
                 td_src = disk_temperature(rr, lum)
                 cs = composition(td_src)
                 for e, v in cs.items():

@@ -163,6 +163,13 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.44", "every habitable world orbits a 0.51-0.54 Msun star",
+     "withdrawn in 3.1.52. That held only while carbon could not "
+     "reach an inner planet: the delivery source stopped at 45 AU and "
+     "CO condenses at 124, so the only worlds scraping enough carbon "
+     "were those around dim stars with close-in ice lines. With the "
+     "source extended, 101 of 234 worlds are habitable and span every "
+     "stellar mass. The correlation was the shape of a gap"),
     ("3.1.37", "habitable band outer edge 1.898 AU",
      "3.1.42 coarsened the root scan from 3,400 points to 420 after "
      "profiling showed it bought nothing; the outer edge moved by "

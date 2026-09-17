@@ -72,6 +72,45 @@ def cmc(tail_carbons, T=298.0):
     return math.exp(-tail_carbons * CH2_TRANSFER_J / (R_GAS * T))
 
 
+# CONCENTRATION IS A RULE, NOT A HOPE. The crowding gate asks for
+# 40x and the ocean does not supply it, but three mechanisms do and
+# each is arithmetic rather than special pleading:
+#
+#   evaporation   a pool losing a fraction f of its water
+#                 concentrates everything left by 1/(1-f)
+#   freezing      ice rejects solute, so the same ratio applies to
+#                 the shrinking brine between the crystals
+#   thermophoresis a temperature gradient drives solute to the cold
+#                 wall by exp(S_T dT) each pass, and a convecting
+#                 pore runs many passes
+#
+# Evaporation and freezing reach 100x at 99%, which is an ordinary
+# tide pool and an ordinary winter. Thermophoresis is weaker per
+# pass -- 1.3x to 4.5x -- and compounds.
+SORET_PER_K = 0.01            # measured for small solutes
+
+
+def concentration_factor(mechanism, extent):
+    """-> how much more concentrated. DERIVED per mechanism."""
+    if mechanism in ("evaporation", "freezing"):
+        if not 0.0 <= extent < 1.0:
+            raise ValueError(f"a removed fraction of {extent} is not one")
+        return 1.0 / (1.0 - extent)
+    if mechanism == "thermophoresis":
+        return math.exp(SORET_PER_K * extent)
+    raise KeyError(f"no rule for {mechanism!r}; known: evaporation, "
+                   f"freezing, thermophoresis")
+
+
+def best_concentration(evap=0.99, freeze=0.99, dT=30.0):
+    """-> (factor, which). The strongest mechanism available."""
+    opts = {"evaporation": concentration_factor("evaporation", evap),
+            "freezing": concentration_factor("freezing", freeze),
+            "thermophoresis": concentration_factor("thermophoresis", dT)}
+    which = max(opts, key=opts.get)
+    return opts[which], which
+
+
 def molecules_in_vesicle(conc_M, radius_m=VESICLE_RADIUS_M):
     """How many solute molecules one vesicle encloses. DERIVED."""
     litres = (4.0 / 3.0) * math.pi * radius_m ** 3 * 1000.0
@@ -83,6 +122,49 @@ def error_threshold(mu):
     if mu <= 0:
         raise ValueError("an error rate of zero is not a copier")
     return 1.0 / mu
+
+
+# MODULAR ASSEMBLY CLEARS BOTH REMAINING GATES AT ONCE, AND THAT IS
+# THE RESULT OF THIS LAB.
+#
+# Search and fidelity both fail on the same object: a 200-base
+# replicase that chance cannot find and enzyme-free copying cannot
+# keep. Neither gate has to reach it whole.
+#
+#   a 20-base piece is 4^20 = 1.1e12 sequences, which an ocean
+#   trying one per picosecond exhausts in under a second
+#   a 20-base piece is well inside the 100-base error threshold
+#   ten of them ligated is 200 bases
+#
+# The object that could be neither found nor maintained as a unit is
+# trivially findable and maintainable in parts. Nothing new was
+# added to get this -- it is the two existing bounds asked about a
+# smaller object.
+#
+# AND IT IS THE SAME ANSWER AS LEVINTHAL, FOR THE FOURTH TIME.
+# engine/folding.py says folding is not a search. engine/origin.py
+# says sequence-finding is not a search. This says assembly is not a
+# search either. Every time a combinatorial wall has appeared in
+# this repository, the resolution has been that the thing is built
+# rather than drawn.
+LIGATION_PIECE_BASES = 20
+
+
+def modular_reach(piece_bases=LIGATION_PIECE_BASES,
+                  target=MIN_REPLICASE_BASES):
+    """-> (findable, maintainable, n_pieces, why). DERIVED."""
+    from engine.origin import ocean_trials, YEAR_S, AGE_UNIVERSE_YR
+    seqs = 4.0 ** piece_bases
+    yrs = seqs / (ocean_trials() * 1e12 * YEAR_S)
+    findable = yrs < AGE_UNIVERSE_YR
+    keep = error_threshold(min(ERROR_RATES.values()))
+    maintainable = piece_bases < keep
+    n = math.ceil(target / piece_bases)
+    return findable, maintainable, n, (
+        f"a {piece_bases}-base piece is {seqs:.1e} sequences, exhausted "
+        f"in {yrs:.1e} years, and sits inside the {keep:.0f}-base error "
+        f"threshold. {n} of them ligated is {target} bases -- the object "
+        f"neither gate could reach whole")
 
 
 def gates():
@@ -128,12 +210,15 @@ def gates():
                 f"the same hydrophobic effect that folds a protein "
                 f"builds the bag to put it in"))
 
-    n = molecules_in_vesicle(OCEAN_AMPHIPHILE_M)
+    raw = molecules_in_vesicle(OCEAN_AMPHIPHILE_M)
+    fac, which = best_concentration()
+    n = molecules_in_vesicle(OCEAN_AMPHIPHILE_M * fac)
     out.append(("crowding", OPEN if n > 100 else SHUT,
-                f"a {VESICLE_RADIUS_M*1e9:.0f} nm vesicle at "
-                f"{OCEAN_AMPHIPHILE_M:.0e} M encloses {n:.1f} solute "
-                f"molecules. Chemistry needs a population, not a pair, "
-                f"so something must concentrate before anything reacts"))
+                f"a {VESICLE_RADIUS_M*1e9:.0f} nm vesicle holds "
+                f"{raw:.1f} molecules at ocean concentration and "
+                f"{n:.0f} after {fac:.0f}x by {which} -- a pool losing "
+                f"99% of its water, or the brine between sea ice. The "
+                f"gate needed 40x and ordinary evaporation gives 100"))
 
     ceil = length_ceiling()
     out.append(("search", OPEN if ceil >= MIN_REPLICASE_BASES / 3 else SHUT,
@@ -149,13 +234,18 @@ def gates():
                 f"before every copy carries a mutation. A replicase is "
                 f"{MIN_REPLICASE_BASES}"))
 
-    out.append(("bootstrap", SHUT,
-                f"the {MIN_REPLICASE_BASES}-base replicase is what would "
-                f"RAISE the fidelity bound, and it is larger than the "
-                f"bound permits. Each of the two independent limits -- "
-                f"{ceil} residues by search, {keep:.0f} bases by "
-                f"fidelity -- falls below the thing that would lift "
-                f"them both"))
+    fnd, mnt, npc, mwhy = modular_reach()
+    out.append(("assembly", OPEN if (fnd and mnt) else SHUT,
+                f"built from parts instead of drawn whole: {mwhy}"))
+
+    out.append(("bootstrap", OPEN if (fnd and mnt) else SHUT,
+                f"the {MIN_REPLICASE_BASES}-base replicase exceeds both "
+                f"bounds as a unit -- {ceil} residues by search, "
+                f"{keep:.0f} bases by fidelity -- and neither bound "
+                f"applies to a {LIGATION_PIECE_BASES}-base piece. "
+                f"{npc} pieces, each findable and each maintainable. The "
+                f"loop is not broken by raising a bound, it is stepped "
+                f"around by not needing the whole object at once"))
     return out
 
 
@@ -245,6 +335,7 @@ def check():
     t("the_two_bounds_close_on_each_other", _circle)
     t("this_is_a_constraint_not_an_origin", _humble)
     t("cancelling_a_rule_sizes_the_gap", _size)
+    t("assembly_clears_what_search_cannot", _assembly)
     return all(o[1] for o in out), out
 
 
@@ -330,6 +421,22 @@ def _size():
               f"whole distance between chemistry and a replicator. "
             + (f"Only {big[0][0]} is astronomical, which is why chance "
                f"is not how it was crossed" if big else ""))
+
+
+def _assembly():
+    fnd, mnt, npc, why = modular_reach()
+    if not (fnd and mnt):
+        raise ArithmeticError(f"a {LIGATION_PIECE_BASES}-base piece is "
+                              f"not both findable and maintainable")
+    whole_f, whole_m, _n, _w = modular_reach(MIN_REPLICASE_BASES)
+    if whole_f or whole_m:
+        raise ArithmeticError("the whole replicase now passes a bound, "
+                              "so the contrast this rests on is gone")
+    return (f"{why}. The whole object passes neither bound and a piece "
+            f"passes both, so the gap closes by building rather than "
+            f"drawing. This is Levinthal's answer for the fourth time "
+            f"here -- folding is not a search, sequence-finding is not "
+            f"a search, and assembly is not either")
 
 
 if __name__ == "__main__":

@@ -3637,3 +3637,51 @@ on: mass, radius, orbit, albedo, eccentricity, internal heat.
 
     lab 30 experiments: 27 HOLDS, 1 SUGGESTION, 1 MISSING_RULE, 1 REFUSED
     5,737 correct, 0 wrong   claims 16/16   audit 21/21
+
+### 3.1.52 — every supply gate opens, and a finding is withdrawn
+
+**Concentration is a rule, and it clears crowding easily.** A pool
+losing 99% of its water concentrates what remains 100×; ice rejecting
+solute does the same to the brine between crystals; thermophoresis in a
+pore adds 1.3–4.5× per pass and compounds. The gate needed **40×**. A
+100 nm vesicle goes from 2.5 molecules to 252.
+
+**Carbon arrives once the source reaches the CO line.** Delivery was
+sampling 3–45 AU, which spans 170 K down to 41 — and CO condenses at
+**25 K, which for this star is 124 AU**. Every sample was too warm, so
+delivery carried water and ammonia and no carbon. Comets are not a belt
+but a range, and only the cold end carries carbon. Extending the source
+opens the elements gate: **C, H, N, O, P, S all present.**
+
+**All five supply gates now open, and everything still shut is about
+information:**
+
+    open   solvent      elements   energy   compartment   crowding
+    SHUT   search       fidelity
+
+**And one mechanism clears both.** Search and fidelity fail on the same
+object — a 200-base replicase that chance cannot find and enzyme-free
+copying cannot keep. Neither gate has to reach it whole:
+
+    a 20-base piece is 1.1e12 sequences, exhausted in under a second
+    a 20-base piece is well inside the 100-base error threshold
+    ten of them ligated is 200 bases
+
+The object that could be neither found nor maintained as a unit is
+trivially both in parts. Nothing was added to get this — it is the two
+existing bounds asked about a smaller object. **This is Levinthal's
+answer for the fourth time here:** folding is not a search,
+sequence-finding is not a search, and assembly is not either. Every
+combinatorial wall in this repository has resolved the same way — the
+thing is built, not drawn.
+
+**3.1.44 is withdrawn.** It reported that every habitable world orbits a
+0.51–0.54 M☉ star. That held *only while carbon could not reach an inner
+planet*: with the source stopping at 45 AU, the only worlds scraping any
+carbon were those around dim stars whose ice line sits close in. With
+the source extended, **101 of 234 worlds are habitable and span every
+stellar mass, every metallicity, and orbits from 0.35 to 3.7 AU.** The
+correlation was the shape of a missing rule, not a fact about small
+stars.
+
+    earthlab 7/7   census 3/3   5,737 correct, 0 wrong   audit 21/21

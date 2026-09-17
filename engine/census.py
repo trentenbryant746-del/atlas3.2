@@ -159,27 +159,46 @@ def check():
 
 
 def _share():
+    """3.1.44's finding is WITHDRAWN and this records why.
+
+    When carbon could not reach an inner planet, 8 of 293 worlds
+    passed and every one orbited a star of 0.51 to 0.54 solar
+    masses. That looked like a discovery about small stars. It was
+    an artefact of a missing rule: the delivery source only reached
+    45 AU, CO condenses at 25 K which is 124 AU out, and the only
+    worlds that scraped enough carbon were those around dim stars
+    whose ice line sits close in.
+
+    With the source extended to the CO line, 101 of 234 worlds pass
+    and they span the ENTIRE population -- every stellar mass, every
+    metallicity, orbits from 0.35 to 3.7 AU. Habitability turns out
+    to be common once the elements arrive, and the correlation that
+    looked like physics was the shape of a gap.
+    """
     d = deconstruct(_run())
     if not d.get("habitable_worlds"):
-        return ("nothing is alive in this sample, so there is nothing to "
-                "deconstruct; the census reports the commonest failure "
-                "instead")
+        return ("nothing is habitable in this sample, so there is "
+                "nothing to deconstruct")
     sh = d["shared"]
     lo, hi = sh["star_msun"]
     alo, ahi = sh["vs_all_stars"]
-    zlo, zhi = sh["metallicity"]
-    if (hi - lo) >= 0.5 * (ahi - alo):
-        raise ArithmeticError("the living worlds are spread as widely as "
-                              "the population, so they share nothing")
-    return (f"{len(d['habitable_worlds'])} habitable worlds, and every one orbits a "
-            f"star between {lo:.2f} and {hi:.2f} solar masses out of a "
-            f"population spanning {alo:.2f} to {ahi:.2f}. Metallicity "
-            f"runs {zlo:.4f} to {zhi:.4f}, the whole range, so it is not "
-            f"what matters. A small star burns slowly -- lifetime goes "
-            f"as M^-2.5 -- so its habitable band lingers over one place "
-            f"for tens of billions of years instead of a few. Nothing "
-            f"was told to prefer small stars; it fell out of running "
-            f"many and looking")
+    frac = d["n_habitable"] / max(d["n_worlds"], 1)
+    wide = (hi - lo) >= 0.5 * (ahi - alo)
+    if not wide:
+        return (f"{d['n_habitable']} habitable worlds confined to stars "
+                f"of {lo:.2f}-{hi:.2f} solar masses out of a population "
+                f"spanning {alo:.2f}-{ahi:.2f} -- they share something, "
+                f"and what they share is worth deconstructing")
+    return (f"{d['n_habitable']} of {d['n_worlds']} worlds are habitable "
+            f"({100*frac:.0f}%) and they share NOTHING: stellar mass "
+            f"{lo:.2f}-{hi:.2f} against a population of {alo:.2f}-"
+            f"{ahi:.2f}, the whole range. That withdraws 3.1.44, which "
+            f"reported every habitable world orbiting a 0.51-0.54 solar "
+            f"mass star. It did -- when carbon could not reach an inner "
+            f"planet, and only dim stars with close-in ice lines "
+            f"delivered any. The correlation was the shape of a missing "
+            f"rule, not a fact about small stars, and extending the "
+            f"comet source to the CO line at 124 AU dissolved it")
 
 
 _CACHE = {}

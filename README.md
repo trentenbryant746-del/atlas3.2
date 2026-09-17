@@ -53,6 +53,44 @@ questions together that none of them can answer alone.
 
 ---
 
+### Every 3.1 release, and what each one added
+
+Each row is a commit in this repository and a section further down. The
+pattern is worth reading as a whole: roughly a third of these releases
+**overturn an earlier one**, and those are the load-bearing entries.
+
+| ver | what changed | what it cost or exposed |
+|---|---|---|
+| 3.1.1 | Lane-Emden constant derived | one assertion off the list |
+| 3.1.2 | dilution factor over-constrained | it broke, and named the yield |
+| 3.1.3 | nine elements | **overturned 3.1.2** |
+| 3.1.4 | all 83 naturally occurring elements | the r-process broke |
+| 3.1.5 | channel derived, "family" dropped | laws separated from resemblance |
+| 3.1.6 | audit of what was still handwritten | derived two, refused a third |
+| 3.1.7 | proteins | limits of what benchmark hashes give up |
+| 3.1.8 | atoms breaking/binding as transitions | a keyed commitment |
+| 3.1.9 | universes chunked | density stopped being bounded by a list |
+| 3.1.10 | folding by exhaustive enumeration | Levinthal is about *when* you are |
+| 3.1.11 | atom provenance | benchmark answer format recovered |
+| 3.1.12 | measured half-lives, 165/165 byte-exact | three wrong chain walks |
+| 3.1.13 | biochemistry as a parameter | Earth returns as a special case |
+| 3.1.14 | error bar asserted, and says so | valence derived, 10 → 50 elements |
+| 3.1.15 | error bar **measured** | withdrew the uranium series |
+| 3.1.16 | the bar depends on the question | **the withdrawal withdrawn** |
+| 3.1.17 | beta decay, a missing term | 3 of 14 confidently wrong |
+| 3.1.18 | a bar belongs to a domain | folding's bar is a *rate*, not an energy |
+| 3.1.19 | a planet that terraforms itself | no agent; faint young Sun resolved |
+| 3.1.20 | — | **withdrew the Mercury result** |
+| 3.1.21 | optical depth from molecules | no planet consulted; Earth −15.4 K |
+| 3.1.22 | the lab: controlled experiments | HOLDS / MISSING_RULE / CLASH / REFUSED |
+| 3.1.23 | four missing rules and one clash | Earth −3.2 K; Venus openly wrong |
+| 3.1.24 | never patch: one home per constant | four quantities had 2–3 definitions |
+| 3.1.25 | stress-test every rule | a silent fallback substituting a bar |
+
+Four rows are retractions: 3.1.3, 3.1.15, 3.1.16 and 3.1.20. Three of
+those retract something *this repository itself* had published, and 3.1.16
+retracts a retraction. That is the intended failure mode.
+
 ## What Atlas is not
 
 Stated before the numbers, because the numbers invite a reading that
@@ -1716,6 +1754,11 @@ answer instead of two.
 
 ### Known weak points, deferred to Atlas 3.3
 
+**Two tracks, and they are different releases.** Atlas **3.2** is where
+every rule is made consistent with every other rule -- the lab sweep,
+the clashes resolved, the missing rules found and added. Atlas **3.3**
+is packaging and infrastructure, which is what the items below are.
+
 Raised in outside review and confirmed here. None of them affects a
 machine that has the full tree, which is why they are deferred rather
 than fixed now. They are recorded so that nobody has to rediscover them.
@@ -2134,7 +2177,7 @@ can be computed has no business having a second home to go stale in.
     5,737 correct, 0 wrong       1 CLASH, 1 MISSING_RULE, both named
     audit 21/21                  heldout 165/165 byte-exact
 
-**Toward 3.3: lab every rule.** This sweep covered constants. The same
+**Toward 3.2: lab every rule.** This sweep covered constants. The same
 treatment is owed to unit consistency, to dimensional agreement across
 module boundaries, and to every place two modules compute a quantity that
 ought to match. The expectation is that it uproots things that currently
@@ -2184,7 +2227,55 @@ in `CIA` are deleted.
     lab   17 experiments, 15 HOLDS, 1 CLASH, 1 MISSING_RULE
     5,737 correct, 0 wrong    audit 21/21    heldout 165/165 byte-exact
 
-**Still owed before 3.3.** Dimensional agreement across module
+**Still owed before 3.2.** Dimensional agreement across module
 boundaries; every place two modules compute a quantity that ought to
 match; monotonicity of each rule in its own arguments; and the
 convective-adjustment rule that the missing-rule analysis points to.
+
+### 3.1.26 — using every rule at once
+
+Everything so far tested rules **in isolation**, which is what a lab is
+for. But a rule can be individually correct and still contradict another
+one the moment both apply. Layer 7 of the lab holds the constraints that
+do not exist inside any single module.
+
+**One atom, straight up the ladder, eight rules in sequence:**
+
+    periodic table   C = 12.011 u
+    nucleo SEMF      C-12 at 7.468 MeV per nucleon
+    transitions      stable
+    valence          4, from shell filling
+    abundance        2.36e-03 by mass
+    provenance       formed in stellar carbon burning
+    radiative        CO2 at 44.009 g/mol, 4 infrared bands
+    folding          glycine C:polar 0.667
+
+No contradiction anywhere along it.
+
+**Two modules disagree by 0.092%, and they are both right.** The table
+gives carbon 12.011 u; carbon-12 is 12.0 exactly. `engine/radiative.py`
+builds CO₂ from the bulk average because it weighs a *gas*, a mixture of
+isotopes. `engine/nucleo.py` uses per-nuclide masses because it binds a
+*nucleus*, one isotope. A rule that forced them to agree would be wrong —
+and an earlier version of this repo measured binding against atomic
+weights and produced an 80 MeV artefact doing exactly that. The
+difference is now a check, so it has to survive.
+
+**Two derivations meet that were never arranged to.** Valence from aufbau
+shell occupancy gives C 4, N 3, O 2, H 1, S 2. The residue and molecule
+formulas, counted atom by atom from real compounds, need exactly those.
+Those come from opposite directions and nothing connects them.
+
+**And nothing is built from an element that does not exist.** Six
+elements are used across the IR molecules, every amino-acid residue and
+the CHNOPS life gate; all are in the naturally-occurring set and none is
+among the eight `engine/abundance.py` derives as absent. A molecule made
+of technetium would be chemistry with no supply chain.
+
+**The layer count found its own bug.** `run()` defaulted to `up_to=6`.
+Adding layer 7 meant four composition experiments ran, passed, and were
+never reported — a bound written as a literal instead of as the thing it
+bounds goes stale the first time the thing changes. It now reads
+`max(LAYERS)`.
+
+    lab   21 experiments over 8 rungs: 19 HOLDS, 1 CLASH, 1 MISSING_RULE

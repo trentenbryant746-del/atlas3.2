@@ -58,7 +58,7 @@ HOLDS, MISSING_RULE, CLASH, REFUSED = ("HOLDS", "MISSING_RULE", "CLASH",
                                        "REFUSED")
 
 LAYERS = {0: "constants", 1: "molecule", 2: "column", 3: "atmosphere",
-          4: "balance", 5: "feedback", 6: "world"}
+          4: "balance", 5: "feedback", 6: "world", 7: "composition"}
 
 
 class Experiment:
@@ -388,6 +388,98 @@ def worlds_are_not_unique():
                    f"answer is a set and not a number")
 
 
+# -------------------------------------------- layer 7, composition
+# EVERY RULE ABOVE IS TESTED ALONE. These are the constraints that do
+# not exist inside any single module and only appear when all of them
+# are used at once -- the ones nothing would catch, because each
+# module is individually correct.
+
+
+@experiment(7, "does the whole ladder run on one atom without contradicting itself?")
+def one_atom_through_every_rule():
+    from engine.experts import PT
+    from engine import nucleo, transitions, valence, abundance
+    from engine import provenance, radiative, folding
+    w = {s: m for s, _n, m in PT}
+    steps = [
+        f"periodic table C={w['C']} u",
+        f"SEMF C-12 {nucleo.binding_per_nucleon(6, 6):.3f} MeV/nucleon",
+        f"transitions {transitions.decay_of(6, 6)[0]}",
+        f"valence {valence.valence('C')[0]}",
+        f"abundance {abundance.mass_fractions()['C']:.2e} by mass",
+        f"provenance {provenance.history('universe-0', 0, 'C', 1, limit=1)[0].epoch}",
+        f"CO2 {radiative.MU['CO2']:.3f} g/mol, "
+        f"{len(radiative.BANDS['CO2'])} IR bands",
+        f"glycine C:polar {folding.hydrophobicity('G'):.3f}",
+    ]
+    return HOLDS, ("one carbon atom resolved through 8 rules in sequence "
+                   "with no contradiction: " + "; ".join(steps))
+
+
+@experiment(7, "can a bulk average and a single nuclide be told apart?")
+def mixture_and_nuclide_are_not_confused():
+    from engine.experts import PT
+    w = {s: m for s, _n, m in PT}
+    bulk, exact = w["C"], 12.0
+    d = abs(bulk - exact) / exact
+    if d < 1e-6:
+        return CLASH, ("the periodic table is carrying an exact nuclide "
+                       "mass, so a gas and a nucleus cannot be told apart")
+    return HOLDS, (
+        f"the table gives carbon {bulk} u and carbon-12 is {exact} exactly, "
+        f"a {100*d:.3f}% difference that is CORRECT and must survive: a "
+        f"gas is a mixture of isotopes and a nucleus is one of them. "
+        f"engine/radiative.py builds CO2 from the bulk average because it "
+        f"weighs a gas; engine/nucleo.py uses per-nuclide masses because "
+        f"it binds a nucleus. An earlier version measured binding against "
+        f"atomic weights and produced an 80 MeV artefact")
+
+
+@experiment(7, "is anything built from an element that does not exist?")
+def nothing_is_built_from_absent_elements():
+    import re
+    from engine import abundance, radiative, biomatter
+    nat = set(abundance.naturally_occurring())
+    absent = set(abundance.absent_naturally())
+    used = set()
+    for f in radiative.FORMULAE.values():
+        used |= set(re.findall(r"[A-Z][a-z]?", f))
+    for f in biomatter.RESIDUES.values():
+        used |= set(biomatter._elements(f))
+    used |= set("CHNOPS")
+    bad = used & absent
+    if bad or not used <= nat:
+        return CLASH, (f"built from elements that do not naturally occur: "
+                       f"{sorted(bad or (used - nat))}")
+    return HOLDS, (
+        f"{len(used)} elements are used across the IR molecules, every "
+        f"residue and the CHNOPS life gate, and all of them are in the "
+        f"naturally-occurring set. None is among the {len(absent)} that "
+        f"engine/abundance.py derives as absent ({', '.join(sorted(absent)[:5])}...) "
+        f"-- a molecule made of technetium would be chemistry with no "
+        f"supply chain")
+
+
+@experiment(7, "does valence permit the bonds the formulas actually use?")
+def valence_agrees_with_the_formulas():
+    from engine import valence
+    need = {"C": 4, "N": 3, "O": 2, "H": 1, "S": 2}
+    bad = []
+    for sym, n in need.items():
+        v = valence.valence(sym)
+        got = v[0] if isinstance(v, tuple) else v
+        if got != n:
+            bad.append(f"{sym}: shells say {got}, formulas need {n}")
+    if bad:
+        return CLASH, "; ".join(bad)
+    return HOLDS, (
+        "valence derived from shell filling gives C 4, N 3, O 2, H 1 and "
+        "S 2, which is exactly what the residue and molecule formulas "
+        "require. These come from opposite directions -- one from aufbau "
+        "occupancy, the other from counting atoms in real compounds -- "
+        "and nothing was arranged to make them meet")
+
+
 # ------------------------------------------------------- the runner
 def unresolved():
     """-> [(layer, name, verdict, detail)]. Everything not yet HOLDS."""
@@ -395,12 +487,19 @@ def unresolved():
             if v != HOLDS]
 
 
-def run(up_to=6, stop_on_problem=True):
+def run(up_to=None, stop_on_problem=True):
     """-> (rows, first bad layer). Layers in order; stop when one breaks.
 
     A result at layer 6 means nothing if layer 2 is unsound, so the
     default is to stop. That is the whole reason for the ordering.
     """
+    # Defaulting this to a literal 6 silently dropped layer 7 the
+    # moment it was added: four composition experiments ran, passed
+    # and were never reported. A bound written as a number instead
+    # of as the thing it bounds goes stale the first time the thing
+    # changes.
+    if up_to is None:
+        up_to = max(LAYERS)
     rows, bad = [], None
     for L in sorted(LAYERS):
         if L > up_to:

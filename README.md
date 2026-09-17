@@ -2961,3 +2961,69 @@ yesterday's answer fails the moment its own finding is acted on.
 
     lab 26 experiments: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED
     radiative 10/10   5,737 correct, 0 wrong   published claims 12/12
+
+### 3.1.39 — an intermolecular potential, and a prediction that misses
+
+The far-wing cutoff was the last thing blocking Venus, and it was
+being estimated by a hand-wave: molecular diameter over mean thermal
+speed. That is not a rule, it is a guess with units on it.
+
+**The potential is derived from two laboratory properties of a
+molecule.** CO₂ has no permanent dipole — it is symmetric — but its
+electrons move, and a fluctuation in one molecule polarises the other,
+which pulls back. That is London dispersion, and its strength follows
+from how easily the cloud distorts and how tightly the electrons are
+held:
+
+    C6 = (3/4) alpha^2 I / (4 pi eps0)^2
+    V(r) = 4 eps [(sigma/r)^12 - (sigma/r)^6],   eps = C6 / 4 sigma^6
+
+    derived well depths   CO2 180 K   N2 44 K   H2O 167 K
+    literature            CO2 195 K   N2 95 K   H2O 356 K
+
+**The collision duration is integrated, not estimated.** A pair crawls
+near the turning point, where its kinetic energy has gone into the
+field. Integrating the trajectory gives a collision **1.19× longer**
+than diameter-over-speed said, and the temperature dependence — 4.2
+cm⁻¹ at 200 K to 14.6 at 1000 K — is a consequence of the trajectory
+rather than a parameter.
+
+**Then it was allowed to guess, and it missed.**
+
+    derived cutoff at 737 K      11.2 cm-1
+    what Venus would require     between 29 and 96
+
+A factor of three to nine, on the cold side. `nothing_here_reads_a_planet`
+parses the imports: the prediction was made from molecular properties
+and compared to Venus only afterwards.
+
+**The miss is the result, because it closes the question.** A guess that
+fails eliminates its hypothesis. Widening wings are not what makes Venus
+hot, so the thing still missing is not a better line shape — and the
+layer-2 **CLASH is resolved**, because both of its branches were
+hand-waves and neither survives a derivation.
+
+**The absence has a new name.** 3.1.23 blamed missing continuum
+absorption and it was added. 3.1.38 blamed the line shape. 3.1.39
+eliminated the line shape. What remains is a mechanism no gas model
+contains at all: Venus is wrapped in a sulfuric acid cloud deck, and a
+condensed aerosol absorbs and scatters across the **whole spectrum**
+instead of in bands. That is a different rung, not a refinement of this
+one.
+
+**And it compounds, which is the point.** One chain, no hand-written
+scenario at any step:
+
+    polarizability + ionisation energy
+      -> London C6            1.402e-77 J m^6
+      -> well depth           180 K
+      -> collision duration   4.724e-13 s
+      -> wing cutoff          11.2 cm-1
+      -> opaque band width    331 cm-1
+      -> Venus optical depth  0.599
+      -> habitable band       0.999 - 1.898 AU
+      -> ice line             2.68 AU
+      -> worlds with a window 3
+
+    lab 26: 24 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED
+    potential 5/5   5,737 correct, 0 wrong   claims 14/14   audit 21/21

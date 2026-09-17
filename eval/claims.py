@@ -100,6 +100,17 @@ def _band():
     return (round(i, 3), round(o, 3))
 
 
+def _cutoff():
+    from engine.potential import wing_cutoff
+    return round(wing_cutoff("CO2", 737.0), 1)
+
+
+def _welldepth():
+    from engine.potential import well_depth
+    from engine.constants import K_B
+    return round(well_depth("CO2") / K_B)
+
+
 def _lab_counts():
     from engine.lab import run, HOLDS, CLASH, MISSING_RULE, REFUSED
     rows, _ = run(stop_on_problem=False)
@@ -130,17 +141,25 @@ CLAIMS = [
      _table_size, 29, CURRENT),
     ("3.1.18", "folding survival rate 0.573",
      _fold_bar, 0.5729, CURRENT),
-    ("3.1.38", "unfitted climate: Earth +21.3 K, Venus -489.8 K",
-     _climate, (21.3, -489.8), CURRENT),
+    ("3.1.39", "unfitted climate: Earth +21.0 K, Venus -488.3 K",
+     _climate, (21.0, -488.3), CURRENT),
     ("3.1.37", "habitable band derived 0.999 - 1.898 AU",
      _band, (0.999, 1.898), CURRENT),
-    ("3.1.31", "lab: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED",
-     _lab_counts, (23, 1, 1, 1), CURRENT),
+    ("3.1.39", "lab: 24 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED",
+     _lab_counts, (24, 0, 1, 1), CURRENT),
+    ("3.1.39", "derived CO2 wing cutoff 11.2 cm-1 at 737 K",
+     _cutoff, 11.2, CURRENT),
+    ("3.1.39", "derived CO2 well depth 180 K",
+     _welldepth, 180, CURRENT),
 ]
 
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.31", "lab reported 1 CLASH",
+     "resolved in 3.1.39: the far-wing clash was between two "
+     "hand-waves, and deriving the intermolecular potential replaced "
+     "both with a computed 11.2 cm-1"),
     ("3.1.33", "unfitted climate: Earth +12.3 K",
      "3.1.38 replaced the box-shaped wing with a real Lorentz profile "
      "that falls off with distance from line centre. The correct shape "

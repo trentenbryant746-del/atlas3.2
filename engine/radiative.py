@@ -239,11 +239,25 @@ C_CM = 2.99792458e10
 
 
 def collision_cutoff(species, T):
-    """cm^-1 past which wings are sub-Lorentzian. DERIVED."""
+    """cm^-1 past which wings are sub-Lorentzian. DERIVED.
+
+    This used to be a diameter over a mean speed, which is a guess
+    with units on it. engine/potential.py now derives the
+    intermolecular potential from polarizability and ionisation
+    energy and integrates an actual trajectory through it, which is
+    slower near the turning point where the kinetic energy has gone
+    into the field. The collision lasts 1.19 times longer than the
+    crude estimate said.
+    """
+    try:
+        from engine.potential import wing_cutoff, MOLECULES
+        if species in MOLECULES:
+            return wing_cutoff(species, T)
+    except Exception:
+        raise
     m = MU[species] * 1e-3 / N_A
     v = math.sqrt(8 * K_B * T / (math.pi * m))
-    tau_c = DIAMETER_M[species] / v
-    return 1.0 / (2 * math.pi * C_CM * tau_c)
+    return 1.0 / (2 * math.pi * C_CM * DIAMETER_M[species] / v)
 
 
 def opaque_width(species, column_kg_m2, pressure_pa, band=0, T=288.0):

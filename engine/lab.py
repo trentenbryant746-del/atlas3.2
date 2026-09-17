@@ -365,59 +365,53 @@ def a_band_slides_off_the_planck_peak():
 
 @experiment(3, "what is the hottest a CO2-only world can be?")
 def co2_alone_has_a_ceiling():
-    """Re-measured on the full spectral model, and it is a threshold."""
+    """The absence is named differently now the wings are settled."""
     from engine.radiative import grey_equivalent_full
+    from engine.potential import wing_cutoff
     tau = grey_equivalent_full({"CO2": 8.9e6}, 737.0, 8.87, 9.2e6)
     ceiling = (1.0 + 0.75 * tau) ** 0.25
     needed = 737.0 / 226.7
     if ceiling >= needed:
-        return HOLDS, (f"CO2 can multiply bare-rock temperature by "
-                       f"{ceiling:.3f}; a real body needs {needed:.3f}")
+        return HOLDS, (f"CO2 warms a surface by {ceiling:.3f} and the "
+                       f"hottest rocky body needs {needed:.3f}")
     return MISSING_RULE, (
         f"CO2 at Venus' own column and pressure warms a surface by "
-        f"{ceiling:.3f} and a real body needs {needed:.3f}. WHAT CHANGED "
-        f"IS THE SHAPE OF THE ANSWER. The bands do not fall a little "
-        f"short; they fall short until the wings bridge the gaps between "
-        f"them and then overshoot enormously. CO2's bands sit at 667, "
-        f"960, 2349 and 3716 cm^-1, so the gaps are about 1,370 wide, and "
-        f"a wing reaching half a gap shuts the sky at once -- Venus is "
-        f"471 K too cold at a 29 cm^-1 cutoff and 250 K too hot at 96, "
-        f"with nothing between. A PERCOLATION THRESHOLD, and its "
-        f"sharpness is real rather than numerical. The missing rule is "
-        f"therefore not more absorber. It is whatever sets where a wing "
-        f"stops, and this now depends entirely on the layer-2 clash. "
-        f"Continuum absorption is in and was not enough")
+        f"{ceiling:.3f} and a real body needs {needed:.3f}. THE ABSENCE "
+        f"HAS A DIFFERENT NAME NOW. 3.1.23 blamed missing continuum "
+        f"absorption and it was added. 3.1.38 blamed the line shape and "
+        f"suspected the wings. 3.1.39 derived the intermolecular "
+        f"potential and let it predict where a wing stops: "
+        f"{wing_cutoff('CO2', 737.0):.1f} cm^-1, against the 29 to 96 "
+        f"Venus would require. The prediction was made from molecular "
+        f"properties and checked afterwards, and it MISSED -- so the "
+        f"wings are eliminated rather than left open. What remains is a "
+        f"mechanism no gas model contains: Venus is wrapped in a "
+        f"sulfuric acid cloud deck, and a condensed aerosol absorbs and "
+        f"scatters across the whole spectrum instead of in bands. That "
+        f"is a different rung, not a better line shape")
 
 
 @experiment(2, "do the wing rules agree with each other?")
 def far_wing_rules_clash():
-    """Two derived rules, neither fitted, and they cannot both be right."""
-    from engine.radiative import (opaque_width, collision_cutoff, BANDS,
-                                  molecules_per_cm2, MU, P_REF)
-    import math
-    b = BANDS["CO2"][0]
-    col, P, T = 1.0e6, 9.2e6, 737.0
-    u = molecules_per_cm2(col, MU["CO2"])
-    gamma = b["gamma"] * (P / P_REF)
-    unbounded = 2.0 * math.sqrt(b["S"] * u * gamma / math.pi)
-    dc = collision_cutoff("CO2", T)
-    withcut = opaque_width("CO2", col, P, 0, T)
-    return CLASH, (
-        f"LORENTZ WINGS say this band blacks out {unbounded:,.0f} cm^-1 -- "
-        f"79 times the whole thermal infrared, which is impossible. "
-        f"COLLISION DURATION says wings stop being Lorentzian past "
-        f"{dc:.1f} cm^-1, leaving {withcut:.0f} cm^-1, which is the "
-        f"nominal width and no widening at all. Both are derived, "
-        f"neither is fitted, and they disagree by four orders of "
-        f"magnitude. Measured against bodies: unbounded gives Venus "
-        f"-278 K and Earth +9.8 K; the cutoff gives Venus -496 K and "
-        f"Earth -3.2 K. The truth is between them, so the collision "
-        f"timescale -- diameter over mean speed -- is too crude a "
-        f"derivation for the far wing. THIS IS NOT A NUMBER TO TUNE. It "
-        f"is a statement that the rule for how a line profile ends is "
-        f"not yet known here, and until it is, no CO2-rich world can be "
-        f"trusted. The conservative branch is shipped: Earth right, "
-        f"Venus openly wrong")
+    """RESOLVED in 3.1.39. Kept because the resolution is the finding."""
+    from engine.potential import wing_cutoff, well_depth
+    from engine.constants import K_B
+    dc = wing_cutoff("CO2", 737.0)
+    if not 5.0 < dc < 25.0:
+        return CLASH, (f"the derived cutoff moved to {dc:.1f} cm^-1 and "
+                       f"this resolution needs rechecking")
+    return HOLDS, (
+        f"the clash was between unbounded Lorentz wings, which claimed "
+        f"315,694 cm^-1 of opacity and is impossible, and a cutoff from "
+        f"diameter-over-speed, which is a guess with units. Neither was "
+        f"a rule. engine/potential.py derives the intermolecular "
+        f"potential from polarizability and ionisation energy -- London "
+        f"dispersion against Pauli repulsion, well depth "
+        f"{well_depth('CO2')/K_B:.0f} K against a literature 195 -- and "
+        f"integrates a trajectory through it. The cutoff is "
+        f"{dc:.1f} cm^-1 and it is DERIVED. It also misses the window "
+        f"Venus would need by a factor of three to nine, which is what "
+        f"settles the question rather than leaving it open")
 
 
 @experiment(4, "can the climate bar be split by manifestation too?")

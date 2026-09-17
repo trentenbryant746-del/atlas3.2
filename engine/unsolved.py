@@ -104,17 +104,16 @@ OPEN_TO_US = (
      "turning the fit into a prediction or breaking it"),
     ("initial-final mass relation", "engine/remnants.py; asserted anchors",
      "stellar-evolution modelling, which this repo does not do"),
-    ("whether the mass formula can see alpha decay at all",
-     "MEASURED, and the answer is probably no. nucleo.error_bar() "
-     "scores the formula on elements whose atomic weight is one "
-     "isotope's mass and gets ~8 MeV median, against alpha Q-values "
-     "of 4-5 MeV. So every decay chain collapses to undetermined, "
-     "and the uranium series this repo derived at the literature's "
-     "3.0 MeV was an artefact of an optimistic bar",
-     "per-isotope masses. The measurement is an UPPER bound -- the "
-     "mono-isotopic test admits chromium and molybdenum, which are "
-     "not -- so the true error is between 3 and 8 and the question "
-     "is which side of the alpha Q-values it falls on"),
+    ("whether the mass formula can see BETA decay",
+     "ALPHA IS SETTLED: the Q-value error is 1.21 MeV measured on "
+     "differences, against alpha Q-values of 4-5, so alpha decay "
+     "resolves. Beta Q-values are 0.02 to 2.3 MeV and straddle the "
+     "bar, so chains still cannot branch and Ac, Fr and Pm stay "
+     "undetermined",
+     "more measured binding energies, particularly beta pairs "
+     "(Z, Z+1 at the same A). The alpha bar rests on four pairs in "
+     "BINDING_FIXTURE and the beta bar on none at all -- it is "
+     "currently inferred from the alpha one"),
     ("nuclear shell closures",
      "engine/nucleo.py is a liquid drop with no shell structure, so "
      "the magic numbers are invisible to it -- provenance.py walks "

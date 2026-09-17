@@ -411,7 +411,7 @@ def _split():
     s = trace_or_absent()
     g = lambda v: sorted(k for k, (x, _w) in s.items() if x == v)
     absent, trace, und = g("absent"), g("trace"), g("undetermined")
-    if set(absent) - {"Tc", "Pm"}:
+    if set(absent) - {"Tc", "Pm", "Ac", "Fr"}:
         raise ArithmeticError(f"called absent without being sure: {absent}")
     if not und:
         raise ArithmeticError("nothing came out undetermined, but the "

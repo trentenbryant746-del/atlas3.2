@@ -1490,3 +1490,75 @@ true error sits between 3 and 8 MeV.
 And that sharpens the unsolved entry rather than closing it. It is no
 longer *"measure the error bar"*. It is **"decide whether this model can
 see alpha decay at all"**, and it needs per-isotope masses to settle.
+
+
+## 3.1.16 — One error bar was the wrong object
+
+You said each field should have its own rules, and that folding and decay
+should not share a number. That is exactly what was wrong, and fixing it
+restored a result I had withdrawn.
+
+### The bar depends on the question
+
+A single "error of the mass formula" answers a question nobody asked.
+**A decay is a difference of two binding energies**, and the formula's
+errors are strongly correlated between neighbouring nuclei — the same
+volume, surface and Coulomb terms are slightly off in the same direction
+for both. Most of it cancels.
+
+Measured on the same seventeen nuclides:
+
+```
+absolute binding error    4.76 MeV median      what a MASS prediction inherits
+Q-value error             1.21 MeV median      what a DECAY inherits
+```
+
+Alpha Q-values in the heavy elements are 4–5 MeV. Against 4.76 they are
+invisible; against 1.21 they are comfortable. Same formula, same data,
+opposite conclusion — because the first number was measuring the wrong
+thing.
+
+`error_bar("mass")` and `error_bar("decay")` are now different
+functions, and asking for a bar without saying which question raises
+rather than guessing.
+
+### The withdrawal is itself withdrawn
+
+3.1.15 withdrew the uranium series on an 8 MeV bar. **That withdrawal
+was right given the number it had and wrong about the number.** The
+series is back:
+
+```
+U -> Th -> Ra -> Rn -> Po -> Pb        at a 1.21 MeV measured bar
+```
+
+Not on the literature's 3.0, and not on an absolute error that does not
+apply — on a bar measured here, on differences, which is what a decay
+actually inherits.
+
+Both corrections were right in sequence and the second needed the first
+to have happened. Measuring 8 MeV was what made it obvious the quantity
+was wrong.
+
+### And the fixture had to change too
+
+The earlier measurement scored predictions against standard atomic
+**weights**, which are abundance-weighted averages. Chromium came out 55
+MeV wrong because Cr-53 and Cr-54 pull the average off Cr-52 — not
+because the formula missed. `BINDING_FIXTURE` is **per-nuclide**
+measured binding energies for exactly that reason.
+
+### What it buys, beyond the series
+
+```
+Po  trace          At  trace          Ra  trace       Rn  trace
+Ac  undetermined   Fr  undetermined   Pm  undetermined
+Tc  absent
+```
+
+Polonium and astatine now resolve as trace, which they are. And the
+finding that chains cannot branch **survives**: beta Q-values are 0.02
+to 2.3 MeV and straddle the 1.21 bar, so Ac, Fr and Pm stay
+undetermined. The unsolved entry narrows from "can it see decay at all"
+to **"can it see beta decay"** — and names what is missing: the alpha
+bar rests on four pairs in the fixture, and the beta bar on none.

@@ -90,10 +90,16 @@ SEMF_SOURCE = ("accepted liquid-drop accuracy from the literature; kept "
 
 
 def _measured_bar():
-    """Measured if it can be, typed if not. See nucleo.error_bar()."""
+    """The DECAY bar, not the mass bar. See nucleo.error_bar().
+
+    This took the absolute mass error, which is the wrong quantity:
+    a decay is a difference of two binding energies and the
+    formula's errors largely cancel in it. Using the mass error
+    made alpha decay unresolvable and withdrew a correct result.
+    """
     try:
         from engine.nucleo import error_bar
-        v, _why = error_bar()
+        v, _why = error_bar("decay")
         return v if v > 0 else SEMF_TYPED
     except Exception:
         return SEMF_TYPED

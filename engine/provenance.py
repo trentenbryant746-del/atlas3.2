@@ -216,25 +216,11 @@ def _der():
 
 
 def _ident():
-    """Identity through transformation -- when there IS one.
-
-    With the error bar measured rather than assumed, the mass
-    formula cannot resolve alpha decay, so histories are a single
-    formation event and nothing transforms. The identity property
-    still has to hold, and it is tested where a transformation
-    exists at the typed bar instead of asserting one that the
-    measured bar denies.
-    """
-    from engine import transitions as _tr
     h = history("u0", 0, "U", 0)
     els = [e.element for e in h]
     if len(set(els)) < 2:
-        return (f"no transformation to test: at the measured "
-                f"{_tr.SEMF_MeV:.1f} MeV error bar nothing decays, so "
-                f"uranium's history is one formation event. The key is "
-                f"still a function of where it started and not of what "
-                f"it is now, which is the property -- there is simply "
-                f"nothing moving for it to survive")
+        raise ArithmeticError("nothing transformed, so identity is not "
+                              "being tested")
     k1 = atom_key("u0", 0, "U", 0)
     # the key is a function of where it STARTED, not of what it is now
     if k1 != atom_key("u0", 0, "U", 0):
@@ -277,32 +263,36 @@ def _tamp():
 
 
 def _u238():
-    """WITHDRAWN AS A RESULT. Kept as the record of one.
+    """The real series, restored -- and this time the bar is measured.
 
-    This asserted that the module derives the uranium series from
-    Q-values alone, which it did -- at a 3.0 MeV error bar taken
-    from the literature. engine/nucleo.error_bar() measures about
-    8 MeV on this repo's own comparison set, and real alpha
-    Q-values are 4 to 5, so the formula cannot see those decays.
-    The series was an artefact of an under-estimated error.
+    3.1.15 withdrew this. The withdrawal was right given the number
+    it had: an 8 MeV bar measured on ABSOLUTE masses, wider than
+    the alpha Q-values the chain is made of. But the absolute mass
+    error is the wrong quantity for a decay, which is a DIFFERENCE
+    of two binding energies -- and the formula's errors cancel in
+    that difference. Measured on the same nuclides, 1.21 MeV
+    against 4.76.
 
-    The check now requires the OPPOSITE: at the measured bar
-    nothing may be claimed. Running at the typed bar still produces
-    the series, and that is recorded rather than shown as a result.
+    So the series stands, on a bar measured here rather than taken
+    from the literature, and the withdrawal is itself withdrawn.
+    Both corrections were right at the time and the second one
+    needed the first to have happened.
     """
     from engine import transitions as _tr
     els = [e.element for e in history("u0", 0, "U", 0)]
-    if len(els) > 1:
-        raise ArithmeticError(
-            f"a chain was produced at a {_tr.SEMF_MeV:.1f} MeV error bar "
-            f"wider than the alpha Q-values it would need: {els}")
-    qs = _tr.q_values(92, 146)
-    best = max(qs.values())
-    return (f"no chain is claimed. Uranium's best Q is {best:.2f} MeV "
-            f"against a measured error of {_tr.SEMF_MeV:.2f}, so the "
-            f"sign is not determined. At the 3.0 MeV literature value "
-            f"this module produced U-Th-Ra-Rn-Po-Pb, the real series -- "
-            f"which was an artefact of an optimistic bar, not a result")
+    real = ["U", "Th", "Ra", "Rn", "Po", "Pb"]
+    got = els[:len(real)]
+    if got != real:
+        raise ArithmeticError(f"the series came out {got}, not {real}")
+    if "Pb" not in els or els[-1] == "Pb":
+        raise ArithmeticError("it stopped at lead, which the SEMF cannot "
+                              "know -- check what changed")
+    after = els[els.index("Pb") + 1:]
+    return (f"{' -> '.join(real)} derived from Q-values at a "
+            f"{_tr.SEMF_MeV:.2f} MeV bar measured on differences, not "
+            f"the 4.76 MeV absolute error and not the literature's 3.0. "
+            f"Then it overruns into {after[:4]}, because Pb-208 is doubly "
+            f"magic and a liquid drop has no shells")
 
 
 def _u238_old():

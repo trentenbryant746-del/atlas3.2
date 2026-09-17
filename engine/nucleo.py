@@ -98,85 +98,109 @@ REACTIONS = {
 
 
 # ====================================================================
-# HOW WRONG IS THIS FORMULA? MEASURED, NOT TAKEN FROM THE LITERATURE.
+# HOW WRONG IS THIS FORMULA? IT DEPENDS ENTIRELY ON WHAT YOU ASK IT.
 #
-# engine/transitions.py refuses a decay whose Q-value is smaller than
-# the mass formula's error, and that error was typed in as 3.0 MeV
-# from the literature. It is the threshold every refusal turns on, so
-# it decides what the repo will and will not say -- and a number that
-# important should be measured here.
+# A single error bar for the whole formula is the wrong object, and
+# using one cost this repo a correct result. engine/transitions.py
+# refuses a decay whose Q-value is under "the formula's error", and
+# that error was first typed as 3.0 MeV from the literature, then
+# measured at ~8 MeV against atomic weights -- at which point alpha
+# decay became unresolvable and the uranium series was withdrawn.
 #
-# The obvious measurement fails. Scoring predictions against the
-# periodic table's atomic weights gives 80 MeV, which is an artefact:
-# a standard atomic weight is the ABUNDANCE-WEIGHTED AVERAGE over an
-# element's isotopes and not the mass of any one nuclide. Iron comes
-# out 55.935 u, which is Fe-56 almost exactly, against a tabulated
-# 55.845 that Fe-54 pulls down.
+# BOTH NUMBERS ANSWER A QUESTION NOBODY ASKED. A decay is a
+# DIFFERENCE of two binding energies, and the formula's errors are
+# strongly correlated between neighbouring nuclei -- the same
+# volume, surface and Coulomb terms are slightly off in the same
+# direction for both. So the error in a difference is far smaller
+# than the error in either term, and measuring the absolute mass
+# error tells you almost nothing about whether a decay is
+# resolvable.
 #
-# BUT SOME ELEMENTS HAVE ONLY ONE ISOTOPE, and for those the average
-# has a single term -- so the weight IS the mass and the comparison is
-# fair. Which elements those are does not need asserting either: a
-# mono-isotopic weight sits very close to a whole number (aluminium
-# 26.9815) while a mixture lands between them (chlorine 35.45, copper
-# 63.55). Selecting on that gives a comparison set the model picks out
-# for itself.
+# Measured on the same nuclides:
 #
-# THE MEASURED ANSWER IS WORSE THAN THE TYPED ONE, which is the point
-# of measuring. Median residual about 7 MeV against the 3.0 assumed,
-# and much worse for the lightest nuclei -- hydrogen is out by 25 MeV,
-# because a liquid drop is a poor model of four nucleons. So the
-# threshold should be more conservative than it was, not less, and the
-# refusals it drives should be wider.
-NEAR_INTEGER = 0.05      # how close to a whole number counts as one isotope
-LIGHT_Z = 8              # below this a liquid drop is not the right model
+#     absolute binding error     4.76 MeV median
+#     Q-VALUE error              1.21 MeV median
+#
+# Alpha Q-values in the heavy elements are 4 to 5 MeV, so with the
+# right bar they are resolvable after all, and the uranium series
+# stands. Beta Q-values are 0.02 to 2.3 and mostly are NOT, which
+# preserves the finding that chains cannot branch here.
+#
+# So the bar is a function of the question. error_bar("decay") is
+# not error_bar("mass"), and neither is a property of "the formula"
+# on its own.
+#
+# THE FIXTURE IS PER-NUCLIDE, WHICH IS THE OTHER HALF OF THE FIX.
+# The earlier attempt scored against standard atomic WEIGHTS, which
+# are abundance-weighted averages -- chromium came out 55 MeV wrong
+# because Cr-53 and Cr-54 pull the average off Cr-52, not because
+# the formula missed. These are single-nuclide measurements.
+BINDING_FIXTURE = {
+    (2, 2): 28.30, (6, 6): 92.16, (8, 8): 127.62, (20, 20): 342.05,
+    (24, 28): 456.35, (26, 30): 492.25, (28, 30): 506.46,
+    (34, 46): 696.87, (47, 60): 915.3, (50, 70): 1020.5,
+    (79, 118): 1559.4, (82, 126): 1636.4, (84, 128): 1655.8,
+    (86, 136): 1708.2, (88, 138): 1731.6, (90, 142): 1766.7,
+    (92, 146): 1801.70,
+}
+BF_SOURCE = "measured nuclear binding energies, per nuclide"
+B_ALPHA_MEV = 28.296
 
 
-def mono_isotopic(near=NEAR_INTEGER, min_z=LIGHT_Z):
-    """Elements whose weight is essentially one isotope's mass."""
-    from engine.experts import BY_Z, UNSTABLE
+def absolute_error(lo=1, hi=118):
+    """Error in a single binding energy. NOT what a decay inherits."""
+    d = sorted(abs(binding_energy_MeV(z, n) - v)
+               for (z, n), v in BINDING_FIXTURE.items() if lo <= z <= hi)
+    if not d:
+        raise ArithmeticError(f"no fixture nuclides in Z {lo}-{hi}")
+    return {"n": len(d), "median": d[len(d) // 2], "worst": d[-1],
+            "mean": sum(d) / len(d)}
+
+
+def q_error():
+    """Error in a DIFFERENCE. This is the one a decay inherits."""
     out = []
-    for z in range(1, 93):
-        if z in UNSTABLE or z < min_z:
+    for (z, n), v in BINDING_FIXTURE.items():
+        d = (z - 2, n - 2)
+        if d not in BINDING_FIXTURE:
             continue
-        sym, _name, w = BY_Z[z]
-        if abs(w - round(w)) < near:
-            out.append((sym, z, round(w), w))
-    return out
+        q_semf = (binding_energy_MeV(*d) + B_ALPHA_MEV) - \
+            binding_energy_MeV(z, n)
+        q_true = (BINDING_FIXTURE[d] + B_ALPHA_MEV) - v
+        out.append((z, abs(q_semf - q_true), q_true))
+    if not out:
+        raise ArithmeticError("no alpha pairs in the fixture")
+    d = sorted(e for _z, e, _q in out)
+    return {"n": len(d), "median": d[len(d) // 2], "worst": d[-1],
+            "pairs": out}
 
 
-def accuracy(near=NEAR_INTEGER, min_z=LIGHT_Z):
-    """-> dict. The formula's residual, measured on its own predictions."""
-    import math as _m
-    U_MEV = 931.49410242
-    M_H, M_N = 1.007825, 1.008665
-    rows = []
-    for sym, z, a, w in mono_isotopic(near, min_z):
-        n = a - z
-        b = binding_energy_MeV(z, n)
-        if b is None:
-            continue
-        pred = z * M_H + n * M_N - b / U_MEV
-        rows.append((sym, (pred - w) * U_MEV))
-    if not rows:
-        raise ArithmeticError("no comparison set")
-    d = sorted(abs(r[1]) for r in rows)
-    return {"n": len(d), "median": d[len(d) // 2],
-            "mean": sum(d) / len(d),
-            "rms": _m.sqrt(sum(x * x for x in d) / len(d)),
-            "worst": d[-1], "rows": rows,
-            "caveat": ("the near-integer test has false positives -- "
-                       "chromium and molybdenum have several isotopes "
-                       "whose average happens to land near a whole "
-                       "number -- so this is an upper bound on the "
-                       "formula's error rather than a clean one")}
+def error_bar(kind="decay"):
+    """-> (MeV, why). The bar for the question actually being asked."""
+    if kind == "mass":
+        a = absolute_error()
+        return a["median"], (
+            f"{a['median']:.2f} MeV median over {a['n']} measured "
+            f"nuclides -- the error in ONE binding energy, which is what "
+            f"a mass prediction inherits")
+    if kind == "decay":
+        q = q_error()
+        a = absolute_error()
+        return q["median"], (
+            f"{q['median']:.2f} MeV median over {q['n']} alpha pairs -- "
+            f"the error in a DIFFERENCE of two binding energies, which "
+            f"is what a decay inherits. Far smaller than the "
+            f"{a['median']:.2f} MeV absolute error, because the formula "
+            f"is wrong in the same direction for neighbouring nuclei and "
+            f"most of it cancels")
+    raise KeyError(f"no error bar defined for {kind!r}; the bar depends "
+                   f"on the question, and 'mass' and 'decay' are "
+                   f"different questions")
 
 
-def error_bar():
-    """The number engine/transitions.py should refuse inside. DERIVED."""
-    a = accuracy()
-    return a["median"], (
-        f"{a['median']:.2f} MeV median residual over {a['n']} elements "
-        f"whose atomic weight is within {NEAR_INTEGER} of a whole number, "
-        f"so the weight is one isotope's mass rather than an average. "
-        f"Measured, not taken from the literature -- and larger than the "
-        f"3.0 that was assumed, so the refusals widen. {a['caveat']}")
+# The atomic-weight measurement that preceded this is removed
+# rather than kept: it scored single-nuclide predictions against
+# abundance-weighted averages and reported ~8 MeV, which is the
+# isotope mix and not the formula. Its one lasting contribution is
+# the caution above -- a weight is not a mass -- and BINDING_FIXTURE
+# is per-nuclide for exactly that reason.

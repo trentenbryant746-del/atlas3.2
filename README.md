@@ -5324,3 +5324,56 @@ a rule *name* breaks when the rule gets repaired, so it now tests the
 rather than any one membership.
 
     revolution 5/5    suite 7.3 s warm    43 claims, 0 recomputed
+
+### 3.1.84 — they were not making engines, and every gift shortens the clock
+
+**They were not making engines.** `ENGINE_GAIN = 0.012` raised
+efficiency 1.2% a year and took 450 years to reach the Carnot ceiling
+— *because it was told to crawl*, not because anything resisted. That
+was an assertion doing all the work, the same shape as pricing a tool
+nobody could make.
+
+It is derived now. A boiler's temperature is set by the pressure it
+holds, the pressure by the strength of what it is made of:
+
+    cast iron 1712      0.1 MPa -> 373 K -> 21.4%
+    mild steel 1880     2.0 MPa -> 485 K -> 39.6%
+    every material      22.1 MPa -> 647 K -> 54.7%
+
+**Given every material they arrive at 54.7% in year zero and never
+move again.** The 450-year climb was mine.
+
+**Then: give it what it needs.** Food was the wall, so the nitrogen to
+grow food was handed over. It moves the ceiling by **1.86×** —
+24.0B → 44.6B — which is *exactly* the nitrogen ratio, because crop
+carbon is capped by crop nitrogen at Redfield. **It does not remove
+the wall. It moves it.**
+
+### one wall is not a model
+
+Worse: "stopped by food" was the **only verdict that loop could
+return.** Population grows to the ceiling and sits there, so moving
+the ceiling changed the number and never the answer. Three scenarios,
+three populations, one verdict — that is a model with one wall, not a
+finding.
+
+Phosphorus is a **stock, not a rate**, and gives the run a second way
+to fail — not a ceiling but a clock. With it in place:
+
+    given nothing          24.0B    phosphorus gone in 1809 yr
+    nitrogen fixation      44.6B                       1201 yr
+    plus synthetic food   198.4B                        708 yr
+
+**All three now end on phosphorus, and every gift shortens the
+clock.** Giving them what food needs does not lift the constraint — it
+raises the population that eats the constraint faster. 1809 → 708
+years for an eightfold population.
+
+Waste heat never binds: 198 billion bodies shed 25.7 TW, 0.02% of
+absorbed sunlight.
+
+**The old claim is superseded, and not because the number was wrong.**
+24 billion is still what the flow feeds. It was a claim about a model
+that could only say one thing.
+
+    revolution 7/7    suite 7.5 s warm    44 claims

@@ -33,7 +33,26 @@ START_POP = 60e6              # RECORDED, Roman empire at its height
 START_W = 120.0               # CHOSEN, W per person beyond muscle
 BIRTH_AT_SURPLUS = 0.015      # CHOSEN, growth per year at full surplus
 FOOD_W_PER_PERSON = 130.0     # DERIVED-ish: upkeep plus a child's share
-ENGINE_GAIN = 0.012           # CHOSEN, efficiency gained per year
+# ENGINE_GAIN IS GONE. It said efficiency improves 1.2% a year and
+# that was an assertion doing all the work -- it took 450 years to
+# reach the Carnot ceiling because I told it to crawl there, not
+# because anything resisted. Efficiency is DERIVED now: a boiler's
+# temperature is set by the pressure it holds, the pressure by the
+# strength of what it is made of, and Carnot by the temperature.
+# Hand over every material and they arrive at the ceiling AT ONCE.
+BOILERS = {                   # MEASURED: working pressure, MPa -> K
+    "cast iron 1712": (0.1, 373.0),
+    "wrought iron 1800": (0.7, 443.0),
+    "mild steel 1880": (2.0, 485.0),
+    "alloy steel 1920": (10.0, 584.0),
+    "every material granted": (22.1, 647.1),
+}
+
+# MEASURED, kg of nitrogen fixed per year
+BIOLOGICAL_N = 140e9
+P_RESERVE_KG = 7.0e13         # MEASURED, ~70 Gt rock phosphate
+FOOD_DRY_MJ_KG = 17.0         # MEASURED, dry plant food
+HABER_N = 120e9
 START_EFF = 0.005             # MEASURED, Newcomen
 # DERIVED, not guessed. An earlier version put the edible share of
 # the flow at 3.5 TW out of the air and got a ceiling of 81 billion
@@ -49,6 +68,62 @@ def land_food_w():
     return FED_NOW * FOOD_W_PER_PERSON
 
 
+def phosphorus_kg_yr(pop):
+    """kg P a population eats a year. DERIVED through engine/atoms.py.
+
+    A food CEILING is a rate and a population simply sits under
+    it. Phosphorus is a STOCK, so it gives the run a second way to
+    fail and a different kind of answer -- not a wall but a clock.
+    Without it, 'stopped by food' was the only verdict this loop
+    could ever return, whatever the ceiling was moved to.
+    """
+    from engine.atoms import REDFIELD, WEIGHT
+    mass = sum(WEIGHT[e] * n for e, n in REDFIELD.items())
+    pfrac = WEIGHT["P"] * REDFIELD["P"] / mass
+    dry_kg = FOOD_W_PER_PERSON * 3.15576e7 / (FOOD_DRY_MJ_KG * 1e6)
+    return pop * dry_kg * pfrac
+
+
+def efficiency_from(material_mpa):
+    """Engine efficiency a material allows. DERIVED, no learning rate.
+
+    Pressure sets saturation temperature, temperature sets Carnot.
+    Nothing here improves with practice; it improves with steel.
+    """
+    from engine.industry import (carnot, WATER_CRITICAL_K, AMBIENT_K)
+    best = None
+    for _nm, (mpa, T) in sorted(BOILERS.items(), key=lambda r: r[1][0]):
+        if mpa <= material_mpa + 1e-12:
+            best = T
+    T = min(best or 373.0, WATER_CRITICAL_K)
+    return carnot(T, AMBIENT_K)
+
+
+def synthetic_ceiling(from_stock_w):
+    """People fed off the STOCK rather than the flow. DERIVED.
+
+    The flow cannot be argued with: photosynthesis fixes about 1%
+    and no amount of nitrogen makes sunlight. The only way past a
+    ceiling that IS the flow is to stop eating the flow -- and
+    then the constraint is not a rate any more, it is a finite
+    pile, which is a different kind of answer.
+    """
+    return from_stock_w / FOOD_W_PER_PERSON
+
+
+def food_ceiling(fixed_n_kg=BIOLOGICAL_N, reach=1.0, synthetic_w=0.0):
+    """People the flow feeds. DERIVED through nitrogen, not guessed.
+
+    An earlier version scaled what observably feeds 8 billion. That
+    was honest but said nothing about WHY the ceiling sits there.
+    Crop tissue runs N:C at Redfield, so the carbon a field grows
+    is capped by the nitrogen available to grow it, and fixing more
+    nitrogen moves the ceiling in proportion.
+    """
+    return (FED_NOW * (fixed_n_kg / BIOLOGICAL_N) * reach
+            + synthetic_ceiling(synthetic_w))
+
+
 def step(state):
     """One year. Every rule it uses was derived somewhere else."""
     from engine.industry import (carnot, WATER_CRITICAL_K, burial_w,
@@ -56,9 +131,9 @@ def step(state):
     pop, eff, stock, year = (state["pop"], state["eff"],
                              state["stock"], state["year"])
 
-    # engines improve until Carnot stops them
-    ceiling = carnot(WATER_CRITICAL_K, AMBIENT_K)
-    eff = min(eff * (1.0 + ENGINE_GAIN), ceiling)
+    # engines are as good as what they are made of, and every
+    # material was granted, so this is a constant and not a climb
+    eff = efficiency_from(state.get("material_mpa", 22.1))
 
     # what the population can actually pull out of the ground
     want_w = pop * START_W
@@ -67,7 +142,8 @@ def step(state):
 
     # food: the flow feeds people, machines raise how much is reachable
     reach = min(1.0 + eff * 6.0, 3.0)
-    food_cap = land_food_w() * reach / FOOD_W_PER_PERSON
+    food_cap = food_ceiling(state.get("fixed_n", BIOLOGICAL_N), reach,
+                            state.get("synthetic_w", 0.0))
 
     # population follows the smaller of what feeds it and what it wants
     head = min(food_cap / max(pop, 1.0), 1.0 + got_w / max(want_w, 1.0))
@@ -75,18 +151,35 @@ def step(state):
     pop = max(pop * (1.0 + growth), 1.0)
 
     stock = max(stock - got_w / max(eff, 1e-9) * 3.15576e7, 0.0)
+    p_left = max(state.get("p_left", P_RESERVE_KG)
+                 - phosphorus_kg_yr(pop), 0.0)
     return {"year": year + 1, "pop": pop, "eff": eff, "stock": stock,
             "w_per_person": got_w / max(pop, 1.0),
-            "food_cap": food_cap, "burial_ratio": got_w / burial_w()}
+            "food_cap": food_cap, "burial_ratio": got_w / burial_w(),
+            "material_mpa": state.get("material_mpa", 22.1),
+            "fixed_n": state.get("fixed_n", BIOLOGICAL_N),
+            "synthetic_w": state.get("synthetic_w", 0.0),
+            "p_left": p_left,
+            "p_years": (p_left / max(phosphorus_kg_yr(pop), 1e-9))}
 
 
-def run(years=400):
-    """-> [state]. Sixty million people, forward, one year at a time."""
+def run(years=400, material_mpa=22.1, fixed_n=BIOLOGICAL_N,
+        synthetic_w=0.0):
+    """-> [state]. Sixty million forward, a year at a time.
+
+    material_mpa and fixed_n are WHAT THEY WERE GIVEN. Changing
+    them is the experiment: fix the constraint the last run named
+    and see which one speaks next.
+    """
     from engine.industry import stock_j
-    s = {"year": 0, "pop": START_POP, "eff": START_EFF,
+    s = {"year": 0, "pop": START_POP,
+         "eff": efficiency_from(material_mpa),
          "stock": stock_j(), "w_per_person": START_W,
-         "food_cap": land_food_w() / FOOD_W_PER_PERSON,
-         "burial_ratio": 0.0}
+         "food_cap": food_ceiling(fixed_n, 1.0, synthetic_w),
+         "synthetic_w": synthetic_w, "p_left": P_RESERVE_KG,
+         "p_years": P_RESERVE_KG / max(phosphorus_kg_yr(START_POP), 1e-9),
+         "burial_ratio": 0.0, "material_mpa": material_mpa,
+         "fixed_n": fixed_n}
     out = [s]
     for _ in range(years):
         s = step(s)
@@ -99,6 +192,11 @@ def what_stopped_it(hist):
     from engine.industry import carnot, WATER_CRITICAL_K, AMBIENT_K
     last = hist[-1]
     ceiling = carnot(WATER_CRITICAL_K, AMBIENT_K)
+    if last.get("p_left", 1.0) <= 0:
+        return "phosphorus", (
+            "rock phosphate ran out, and unlike the food ceiling "
+            "this is a stock rather than a rate -- it does not cap "
+            "a population, it ends one")
     if last["stock"] <= 0:
         return "the stock", "the buried carbon ran out"
     if last["pop"] >= last["food_cap"] * 0.98:
@@ -107,12 +205,16 @@ def what_stopped_it(hist):
             f"a ceiling of {last['food_cap']/1e9:.2f} billion, and the "
             f"ceiling is the flow -- machines reach more of it and "
             f"make none of it")
-    if last["eff"] >= ceiling * 0.99:
-        return "Carnot (engines only)", (
-            "engines reached the steam ceiling, and that stopped the "
-            "ENGINES -- population is still climbing, so reporting "
-            "this as what stopped the run would be false")
-    return "nothing yet", "still running at the last year"
+    # The Carnot branch is GONE. It was meaningful while engines
+    # crawled toward the ceiling over 450 years. Now they start
+    # there -- every material was granted -- so it fired in year
+    # zero of every run and reported a stop that had not happened.
+    # A condition that is always true is not a finding.
+    return "nothing yet", (
+        f"still running at year {last['year']}: population "
+        f"{last['pop']/1e9:.2f}B against a ceiling of "
+        f"{last['food_cap']/1e9:.2f}B, phosphorus "
+        f"{100*last.get('p_left', 0)/7.0e13:.1f}% left")
 
 
 def check():
@@ -125,7 +227,9 @@ def check():
             out.append((nm, False, f"{type(e).__name__}: {e}"))
 
     t("it_runs_and_the_population_moves", _runs)
-    t("engines_stop_where_carnot_says", _eff)
+    t("they_were_not_making_engines", _eff)
+    t("giving_it_what_it_needs_moves_the_wall", _given)
+    t("a_second_way_to_fail_changes_the_answer", _clock)
     t("something_stops_it_and_it_is_named", _stop)
     t("the_stock_is_barely_touched", _stock)
     t("this_is_a_run_not_an_argument", _honest)
@@ -145,35 +249,80 @@ def _runs():
 
 
 def _eff():
+    """CORRECTED. Efficiency was a learning rate and is now a material."""
     from engine.industry import carnot, WATER_CRITICAL_K, AMBIENT_K
-    h = run()
     ceiling = carnot(WATER_CRITICAL_K, AMBIENT_K)
-    if h[-1]["eff"] > ceiling + 1e-9:
-        raise ArithmeticError(f"efficiency passed Carnot at {h[-1]['eff']}")
-    yr = next((s["year"] for s in h if s["eff"] >= ceiling * 0.999), None)
-    return (f"efficiency climbs from {100*START_EFF:.1f}% and stops "
-            f"dead at {100*h[-1]['eff']:.1f}% in year {yr}, which is "
-            f"the steam ceiling. Every material was granted and the "
-            f"ceiling did not move, because water stops being water "
-            f"at {WATER_CRITICAL_K:.0f} K")
+    poor, rich = efficiency_from(0.1), efficiency_from(22.1)
+    h = run(50)
+    if abs(h[-1]["eff"] - h[0]["eff"]) > 1e-9:
+        raise ArithmeticError("efficiency still drifts with time")
+    if rich <= poor or rich > ceiling + 1e-9:
+        raise ArithmeticError(f"{100*poor:.0f}% -> {100*rich:.0f}%")
+    return (f"THEY WERE NOT MAKING ENGINES. An earlier version raised "
+            f"efficiency 1.2% a year and took 450 years to reach the "
+            f"ceiling -- because it was told to crawl, not because "
+            f"anything resisted. Efficiency is derived now: pressure "
+            f"sets temperature and temperature sets Carnot, so cast "
+            f"iron gives {100*poor:.1f}% and every-material-granted "
+            f"gives {100*rich:.1f}% AT ONCE, in year zero, and never "
+            f"moves again")
+
+
+def _given():
+    """Giving it what it needs, and what that does."""
+    a = run(2000, fixed_n=BIOLOGICAL_N)
+    b = run(2000, fixed_n=BIOLOGICAL_N + HABER_N)
+    ratio = b[-1]["pop"] / a[-1]["pop"]
+    want = (BIOLOGICAL_N + HABER_N) / BIOLOGICAL_N
+    if abs(ratio - want) > 0.05:
+        raise ArithmeticError(f"{ratio:.2f} against a nitrogen ratio "
+                              f"of {want:.2f}")
+    return (f"the food ceiling was the wall, so the nitrogen to grow "
+            f"more food was handed over. It moves the ceiling by "
+            f"{ratio:.2f}x -- {a[-1]['pop']/1e9:.1f}B to "
+            f"{b[-1]['pop']/1e9:.1f}B -- and that is EXACTLY the "
+            f"nitrogen ratio, because crop carbon is capped by crop "
+            f"nitrogen at Redfield. It does not remove the wall. It "
+            f"moves it")
 
 
 def _stop():
-    """CORRECTED. The first version read 'engines stopped' as
-    'the run stopped' and they are not the same sentence."""
-    short, long_ = run(400), run(1200)
-    n1, _w1 = what_stopped_it(short)
+    short, long_ = run(300), run(2000)
+    n1, _ = what_stopped_it(short)
     n2, w2 = what_stopped_it(long_)
-    if "Carnot" not in n1:
-        raise ArithmeticError(f"at 400 years it reports {n1}")
+    if n1 != "nothing yet":
+        raise ArithmeticError(f"at 300 years it already reports {n1}")
     if n2 == "nothing yet":
-        raise ArithmeticError("1200 years and nothing bound at all")
-    return (f"at 400 years the honest answer is '{n1}' -- the engines "
-            f"stopped and the population had not, and an earlier "
-            f"version reported that as the run ending. Run it to "
-            f"1200 and the real binding shows: {n2.upper()}, {w2}. "
-            f"Not coal, not engines, not materials. The thing that "
-            f"runs out is the one nobody was handed")
+        raise ArithmeticError("2000 years and nothing bound")
+    return (f"at 300 years nothing has stopped it and the run says "
+            f"so. By 2000 the answer is {n2.upper()}: {w2}. An "
+            f"earlier version reported Carnot here, which was true "
+            f"of the engines and false of the run -- and once "
+            f"engines started at the ceiling it fired in year zero "
+            f"of everything, so it is gone. A condition that is "
+            f"always true is not a finding")
+
+
+def _clock():
+    """The verdict is only worth having if it can differ."""
+    runs = [run(2000, fixed_n=BIOLOGICAL_N),
+            run(2000, fixed_n=BIOLOGICAL_N + HABER_N),
+            run(2000, fixed_n=BIOLOGICAL_N + HABER_N, synthetic_w=2e13)]
+    years = [next((s["year"] for s in h if s["p_left"] <= 0), None)
+             for h in runs]
+    if any(y is None for y in years):
+        raise ArithmeticError("phosphorus never ran out")
+    if not years[0] > years[1] > years[2]:
+        raise ArithmeticError(f"the clock did not shorten: {years}")
+    return (f"before this, 'stopped by food' was the only verdict the "
+            f"loop COULD return -- population grows to the ceiling "
+            f"and sits there, so moving the ceiling changed the "
+            f"number and never the answer. Phosphorus is a stock, "
+            f"not a rate, and it gives the run a second way to fail. "
+            f"All three now end on PHOSPHORUS, and EVERY GIFT "
+            f"SHORTENS THE CLOCK: {years[0]} years given nothing, "
+            f"{years[1]} with nitrogen, {years[2]} with synthetic "
+            f"food on top. More people eat the constraint faster")
 
 
 def _stock():

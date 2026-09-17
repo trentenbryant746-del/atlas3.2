@@ -170,5 +170,9 @@
 "3.1.83|the run reaches 24B and stops on food, not coal": {
 "fp": "324cceb2dc735156",
 "ok": true
+},
+"3.1.84|every gift shortens the clock: 1809, 1201, 708 years": {
+"fp": "c9ee568a60707bfe",
+"ok": true
 }
 }

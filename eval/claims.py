@@ -144,11 +144,17 @@ def _chainlen():
 
 
 def _revolution():
-    from engine.revolution import run, what_stopped_it
-    h = run(1200)
-    return (round(h[-1]["pop"] / 1e9, 1),
-            what_stopped_it(h)[0],
-            round(100 * h[-1]["eff"], 1))
+    from engine.revolution import (run, what_stopped_it, BIOLOGICAL_N,
+                                   HABER_N, efficiency_from)
+    yrs = []
+    for kw in (dict(fixed_n=BIOLOGICAL_N),
+               dict(fixed_n=BIOLOGICAL_N + HABER_N),
+               dict(fixed_n=BIOLOGICAL_N + HABER_N, synthetic_w=2e13)):
+        h = run(2000, **kw)
+        yrs.append(next((s["year"] for s in h if s["p_left"] <= 0), 0))
+    h = run(2000, fixed_n=BIOLOGICAL_N)
+    return (tuple(yrs), what_stopped_it(h)[0],
+            round(100 * efficiency_from(22.1), 1))
 
 
 def _industry():
@@ -355,8 +361,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
-    ("3.1.83", "the run reaches 24B and stops on food, not coal",
-     _revolution, (24.0, "food", 54.7), CURRENT),
+    ("3.1.84", "every gift shortens the clock: 1809, 1201, 708 years",
+     _revolution, ((1809, 1201, 708), "phosphorus", 54.7), CURRENT),
     ("3.1.82", "steam caps at 54.7%; Rome 0.17x burial, we run 51x",
      _industry, (54.7, 0.17, 51, True), CURRENT),
     ("3.1.81", "empire 2250 km, 4.7% lies tolerated, 3 of 10 derive",
@@ -446,6 +452,15 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.83", "the run reaches 24B and stops on food, not coal",
+     "withdrawn in 3.1.84. 24 billion is still what the flow feeds, "
+     "but 'stopped by food' was the only verdict that loop COULD "
+     "return -- population grows to the ceiling and sits there, so "
+     "moving the ceiling changed the number and never the answer. "
+     "Phosphorus is a stock rather than a rate and gives the run a "
+     "second way to fail, and with it in place all three scenarios "
+     "end on PHOSPHORUS instead. The old claim was not wrong about "
+     "the number; it was a claim about a model with one wall"),
     ("3.1.72", "the tool root is 2 nodes deep, the shallowest asked",
      "withdrawn in 3.1.73 BY BEING FIXED, which is the only way a "
      "depth claim can be withdrawn. Two nodes meant the question "

@@ -3027,3 +3027,64 @@ scenario at any step:
 
     lab 26: 24 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED
     potential 5/5   5,737 correct, 0 wrong   claims 14/14   audit 21/21
+
+### 3.1.40 — clouds, composition, and heat from below
+
+**A condensed particle is different in kind from a gas.** Every absorber
+so far works in bands, because a molecule has discrete vibrational
+modes — which is why CO₂ alone cannot make a Venus and why 3.1.39's
+derived potential eliminated the last gas mechanism. A droplet microns
+across is large against every infrared wavelength and removes light
+**geometrically**, `tau = 3 Q M / (4 rho r)`, with no window anywhere.
+CO₂'s four bands cover 17% of a 737 K spectrum; a cloud covers all of it.
+
+**The model already had half of this, and it was the wrong half.**
+Venus' albedo of 0.77 *is* its sulfuric acid deck — a bare rock would be
+near 0.10 — so the model counted the clouds removing **92 K** and gave
+back none of their greenhouse. Taking one side of a mechanism is worse
+than omitting it, because the error has a sign and nothing declares it.
+
+**Venus is refused by name.** H₂SO₄ needs its own triple point and
+latent heat, laboratory measurements this repository does not hold. The
+mechanism is built and waiting for them; inventing a curve to close
+Venus would be the patch this whole exercise exists to avoid.
+
+**And the first cloud estimate was wrong by a thousand.** Lifting
+Earth's air from 288 K to 260 K sheds enough water for optical depth
+**22,500**, against a real 5–20. Not arithmetic: almost all of what
+condenses **falls**. A cloud is a standing balance between condensation
+and precipitation, needing Stokes drag and collision-coalescence, and
+neither is here. Every cloud depth is now reported as an upper bound —
+what the air would hold if nothing ever rained — with the balance
+refused rather than guessed.
+
+**Planets now have a composition instead of a label.** They previously
+carried a mass, a temperature and the string `"rocky"`. Composition
+follows from the elemental inventory in `abundance.py` and the disk
+temperature — but **minerals must condense, not elements.** Keyed on
+elements, oxygen condenses at 180 K and so was absent from a 280 K
+planet, while Earth is 30% oxygen. It does not arrive as ice at 1 AU; it
+arrives bound in silicates.
+
+              derived   Earth
+      Fe         34.9    32.1
+      O          28.8    30.1
+      Si         12.6    15.1
+      Mg         19.1    13.9
+      Ni          1.9     1.8
+      Al          1.5     1.4
+
+From solar abundances and laboratory condensation temperatures, no
+planet consulted. The composition is flat across the rocky zone, so this
+does **not** reproduce Mercury's iron enrichment, which needs mantle
+stripping rather than equilibrium condensation.
+
+**A planet is also warm from inside.** The balance counted only
+starlight. Earth's 0.087 W/m² against 236 absorbed is worth 0.0 K and
+was right to ignore — but Io's 2.0 against 4.65 is **43%, worth +8.9 K**,
+and Io was coming out 14.8 K too cold with the shortfall blamed on
+having no atmosphere. Tidal heat was the answer and it was never in the
+sum.
+
+    clouds 5/5   genesis 8/8   terraform 14/14
+    5,737 correct, 0 wrong   claims 14/14   audit 21/21

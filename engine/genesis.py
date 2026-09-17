@@ -111,6 +111,56 @@ def surface_density(r_au, seed, lum_w):
     return sigma_gas * frac * 10.0
 
 
+# WHAT A PLANET IS MADE OF, NOT WHAT IT IS CALLED.
+#
+# Until now a generated planet carried a mass, a temperature and the
+# STRING "rocky". That is a label, not a statement about elements,
+# and it cannot be compared with anything.
+#
+# Composition follows from two things already here: the elemental
+# inventory in engine/abundance.py, and the disk temperature. A
+# substance condenses where the disk is cooler than its condensation
+# point, and what is left in the gas is lost with the gas.
+#
+# CONDENSE MINERALS, NOT ELEMENTS. Keying the table on elements put
+# oxygen's condensation at 180 K and therefore left it out of a
+# 280 K planet -- while Earth is 30% oxygen. Oxygen does not arrive
+# as ice at 1 AU; it arrives BOUND IN SILICATES. The stoichiometry
+# has to be in the table or the answer is wrong by a third.
+MINERALS = [
+    ("CaAl2Si2O8", 1600, {"Ca": 1, "Al": 2, "Si": 2, "O": 8}),
+    ("Ni", 1353, {"Ni": 1}),
+    ("Mg2SiO4", 1354, {"Mg": 2, "Si": 1, "O": 4}),
+    ("Fe", 1334, {"Fe": 1}),
+    ("MgSiO3", 1316, {"Mg": 1, "Si": 1, "O": 3}),
+    ("FeS", 704, {"Fe": 1, "S": 1}),
+    ("H2O", 170, {"H": 2, "O": 1}),
+]
+
+
+def composition(T_disk):
+    """-> {element: mass fraction}. DERIVED from abundance + condensation."""
+    from engine.abundance import mass_fractions
+    from engine.experts import PT
+    w = {sym: m for sym, _n, m in PT}
+    mf = mass_fractions()
+    avail = {e: mf[e] / w[e] for e in mf if e in w}
+    got = {}
+    for _name, tc, st in MINERALS:
+        if tc <= T_disk:
+            continue
+        lim = min(avail.get(e, 0.0) / n for e, n in st.items())
+        if lim <= 0:
+            continue
+        for e, n in st.items():
+            avail[e] -= lim * n
+            got[e] = got.get(e, 0.0) + lim * n * w[e]
+    tot = sum(got.values())
+    if tot <= 0:
+        return {}
+    return {e: v / tot for e, v in sorted(got.items(), key=lambda k: -k[1])}
+
+
 def isolation_mass(r_au, seed, lum_w, m_star_msun):
     """kg a planet can sweep from its own feeding zone. DERIVED.
 
@@ -141,8 +191,13 @@ def generate(seed, radii=None):
         td = disk_temperature(r_au, lum)
         mass = isolation_mass(r_au, seed, lum, m)
         icy = td < T_ICE
+        comp = composition(td)
         out.append({
             "au": r_au, "disk_K": td, "mass_kg": mass,
+            "composition": comp,
+            "iron_fraction": comp.get("Fe", 0.0),
+            "water_fraction": (comp.get("H", 0.0) * 9.0
+                               if td < 170 else 0.0),
             "mass_earths": mass / M_EARTH,
             "kind": ("gas giant" if icy and mass > 8 * M_EARTH else
                      "ice-rich" if icy else
@@ -220,6 +275,8 @@ def check():
     t("ice_line_falls_in_the_asteroid_belt", _ice)
     t("rocky_inside_icy_outside", _order)
     t("a_dimmer_star_moves_everything_in", _dim)
+    t("planets_have_a_composition_not_a_label", _comp)
+    t("oxygen_arrives_bound_in_silicates", _oxy)
     t("positions_land_near_real_planets", _pos)
     t("masses_are_wrong_and_say_so", _mass)
     return all(o[1] for o in out), out
@@ -302,6 +359,32 @@ def _mass():
             f"planet formation rather than an arithmetic error here. The "
             f"structure derives and the masses do not, and saying so is "
             f"the result")
+
+
+def _comp():
+    c = composition(280.0)
+    real = {"Fe": 0.321, "O": 0.301, "Si": 0.151, "Mg": 0.139}
+    err = {e: abs(c.get(e, 0) - v) for e, v in real.items()}
+    if max(err.values()) > 0.08:
+        raise ArithmeticError(f"composition off by {max(err.values()):.3f}")
+    return ("a planet at 280 K condenses to "
+            + ", ".join(f"{e} {100*c[e]:.0f}%"
+                        for e in ("Fe", "O", "Si", "Mg"))
+            + " against Earth's measured 32, 30, 15, 14. From solar "
+              "abundances and laboratory condensation temperatures, with "
+              "no planet consulted -- 'rocky' was a string and this is "
+              "not")
+
+
+def _oxy():
+    c = composition(280.0)
+    if c.get("O", 0) < 0.15:
+        raise ArithmeticError("oxygen is missing from a rocky planet; the "
+                              "table is keyed on elements again")
+    return (f"oxygen is {100*c['O']:.0f}% of a 280 K planet even though "
+            f"water ice needs 170 K. It arrives BOUND IN SILICATES, and "
+            f"an element-keyed condensation table left it out entirely -- "
+            f"wrong by a third of the planet")
 
 
 if __name__ == "__main__":

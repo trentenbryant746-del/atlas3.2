@@ -77,7 +77,7 @@ R_GAS = K_B * N_A             # DERIVED: the gas constant is k times N_A
 class Body:
     def __init__(self, name, mass_kg, radius_m, au, albedo,
                  observed_T=None, observed_bar_pa=None, observed_co2=None,
-                 water_kg=0.0, eccentricity=0.0):
+                 water_kg=0.0, eccentricity=0.0, internal_w_m2=0.0):
         self.name, self.mass, self.radius = name, mass_kg, radius_m
         self.au, self.albedo = au, albedo
         # An inventory, carried by the body. The first version looked
@@ -94,6 +94,15 @@ class Body:
         # the 9.3 K planetary bar for every body that is scored. It
         # goes in because it is right, not because it shows.
         self.eccentricity = eccentricity
+        # A PLANET IS ALSO WARM FROM THE INSIDE. Radioactive decay
+        # and leftover heat of formation leak out through the
+        # surface, and on a tidally squeezed body they dominate.
+        # Earth's 0.087 W/m2 against 236 absorbed is worth 0.0 K and
+        # is right to ignore; Io's 2.0 against 4.65 is 43% and worth
+        # +8.9 K. The model counted only starlight, which is why Io
+        # came out 14.8 K too cold and the shortfall was blamed on
+        # having no atmosphere.
+        self.internal_w_m2 = internal_w_m2
         self.observed_T = observed_T
         self.observed_bar_pa = observed_bar_pa
         self.observed_co2 = observed_co2
@@ -218,7 +227,8 @@ def equilibrium_T(body, luminosity=L_SUN, albedo=None):
     which is where the 4 comes from -- it is geometry, not a fudge.
     """
     a = body.albedo if albedo is None else albedo
-    return (body.flux(luminosity) * (1 - a) / (4 * SIGMA)) ** 0.25
+    absorbed = body.flux(luminosity) * (1 - a) / 4.0
+    return ((absorbed + getattr(body, "internal_w_m2", 0.0)) / SIGMA) ** 0.25
 
 
 # ------------------------------------------------- what stays put

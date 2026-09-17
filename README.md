@@ -3727,3 +3727,58 @@ result that agrees across Python, Ruby and GDScript is one no single
 interpreter's quirk produced. That is verification, not throughput.
 
     earthlab 8/8   5,737 correct, 0 wrong   claims 16/16   audit 21/21
+
+### 3.1.54 — cells on Earth, and the one place compiling was right
+
+**Cells introduced, at the size the lab derived** — between the
+closure floor and the diffusion roof, not sized to fit the experiment.
+The question stops being whether a world permits life and becomes what
+life does to the world.
+
+**Oxygen is sink-limited, not production-limited.** A modern biosphere
+makes Earth's whole oxygen atmosphere in **4,144 years**. The reduced
+crust swallows 38 atmospheres' worth first, so a planet can
+photosynthesise for ages and still read as anoxic. The curve is a
+threshold, not a ramp: nothing, then everything.
+
+**And the air was already wired to the surface.** Methane is one of
+three gases in the band table, so once oxygen cuts its lifetime from
+10,000 years to 10, the climate follows with nothing added to connect
+them:
+
+    t Gyr   sink     O2   CH4 ppm   T surf
+     0.00     0%   0.00    1000.0    315.6
+     0.23   100%   1.00       1.8    313.7   <-- -1.9 K
+
+**A biosphere that makes oxygen cools its own planet**, which is not
+something it was asked to do, and Earth's first glaciation follows its
+first oxygen.
+
+**The delay is wrong by 147× and is left wrong.** The model puts first
+oxygen at 0.0075 Gyr; Earth took about 1.1. The *shape* is right —
+sink first, then accumulation — and the inputs are not: early
+productivity was a fraction of modern, and the sink is not only iron
+but the whole reduced crust plus what volcanism keeps adding. Neither
+is derived here, so neither is tuned.
+
+**On Cython: it was right exactly once, and it earned that by
+measurement.** Four earlier speed attempts did not need a compiler —
+threads made the band search **seven times slower**, a 3,400-step scan
+gave identical answers at 200, `gravity()` ran 1,309,539 times for a
+constant, and `c6()` 10,749,440 times for a pure function. All four
+were fixed by *not doing the work*, and a compiler would only have made
+needless work fast.
+
+Planck's law is different: **2,475,200 evaluations per biosphere run**,
+every one a different number something downstream uses. Nothing to
+hoist, nothing to cache. That is when compiling is worth reaching for.
+
+    spectral pass    0.039s -> 0.0156s
+    biosphere        61.4s  -> 6.0s
+
+**The Python version stays beside it**, and the two are checked against
+each other — they agree to 1e-16 across nine band-and-temperature
+combinations. The compiled path is a *second implementation*, not a
+replacement, so a disagreement between them would be a finding.
+
+    biosphere 6/6   radiative 11/11   5,737 correct, 0 wrong

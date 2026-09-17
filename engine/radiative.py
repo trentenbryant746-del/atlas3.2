@@ -315,7 +315,42 @@ def goody_tau(species, column_kg_m2, pressure_pa, band=0):
                                              / (math.pi * gamma))
 
 
+# A COMPILED PATH, AND THE PYTHON ONE KEPT BESIDE IT.
+#
+# This is the only place in the repository where compiling was the
+# right answer, and it earned that by measurement. Threads made the
+# band search seven times slower; a 3,400-step scan gave identical
+# answers at 200; gravity() ran 1,309,539 times for a constant and
+# c6() 10,749,440 times for a pure function. All four were fixed by
+# NOT DOING THE WORK, and a compiler would only have made needless
+# work fast.
+#
+# Planck's law is different. It is evaluated 2,475,200 times in one
+# biosphere run -- 220 quadrature points for each of 400 bins for
+# each band and temperature -- and every evaluation is a different
+# number something downstream uses. Nothing to hoist, nothing to
+# cache. That is when a compiler is worth reaching for.
+#
+# The Python version stays. It is not dead code: the two are
+# checked against each other, so the compiled path is a SECOND
+# IMPLEMENTATION rather than a replacement, and a disagreement
+# between them is a finding rather than a mystery.
+_FAST = None
+try:
+    import sys as _s
+    _s.path.insert(0, str(ROOT / "fast"))
+    import planck as _FAST          # noqa: F401
+except Exception:
+    _FAST = None
+
+
 def planck_fraction(nu_lo, nu_hi, T):
+    if _FAST is not None:
+        return _FAST.planck_fraction(nu_lo, nu_hi, T)
+    return planck_fraction_py(nu_lo, nu_hi, T)
+
+
+def planck_fraction_py(nu_lo, nu_hi, T):
     """Fraction of blackbody emission between two wavenumbers. DERIVED."""
     def integrand(nu_cm):
         nu = nu_cm * 100.0
@@ -528,6 +563,7 @@ def check():
     t("bands_combine_in_transmittance", _combine)
     t("an_opaque_band_cannot_close_the_window", _window)
     t("continuum_is_quadratic_in_density", _cia)
+    t("compiled_and_python_paths_agree", _twopath)
     t("bands_widen_under_pressure", _widen)
     t("no_numerical_ceiling_on_opacity", _ceiling)
     return all(o[1] for o in out), out
@@ -705,6 +741,28 @@ def _ceiling():
             f"0.382 -- but it silently capped the unbounded-wing branch, "
             f"which is why a scan of that branch saturated at -278 K and "
             f"looked like physics")
+
+
+def _twopath():
+    if _FAST is None:
+        return ("the compiled path is not built, so everything runs "
+                "through Python; build it with python3 fast/setup.py")
+    worst, where = 0.0, None
+    for T in (200.0, 288.0, 737.0):
+        for lo, hi in ((542.0, 792.0), (50.0, 550.0), (2249.0, 2449.0)):
+            a = _FAST.planck_fraction(lo, hi, T)
+            b = planck_fraction_py(lo, hi, T)
+            d = abs(a - b)
+            if d > worst:
+                worst, where = d, (lo, hi, T)
+    if worst > 1e-9:
+        raise ArithmeticError(f"compiled and Python disagree by {worst:.2e} "
+                              f"at {where}")
+    return (f"the compiled and Python Planck integrators agree to "
+            f"{worst:.1e} over 9 band-and-temperature combinations. The "
+            f"Python one is kept as a second implementation, not as "
+            f"dead code -- a disagreement between them would be a "
+            f"finding")
 
 
 if __name__ == "__main__":

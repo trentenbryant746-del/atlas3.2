@@ -17,3 +17,8 @@ data/qwen/route-events.jsonl
 # Both are derived from the tree and would conflict on every pull.
 .atlas-cache.json
 .atlas-verdicts.json
+
+# Cython build artefacts; the .pyx source is tracked, the binary is not.
+fast/build/
+fast/*.so
+fast/*.c

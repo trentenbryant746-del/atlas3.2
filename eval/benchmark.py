@@ -63,7 +63,7 @@ def modules():
               "polytrope", "abundance", "transitions",
               "cosmoschunks", "folding", "provenance",
               "halflife", "variantlife", "valence", "scales", "terraform", "radiative", "lab", "constants", "ablate",
-              "shells", "thermo", "genesis", "evolve", "potential", "clouds", "census", "watch", "origin", "earthlab", "biosphere"):
+              "shells", "thermo", "genesis", "evolve", "potential", "clouds", "census", "watch", "origin", "earthlab", "biosphere", "descent"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()

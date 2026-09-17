@@ -3913,3 +3913,50 @@ named absence standing behind three separate gates, which is a better
 position than three unrelated mysteries.
 
     biosphere 12/12
+
+### 3.1.58 — seeded, released, and it stays microbial
+
+The instruction was to seed the smallest thing that can live, supply
+the planet, give it only the rules under which it lives or dies, and
+let go. `engine/descent.py` does that. The seed is one 1.58-micron
+sphere — the closure floor — with **no traits and no instruction to
+acquire any**. Traits appear by accident, cost metabolism, and pay
+nothing unless a wall makes them necessary.
+
+**It ran twice and both runs were wrong in opposite directions, which
+is how the missing rule announced itself.**
+
+**First run: eighty-one metres.** Kleiber gives the *cost* of being big
+— mass^0.75, so cost per gram falls — and I had given no *intake*.
+Bigness was free, circulation fixed at 100% within 333 generations, and
+the population grew until it hit the only wall left: a land skeleton's
+173 m ceiling, applied absurdly to something swimming.
+
+**Second run: it collapses to the floor.** A body feeds through a
+*surface*, so intake goes as mass^(2/3) while cost goes as mass^0.75.
+Adding that bounds size from above — the curves cross at 23 cm — but it
+also makes surplus energy per gram scale as **mass^(-1/3)**:
+
+     radius    intake W      cost W     surplus/g
+      0.10u    2.34e-10    6.48e-12     5.43e+07
+     10.00u    2.34e-06    2.05e-07     5.09e+05
+   1000.00u    2.34e-02    6.48e-03     4.04e+03
+
+**Smaller is always fitter, and that is not a bug.** Life on Earth was
+microbial for three billion years. Nothing about metabolism favours
+being large.
+
+**So what selects for size is not in this repository, and now I can
+name the category.** Predation and competition are **interactions
+between organisms**, and every rule here is one body against physics —
+diffusion, Kleiber, square-cube, desiccation, Poiseuille. That is a
+different kind of absence from a missing measurement like H₂SO₄'s
+vapour curve. It is a missing *kind of rule*.
+
+**A check was inverted rather than deleted.** `size_grows_until_a_wall`
+asserted that size grows, and passed — on the model where bigness was
+free. The intake rule falsified it. It now asserts that size *shrinks*,
+which is what the rules say and what Earth did, and it carries the
+history of having claimed the opposite.
+
+    descent 6/6

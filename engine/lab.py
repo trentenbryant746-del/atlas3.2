@@ -420,6 +420,27 @@ def far_wing_rules_clash():
         f"Venus openly wrong")
 
 
+@experiment(4, "can the climate bar be split by manifestation too?")
+def climate_manifestations_not_yet_measurable():
+    """The rule is right; the data cannot carry it here. REFUSED."""
+    from engine import terraform, radiative
+    n_bodies = sum(1 for b in terraform.BODIES.values()
+                   if terraform.redistributes(b)[0])
+    return REFUSED, (
+        f"the manifestation rule says a climate bar should be measured "
+        f"separately for each state a planet can be in -- thin against "
+        f"thick atmosphere, with a condensable volatile against without. "
+        f"It cannot be done here. Only {n_bodies} bodies survive the "
+        f"redistribution test at all, three of those were spent "
+        f"calibrating, and Venus is blocked on the far-wing clash so its "
+        f"optical depth comes out 0.382 when it is physically enormous. "
+        f"Splitting four bodies -- one of them wrong by 496 K -- into two "
+        f"or three states leaves at most one per state, and a bar over "
+        f"one sample is not a bar. What is needed is not a better "
+        f"statistic but the missing rule at layer 3; the split becomes "
+        f"measurable the moment Venus is derivable")
+
+
 # ------------------------------------------------ layer 4, balance
 @experiment(4, "does a body with no absorber sit at bare-rock temperature?")
 def airless_body_is_bare_rock():

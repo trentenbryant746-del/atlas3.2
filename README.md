@@ -2462,3 +2462,60 @@ the four duplicated constants in 3.1.24. It is now computed in
 
     lab 25 experiments, 23 HOLDS, 1 CLASH, 1 MISSING_RULE
     5,737 correct, 0 wrong   audit 21/21   heldout 165/165 byte-exact
+
+### 3.1.30 — all rules at once, then one at a time
+
+A lab tests a rule in isolation, which is how you learn whether the rule
+is sound. It cannot tell you which rule is responsible when everything is
+switched on and the answer is still wrong — and by then the rules
+interact, so reading the code will not tell you either.
+
+`engine/ablate.py` makes the procedure a mechanism:
+
+    1  run with every rule on. If it passes, stop.
+    2  if it fails, run again with each rule removed in turn.
+    3  a rule whose REMOVAL changes the outcome is implicated.
+    4  a rule whose removal changes nothing is not the problem,
+       however plausible it looked.
+    5  what is left is a specific failure with a specific owner,
+       and that is what a narrower rule gets written for.
+
+**Run on the decay target it immediately reversed a conclusion.**
+
+    all rules on                          1 right, 1 WRONG, 12 refused
+    without shell-corrections             1 right, 1 WRONG, 12 refused
+    without liquid-drop-domain            4 right, 2 WRONG,  8 refused
+    without one-source-per-Q              1 right, 1 WRONG, 12 refused
+
+Read alone, that says the domain rule is the whole story and the other
+two do nothing — that shell corrections and the helium-4 consistency
+fix, both of which cost real work, are irrelevant.
+
+**That reading is wrong, and pairs show why.**
+
+    without shell-corrections + domain            4 right, 3 WRONG,  7 refused
+    without domain + one-source-per-Q             8 right, 2 WRONG,  4 refused
+
+Both "inert" rules matter the moment the domain rule is lifted too. They
+were not irrelevant; they were **downstream of a closed gate**. The
+domain rule shuts the alpha channel entirely, so neither had any input
+to act on. A rule behind a closed gate looks irrelevant however
+important it is, and single ablation reports it as not implicated.
+
+**This also reproduces the 3.1.27 finding mechanically.** Lifting the
+domain *and* the source consistency gives 8 right — the old headline
+number — because the +5.455 MeV helium bias returns and cancels the
+liquid drop's deficit on heavy alpha steps. Two errors, one good-looking
+answer. Ablation separates them by construction: remove one and the
+other appears.
+
+**And it answers the question asked of 3.1.29 directly.** The
+manifestation rule did not resolve the decay scoring, and the ablation
+says why in one line: the 12 refusals belong entirely to
+`liquid-drop-domain`. Tightening a bar cannot help a channel that cannot
+be computed at all. Three hypotheses have now been rejected this way —
+a curvature term, a tighter mass bar, a climate manifestation split —
+and each cost work that an ablation would have saved.
+
+    engine/ablate.py 4/4   lab 26 experiments, 23 HOLDS, 1 CLASH,
+                           1 MISSING_RULE, 1 REFUSED

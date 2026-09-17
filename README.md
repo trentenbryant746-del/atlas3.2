@@ -3416,3 +3416,47 @@ gets ignored.
 
     watch 4/4   census 3/3   cache 4/4   suite 0:32 warm
     5,737 correct, 0 wrong   claims 14/14   audit 21/21
+
+### 3.1.47 — a lab on the origin, and the barrier is not what it looks like
+
+Back to a lab, because the question is small enough to isolate: what
+can be said about abiogenesis from rules already here, without
+inventing biology?
+
+**Energy is not the barrier, and that rules out a whole class of
+explanation.** Copying information has a floor — Landauer, `kT ln 2`
+per bit, **0.0179 eV** at 300 K. A minimal 580,000-base genome is 1.16
+million bits and costs **3.3 × 10⁻¹⁵ J** to copy. A three-unit pH
+gradient pays 0.179 eV per proton, so **116,398 protons** cover a whole
+genome — a hydrothermal system moves that in moments. A real bacterium
+spends about 10⁻¹¹ J, **three thousand times the floor**. Nothing is
+stopped by the bill.
+
+**What cannot be paid for is the search.**
+
+     residues    sequences    years to search
+           40     1.1e+52          4.3e-13
+           50     1.1e+65          4.4e+00
+           57     1.4e+74          5.6e+09
+           70     1.2e+91          4.6e+26
+          100     1.3e+130         4.9e+65
+
+Fill an ocean with 8.1 × 10⁴⁴ peptide-scale molecules, let each try a
+new sequence every picosecond, and run it for the age of the universe.
+**Chance reaches 57 residues and stops.** Ten more residues costs 10¹⁷
+times longer — 20ⁿ does not bend, so the ceiling is a cliff.
+
+**So the missing mechanism has a shape.** Below 57 residues, exhaustive
+search needs no explanation. Above it, something must reach long
+sequences *without trying them* — selection on intermediates, or
+assembly from parts already found. That is the same answer
+`engine/folding.py` gives to Levinthal's paradox one level down:
+folding is not a search, and neither is this.
+
+**And naming the shape of a mechanism is not deriving it.**
+`this_does_not_claim_abiogenesis` says so explicitly. What the lab
+produced is a *constraint* — a number where there was a hand-wave, and
+one whole explanation eliminated. The origin itself is still absent.
+
+    origin 5/5   lab 28 experiments   5,737 correct, 0 wrong
+    claims 14/14   audit 21/21

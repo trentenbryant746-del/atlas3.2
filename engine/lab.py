@@ -681,6 +681,29 @@ def valence_agrees_with_the_formulas():
         "and nothing was arranged to make them meet")
 
 
+@experiment(7, "is energy or search the barrier to an origin?")
+def the_barrier_is_search_not_energy():
+    from engine.origin import (genome_cost, length_ceiling,
+                               search_years, landauer)
+    from engine.constants import E_CHARGE
+    n = length_ceiling()
+    c = genome_cost(580000)
+    if c > 1e-11:
+        return CLASH, "copying costs more than a cell spends"
+    return HOLDS, (
+        f"two rules already here answer this without modelling a cell. "
+        f"Landauer puts a bit at {landauer(300.0)/E_CHARGE:.4f} eV, so a "
+        f"minimal genome costs {c:.1e} J to copy against the 1e-11 a "
+        f"bacterium spends -- energy is not the barrier and a whole "
+        f"class of explanation is ruled out. What cannot be paid for is "
+        f"the SEARCH: an ocean of molecules trying a sequence every "
+        f"picosecond for the age of the universe reaches {n} residues "
+        f"and stops. Ten more costs {search_years(n+10)/search_years(n):.0e} "
+        f"times longer. Below the ceiling chance suffices; above it "
+        f"something must build without searching, which is exactly what "
+        f"engine/folding.py concludes about Levinthal one level down")
+
+
 # ------------------------------------------------------- the runner
 def unresolved():
     """-> [(layer, name, verdict, detail)]. Everything not yet HOLDS."""

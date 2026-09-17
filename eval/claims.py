@@ -111,6 +111,11 @@ def _welldepth():
     return round(well_depth("CO2") / K_B)
 
 
+def _ceiling57():
+    from engine.origin import length_ceiling
+    return length_ceiling()
+
+
 def _lab_counts():
     from engine.lab import run, HOLDS, CLASH, MISSING_RULE, REFUSED
     rows, _ = run(stop_on_problem=False)
@@ -145,8 +150,10 @@ CLAIMS = [
      _climate, (21.0, -488.3), CURRENT),
     ("3.1.42", "habitable band derived 0.999 - 1.899 AU",
      _band, (0.999, 1.899), CURRENT),
-    ("3.1.42", "lab: 25 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED",
-     _lab_counts, (25, 0, 1, 1), CURRENT),
+    ("3.1.47", "lab: 26 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED",
+     _lab_counts, (26, 0, 1, 1), CURRENT),
+    ("3.1.47", "chance reaches 57 residues and stops",
+     _ceiling57, 57, CURRENT),
     ("3.1.39", "derived CO2 wing cutoff 11.2 cm-1 at 737 K",
      _cutoff, 11.2, CURRENT),
     ("3.1.39", "derived CO2 well depth 180 K",

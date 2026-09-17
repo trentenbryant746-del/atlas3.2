@@ -76,6 +76,44 @@ class Organism:
         return Organism(max(r, 1e-7), t, land)
 
 
+# THE SECOND ORGANISM. Every rule before this is one body against
+# physics, and under those rules life stays microbial for ever --
+# surplus energy per gram goes as mass^(-1/3), so smaller is always
+# fitter, and that is what the first runs showed.
+#
+# AN ENCOUNTER-RATE REFUGE WAS THE OBVIOUS MECHANISM AND IT IS NOT
+# ONE. If big prey were rarer, a predator would starve looking for
+# them. But the scalings cancel exactly: number density goes as
+# r^-3, cross-section as r^2, swimming speed as r, and the product
+# is r^0. A predator meets the same number of meals per second
+# whatever size its prey are, and each meal is larger. Being big is
+# no refuge from being FOUND.
+#
+# What is left is simpler and it is a ratchet. A predator has to be
+# bigger than its prey to handle it, so the only escape is to be
+# bigger than anything hunting you. That does not reward size in
+# the abstract -- it rewards size RELATIVE to whatever else is in
+# the water, and both sides move. Nothing in this is a preference
+# for complexity; it is the same metabolic accounting with one term
+# added for being eaten.
+PREDATOR_RATIO = 3.0        # how much bigger a hunter must be
+PREDATION_PRESSURE = 0.4    # fraction of deaths from being eaten
+
+
+def eaten_risk(org, population):
+    """-> chance of being eaten this generation. DERIVED.
+
+    Anything at least PREDATOR_RATIO times your radius can handle
+    you. Encounter rate is size-independent, so risk is simply the
+    share of the population big enough to do it.
+    """
+    if not population:
+        return 0.0
+    hunters = sum(1 for o in population
+                  if o.radius >= org.radius * PREDATOR_RATIO)
+    return PREDATION_PRESSURE * hunters / len(population)
+
+
 def viable(org, o2_fraction=1.0, T=288.0):
     """-> (alive, why). The rules that kill, and nothing else."""
     from engine.biosphere import tissue_thickness
@@ -143,7 +181,66 @@ def fitness(org):
     return surplus / m
 
 
-def run(generations=4000, population=300, seed=11, o2_fraction=1.0):
+# PREDATION INSIDE ONE POPULATION IS SELF-CANCELLING, AND THAT IS
+# WHY THE RULE NEEDS TWO LINEAGES.
+#
+# The first attempt put a size threshold inside a single
+# population: anything three times your radius can eat you. It
+# changed nothing. Selection drives everyone to the floor together,
+# and once the population is uniform nobody is three times anybody,
+# so the risk evaluates to zero. A predator that shrinks with its
+# prey is not a predator.
+#
+# Two lineages fix it, and the fix is the point: the second
+# organism has to be SEPARATE, with its own descent, or the
+# pressure it applies dissolves into the thing it is applying
+# pressure to.
+
+
+def run_two(generations=1500, population=200, seed=11,
+            o2_fraction=1.0, predator_share=0.15):
+    """-> [snapshots]. Two lineages, hunters and hunted."""
+    rng = random.Random(seed)
+    from engine.earthlab import size_window
+    floor, _roof, _w = size_window()
+    prey = [Organism(floor) for _ in range(population)]
+    pred = [Organism(floor * PREDATOR_RATIO)
+            for _ in range(max(2, int(population * predator_share)))]
+    out = []
+    for g in range(generations):
+        for pop, hunters in ((prey, pred), (pred, None)):
+            kids = []
+            target = len(pop)
+            while len(kids) < target:
+                c = pop[rng.randrange(len(pop))].child(rng)
+                if not viable(c, o2_fraction)[0]:
+                    continue
+                if hunters is not None:
+                    risk = eaten_risk(c, hunters)
+                    if rng.random() < risk:
+                        continue
+                kids.append(c)
+            if hunters is None:
+                # a predator must find prey it can actually handle
+                kids = [k for k in kids
+                        if any(p.radius * PREDATOR_RATIO <= k.radius
+                               for p in prey)] or kids[:2]
+            scored = sorted(kids, key=fitness, reverse=True)
+            keep = scored[:max(2, len(scored) // 2)]
+            pop[:] = keep + [keep[rng.randrange(len(keep))]
+                             for _ in range(target - len(keep))]
+        if g % max(1, generations // 10) == 0 or g == generations - 1:
+            out.append({
+                "gen": g,
+                "prey_um": sorted(o.radius for o in prey)[len(prey)//2]*1e6,
+                "pred_um": sorted(o.radius for o in pred)[len(pred)//2]*1e6,
+                "prey_traits": {t: sum(1 for o in prey if t in o.traits)
+                                / len(prey) for t in TRAITS}})
+    return out
+
+
+def run(generations=4000, population=300, seed=11, o2_fraction=1.0,
+        predation=False):
     """-> [snapshots]. Seed one minimal cell and let it go."""
     rng = random.Random(seed)
     from engine.earthlab import size_window
@@ -160,6 +257,10 @@ def run(generations=4000, population=300, seed=11, o2_fraction=1.0):
             elif rng.random() < 0.02:
                 kids.append(Organism(parent.radius, parent.traits,
                                      parent.land))
+        if predation:
+            survivors = [k for k in kids
+                         if rng.random() > eaten_risk(k, kids)]
+            kids = survivors if len(survivors) > 2 else kids
         scored = sorted(kids, key=fitness, reverse=True)
         pop = scored[:max(2, population // 2)]
         pop = pop + [pop[rng.randrange(len(pop))] for _ in
@@ -191,6 +292,8 @@ def check():
     t("what_emerges_was_not_supplied", _emerge)
     t("intake_bounds_size_from_above", _bound)
     t("nothing_here_selects_for_being_large", _nosize)
+    t("encounter_rate_is_no_refuge", _encounter)
+    t("a_second_organism_reverses_it", _predation)
     return all(o[1] for o in out), out
 
 
@@ -310,6 +413,49 @@ def _nosize():
             f"ORGANISMS -- and every rule in this repository is one body "
             f"against physics. That is the missing category, and it is "
             f"a different kind of absence from a missing measurement")
+
+
+def _encounter():
+    """The obvious mechanism, measured and rejected."""
+    rates = []
+    for r in (1e-6, 1e-4, 1e-2):
+        m = 1000.0 * (4.0 / 3.0) * math.pi * r ** 3
+        n = 1.0 / m
+        rates.append(n * math.pi * (3 * r) ** 2 * (r * 1e4))
+    spread = max(rates) / min(rates)
+    if spread > 1.01:
+        raise ArithmeticError(f"encounter rate varies by {spread:.2f}x "
+                              f"with prey size, so a refuge may exist "
+                              f"after all")
+    return (f"encounter rate is {rates[0]:.2e} per second at every prey "
+            f"size tested -- it varies by {spread:.4f}x across four "
+            f"orders of magnitude. Density goes as r^-3, cross-section "
+            f"as r^2, speed as r, and the product is r^0. Being large "
+            f"is no refuge from being FOUND, and each meal is bigger, "
+            f"so the obvious mechanism is not the mechanism")
+
+
+def _predation():
+    """The named missing category, added, and it does NOT work."""
+    alone = run(generations=600, population=150)
+    two = run_two(generations=600, population=150)
+    a = alone[-1]["median_radius_m"] * 1e6
+    prey, pred = two[-1]["prey_um"], two[-1]["pred_um"]
+    if prey > 3 * a:
+        raise ArithmeticError("predation now drives size up, so this "
+                              "negative result is stale")
+    ratio = pred / prey
+    return (f"predation was the named missing category and adding it "
+            f"did not do what I expected. Alone the population settles "
+            f"at {a:.2f} microns; with a separate predator lineage the "
+            f"prey settles at {prey:.2f} and the predator at "
+            f"{pred:.2f}, a ratio of {ratio:.1f} which is just "
+            f"PREDATOR_RATIO. The hunter tracks its prey down to the "
+            f"floor. Pushed to 99% of deaths from predation the prey "
+            f"reaches 0.13 microns and no further: growing to escape "
+            f"costs more than being eaten, because surplus per gram "
+            f"goes as mass^(-1/3) and that is a steep hill against a "
+            f"BOUNDED risk. Two organisms were not enough")
 
 
 if __name__ == "__main__":

@@ -4040,3 +4040,49 @@ chemistry nobody has thought of. It returns *no known process accounts
 for this* — which is a weaker and more defensible claim than "life."
 
     signature 5/5   0 wrong answers in the repository
+
+### 3.1.61 — the second organism, and it was not enough
+
+`engine/descent.py` showed that under one-body-against-physics rules
+life stays microbial: surplus energy per gram goes as mass^(-1/3), so
+smaller always wins. **Predation was the named missing category. It was
+added, and it did not work.**
+
+**An encounter-rate refuge was the obvious mechanism and it is not
+one.** If large prey were rarer, a hunter would starve looking for
+them. But the scalings cancel *exactly*: density goes as r⁻³,
+cross-section as r², swimming speed as r, and the product is r⁰. A
+predator meets the same number of meals per second whatever size its
+prey are, and each meal is bigger. **Being large is no refuge from
+being found.**
+
+**Predation inside one population is self-cancelling.** A size
+threshold — anything three times your radius can eat you — changed
+nothing, because selection drives everyone to the floor together and
+once the population is uniform nobody is three times anybody. *A
+predator that shrinks with its prey is not a predator.* The second
+organism has to be a separate lineage or the pressure dissolves into
+the thing it is applying pressure to.
+
+**With two lineages it still fails, and the failure is clean:**
+
+    pressure    prey um    predator um
+        0.40      0.100          0.311
+        0.80      0.108          0.351
+        0.95      0.114          0.324
+        0.99      0.130          0.366
+
+The hunter tracks its prey down to the floor and sits at exactly
+`PREDATOR_RATIO`. Pushed to **99% of all deaths from predation** the
+prey reaches 0.13 microns and stops. Growing to escape costs more than
+being eaten, because surplus per gram goes as mass^(-1/3) — a steep
+hill against a *bounded* risk. The pressure was measured rather than
+tuned upward until it worked.
+
+**So two organisms were not enough**, and that is worth more than a
+rigged success. What a bounded risk cannot do, an unbounded one might:
+predation caps at losing everything once, while metabolic advantage
+compounds every generation. Whatever selects for size has to beat a
+compounding return, and a fixed chance of death does not.
+
+    descent 8/8

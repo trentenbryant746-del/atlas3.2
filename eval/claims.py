@@ -143,6 +143,22 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _infantshare():
+    from engine.ontogeny import ONTOGENY, brain_share
+    return round(100 * brain_share(ONTOGENY[0][1], ONTOGENY[0][2]))
+
+
+def _growthdip():
+    from engine.ontogeny import slowest_growth
+    a, r, sh = slowest_growth()
+    return round(a, 1), round(r, 2), round(100 * sh)
+
+
+def _debt():
+    from engine.ontogeny import provisioning_debt
+    return round(provisioning_debt()[1], 1)
+
+
 def _brainpay():
     from engine.human import brain_cost, gut_saving, APE_BRAIN_KG, \
         HUMAN_BRAIN_KG
@@ -167,8 +183,12 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
-    ("3.1.69", "the brain costs 11.1 W and the gut frees 12.8 W",
-     _brainpay, (11.1, 12.8), CURRENT),
+    ("3.1.70", "a newborn's brain is 109% of its own budget",
+     _infantshare, 109, CURRENT),
+    ("3.1.70", "growth bottoms at age 5 where the brain is 71%",
+     _growthdip, (5.0, 1.5, 71), CURRENT),
+    ("3.1.70", "the provisioning debt is 3.0 adult-years per child",
+     _debt, 3.0, CURRENT),
     ("3.1.69", "cooking short 1.73x on break-even, 2.18x on the gut",
      _cookinggap, (1.73, 2.18, 76), CURRENT),
     ("3.1.69", "death conserves total matter and burial breaks the cycle",
@@ -214,6 +234,18 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.69", "the gut pays for the brain, 12.8 W against 11.1 W",
+     "withdrawn in 3.1.70, and the arithmetic was never wrong -- the "
+     "QUESTION was. It priced an adult standing still, where a brain "
+     "is a running cost that some other organ must offset. A brain is "
+     "not run, it is BUILT, out of food, in childhood, by someone who "
+     "is not paying for it. Run the life instead of the snapshot and "
+     "a newborn's brain is 109% of everything its own body can make, "
+     "so provisioning is a precondition and not a trade; and body "
+     "growth falls to its slowest at age five with the brain still at "
+     "71%, so the child does not shrink an organ, it stops growing. "
+     "The 3.0 adult-years a child costs was never inside one adult "
+     "body to be found by rearranging its organs"),
     ("3.1.44", "every habitable world orbits a 0.51-0.54 Msun star",
      "withdrawn in 3.1.52. That held only while carbon could not "
      "reach an inner planet: the delivery source stopped at 45 AU and "

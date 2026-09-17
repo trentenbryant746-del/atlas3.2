@@ -139,6 +139,11 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "ontogeny.ONTOGENY": (
+        MEASURED, "one human's body and brain mass by age"),
+    "ontogeny.NEURAL": (
+        MEASURED, "C40H80NO8P, phospholipid; a brain is not plankton"),
+    "ontogeny.FORAGER_W": (MEASURED, "2000 kcal/day net, about 97 W"),
     "ancestry.NEURAL_COST_RATIO": (
         MEASURED, "neural tissue costs about 10x average tissue"),
 }
@@ -158,7 +163,9 @@ CLAIMS_ON = {
                                     "biome.PHOTOSYNTHETIC_EFFICIENCY"],
     "height is worthless without a rival": [],
     "the food chain runs 4 levels": ["biome.PHOTOSYNTHETIC_EFFICIENCY"],
-    "the gut pays for the brain with 1.7 W to spare": [],
+    "a newborn's brain is 109% of its own budget": [],
+    "growth bottoms at age 5 where the brain is 71%": [],
+    "the provisioning debt is 3.0 adult-years": [],
     "cooking is short by a factor of 2.18": ["human.COOKING_GAIN"],
     "death returns every atom": [],
     "a brain must raise intake by a fifth": [],

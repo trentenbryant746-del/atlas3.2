@@ -159,8 +159,8 @@ def check():
         except Exception as e:
             out.append((nm, False, f"{type(e).__name__}: {e}"))
 
-    t("the_gut_pays_for_the_brain", _tradeoff)
-    t("cooking_alone_does_not_pay_for_the_brain", _ramp)
+    t("the_gut_trade_was_the_wrong_question", _tradeoff)
+    t("cooking_alone_does_not_explain_the_gut", _ramp)
     t("the_two_routes_to_the_gut_are_compared", _clash)
     t("a_tool_must_feed_the_head_that_made_it", _tool)
     t("a_human_is_made_of_atoms_and_returns_them", _matter)
@@ -169,18 +169,27 @@ def check():
 
 
 def _tradeoff():
+    """INVERTED, kept. The arithmetic stands; the framing does not."""
+    from engine.ontogeny import ONTOGENY, brain_share, provisioning_debt
     _, cost = brain_cost(HUMAN_BRAIN_KG)
     _, base = brain_cost(APE_BRAIN_KG)
     _, freed = gut_saving()
     if freed < (cost - base):
-        raise ArithmeticError("the gut does not cover the brain")
-    return (f"a 70 kg body runs at {budget_w():.0f} W. Going from "
-            f"{1000*APE_BRAIN_KG:.0f} g of brain to "
-            f"{1000*HUMAN_BRAIN_KG:.0f} g adds {cost-base:.1f} W, and "
-            f"shrinking the gut from an ape's share to ours frees "
-            f"{freed:.1f} W. It covers it with {freed-(cost-base):.1f} W "
-            f"to spare. Nothing had to be invented -- one expensive "
-            f"tissue was traded for another")
+        raise ArithmeticError("the arithmetic itself stopped working")
+    infant = brain_share(ONTOGENY[0][1], ONTOGENY[0][2])
+    if infant <= 1.0:
+        raise ArithmeticError("a newborn can feed its own head after all")
+    _, yrs = provisioning_debt()
+    return (f"INVERTED, kept. The sum is still right -- {freed:.1f} W "
+            f"freed against {cost-base:.1f} W spent -- and it answers "
+            f"nothing, because it prices an ADULT STANDING STILL, as "
+            f"though a brain were a running cost some organ must "
+            f"offset. A brain is built, out of food, in childhood, by "
+            f"someone else. engine/ontogeny.py runs the life instead "
+            f"of the snapshot: a newborn's brain is {100*infant:.0f}% "
+            f"of everything its own body can make, and the {yrs:.1f} "
+            f"adult-years a child costs were never inside one body to "
+            f"be found by rearranging its organs")
 
 
 def _ramp():
@@ -192,7 +201,12 @@ def _ramp():
         raise ArithmeticError("cooking covered it after all")
     if need < COOKING_GAIN:
         raise ArithmeticError("break-even is below cooking; no gap left")
-    return (f"MISSING_RULE. Walk brain and diet up together and the "
+    return (f"MISSING_RULE, and NARROWED. This used to say cooking "
+            f"fails to pay for the brain; engine/ontogeny.py showed "
+            f"the brain was never waiting on the gut. What is left is "
+            f"still real and now stands on its own: the human gut IS "
+            f"smaller, and nothing here explains how far. Walk brain "
+            f"and diet up together and the "
             f"climb LOSES ground the whole way, {r[0][2]:.2f} W to "
             f"{r[-1][2]:.2f} W. It only breaks even at a "
             f"{100*need:.0f}% diet improvement, and cooking is "

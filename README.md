@@ -4533,3 +4533,62 @@ Neither was moved to make them agree.
 open. It is not shown to have been taken — that step stays **RECORDED**.
 
     human 6/6    21/21 published numbers reproduce
+
+### 3.1.70 — a brain is built, not run
+
+3.1.69 asked what pays for a brain and answered with an **adult
+standing still**: a brain costs 20% of the budget, so shrink the gut
+and the books balance. **The arithmetic was right and the question was
+wrong.** A brain is not a running cost some other organ must offset.
+It is *built*, out of food, during childhood, by someone who is not
+paying for it.
+
+Run the life instead of the snapshot:
+
+    age   body   brain     W   brain %   kg/yr
+    0.0    3.5    0.38   8.7      109%       -
+    0.5    7.5    0.65  15.4       87%    8.00
+    1.0   10.0    0.95  19.1       95%    5.00
+    2.0   12.5    1.10  22.5       88%    2.50
+    5.0   18.0    1.28  29.6       71%    1.50
+   10.0   32.0    1.34  45.6       42%    3.00
+   18.0   65.0    1.35  77.6       21%    4.00
+
+**At birth the brain exceeds the whole budget.** 380 g of neural
+tissue in a 3.5 kg body is **109%** of what that body can produce — not
+tight, impossible. So provisioning is a **precondition, not an
+advantage**, the same shape as insulation in `engine/ancestry.py`,
+which also never balances at any size.
+
+**Growth stops to pay for it.** Body growth bottoms out at age 5 at
+1.50 kg/yr, down from 8.00 in the first half year — and the brain is
+still taking **71%** of the budget right there. Two curves entered
+separately, and the minimum of one lands in the expensive phase of the
+other. The child does not shrink an organ to afford its head. **It
+stops growing.**
+
+    provisioning debt   9,294 MJ  =  3.0 adult-years per child
+
+That is what somebody else hands over. 3.1.69 went looking for it
+inside one adult body by rearranging organs; **it was never in there**,
+and the gut claim is now **SUPERSEDED** with that reason recorded.
+
+**The child is assembled from what it eats** — 60.5 kg of body and
+0.97 kg of brain drawn atom by atom from a pool that still balances.
+Neural tissue gets its own recipe (C₄₀H₈₀NO₈P, **6× the phosphorus** of
+Redfield tissue) because it is phospholipid, not protein. Wood got
+cellulose; a brain gets this. No recipe here is a default anyone can
+fall into.
+
+**Tools: searched, not assumed.** 28 combinations of brain size and
+intake gain; **26 of them pay**, the cheapest at a 5% gain. A tool is
+affordable across nearly the whole space.
+
+**Zero were made.** Nothing in this repository generates a tool, a
+technique, or any other piece of architecture. `engine/descent.py`
+found the identical hole for pumps, skins and skeletons — all can be
+priced, none produced. **That is one absence, not two**, and it has now
+been met from a second direction, which is the strongest evidence yet
+that it is the single real gap.
+
+    ontogeny 6/6    23/23 published numbers reproduce

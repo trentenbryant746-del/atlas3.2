@@ -167,6 +167,57 @@ def modular_reach(piece_bases=LIGATION_PIECE_BASES,
         f"neither gate could reach whole")
 
 
+# SELF-MAINTAINING MEANS AUTOCATALYTIC CLOSURE, AND CLOSURE HAS A
+# SIZE.
+#
+# A replicase that can be assembled is still not a cell. A cell
+# maintains itself: every molecule it needs is produced by a
+# reaction that another of its molecules catalyses, with nothing
+# outside keeping it going. Closure appears when N x p > 1, for N
+# molecule types present and p the chance that a random one
+# catalyses a given reaction -- measured by in-vitro selection at
+# somewhere between 1e-6 and 1e-11.
+#
+# That puts a FLOOR under the compartment, because diversity needs
+# volume. And engine/watch.py already derived a ROOF from
+# diffusion: past a certain radius the centre suffocates. Two
+# bounds from arguments with nothing to do with each other:
+#
+#   p = 1e-6    floor 0.34 um     roof 47.5 um
+#   p = 1e-8    floor 1.58 um     roof 47.5 um
+#   p = 1e-10   floor 7.35 um     roof 47.5 um
+#
+# There is a window for every plausible p, and a bacterium is 0.5 to
+# 5 microns. The 100 nm vesicle that passed the compartment gate is
+# FAR too small to maintain itself -- it holds 252 molecules where
+# closure wants a million types. The first self-maintaining thing
+# had to be cell-sized, and that is a prediction rather than an
+# observation fed in.
+CATALYSIS_P = 1e-8            # in-vitro selection, mid-range
+CROWDED_M = 1e-2              # after concentration
+
+
+def closure_floor(p=CATALYSIS_P, conc_M=CROWDED_M):
+    """m. Smallest compartment that can hold a closed set. DERIVED."""
+    from engine.constants import N_A
+    need = 1.0 / p
+    litres = need / (conc_M * N_A)
+    return (litres / 1000.0 * 3.0 / (4.0 * math.pi)) ** (1.0 / 3.0)
+
+
+def size_window(T=288.0, p=CATALYSIS_P):
+    """-> (floor m, roof m, why). Both ends derived, neither fitted."""
+    from engine.watch import cell_ceiling
+    floor = closure_floor(p)
+    roof = cell_ceiling(T)[0]
+    return floor, roof, (
+        f"closure needs at least {floor*1e6:.2f} microns to hold "
+        f"{1/p:.0e} molecule types at {CROWDED_M:.0e} M; diffusion "
+        f"allows at most {roof*1e6:.1f} before the centre suffocates. "
+        f"A bacterium is 0.5 to 5 microns and sits inside a window "
+        f"neither bound was aimed at")
+
+
 def gates():
     """-> [(name, OPEN/SHUT, why)]. Earth, one step at a time."""
     from engine.origin import genome_cost, length_ceiling
@@ -237,6 +288,10 @@ def gates():
     fnd, mnt, npc, mwhy = modular_reach()
     out.append(("assembly", OPEN if (fnd and mnt) else SHUT,
                 f"built from parts instead of drawn whole: {mwhy}"))
+
+    floor, roof, swhy = size_window()
+    out.append(("self-maintaining", OPEN if floor < roof else SHUT,
+                f"autocatalytic closure: {swhy}"))
 
     out.append(("bootstrap", OPEN if (fnd and mnt) else SHUT,
                 f"the {MIN_REPLICASE_BASES}-base replicase exceeds both "
@@ -336,6 +391,7 @@ def check():
     t("this_is_a_constraint_not_an_origin", _humble)
     t("cancelling_a_rule_sizes_the_gap", _size)
     t("assembly_clears_what_search_cannot", _assembly)
+    t("closure_and_diffusion_bracket_a_real_cell", _window)
     return all(o[1] for o in out), out
 
 
@@ -437,6 +493,23 @@ def _assembly():
             f"drawing. This is Levinthal's answer for the fourth time "
             f"here -- folding is not a search, sequence-finding is not "
             f"a search, and assembly is not either")
+
+
+def _window():
+    floor, roof, why = size_window()
+    if floor >= roof:
+        raise ArithmeticError(f"no window: floor {floor*1e6:.2f} um "
+                              f"exceeds roof {roof*1e6:.1f}")
+    small = molecules_in_vesicle(CROWDED_M, VESICLE_RADIUS_M)
+    if small > 1.0 / CATALYSIS_P:
+        raise ArithmeticError("a 100 nm vesicle now suffices for "
+                              "closure, which would undo this contrast")
+    return (f"{why}. The 100 nm vesicle that passes the compartment "
+            f"gate holds {small:.0f} molecules against the {1/CATALYSIS_P:.0e} "
+            f"types closure wants, so a bag is not yet a cell. The two "
+            f"bounds come from diversity and from diffusion, neither "
+            f"aimed at the other, and what they bracket is the size "
+            f"life actually is")
 
 
 if __name__ == "__main__":

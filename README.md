@@ -3685,3 +3685,45 @@ correlation was the shape of a missing rule, not a fact about small
 stars.
 
     earthlab 7/7   census 3/3   5,737 correct, 0 wrong   audit 21/21
+
+### 3.1.53 — self-maintaining has a size, and it is the size of a cell
+
+A replicase that can be assembled is still not a cell. A cell
+**maintains itself**: every molecule it needs is produced by a reaction
+another of its molecules catalyses, with nothing outside keeping it
+going. That is autocatalytic closure, and closure appears when
+`N × p > 1` — N molecule types present, p the chance a random one
+catalyses a given reaction, measured by in-vitro selection at somewhere
+between 10⁻⁶ and 10⁻¹¹.
+
+**Diversity needs volume, so closure puts a FLOOR under the
+compartment.** And `engine/watch.py` already derived a **ROOF** from
+diffusion — past a certain radius a sphere cannot supply its own centre.
+Two bounds from arguments with nothing to do with each other:
+
+    p = 1e-6     floor 0.34 um     roof 47.5 um
+    p = 1e-8     floor 1.58 um     roof 47.5 um
+    p = 1e-10    floor 7.35 um     roof 47.5 um
+
+**There is a window for every plausible p, and a bacterium is 0.5 to 5
+microns.** Neither bound was aimed at the other and neither was fitted
+to a cell. What they bracket is the size life actually is.
+
+**And it says the 100 nm vesicle is not a candidate.** The bag that
+passes the compartment gate holds 25,225 molecules against the 10⁸ types
+closure wants. A bag is not a cell, and the first self-maintaining thing
+had to be cell-sized — which is a prediction, not an observation fed in.
+
+    open   solvent  elements  energy  compartment  crowding
+    open   assembly  self-maintaining  bootstrap
+    SHUT   search    fidelity            (both bypassed by assembly)
+
+**Godot is present** — 4.7.2, already wired as a third executable
+backend in `engine/ir.py`. Worth being exact about what it can do for
+speed: rendering does not reduce computation, and moving the chemistry
+into GDScript would be a rewrite, not an offload. What it *is* good for
+is the thing atlas2 used it for — a **second execution path**, so a
+result that agrees across Python, Ruby and GDScript is one no single
+interpreter's quirk produced. That is verification, not throughput.
+
+    earthlab 8/8   5,737 correct, 0 wrong   claims 16/16   audit 21/21

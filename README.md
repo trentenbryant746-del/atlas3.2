@@ -2746,3 +2746,61 @@ because it is right, not because it shows.
 
     thermo 5/5   terraform 14/14   5,737 correct, 0 wrong
     published claims 11/11   audit 21/21   heldout 165/165
+
+### 3.1.35 — generated forward from a cloud, with our planets held out
+
+**The seed is not the planets, and that is the whole design decision.**
+It is tempting to "seed our solar system" by writing down Mercury
+through Neptune and letting the rules act on them. That gives the answer
+away: any later agreement restates the input. The rules must *generate*
+planets, so the planets cannot be seeded.
+
+What is seeded is the cloud they came from — **four numbers**:
+
+    nebula mass        how much material collapsed
+    metallicity        the fraction that is not hydrogen or helium
+    angular momentum   how far the disk spreads
+    a random draw      for what is genuinely stochastic
+
+Everything after is derived: star mass from the collapse, luminosity
+from mass, disk temperature from luminosity, where each substance can
+condense, how much solid sits at each radius, what a body there can
+sweep up. `the_seed_contains_no_planet` enforces it.
+
+**The first derived structure is right, and nothing about any planet
+was used to get it.** Water ice condenses below 170 K, which for the
+Sun's luminosity is **2.68 AU**:
+
+      ice line                             |                       2.68 AU
+      actual       M       V   E     M     C     J     S      U   N
+      generated   R      R     R     R   R    G    G     G   G    G
+                0.3                                          35 AU
+
+The asteroid belt runs 2.1–3.3 AU. Mars is at 1.52, Jupiter at 5.20.
+The rock/ice boundary falls between them. Rocky bodies form inside it
+and giants outside, and that ordering is a consequence of one
+temperature profile.
+
+**Nine of ten generated orbits land within 35% of a real body** — 0.99
+AU against Earth, 1.53 against Mars, 5.55 against Jupiter, 9.29 against
+Saturn. The spacing came from a seeded random walk, so that is partly
+the draw. What is not the draw is which side of the ice line each one
+falls on.
+
+**The masses are wrong and the check says so.** Six of nine are out by
+more than 3×, up to 489,000× in the asteroid belt. Isolation mass gives
+what a body can sweep from its own feeding zone, and Mercury and Mars
+are far *lighter* than that — a known open problem in planet formation,
+not an arithmetic error here. **The structure derives and the masses do
+not**, and `masses_are_wrong_and_say_so` fails if that ever quietly
+starts passing.
+
+**Why this replaces hand-written experiments.** The lab's 26 experiments
+each construct a scenario I thought of in advance; the rules do not
+compound, they are exercised one at a time in artificial isolation. A
+generated system is one state that every rule acts on at once, so
+interactions appear without being anticipated. This is the first piece:
+cloud to planet. Planet to life is next, and the Sun's own evolution —
+birth to red giant — moves the ice line across the system while it runs.
+
+    genesis 6/6   5,737 correct, 0 wrong   published claims 11/11

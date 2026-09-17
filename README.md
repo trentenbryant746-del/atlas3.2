@@ -5261,3 +5261,66 @@ with the radius set by cone density: **0.1 px at the fovea, 2.3 px at
 50° out.**
 
     pov 4/4    industry 5/5    suite green
+
+### 3.1.83 — the run, and then relating without simulating
+
+**First: `engine/industry.py` answered a question that was not asked.**
+It priced the constraints and concluded a Roman-scale industrial
+revolution stays inside the flow. All true, and none of it is a **run**.
+The request was to put the people there and watch.
+
+So `engine/revolution.py` runs it — 60 million at Roman productivity,
+handed steam engines and every material, stepped a year at a time.
+Nothing about the outcome is written into the loop.
+
+    year      population    engine   vs burial
+       0           0.06B      0.5%        0.00
+     300           3.70B     17.9%        1.25
+     450          14.97B     54.7%        5.07
+     750          23.84B     54.7%        8.13
+    1200          24.00B     54.7%        8.18
+
+**Stopped by FOOD.** Not coal — they used 0.005% of it. Not engines,
+not materials. Population reached 24 billion against a ceiling that
+*is* the flow: **machines reach more of it and make none of it.**
+
+**And the first report of that was wrong.** At 400 years it said
+"stopped by Carnot" — the engines had hit the steam ceiling and the
+population had not stopped. *Engines stopping* and *the run stopping*
+are not the same sentence. Run it to 1200 and the real binding shows.
+
+The food ceiling was also guessed at first — 3.5 TW out of the air,
+giving 81 billion people, which is nobody's estimate. It is now derived
+from what observably feeds 8 billion now.
+
+### relating without simulating
+
+The suite had reached **77 seconds** and that is not sustainable.
+Profiling put **70 of them in the published-claims checker** — several
+claims spin up a process pool and sweep universes, *every run*, to
+re-derive answers nothing could have changed.
+
+The answer was already here and unused. A claim's spine fingerprint
+commits to every rule beneath it, so **an unchanged fingerprint is a
+proof that recomputing would return what it returned last time.**
+
+    claims, cold       70.9 s
+    claims, unchanged   0.0 s   43/43 skipped
+    full suite         77 s  ->  7.3 s
+
+**And the gate is sound, which matters more than the speed.** Editing
+one constant in `biome.py` forced 7 of 43 claims to recompute and
+correctly caught the 2 that depend on it. A fast wrong answer would be
+worse than a slow right one.
+
+`engine/spine.py` now reads `eval/` as well — a published claim is a
+rule like any other and can be fingerprinted, which is what lets it be
+skipped rather than re-run.
+
+**One check failed by being fixed, again.** It asserted
+`atoms.standing_crop` was stranded; 3.1.76 wired it. Pinning a check to
+a rule *name* breaks when the rule gets repaired, so it now tests the
+**ordering** — lineage > dispatched > stranded — which is the finding
+rather than any one membership.
+
+    revolution 5/5    suite 7.3 s warm    43 claims, 0 recomputed

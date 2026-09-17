@@ -158,6 +158,14 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "revolution.START_W": (CHOSEN, "120 W per person beyond muscle"),
+    "revolution.BIRTH_AT_SURPLUS": (CHOSEN, "1.5%/yr at full surplus"),
+    "revolution.FOOD_W_PER_PERSON": (
+        MEASURED, "upkeep plus a child's share, about 130 W"),
+    "revolution.ENGINE_GAIN": (CHOSEN, "1.2% efficiency a year"),
+    "revolution.FED_NOW": (
+        RECORDED, "8 billion people currently fed; the food ceiling "
+                  "is derived from this and not from a guessed share"),
     "industry.POPULATION": (MEASURED, "Roman empire, about 60 million"),
     "industry.BURIAL_FRACTION": (
         CHOSEN, "0.1% of production buried; the number the stock rests on"),
@@ -258,6 +266,8 @@ ENACTED_RESULTS = {
         "a span computed from a courier speed, not a map",
     "60 million industrialising stays inside the flow":
         "a draw against a burial rate, not a history",
+    "the run stops at 24 billion on food":
+        "a trajectory these rules produce, not one anybody lived",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -283,6 +293,8 @@ CLAIMS_ON = {
     "an empire reaches 2250 km at courier speed": ["empire.CRISIS_DAYS"],
     "steam caps at 54.7% whatever it is made of": [],
     "we burn 51 years of burial every year": ["industry.BURIAL_FRACTION"],
+    "the run stops at 24 billion on food": ["revolution.BIRTH_AT_SURPLUS",
+                                            "revolution.START_W"],
     "the channel tolerates 4.7% lies": ["empire.WRONG_COST_MULT"],
     "the assigned genome costs 11% more forever": ["inherit.GIVEN_GENOME"],
     "two adults are the smallest viable group": ["civ.FORAGER_W"],

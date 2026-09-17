@@ -143,6 +143,14 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _revolution():
+    from engine.revolution import run, what_stopped_it
+    h = run(1200)
+    return (round(h[-1]["pop"] / 1e9, 1),
+            what_stopped_it(h)[0],
+            round(100 * h[-1]["eff"], 1))
+
+
 def _industry():
     from engine.industry import (steam_ceiling, drawdown, burial_w,
                                  MODERN_TW, inside_the_flow)
@@ -313,8 +321,42 @@ def _conserve():
     return p.conserved()[0], p.cycles()[0]
 
 
+LEDGER = ROOT / "data" / "claims_ledger.json"
+
+
+def _fp(fn):
+    """The fingerprint of everything this claim stands on.
+
+    engine/spine.py hashes a rule over its own source and its
+    dependencies' fingerprints, so this one value commits to the
+    entire chain beneath a claim. If it has not moved, the claim
+    cannot have changed its answer -- which is how a claim gets
+    RELATED to its past without being RUN again.
+    """
+    from engine.spine import fingerprint
+    return fingerprint("claims", fn.__name__)
+
+
+def _ledger():
+    import json
+    if LEDGER.exists():
+        try:
+            return json.loads(LEDGER.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def _save_ledger(d):
+    import json
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    LEDGER.write_text(json.dumps(d, sort_keys=True, indent=0))
+
+
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.83", "the run reaches 24B and stops on food, not coal",
+     _revolution, (24.0, "food", 54.7), CURRENT),
     ("3.1.82", "steam caps at 54.7%; Rome 0.17x burial, we run 51x",
      _industry, (54.7, 0.17, 51, True), CURRENT),
     ("3.1.81", "empire 2250 km, 4.7% lies tolerated, 3 of 10 derive",
@@ -479,15 +521,47 @@ SUPERSEDED = [
 ]
 
 
-def run():
-    rows = []
+def run(verify=False):
+    """-> rows. Recompute only the claims whose roots have moved.
+
+    A claim's fingerprint commits to every rule beneath it, so an
+    unchanged fingerprint is a PROOF that recomputing would return
+    what it returned last time. Before this, checking 34 published
+    numbers took 70 seconds because several of them spin up a
+    process pool and sweep universes -- every run, to re-derive
+    answers nothing could have changed.
+
+    verify=True ignores the ledger and runs everything, which is
+    what to do when the ledger itself is in doubt.
+    """
+    led = {} if verify else _ledger()
+    fresh, rows, skipped = dict(led), [], 0
     for sec, claim, fn, want, status in CLAIMS:
+        key = f"{sec}|{claim}"
+        try:
+            fp = _fp(fn)
+        except Exception:
+            fp = None
+        prev = led.get(key)
+        if fp and prev and prev.get("fp") == fp and prev.get("ok"):
+            rows.append((sec, claim, want, want, True, status))
+            skipped += 1
+            continue
         try:
             got = fn()
             ok = got == want
         except Exception as e:
             got, ok = f"{type(e).__name__}: {e}", False
         rows.append((sec, claim, want, got, ok, status))
+        if fp:
+            fresh[key] = {"fp": fp, "ok": bool(ok)}
+    if not verify:
+        try:
+            _save_ledger(fresh)
+        except Exception:
+            pass
+    run.skipped = skipped
+    run.total = len(CLAIMS)
     return rows
 
 

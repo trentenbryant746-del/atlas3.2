@@ -1,0 +1,174 @@
+{
+"3.1.18|folding survival rate 0.573": {
+"fp": "21579abf6579714b",
+"ok": true
+},
+"3.1.21|Stefan-Boltzmann agrees to 3.25e-11": {
+"fp": "b573e40e8fa2732c",
+"ok": true
+},
+"3.1.27|4.2% of the (kappa, mu) plane gives all seven closures": {
+"fp": "9c0d11cec9944ad3",
+"ok": true
+},
+"3.1.27|the derived magic numbers": {
+"fp": "193e5b83f17c2be4",
+"ok": true
+},
+"3.1.28|the liquid drop is refused below A=13": {
+"fp": "d9ae842f6028515b",
+"ok": true
+},
+"3.1.29|mass bar 1.850 in domain, 6.249 outside": {
+"fp": "269d0c37e4230c4f",
+"ok": true
+},
+"3.1.31|decay score is 8 right, 0 wrong, 6 refused": {
+"fp": "3d3e736bd801cdc0",
+"ok": true
+},
+"3.1.31|measured-Q precision derived as 0.0866 MeV": {
+"fp": "bbae608c0e4d835a",
+"ok": true
+},
+"3.1.31|the unified binding table holds 29 nuclides": {
+"fp": "d3077415d5fe46c9",
+"ok": true
+},
+"3.1.39|derived CO2 well depth 180 K": {
+"fp": "61bc20cacded9deb",
+"ok": true
+},
+"3.1.39|derived CO2 wing cutoff 11.2 cm-1 at 737 K": {
+"fp": "619e2b2ffb994c54",
+"ok": true
+},
+"3.1.39|unfitted climate: Earth +21.0 K, Venus -488.3 K": {
+"fp": "c748c00be948da59",
+"ok": true
+},
+"3.1.42|habitable band derived 0.999 - 1.899 AU": {
+"fp": "2cbf1e7df0fbd9ad",
+"ok": true
+},
+"3.1.47|chance reaches 57 residues and stops": {
+"fp": "667cf0e6e933614c",
+"ok": true
+},
+"3.1.60|lab: 27 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED, 1 SUGGESTION": {
+"fp": "faa20c31410d6107",
+"ok": true
+},
+"3.1.68|4 trophic levels under a 204 m cavitation ceiling": {
+"fp": "3138522a36b76af0",
+"ok": true
+},
+"3.1.68|height scales as crown^0.4: 6, 11, 26, 64, 161 m": {
+"fp": "500ce1922844cd0b",
+"ok": true
+},
+"3.1.68|the light race stops at 11.4 m, and at 0.05 m alone": {
+"fp": "701a78b122d43db6",
+"ok": true
+},
+"3.1.69|cooking short 1.73x on break-even, 2.18x on the gut": {
+"fp": "73b317ea76b4acf4",
+"ok": true
+},
+"3.1.69|death conserves total matter and burial breaks the cycle": {
+"fp": "824fc16774806dab",
+"ok": true
+},
+"3.1.70|a newborn's brain is 109% of its own budget": {
+"fp": "e0ba4c5092fcb6bf",
+"ok": true
+},
+"3.1.70|growth bottoms at age 5 where the brain is 71%": {
+"fp": "d85cec491cea6c53",
+"ok": true
+},
+"3.1.70|the provisioning debt is 3.0 adult-years per child": {
+"fp": "1eadcc6bc82a49fd",
+"ok": true
+},
+"3.1.73|16 of 20 tool configurations pay, on DERIVED gains": {
+"fp": "d10828e3d92661cf",
+"ok": true
+},
+"3.1.73|a body is 8x short of bone; a flaked edge goes through": {
+"fp": "18131416f94d0188",
+"ok": true
+},
+"3.1.73|marrow pays for a brain 5.2x over": {
+"fp": "f58373990eeecea3",
+"ok": true
+},
+"3.1.73|the tool root is 13 nodes deep against 37 for radiative": {
+"fp": "73b7bc681898fcd1",
+"ok": true
+},
+"3.1.73|the tool root went from 2 nodes to 13": {
+"fp": "8375a2d29b5c77fc",
+"ok": true
+},
+"3.1.74|a brain fills in 1.49 years; a life pours 47x through": {
+"fp": "0fa41bf38774e46b",
+"ok": true
+},
+"3.1.74|stereo reaches 1320 m and 0.19 mm at arm's length": {
+"fp": "81ea484a15e202d3",
+"ok": true
+},
+"3.1.74|the eye: diffraction 0.77 arcmin, sampling 1.01": {
+"fp": "c983387a19bd3416",
+"ok": true
+},
+"3.1.76|a brush shelter pays back in 4.6 nights": {
+"fp": "22aa4ac051f1c558",
+"ok": true
+},
+"3.1.76|unreferenced rules are mostly lineage, not dead code": {
+"fp": "b96e33e86c1d383d",
+"ok": true
+},
+"3.1.76|worn insulation runs out at 19 C, a lodge reaches -64": {
+"fp": "9aaa54beecc864f0",
+"ok": true
+},
+"3.1.77|Earth is fragile in spread, one-sided in mass, free in Z": {
+"fp": "76574278f2f971e0",
+"ok": true
+},
+"3.1.78|heat rejection binds; toolmakers fall under 20%": {
+"fp": "171c9fff1639b0fa",
+"ok": true
+},
+"3.1.79|speech is 256410x narrower than sight, 0.0122% of a brain": {
+"fp": "05cccb49e62852ab",
+"ok": true
+},
+"3.1.79|the fovea is 0.028% of the field; 900 s to sweep": {
+"fp": "f38adf5b3927a279",
+"ok": true
+},
+"3.1.79|two adults are the smallest viable group": {
+"fp": "ba8979c7c2669c41",
+"ok": true
+},
+"3.1.80|muscle for a 400 N blow is 53 cm2; bone picks no height": {
+"fp": "a826dc776df8a4d4",
+"ok": true
+},
+"3.1.81|empire 2250 km, 4.7% lies tolerated, 3 of 10 derive": {
+"fp": "9898b343dfaba63a",
+"ok": true
+},
+"3.1.82|steam caps at 54.7%; Rome 0.17x burial, we run 51x": {
+"fp": "dbe22759587224e7",
+"ok": true
+},
+"3.1.83|the run reaches 24B and stops on food, not coal": {
+"fp": "324cceb2dc735156",
+"ok": true
+}
+}

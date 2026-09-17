@@ -40,14 +40,28 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 ENGINE = ROOT / "engine"
+EVAL = ROOT / "eval"
+
+
+def _dir_for(mod):
+    """Which tree a module lives in. eval/ modules have roots too --
+    a published claim is a rule like any other and can be
+    fingerprinted, which is what lets it be SKIPPED rather than
+    re-run when nothing beneath it moved."""
+    if (ENGINE / f"{mod}.py").exists():
+        return ENGINE
+    if (EVAL / f"{mod}.py").exists():
+        return EVAL
+    return None
 SKIP = {"spine", "roots"}          # the reader is not part of what it reads
 
 
 @lru_cache(maxsize=None)
 def _tree(mod):
-    f = ENGINE / f"{mod}.py"
-    if not f.exists():
+    d = _dir_for(mod)
+    if d is None:
         return None, ""
+    f = d / f"{mod}.py"
     src = f.read_text()
     return ast.parse(src), src
 
@@ -62,13 +76,13 @@ def _imports(mod):
     for n in ast.walk(tree):
         if isinstance(n, ast.ImportFrom) and n.module:
             m = n.module.split(".")[-1]
-            if (ENGINE / f"{m}.py").exists():
+            if _dir_for(m) is not None:
                 for a in n.names:
                     out[a.asname or a.name] = (m, a.name)
         elif isinstance(n, ast.Import):
             for a in n.names:
                 m = a.name.split(".")[-1]
-                if (ENGINE / f"{m}.py").exists():
+                if _dir_for(m) is not None:
                     out[a.asname or m] = (m, None)
     return out
 
@@ -117,7 +131,7 @@ def references(mod, name):
     for n in ast.walk(node):
         if isinstance(n, ast.ImportFrom) and n.module:
             m = n.module.split(".")[-1]
-            if (ENGINE / f"{m}.py").exists():
+            if _dir_for(m) is not None:
                 for a in n.names:
                     local[a.asname or a.name] = (m, a.name)
     here = _defs(mod)
@@ -491,8 +505,15 @@ def _dead():
     tot = sum(len(v) for v in k.values())
     if not k["lineage"]:
         raise ArithmeticError("no unreferenced rule appears in an ancestor")
-    if ("atoms", "standing_crop") not in k["stranded"]:
-        raise ArithmeticError("a known stranded rule did not sort as one")
+    # Do NOT pin this to a rule name. The first version asserted
+    # atoms.standing_crop was stranded and 3.1.76 wired it, so the
+    # check failed because the thing it watched got FIXED. The
+    # stable claim is the ordering, not the membership.
+    if not (len(k["lineage"]) > len(k["dispatched"]) > len(k["stranded"])):
+        raise ArithmeticError(
+            f"the ordering broke: {len(k['lineage'])} lineage, "
+            f"{len(k['dispatched'])} dispatched, {len(k['stranded'])} "
+            f"stranded")
     return (f"{tot} rules are referenced nowhere in this tree, and "
             f"they are THREE different things. {len(k['lineage'])} are "
             f"LINEAGE -- Atlas 2 references them, so this tree grew "
@@ -500,9 +521,12 @@ def _dead():
             f"{len(k['dispatched'])} are DISPATCHED, looked up by name "
             f"at runtime in engine/lab.py where no syntax tree can "
             f"follow. Only {len(k['stranded'])} are STRANDED anywhere, "
-            f"and those are mostly ones I wrote this session and never "
-            f"wired -- atoms.standing_crop, biome.must_outgrow, "
-            f"human.is_a_ramp. The earlier version reported all "
+            f"and those are mostly ones written recently and never "
+            f"wired. This check used to name atoms.standing_crop as "
+            f"a stranded rule and 3.1.76 wired it, so the assertion "
+            f"failed because what it watched got FIXED -- it now "
+            f"tests the ORDERING, which is the finding, rather than "
+            f"any one rule's membership. The earlier version reported all "
             f"{tot} as one number with a caveat, and the caveat named "
             f"the dispatched case while missing the larger one")
 

@@ -3960,3 +3960,43 @@ which is what the rules say and what Earth did, and it carries the
 history of having claimed the opposite.
 
     descent 6/6
+
+### 3.1.59 — fewer rules, and a sign of life that could be checked
+
+Every conclusion in this repository so far is about worlds nobody can
+visit. This is the first that could be **measured across interstellar
+distance from a spectrum**.
+
+**Oxygen is not a biosignature** — a photodissociating ocean makes it.
+**Methane is not** — serpentinising rock makes it. The two *together*
+are, because `CH4 + 2 O2 -> CO2 + 2 H2O` is downhill by 818 kJ/mol,
+putting the equilibrium constant at **2.3 × 10¹⁴⁸**. Earth holds 1.8 ppm
+methane inside 21% oxygen. Those cannot sit together; something is
+remaking the methane faster than the oxygen destroys it. That is an
+accounting identity, not an assumption about biology.
+
+**And the first version was wrong in a way Mars exposed.** Asking only
+how far downhill a pair sits, Mars came back **DRIVEN** — it holds 0.07%
+carbon monoxide beside 0.14% photochemical oxygen, genuinely 128 orders
+from equilibrium, and it is not alive. Ultraviolet splits CO₂ all day.
+
+The equilibrium constant says how *impossible* a pair is. It says
+nothing about how *much* must be remade to hold it there, and that is
+what a driver pays for. So the measure became a **flux**:
+
+    Earth   9.47e+11 kg/yr of methane must be replaced
+    Mars    4.06e+10 kg/yr of carbon monoxide
+
+**That narrowed the gap from 20 orders to a factor of 23, and did not
+close it. Mars still reads driven, and it is left that way.** Lowering
+the threshold until Mars drops out would be fitting to the answer. What
+is actually missing is a real lifetime rule — CO on Mars survives
+centuries on slow hydroxyl chemistry, not the inverse-oxygen scaling
+used here — and naming that is worth more than a tuned constant.
+
+**What this deliberately does not say is "life."** It returns *something
+must be doing this* and a bill. A sufficiently odd geology can drive a
+gas pair, Mars demonstrates it, and the false positive is reported
+rather than hidden.
+
+    signature 4/4

@@ -178,5 +178,9 @@
 "3.1.85|four gifts, four shorter clocks: 1411, 998, 957, 695": {
 "fp": "bb50f270c0c804a3",
 "ok": true
+},
+"3.1.86|a head holds 4 trades; today needs 750k; holding never binds": {
+"fp": "0e9acbe3b1e5932e",
+"ok": true
 }
 }

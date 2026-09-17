@@ -143,6 +143,15 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _school():
+    from engine.school import (trades_per_person, grow, holdable,
+                               specialists_for, CORPUS)
+    c8 = grow(8e9, years=3000)[-1][1]
+    return (round(trades_per_person(), 1),
+            round(specialists_for(CORPUS["today"])),
+            c8 < holdable(8e9) * 0.01)
+
+
 def _gifts():
     from engine.revolution import (run, BIOLOGICAL_N, HABER_N,
                                    INFRASTRUCTURE, teaching_is_free,
@@ -378,6 +387,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.86", "a head holds 4 trades; today needs 750k; holding never binds",
+     _school, (4.0, 750000, True), CURRENT),
     ("3.1.85", "four gifts, four shorter clocks: 1411, 998, 957, 695",
      _gifts, ((1411, 998, 957, 695), True, 8), CURRENT),
     ("3.1.82", "steam caps at 54.7%; Rome 0.17x burial, we run 51x",

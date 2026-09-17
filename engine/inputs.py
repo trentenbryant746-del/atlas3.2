@@ -162,6 +162,14 @@ INPUTS = {
     "revolution.BIRTH_AT_SURPLUS": (CHOSEN, "1.5%/yr at full surplus"),
     "revolution.FOOD_W_PER_PERSON": (
         MEASURED, "upkeep plus a child's share, about 130 W"),
+    "school.LIFE_LEARN_HOURS": (
+        CHOSEN, "40,000 waking hours of teaching in a life; generous"),
+    "school.WORKING_LIFE_YR": (MEASURED, "about 50 years"),
+    "school.SPECIALIST_FRACTION": (CHOSEN, "1% of people specialise"),
+    "school.DISCOVERY_PER_SURPLUS": (
+        MEASURED, "CALIBRATED to Rome 30 trades -> 1800 Europe 3,000, "
+                  "not chosen; the first guess was 1e5 times small"),
+    "school.CORPUS": (RECORDED, "rough corpus sizes in trade-equivalents"),
     "revolution.APPRENTICE_HOURS": (
         MEASURED, "10,000 hours to a trade; the upper bound on what "
                   "one person can be told"),
@@ -279,6 +287,8 @@ ENACTED_RESULTS = {
         "a draw against a burial rate, not a history",
     "every gift shortens the phosphorus clock":
         "three trajectories these rules produce, not ones anybody lived",
+    "holding never binds; discovery rate does":
+        "a corpus these rules grow, not one anybody catalogued",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -305,6 +315,9 @@ CLAIMS_ON = {
     "steam caps at 54.7% whatever it is made of": [],
     "we burn 51 years of burial every year": ["industry.BURIAL_FRACTION"],
     "instructions cost 0.0003% of a brain": [],
+    "one head holds about four trades": [],
+    "holding never binds; discovery rate does": [
+        "school.SPECIALIST_FRACTION", "school.LIFE_LEARN_HOURS"],
     "infrastructure taxes 8% and shortens the clock": [
         "revolution.INFRASTRUCTURE"],
     "every gift shortens the phosphorus clock": [

@@ -5423,3 +5423,56 @@ the previous numbers were a claim about a cap, which is why 3.1.84 is
 superseded even though its finding survived.
 
     revolution 10/10    suite 7.5 s warm    45 claims
+
+### 3.1.86 — schooling, and what understanding is actually limited by
+
+Handing over one set of instructions costs almost nothing. A
+society's whole stock of understanding is a different object with a
+different limit.
+
+**What one person can hold.** 40,000 waking hours of teaching at
+39 bit/s is 5.6×10⁹ bits — **about four trades.** Not four thousand.
+The ceiling is the *channel*, not the storage: `learning.py` already
+showed the store fills in 1.49 years and the rest of a life is
+discarding.
+
+**What a society can hold.** A corpus cannot exceed the people
+holding it times what each holds, so knowledge needs a **population
+to exist in**. A Roman city's 30 trades need 8 specialists; today's
+3,000,000 need **750,000**. That is not a claim about universities,
+it is division.
+
+**What it costs.** Eighteen years of a fifty-year working life is
+**36%** — a larger standing tax than every road, grid and aqueduct in
+`revolution.py` put together, which come to 8%.
+
+### holding never binds, and I had assumed it would
+
+    population   corpus in 3000 yr        holdable
+         60 M                2,997       2,400,000
+      1,000 M               49,486      40,000,000
+      8,000 M              395,677     320,000,000
+
+**Three orders of headroom at every scale.** What limits
+understanding is the **discovery rate**, which is proportional to
+people with surplus — 132× the corpus for 133× the population. So
+understanding is limited by population, and population is limited by
+phosphorus. **The chain closes on a mineral — but through the rate,
+not the holding.**
+
+**The rate is calibrated, not chosen.** A Roman city at 30 trades and
+1800 Europe at 3,000, 1,800 years apart, fixes it at 1.7×10⁻⁸ trades
+per specialist-watt-year. My first value was a guess five orders of
+magnitude too small, which made the corpus grow by 0.007 trades in six
+centuries and hid every limit behind an arithmetic that never moved.
+
+**And a named absence.** The model says a specialist today needs
+**0.5 years** of schooling where the recorded figure is **18** — short
+by 36×. The reason is visible: dividing a corpus by its specialists
+assumes they share *nothing*, and real ones share an enormous common
+base — language, numeracy, reading, what a machine is — before any of
+them specialises. **No rule here prices a foundation every specialist
+must hold**, so the cost is understated, and the number was not
+adjusted to hide it.
+
+    school 6/6    suite 7.7 s warm    46 claims

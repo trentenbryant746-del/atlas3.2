@@ -2804,3 +2804,54 @@ cloud to planet. Planet to life is next, and the Sun's own evolution —
 birth to red giant — moves the ice line across the system while it runs.
 
     genesis 6/6   5,737 correct, 0 wrong   published claims 11/11
+
+### 3.1.36 — the system run forward in time
+
+`engine/genesis.py` builds a system once, at one moment, which is not
+how any of it happens. A star brightens across its main sequence, so
+the distance at which water survives moves outward the whole time.
+Checking a system at a single instant answers a question nobody asked.
+
+**What drives it is derived.** Fusing four hydrogen into one helium
+raises the core's mean molecular weight, so it must burn hotter to hold
+itself up. Lifetime is fuel over burn rate, `t ~ M^-2.5`; luminosity
+follows from the mass-luminosity relation already in `genesis.py`.
+
+    t Gyr  L/Lsun  ice AU   inner edge
+      0.0    0.71    2.27      0.84
+      4.2    0.97    2.63      0.98        <- now
+      9.4    1.73    3.52      1.31
+     10.4    5.40    6.23      2.32   post main sequence
+     12.5   81.43   24.19      9.01
+
+**The faint young Sun appears unprompted** — 0.71 of present output at
+formation, from fuel and burn rate alone. That is the reason the
+carbonate thermostat in `engine/terraform.py` has to exist, arriving
+here as a consequence rather than an input.
+
+**Habitability turns out to be a *when*.** The band's inner edge sweeps
+0.84 → 1.31 AU across the main sequence while nothing about the planets
+changes. The generated world at 0.99 AU is inside it early and too hot
+after about 5 Gyr — roughly a billion years from now, before the star
+leaves the main sequence at all.
+
+**The band edges were typed and should not have been.** An inner edge of
+1.10 and outer of 0.36 in Earth-flux units were written straight in,
+while `engine/terraform.py` already *derives* the inner edge by running
+its thermostat outward until the oceans vapourise and the sink closes.
+Two modules, one quantity, the newer typing what the older computes.
+They are now measured once from the thermostat — **0.999 AU** — and
+moved by `sqrt(L)`, which is exact because habitability follows flux.
+
+**And the outer edge is refused, which found the next missing rule.**
+The thermostat keeps water liquid past 12 AU, because it lets CO₂ pile
+up without limit and the grey slab turns any optical depth into warmth.
+A real atmosphere cannot: below about 195 K **carbon dioxide condenses**,
+snowing out and capping its own greenhouse. That is what actually sets
+an outer edge, and Clausius-Clapeyron for CO₂ is the same equation
+already used for water here — so the rule is absent rather than hard.
+Until it exists the outer edge is UNDETERMINED. Inventing a bound would
+be a patch, and the check fails if an outer edge ever appears without
+the rule.
+
+    evolve 6/6   5,737 correct, 0 wrong   published claims 11/11

@@ -155,6 +155,32 @@ def no_bar_is_typed():
         "for reference is a number waiting to be used, and that one was")
 
 
+@experiment(0, "does any cache key on identity rather than content?")
+def a_cache_keys_on_what_it_depends_on():
+    """The band search moved 1.899 -> 1.984 AU and said so."""
+    import re
+    from pathlib import Path as _P
+    eng = _P(__file__).resolve().parent
+    bad = []
+    for f in sorted(eng.glob("*.py")):
+        txt = f.read_text()
+        for m in re.finditer(r"^\s*\w*[ck]k?\s*=\s*\(?\s*id\(", txt,
+                             re.M):
+            bad.append(f"{f.name}:{txt[:m.start()].count(chr(10))+1}")
+    if bad:
+        return CLASH, ("a cache key uses id(), which CPython reuses "
+                       "after an object is freed: " + ", ".join(bad))
+    return HOLDS, (
+        "no cache keys on object identity. One did: the thermostat "
+        "keyed on id(body), and the habitable-band search -- which "
+        "builds a probe planet per iteration and drops it -- got a "
+        "dead world's climate handed to a live one, moving the outer "
+        "edge from 1.899 to 1.984 AU. It announced itself only "
+        "because a published number changed. A key must be what the "
+        "answer depends on, which here is mass, radius, orbit, "
+        "albedo, eccentricity and internal heat")
+
+
 @experiment(0, "can one substance wear another's properties?")
 def no_shared_physical_default():
     """The sulfuric-acid leak, made into a rule."""

@@ -3604,3 +3604,36 @@ than running it faster, after `gravity()` at 1.3 million calls and
 faster, check whether it needs to run.**
 
     earthlab 6/6   5,737 correct, 0 wrong   claims 16/16   audit 21/21
+
+### 3.1.51 — reuse the exact answer, never the average
+
+Caching the thermostat cuts the Earth lab from 0.52 s to 0.007 s and
+the band search roughly in half. Two things about how, because both
+matter more than the speed.
+
+**Averaging past scans would not be a cache, it would be a new and
+wrong number.** A mean over runs that differ describes none of them,
+and this repository has been bitten by exactly that twice: measuring
+binding energies against abundance-weighted atomic weights produced an
+**80 MeV artefact**, and measuring an error bar across two
+manifestations gave **4.763 MeV where the two populations are 1.850 and
+6.249**. Exact reuse of an identical computation is safe. Averaging is
+how you get a plausible number that nothing can check.
+
+**And the first cache was wrong in a way worth keeping.** It keyed on
+`id(body)`. The habitable-band search builds a probe planet per
+iteration and drops it immediately, CPython reuses the freed address,
+and **a new world at a new orbit was handed a dead one's climate.** The
+outer edge moved from **1.899 to 1.984 AU**.
+
+It announced itself only because a published number changed — which is
+what `eval/claims.py` exists for. A key must be what the answer depends
+on: mass, radius, orbit, albedo, eccentricity, internal heat.
+`a_cache_keys_on_what_it_depends_on` now forbids the pattern.
+
+    thermostat    0.483s cold, 0.00001s warm
+    earthlab      0.52s -> 0.007s
+    terraform     8.2s -> 3.9s      lab 30.0s -> 4.7s
+
+    lab 30 experiments: 27 HOLDS, 1 SUGGESTION, 1 MISSING_RULE, 1 REFUSED
+    5,737 correct, 0 wrong   claims 16/16   audit 21/21

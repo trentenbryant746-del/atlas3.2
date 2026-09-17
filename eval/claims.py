@@ -150,8 +150,8 @@ CLAIMS = [
      _climate, (21.0, -488.3), CURRENT),
     ("3.1.42", "habitable band derived 0.999 - 1.899 AU",
      _band, (0.999, 1.899), CURRENT),
-    ("3.1.48", "lab: 26 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED, "
-               "1 SUGGESTION", _lab_counts, (26, 0, 1, 1), CURRENT),
+    ("3.1.51", "lab: 27 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED, "
+               "1 SUGGESTION", _lab_counts, (27, 0, 1, 1), CURRENT),
     ("3.1.47", "chance reaches 57 residues and stops",
      _ceiling57, 57, CURRENT),
     ("3.1.39", "derived CO2 wing cutoff 11.2 cm-1 at 737 K",

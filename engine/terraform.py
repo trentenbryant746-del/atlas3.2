@@ -771,6 +771,9 @@ def _excess(body, co2_pa, outgassing, ocean_kgm2, luminosity, humidity,
     return (outgassing - weathering(body, T, co2_pa, ocean_kgm2)), T, n
 
 
+_THERMO_CACHE = {}
+
+
 def thermostat(body, outgassing=1.0, ocean_kgm2=None, luminosity=L_SUN,
                humidity=RH_EARTH, albedo=None, lo_pa=1e-6, hi_pa=1e8,
                steps=260):
@@ -792,6 +795,37 @@ def thermostat(body, outgassing=1.0, ocean_kgm2=None, luminosity=L_SUN,
     """
     if ocean_kgm2 is None:
         ocean_kgm2 = ocean_column(body)
+    # MEMOISED ON THE EXACT INPUTS, NOT AVERAGED OVER PAST RUNS.
+    # The same body under the same star gives the same answer, so
+    # recomputing 585 root scans for it is waste. But an AVERAGE of
+    # past scans would be a different thing entirely: it would
+    # return a number that is no world's actual answer. This
+    # repository has been bitten by exactly that twice -- measuring
+    # binding energies against abundance-weighted atomic weights
+    # produced an 80 MeV artefact, and measuring an error bar across
+    # two manifestations gave 4.763 MeV where the populations are
+    # 1.850 and 6.249. A mean over things that differ describes none
+    # of them. Exact reuse is safe; averaging is how you get a
+    # plausible number nothing can check.
+    # NOT id(body). The first version keyed on identity and the
+    # band search changed its answer from 1.899 to 1.984 AU: it
+    # creates a probe planet per iteration, each is freed
+    # immediately, and CPython reuses the address -- so a new world
+    # at a new orbit collected a dead one's climate. A cache that
+    # can return another object's answer is worse than no cache,
+    # and it announced itself only because the result moved.
+    #
+    # The key is what the answer actually depends on.
+    ck = (round(body.mass, 3), round(body.radius, 3),
+          round(body.au, 9), round(body.albedo, 9),
+          round(getattr(body, "eccentricity", 0.0), 9),
+          round(getattr(body, "internal_w_m2", 0.0), 9),
+          round(outgassing, 9), round(ocean_kgm2, 3),
+          round(luminosity, 3), round(humidity, 6),
+          None if albedo is None else round(albedo, 6),
+          lo_pa, hi_pa, steps)
+    if ck in _THERMO_CACHE:
+        return _THERMO_CACHE[ck]
 
     def f(c):
         return _excess(body, c, outgassing, ocean_kgm2, luminosity,
@@ -844,13 +878,15 @@ def thermostat(body, outgassing=1.0, ocean_kgm2=None, luminosity=L_SUN,
         v = "PARTLY_LIQUID"
     else:
         v = "FROZEN"
-    return {"body": body.name, "verdict": v,
+    out = {"body": body.name, "verdict": v,
             "co2_pa": co2, "T": T, "tau": tau, "tau_water": tw,
             "states": n, "wet_fraction": frac, "roots": roots,
             "why": f"outgassing and weathering balance at {co2:.3g} Pa of "
                    f"CO2 and a mean of {T:.1f} K, with {100*frac:.0f}% of "
                    f"the surface above freezing -- found by the loop, "
                    f"not set"}
+    _THERMO_CACHE[ck] = out
+    return out
 
 
 def error_bar():

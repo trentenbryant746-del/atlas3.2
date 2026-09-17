@@ -216,10 +216,10 @@ def _seed():
 
 
 def _noreward():
-    import inspect
-    src = inspect.getsource(fitness)
-    if "trait" in src and "COST" not in src.upper():
-        raise ArithmeticError("fitness may be rewarding traits")
+    # NO SOURCE GREP. This read fitness()'s own text looking for the
+    # word "trait", which is the fifth check in this repository to
+    # search a file for a string it contains. The arithmetic answers
+    # the question directly and cannot match itself.
     a = Organism(1e-5)
     b = Organism(1e-5, {"circulation"})
     if fitness(b) >= fitness(a):

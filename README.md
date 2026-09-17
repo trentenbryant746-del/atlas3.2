@@ -1849,3 +1849,51 @@ tuned away.
     engine/terraform.py  13/13     engine/scales.py    6/6
     eval/audit.py        21/21     eval/heldout.py   165/165 byte-exact
     eval/benchmark.py    ALL PASS  5,737 correct, 0 wrong
+
+### 3.1.20 — a correction: Mercury was never a held-out success
+
+3.1.19 reported Mercury at **+2.8 K** as a free win — a body with no
+atmosphere showing no greenhouse. That result does not hold and is
+withdrawn.
+
+The equilibrium temperature's factor of 4 comes from a sphere
+intercepting `πr²` and radiating from `4πr²`. That is only right if the
+absorbed heat is **spread over the whole sphere**, which needs an
+atmosphere to carry it or rotation fast enough that no face stays lit.
+Mercury has neither. Its quoted 440 K is the **dayside** mean; the global
+mean is nearer 340 K. A model assuming full redistribution was being
+scored against a number assuming none, and the two happened to land 3 K
+apart. Against the right quantity the same model is about **+97 K** out.
+
+The tell was the Moon. Every airless body came out too cold — Io −14.8 K,
+Callisto −19.3 K, Europa −9.5 K — except the Moon, which came out
+**+18.3 K too hot**. A greenhouse that is missing makes you too cold, never
+too hot, so the asymmetry meant the formula was being misapplied rather
+than the physics being incomplete.
+
+**So the criterion is derived and the body is refused when it fails.**
+Compare how long the surface takes to radiate its heat away against how
+long the planet takes to turn:
+
+    Titan     573      well mixed
+    Earth      32.2    well mixed
+    Venus      18.8    well mixed
+    Mars        0.92   MARGINAL -- the largest day-night swing here, ~60 K
+    Mercury     1.4e-15  refused: it does not have one temperature
+
+Six orders of magnitude separate Mars from Mercury, so where the line
+falls between them is not a sensitive choice. A body below it does not
+*have* a mean temperature — any single number quoted for it is a choice
+of which average, and scoring against it compares two different
+quantities.
+
+**The bar gets worse and more honest.** Venus, Earth and Mars were spent
+on the three parameters. Every airless body is now refused. That leaves
+the solar system with **one** usable test:
+
+    planetary-climate bar   9.3 K, over a sample of ONE (Titan)
+
+Which is the strongest possible argument for what comes next. There are
+no more test points to be had here, so validation has to stop being
+"does it match our planets" and become **"does our solar system fall out
+of the space of internally consistent worlds."**

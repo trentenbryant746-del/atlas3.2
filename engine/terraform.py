@@ -124,6 +124,79 @@ BODIES = {
 }
 
 
+# A SINGLE TEMPERATURE IS NOT ALWAYS A MEANINGFUL QUANTITY, AND
+# SCORING AGAINST ONE THAT IS NOT COST ME A RESULT.
+#
+# The factor of 4 in the equilibrium temperature comes from a sphere
+# intercepting pi r^2 and radiating from 4 pi r^2. That is only
+# right if the absorbed heat gets SPREAD over the whole sphere,
+# which needs an atmosphere to carry it or rotation fast enough that
+# no face stays lit. Without redistribution the subsolar point runs
+# at 4^(1/4) = 1.41 times hotter and the night side falls towards
+# nothing, and the average of T is not the T of the average because
+# radiation goes as the fourth power.
+#
+# Version 3.1.19 reported Mercury as a held-out success at +2.8 K. It
+# was not. Mercury's quoted 440 K is its DAYSIDE mean; its global
+# mean is nearer 340 K. A model that assumes full redistribution was
+# being scored against a number that assumes none, and the agreement
+# was a coincidence of two mismatched quantities. Against the global
+# figure the same model is about +97 K out.
+#
+# So the criterion is derived and the body is REFUSED when it fails:
+# compare how long the surface takes to radiate its heat away against
+# how long the planet takes to turn. If it cools faster than it
+# spins, each face sits at its own temperature and the planet does
+# not have one.
+CP_AIR = 1004.0          # J/kg/K, diatomic; CO2 is 844, same order
+DAY_S = 86400.0
+
+ROTATION_S = {"Venus": 243.0 * DAY_S, "Earth": 1.0 * DAY_S,
+              "Mars": 1.027 * DAY_S, "Titan": 15.95 * DAY_S,
+              "Mercury": 58.65 * DAY_S, "Moon": 27.3 * DAY_S}
+
+
+def radiative_time(body, T, p_total_pa, cp=CP_AIR):
+    """Seconds for the atmosphere to radiate its heat. DERIVED."""
+    if p_total_pa <= 0 or T <= 0:
+        return 0.0
+    return cp * (p_total_pa / body.gravity()) / (4 * SIGMA * T ** 3)
+
+
+def redistributes(body, T=None, p_total_pa=None):
+    """-> (bool, ratio, why). Does this body HAVE one temperature?"""
+    if T is None:
+        T = equilibrium_T(body)
+    if p_total_pa is None:
+        p_total_pa = body.observed_bar_pa or 0.0
+    rot = ROTATION_S.get(body.name)
+    if rot is None:
+        return True, float("inf"), "rotation unknown; assumed mixed"
+    tr = radiative_time(body, T, p_total_pa)
+    r = tr / rot
+    # Three tiers, not two. A binary cut refused Mars, which sits at
+    # 0.92 -- and Mars is genuinely marginal: it has the largest
+    # day-night swing of any body here, about 60 K, so its mean is a
+    # real number but a noisier one than Earth's. Mercury is at
+    # 1.4e-15. Six orders of magnitude separate them, so where the
+    # line goes between is not a sensitive choice.
+    if r >= 1.0:
+        return True, r, (f"the atmosphere holds its heat {r:.2f} rotations, "
+                         f"so day and night even out and a single mean "
+                         f"temperature means something")
+    if r >= 0.1:
+        return True, r, (f"marginal at {r:.2f} rotations of heat storage -- "
+                         f"the mean is meaningful but the day-night swing "
+                         f"is large, so this body deserves a wider bar "
+                         f"than a well-mixed one")
+    return False, r, (f"the surface radiates its heat away in {r:.3g} of a "
+                      f"rotation, so each face sits at its own temperature "
+                      f"and this body does not HAVE one temperature -- any "
+                      f"single number quoted for it is a choice of which "
+                      f"average, and scoring against it compares two "
+                      f"different quantities")
+
+
 def equilibrium_T(body, luminosity=L_SUN, albedo=None):
     """Bare-rock temperature. DERIVED: absorbed equals radiated.
 
@@ -674,18 +747,27 @@ def error_bar():
     would be the most misleading of the three.
     """
     rows = []
-    b = BODIES["Mercury"]
-    rows.append(("Mercury", equilibrium_T(b) - b.observed_T))
-    b = BODIES["Titan"]
-    rows.append(("Titan", surface_T(b, 0.0)[0] - b.observed_T))
+    for n in sorted(BODIES):
+        b = BODIES[n]
+        if n in ("Venus", "Earth", "Mars"):
+            continue                     # spent on the three parameters
+        if not redistributes(b)[0]:
+            continue                     # has no single temperature to score
+        rows.append((n, surface_T(b, 0.0)[0] - b.observed_T))
+    if not rows:
+        raise ValueError("no held-out body survives the redistribution "
+                         "test, so there is nothing to measure a bar on")
     rms = math.sqrt(sum(d * d for _, d in rows) / len(rows))
-    return rms, (f"{rms:.1f} K, the RMS of {len(rows)} held-out bodies ("
+    return rms, (f"{rms:.1f} K, over {len(rows)} held-out body/bodies ("
                  + ", ".join(f"{n} {d:+.1f}" for n, d in rows) +
                  f"). Venus, Earth and Mars were spent on the three "
-                 f"parameters, so two bodies are all that is left and this "
-                 f"bar is barely determined -- it is a residual in kelvin "
-                 f"like the nuclear bars, over a sample far too small to "
-                 f"behave like one")
+                 f"parameters, and every airless body is refused because it "
+                 f"has no single temperature to score -- which leaves the "
+                 f"solar system with ONE usable test. A residual in kelvin "
+                 f"like the nuclear bars, over a sample of one, and that is "
+                 f"the strongest reason to stop testing against this solar "
+                 f"system and start asking whether it falls out of the "
+                 f"space of consistent worlds")
 
 
 def check():
@@ -721,15 +803,21 @@ def _probe(au, water=True, lum=L_SUN):
 
 
 def _mercury():
-    """A body with no air must show no greenhouse, and is held out."""
+    """Mercury must be REFUSED, not scored. This was a reported result."""
     b = BODIES["Mercury"]
-    te = equilibrium_T(b)
-    d = b.observed_T - te
-    if abs(d) > 10:
-        raise ArithmeticError(f"airless Mercury is off by {d:.1f} K")
-    return (f"Mercury {te:.1f} K against {b.observed_T:.0f} K observed, "
-            f"{d:+.1f} K -- it was not fitted and it has no atmosphere, so "
-            f"a near-zero greenhouse is the model getting a free test right")
+    ok, r, why = redistributes(b)
+    if ok:
+        raise ArithmeticError("Mercury is being treated as having a single "
+                              "temperature; it does not")
+    for n in ("Venus", "Earth", "Mars", "Titan"):
+        good, rr, _ = redistributes(BODIES[n])
+        if not good:
+            raise ArithmeticError(f"{n} was refused too, leaving nothing")
+    return (f"Mercury is refused: {why[:120]}... 3.1.19 scored it at "
+            f"+2.8 K against a DAYSIDE mean of 440 K while predicting a "
+            f"redistributed global mean. The real global figure is near "
+            f"340 K and the model is about +97 K out. The agreement was "
+            f"two different quantities meeting by chance")
 
 
 def _titan():

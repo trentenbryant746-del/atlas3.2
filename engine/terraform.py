@@ -108,8 +108,19 @@ class Body:
         self.observed_co2 = observed_co2
 
     def gravity(self):
-        """m/s^2. DERIVED."""
-        return G_GRAV * self.mass / self.radius ** 2
+        """m/s^2. DERIVED, and memoised because it cannot change.
+
+        Profiling one thermostat call found this evaluated 1,309,539
+        times. It depends on two numbers fixed when the body was
+        made, so every call after the first recomputed a constant --
+        and the fix is not a faster language, it is not computing it
+        again. Cython would have made a needless division fast.
+        """
+        g = self.__dict__.get("_g")
+        if g is None:
+            g = G_GRAV * self.mass / self.radius ** 2
+            self.__dict__["_g"] = g
+        return g
 
     def escape_velocity(self):
         """m/s. DERIVED."""
@@ -414,8 +425,13 @@ def tau_total(body, T, co2_pa, ocean_kgm2, humidity=RH_EARTH):
     return tau_co2(body, co2_pa) + tw, tw
 
 
-def _imbalance(body, T, co2_pa, ocean_kgm2, luminosity, humidity, albedo):
-    te = equilibrium_T(body, luminosity, albedo)
+def _imbalance(body, T, co2_pa, ocean_kgm2, luminosity, humidity, albedo,
+               te=None):
+    # te is the bare-rock temperature and does not depend on T, so
+    # the scan hoists it out rather than recomputing it 436,514
+    # times.
+    if te is None:
+        te = equilibrium_T(body, luminosity, albedo)
     tau, _ = tau_total(body, T, co2_pa, ocean_kgm2, humidity)
     return te * (1.0 + 0.75 * tau) ** 0.25 - T
 
@@ -447,8 +463,9 @@ def fixed_points(body, co2_pa, ocean_kgm2=None, luminosity=L_SUN,
         # scan misses the only root a body with no atmosphere has.
         # Starting at a round 100 K lost Titan, whose answer is 85.
         lo = 0.5 * equilibrium_T(body, luminosity, albedo)
+    _te = equilibrium_T(body, luminosity, albedo)
     f = lambda T: _imbalance(body, T, co2_pa, ocean_kgm2, luminosity,
-                             humidity, albedo)
+                             humidity, albedo, _te)
     out, prev_T, prev = [], lo, f(lo)
     for i in range(1, steps + 1):
         T = lo + (hi - lo) * i / steps

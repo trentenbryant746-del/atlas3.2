@@ -12,6 +12,17 @@ different work:
                   each other when both apply
     REFUSED       the experiment cannot be run with what is here,
                   and says what it would need
+    SUGGESTION    nothing is wrong, and something is worth looking
+                  at anyway
+
+A NOTE ON THE FIFTH. Everything above SUGGESTION is a verdict about
+correctness and stops the build. Not every useful observation is
+one. "This rule has never fired" is worth knowing and is not a
+failure; nor is "this rule has only ever caught someone else." A
+lab with no way to say that either stays silent about it or
+promotes it to an error, and both are wrong -- silence loses the
+observation and an error cries wolf until the whole thing is
+ignored.
 
 Only the first is a pass. The other three are the interesting ones,
 and lumping them together as "fail" throws away the only information
@@ -54,8 +65,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-HOLDS, MISSING_RULE, CLASH, REFUSED = ("HOLDS", "MISSING_RULE", "CLASH",
-                                       "REFUSED")
+ROOT = Path(__file__).resolve().parent.parent
+
+HOLDS, MISSING_RULE, CLASH, REFUSED, SUGGESTION = (
+    "HOLDS", "MISSING_RULE", "CLASH", "REFUSED", "SUGGESTION")
 
 LAYERS = {0: "constants", 1: "molecule", 2: "column", 3: "atmosphere",
           4: "balance", 5: "feedback", 6: "world", 7: "composition"}
@@ -704,11 +717,81 @@ def the_barrier_is_search_not_energy():
         f"engine/folding.py concludes about Levinthal one level down")
 
 
+@experiment(0, "which rules have never once fired?")
+def rules_that_have_never_fired():
+    """A rule that only catches other people is not being tested.
+
+    IT MUST NOT CALL run(). The first version did, and run() calls
+    every experiment including this one, so it recursed until the
+    stack gave out. An experiment that inspects the whole lab cannot
+    be part of the lab unless it reads a RECORD instead of taking a
+    reading -- so the runner writes the history and this only reads
+    it.
+
+    A SUGGESTION, deliberately. Never having fired is not a defect
+    and stopping the build over it would be crying wolf. But going
+    unrecorded means nobody asks whether a rule is load-bearing or
+    decorative. Two of these caught their own author within minutes
+    of being written -- MEASURED_Q_BAR in 3.1.31 and YEAR_S in
+    3.1.47 -- and that is the only hard evidence any of them are
+    live.
+    """
+    hist = _load_history()
+    if not hist:
+        return SUGGESTION, ("no verdict history yet; it accumulates as "
+                            "the lab runs")
+    never = [n for n, vs in sorted(hist.items()) if vs == [HOLDS]]
+    fired = [n for n, vs in sorted(hist.items()) if vs != [HOLDS]]
+    return SUGGESTION, (
+        f"{len(fired)} of {len(hist)} rules have returned something "
+        f"other than HOLDS at least once and are demonstrably live"
+        + (f": {', '.join(fired[:4])}" if fired else "")
+        + f". The other {len(never)} have only ever passed. THE RECORD "
+          f"STARTS WHEN RECORDING STARTED, so rules that fired before "
+          f"this existed -- the sulfuric-acid leak, MEASURED_Q_BAR, "
+          f"YEAR_S -- show as never having fired, and the count "
+          f"understates. Never having fired is not a defect and is not "
+          f"evidence either: a rule that cannot fail looks exactly like "
+          f"one that has not yet had cause to. Worth knowing, not worth "
+          f"stopping for")
+
+
 # ------------------------------------------------------- the runner
+_HIST = ROOT / ".atlas-verdicts.json"
+
+
+def _load_history():
+    import json
+    try:
+        return json.loads(_HIST.read_text())
+    except Exception:
+        return {}
+
+
+def _record(rows):
+    """The RUNNER writes history. An experiment only reads it."""
+    import json
+    hist = _load_history()
+    for _L, nm, v, _d, _a in rows:
+        seen = set(hist.get(nm, []))
+        seen.add(v)
+        hist[nm] = sorted(seen)
+    try:
+        _HIST.write_text(json.dumps(hist, indent=1, sort_keys=True))
+    except Exception:
+        pass
+
+
 def unresolved():
     """-> [(layer, name, verdict, detail)]. Everything not yet HOLDS."""
     return [(L, n, v, d) for L, n, v, d, _ in run(stop_on_problem=False)[0]
             if v != HOLDS]
+
+
+def suggestions():
+    """-> [(layer, name, detail)]. Worth a look, nothing is wrong."""
+    return [(L, n, d) for L, n, v, d, _ in run(stop_on_problem=False)[0]
+            if v == SUGGESTION]
 
 
 def run(up_to=None, stop_on_problem=True):
@@ -732,10 +815,11 @@ def run(up_to=None, stop_on_problem=True):
         for e in here:
             v, d = e.run()
             rows.append((L, e.name, v, d, e.asks))
-            if v != HOLDS and bad is None:
+            if v not in (HOLDS, SUGGESTION) and bad is None:
                 bad = L
         if bad is not None and stop_on_problem:
             break
+    _record(rows)
     return rows, bad
 
 
@@ -793,7 +877,8 @@ def _kinds():
                               "distinction is untested")
     # A clash is allowed to stand, but it must be NAMED and it must
     # stop the layers above it from being trusted. What is forbidden
-    # is a clash nobody has written down.
+    # is a clash nobody has written down. A SUGGESTION stops nothing
+    # and needs no name beyond its own text.
     for L, n, v, d, _ in rows:
         if v == CLASH and len(d) < 200:
             raise ArithmeticError(f"{n} clashes without explaining what "

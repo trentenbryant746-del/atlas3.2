@@ -12,3 +12,8 @@ vendor/
 # parts are tracked, because GitHub refuses any single file over
 # 100 MB. There is no cap on the repository as a whole.
 data/qwen/route-events.jsonl
+
+# machine-local: a result cache and a verdict history.
+# Both are derived from the tree and would conflict on every pull.
+.atlas-cache.json
+.atlas-verdicts.json

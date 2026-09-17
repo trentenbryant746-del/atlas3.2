@@ -3468,3 +3468,49 @@ tested.
 
     origin 5/5   lab 28 experiments   5,737 correct, 0 wrong
     claims 16/16   audit 21/21
+
+### 3.1.48 — a fifth verdict, and measuring instead of compiling
+
+**SUGGESTION.** The lab could only say pass, clash, missing or refused,
+and not every useful observation is a verdict about correctness. "This
+rule has never fired" is worth knowing and is not a failure. With no way
+to say it, a lab either stays silent — losing the observation — or
+promotes it to an error and cries wolf until the whole thing is ignored.
+A SUGGESTION stops nothing and blocks no layer.
+
+The first one implements exactly the point that prompted it:
+
+    3 of 29 rules have returned something other than HOLDS at least
+    once and are demonstrably live. The other 26 have only ever
+    passed, which is not a defect and is not evidence either -- a
+    rule that cannot fail looks exactly like one that has not yet
+    had cause to.
+
+The record starts when recording started, so the rules that fired
+*before* this existed — the sulfuric-acid leak, `MEASURED_Q_BAR`,
+`YEAR_S` — show as never having fired, and the count understates. Said
+plainly rather than quietly corrected.
+
+**And it recursed on its first run.** An experiment that inspects the
+whole lab called `run()`, which runs every experiment including that
+one, until the stack gave out. An experiment cannot take a reading of
+the lab it is part of; the *runner* writes the history and the
+experiment only reads it.
+
+**On compiling to C: the measurement said not to.** Profiling one
+thermostat call found `gravity()` evaluated **1,309,539 times** — a
+constant of two numbers fixed when the body was made — and
+`equilibrium_T` recomputed 436,514 times inside a loop it does not
+depend on. Cython would have made a needless division fast. Memoising
+one and hoisting the other:
+
+    thermostat    6.43s -> 0.67s -> 0.478s
+    band search    24s  -> 12.7s -> 9.1s
+
+That is the second time on this question that measuring first beat the
+obvious answer; the first was threads, which made it seven times slower.
+Compilation is still available and is now worth less, because what was
+left is arithmetic that has to happen.
+
+    lab 29 experiments: 26 HOLDS, 1 SUGGESTION, 1 MISSING_RULE, 1 REFUSED
+    5,737 correct, 0 wrong   claims 16/16   audit 21/21

@@ -710,6 +710,7 @@ def check():
     t("water_is_a_property_not_a_name", _wname)
     t("runaway_inside_the_inner_edge", _inner)
     t("nothing_acts_on_the_planet", _noagent)
+    t("AU_is_a_distance_not_gold", _augold)
     return all(o[1] for o in out), out
 
 
@@ -857,6 +858,23 @@ def _inner():
             f"oceans are vapour, rain stops, the sink closes and CO2 "
             f"accumulates with nothing to remove it. Nobody put an edge "
             f"in; it is where the loop stops having a solution")
+
+
+def _augold():
+    """AU is 149,597,870,700 m. Au is element 79. Never the same thing."""
+    import engine.abundance as ab
+    g = getattr(ab, "ABUNDANCE", {})
+    if "AU" in g:
+        raise ArithmeticError("an element table has a key 'AU'")
+    if "Au" in dir(sys.modules[__name__]):
+        raise ArithmeticError("this module defines a bare name Au")
+    if abs(AU - 1.495978707e11) > 1e-3:
+        raise ArithmeticError(f"AU is {AU}")
+    return (f"AU = {AU:,.0f} m, exact by definition, a bare uppercase "
+            f"constant here; gold is the quoted string 'Au' used as a key "
+            f"in the element tables, which this module never imports. "
+            f"Different case, different type, different namespace -- they "
+            f"cannot be confused by anything that runs")
 
 
 def _noagent():

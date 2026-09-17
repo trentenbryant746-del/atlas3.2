@@ -2700,3 +2700,49 @@ routes to them are now closed by measurement rather than opinion.
 
     radiative 10/10   lab 26 experiments   5,737 correct, 0 wrong
     published claims 11/11   audit 21/21   heldout 165/165
+
+### 3.1.34 — thermodynamics existed as numbers, not rules
+
+Asked directly whether this repository had thermodynamics, the audit
+said almost none: Clausius-Clapeyron in `engine/terraform.py`, the word
+entropy once in `engine/biomatter.py`. **Absent:** equipartition, the
+second law, Carnot, Maxwell-Boltzmann, chemical potential, heat
+capacity. And yet three heat capacities were typed into the climate code
+and used to set lapse rates and radiative timescales.
+
+`engine/thermo.py` derives them. A molecule carries kT/2 per reachable
+quadratic degree of freedom; rotation is two for a linear molecule and
+three otherwise, because spinning a linear molecule about its own axis
+moves nothing.
+
+**The vibrational part was already in the repository.** A mode is frozen
+when its quantum exceeds the thermal energy and active when it does not,
+smoothly, by the Einstein heat capacity — and every frequency needed is
+a band centre in `engine/radiative.py`, measured on gas in a cell. So
+**the heat capacity of CO₂ follows from the same spectroscopy that sets
+its opacity**, and the two stop being independent inputs. That is what a
+rule does and a number cannot.
+
+    Ar    gamma 1.6667   five thirds, from counting alone
+    N2    gamma 1.3998   seven fifths
+    CO2   cp 833 J/kg/K against a typed 850
+
+**And the typed value was wrong in a way that mattered.** CO₂'s cp runs
+**735 J/kg/K at 200 K to 1167 at 800 K, a 59% change**. The climate code
+used one number for Mars at 210 K and Venus at 737 K — the same gas
+asserted to behave identically on two planets 500 K apart.
+
+**The Sun's surface is derived, not measured.** A star's effective
+temperature is not an independent observation: it is what its luminosity
+and radius imply through Stefan-Boltzmann, itself derived from h, c and
+k. **5772 K** comes out; nothing put it in.
+
+**Is the distance from the Sun proper?** The semi-major axis is the right
+length and the wrong average. A planet spends longer near aphelion but
+flux goes as 1/r², so the time-averaged flux is `L/(4πa²√(1−e²))`. The
+correction is **+2.4 K on Mercury, +0.23 K on Mars, +0.01 K on Earth** —
+inside the 9.3 K planetary bar for every body that is scored. It is in
+because it is right, not because it shows.
+
+    thermo 5/5   terraform 14/14   5,737 correct, 0 wrong
+    published claims 11/11   audit 21/21   heldout 165/165

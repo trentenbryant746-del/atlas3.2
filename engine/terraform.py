@@ -77,7 +77,7 @@ R_GAS = K_B * N_A             # DERIVED: the gas constant is k times N_A
 class Body:
     def __init__(self, name, mass_kg, radius_m, au, albedo,
                  observed_T=None, observed_bar_pa=None, observed_co2=None,
-                 water_kg=0.0):
+                 water_kg=0.0, eccentricity=0.0):
         self.name, self.mass, self.radius = name, mass_kg, radius_m
         self.au, self.albedo = au, albedo
         # An inventory, carried by the body. The first version looked
@@ -86,6 +86,14 @@ class Body:
         # habitable-zone probe came back a runaway. Water is a
         # property of a world, not of a string.
         self.water_kg = water_kg
+        # THE SEMI-MAJOR AXIS IS THE RIGHT LENGTH AND THE WRONG
+        # AVERAGE. A planet spends longer near aphelion, but flux
+        # goes as 1/r^2, so the time-average of the FLUX is
+        # 1/(a^2 sqrt(1-e^2)) and not 1/a^2. Derivable, correct, and
+        # worth +2.4 K on Mercury and +0.01 K on Earth -- far inside
+        # the 9.3 K planetary bar for every body that is scored. It
+        # goes in because it is right, not because it shows.
+        self.eccentricity = eccentricity
         self.observed_T = observed_T
         self.observed_bar_pa = observed_bar_pa
         self.observed_co2 = observed_co2
@@ -100,23 +108,28 @@ class Body:
 
     def flux(self, luminosity=L_SUN):
         """W/m^2 at the top of the atmosphere. DERIVED, inverse square."""
-        return luminosity / (4 * math.pi * (self.au * AU) ** 2)
+        e = getattr(self, "eccentricity", 0.0)
+        return (luminosity / (4 * math.pi * (self.au * AU) ** 2)
+                / math.sqrt(1.0 - e * e))
 
 
 BODIES = {
     # albedo is observed; so are T and surface pressure, and those two
     # are used ONLY to score, never to derive.
     "Venus": Body("Venus", 4.8675e24, 6.0518e6, 0.723, 0.77,
-                  observed_T=737.0, observed_bar_pa=9.2e6, observed_co2=0.965),
+                  observed_T=737.0, observed_bar_pa=9.2e6, observed_co2=0.965, eccentricity=0.0068),
     "Earth": Body("Earth", 5.97219e24, 6.371e6, 1.000, 0.306,
                   observed_T=288.0, observed_bar_pa=1.01325e5,
-                  observed_co2=4.2e-4, water_kg=1.35e21),
+                  observed_co2=4.2e-4, water_kg=1.35e21,
+                  eccentricity=0.0167),
     "Mars": Body("Mars", 6.4171e23, 3.3895e6, 1.524, 0.250,
-                 observed_T=210.0, observed_bar_pa=6.36e2, observed_co2=0.95),
+                 observed_T=210.0, observed_bar_pa=6.36e2, observed_co2=0.95, eccentricity=0.0934),
     "Titan": Body("Titan", 1.3452e23, 2.5747e6, 9.537, 0.22,
-                  observed_T=94.0, observed_bar_pa=1.467e5),
+                  observed_T=94.0, observed_bar_pa=1.467e5,
+                  eccentricity=0.0288),
     "Mercury": Body("Mercury", 3.3011e23, 2.4397e6, 0.387, 0.088,
-                    observed_T=440.0, observed_bar_pa=5e-10),
+                    observed_T=440.0, observed_bar_pa=5e-10,
+                    eccentricity=0.2056),
 }
 
 
@@ -144,7 +157,10 @@ BODIES = {
 # how long the planet takes to turn. If it cools faster than it
 # spins, each face sits at its own temperature and the planet does
 # not have one.
-CP_AIR = 1004.0          # J/kg/K, diatomic; CO2 is 844, same order
+def _cp(species, T):
+    """J/kg/K, DERIVED from shape and band frequencies. Was typed."""
+    from engine.thermo import cp_specific
+    return cp_specific(species, T)
 DAY_S = 86400.0
 
 ROTATION_S = {"Venus": 243.0 * DAY_S, "Earth": 1.0 * DAY_S,
@@ -152,10 +168,12 @@ ROTATION_S = {"Venus": 243.0 * DAY_S, "Earth": 1.0 * DAY_S,
               "Mercury": 58.65 * DAY_S, "Moon": 27.3 * DAY_S}
 
 
-def radiative_time(body, T, p_total_pa, cp=CP_AIR):
+def radiative_time(body, T, p_total_pa, cp=None):
     """Seconds for the atmosphere to radiate its heat. DERIVED."""
     if p_total_pa <= 0 or T <= 0:
         return 0.0
+    if cp is None:
+        cp = _cp("CO2" if (body.observed_co2 or 0) > 0.5 else "N2", T)
     return cp * (p_total_pa / body.gravity()) / (4 * SIGMA * T ** 3)
 
 
@@ -795,7 +813,8 @@ def check():
 def _probe(au, water=True, lum=L_SUN):
     e = BODIES["Earth"]
     return Body("probe", e.mass, e.radius, au, e.albedo,
-                water_kg=e.water_kg if water else 0.0)
+                water_kg=e.water_kg if water else 0.0,
+                eccentricity=e.eccentricity)
 
 
 def _mercury():

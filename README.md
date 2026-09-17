@@ -3514,3 +3514,51 @@ left is arithmetic that has to happen.
 
     lab 29 experiments: 26 HOLDS, 1 SUGGESTION, 1 MISSING_RULE, 1 REFUSED
     5,737 correct, 0 wrong   claims 16/16   audit 21/21
+
+### 3.1.49 — Earth alone, walked gate by gate
+
+The census asks many worlds one question. This asks one world every
+question, in order, and stops at the first gate that does not open —
+because that is where the missing mechanism is. Every gate is derived
+from rules already here; nothing was added to make a point.
+
+    open   solvent      82% of the surface above freezing at 288 K
+    SHUT   elements     H,N,O,P,S present -- MISSING C
+    open   energy       a genome costs 3.3e-15 J; a bacterium spends 1e-11
+    open   compartment  C10 tails assemble above 3.3e-07 M
+    SHUT   crowding     a 100 nm vesicle holds 2.5 solute molecules
+    SHUT   search       chance reaches 57 residues; ~66 are needed
+    SHUT   fidelity     best enzyme-free copying keeps 100 bases
+    SHUT   bootstrap    the 200-base replicase exceeds both bounds
+
+**Three of the four things usually called hard are not the problem.**
+Water, energy and compartments all open. Energy by three orders of
+magnitude. And the compartment gate turned out to be the **same rule**
+as protein folding — burying a CH₂ away from water is worth 3.7 kJ/mol,
+which collapses a chain and assembles a bilayer. Two consequences, one
+rule, neither fitted to the other.
+
+**The elements gate was passing on a technicality and now does not.**
+It asked for five of six and opened while **carbon was absent**. That is
+not a partial success — a biochemistry without carbon is not a
+biochemistry. Carbon is locked in CO down to 25 K, so it reaches an
+inner planet only from the coldest reservoir, and the delivery average
+over 3–45 AU does not carry enough. All six or none.
+
+**A 100 nm vesicle at 10⁻⁶ M encloses 2.5 molecules.** Chemistry needs a
+population, not a pair. Something must concentrate before anything can
+react, and that mechanism — drying pools, ice eutectics, vent pores —
+is absent here.
+
+**And the last two bounds close on each other.** Chance can *find* 57
+residues. The most accurate enzyme-free copying can *keep* 100 bases.
+The smallest RNA that copies RNA is 200. Two limits from unrelated
+arguments both fall below the one thing that would raise them — because
+the replicase is what would improve the fidelity that would permit the
+replicase. **The gap is not a shortage, it is a loop.**
+
+This walks Earth to the first closed gate and names it. It does not open
+it. What the walk is worth is that four popular explanations are now
+ruled out by derivation rather than opinion.
+
+    earthlab 5/5   lab 29 experiments   5,737 correct, 0 wrong

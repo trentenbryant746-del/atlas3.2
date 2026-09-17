@@ -108,6 +108,8 @@ INPUTS = {
     "census.MIN_WINDOW_GYR": (CHOSEN, "how long life needs; nobody knows"),
     "genesis.EJECTION_YEARS": (CHOSEN, "dynamical lifetime, order only"),
     "genesis.SCATTERED_FRACTION": (CHOSEN, "fraction thrown inward, picked"),
+    "ecology.CARRYING_ENERGY_W": (CHOSEN, "total world energy, picked"),
+    "ecology.NICHE_WIDTH": (CHOSEN, "how similar two species must be"),
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -122,6 +124,9 @@ CLAIMS_ON = {
     "life cools its own planet by 1.9 K": ["biosphere.CH4_ANOXIC_PPM"],
     "seeded life stays microbial": ["descent.INTAKE_COEFFICIENT",
                                     "descent.TRAIT_COST"],
+    "competition prevents the collapse": ["ecology.CARRYING_ENERGY_W",
+                                          "ecology.NICHE_WIDTH",
+                                          "descent.INTAKE_COEFFICIENT"],
     "predation does not reverse the collapse": [
         "descent.PREDATION_PRESSURE", "descent.PREDATOR_RATIO",
         "descent.INTAKE_COEFFICIENT"],

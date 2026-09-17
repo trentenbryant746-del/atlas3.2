@@ -4359,3 +4359,48 @@ only thing missing was admitting that **history is one of the topics.**
 
     8 transitions, 0 forbidden, 0 silent, 1 crossing into record
     inputs 5/5   ancestry 4/4
+
+### 3.1.67 — other animals, and what kills them
+
+`engine/descent.py` gave one lineage variation and selection and it
+stayed microbial. A predator did not move it. The diagnosis was that
+predation is a **bounded** risk — a thing dies once — while metabolic
+advantage **compounds** every generation, and a bounded cost cannot
+beat a compounding return even at 99% of deaths.
+
+**That implies a rival, not a bigger predator.** A competitor does not
+kill you once; it takes a share of your intake every generation, for
+ever. It is the only cost with the same shape as the advantage it
+opposes.
+
+**Seven causes of death, and six were already rules written for other
+reasons:**
+
+    starvation    intake ~ m^(2/3) falls short of cost ~ m^0.75
+    suffocation   past sqrt(6 D C0 / R) with no pump
+    desiccation   on land against an 850 Pa deficit with no skin
+    crushing      past the square-cube ceiling
+    freezing      below where water is liquid
+    predation     something three times your radius
+    crowded out   a rival takes the food first, every generation
+
+Only the last is new. **What it needs to live is the same list
+inverted**: a surplus after upkeep, oxygen reaching every part, water
+held against the air, CHNOPS present, and a temperature its chemistry
+survives.
+
+**And competition does something predation could not.**
+
+    one lineage alone    collapses to 0.10 microns
+    with rivals          median holds at 0.64, species span 37x
+    death ledger         almost entirely "crowded out"
+
+**It does not drive size up.** It stops the collapse and keeps a range
+alive, because the smallest niche is the most crowded. That is a real
+difference from every previous run and it is still not a ratchet.
+
+Graded **CHOSEN** — it rests on a world energy budget and a niche
+width, both picked. Registered in `engine/inputs.py` and not cited as
+derived.
+
+    ecology 4/4   7 causes of death, 6 of them pre-existing rules

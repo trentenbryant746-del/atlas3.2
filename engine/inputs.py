@@ -139,6 +139,12 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "tools.MATERIALS": (MEASURED, "compressive strengths, Pa"),
+    "tools.CONTACT": (MEASURED, "striking surface areas, m2"),
+    "tools.ARM_BLOW_N": (MEASURED, "a hammering blow, about 400 N"),
+    "tools.MARROW_KG_PER_FEMUR": (MEASURED, "large ungulate, about 200 g"),
+    "tools.MARROW_J_PER_KG": (MEASURED, "700 kcal per 100 g"),
+    "tools.FORAGER_DAY_J": (MEASURED, "2000 kcal a day"),
     "roots.SUITE_WARM_S": (
         MEASURED, "the full suite warm, timed on this machine"),
     "ontogeny.ONTOGENY": (
@@ -165,6 +171,8 @@ CLAIMS_ON = {
                                     "biome.PHOTOSYNTHETIC_EFFICIENCY"],
     "height is worthless without a rival": [],
     "the food chain runs 4 levels": ["biome.PHOTOSYNTHETIC_EFFICIENCY"],
+    "a flaked edge opens a bone and a fist cannot": [],
+    "marrow pays for a brain 5.2x over": [],
     "a newborn's brain is 109% of its own budget": [],
     "growth bottoms at age 5 where the brain is 71%": [],
     "the provisioning debt is 3.0 adult-years": [],

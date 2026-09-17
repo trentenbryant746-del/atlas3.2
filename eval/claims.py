@@ -143,6 +143,25 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _toolstress():
+    from engine.tools import stress, CONTACT, body_alone
+    from engine.life import BONE_COMPRESSIVE
+    ok, short = body_alone()
+    return (ok, round(short),
+            stress(area_m2=CONTACT["flaked edge"]) > BONE_COMPRESSIVE)
+
+
+def _marrowpays():
+    from engine.tools import pays_for_a_brain
+    ok, gain, cost = pays_for_a_brain()
+    return ok, round(gain / cost, 1)
+
+
+def _tooldepth():
+    from engine.spine import depth
+    return depth(("tools", "pays_for_a_brain"))
+
+
 def _toolcount():
     from engine.ontogeny import tool_search
     _, rows = tool_search()
@@ -195,10 +214,16 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
-    ("3.1.72", "21 of 28 tool configurations pay, none are made",
-     _toolcount, (21, 28), CURRENT),
-    ("3.1.72", "the tool root is 2 nodes deep against 37 for radiative",
-     _rootdepth, (2, 37), CURRENT),
+    ("3.1.73", "a body is 8x short of bone; a flaked edge goes through",
+     _toolstress, (False, 8, True), CURRENT),
+    ("3.1.73", "marrow pays for a brain 5.2x over",
+     _marrowpays, (True, 5.2), CURRENT),
+    ("3.1.73", "the tool root went from 2 nodes to 13",
+     _tooldepth, 13, CURRENT),
+    ("3.1.73", "16 of 20 tool configurations pay, on DERIVED gains",
+     _toolcount, (16, 20), CURRENT),
+    ("3.1.73", "the tool root is 13 nodes deep against 37 for radiative",
+     _rootdepth, (13, 37), CURRENT),
     ("3.1.70", "a newborn's brain is 109% of its own budget",
      _infantshare, 109, CURRENT),
     ("3.1.70", "growth bottoms at age 5 where the brain is 71%",
@@ -250,6 +275,29 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.72", "the tool root is 2 nodes deep, the shallowest asked",
+     "withdrawn in 3.1.73 BY BEING FIXED, which is the only way a "
+     "depth claim can be withdrawn. Two nodes meant the question "
+     "stood on one constant and itself -- a tool was being priced, "
+     "never produced. engine/tools.py derives it instead: a blow is "
+     "a force over an area, bone yields at a pressure engine/life.py "
+     "already knew, and a fist misses by 8x while a flaked edge goes "
+     "through. The root now runs 13 nodes and reaches "
+     "life.BONE_COMPRESSIVE. The old number was right when it was "
+     "published and the point of publishing it was to make it "
+     "wrong"),
+    ("3.1.72", "21 of 28 tool configurations pay",
+     "withdrawn in 3.1.73, and not because it was miscounted -- it "
+     "was, at 3.1.70, where 26 was written into the README by hand "
+     "instead of read from the check, which is why both tool numbers "
+     "are registered now. It is withdrawn because the SPACE changed. "
+     "Those 28 combinations crossed four brain sizes with seven "
+     "intake gains somebody picked out of the air, and the answer "
+     "meant no more than the list did. engine/tools.py derives the "
+     "gain from how much marrow is in a femur, how much energy is in "
+     "marrow, and whether anything can open the bone at all -- so "
+     "the gains are computed and there are five, not seven. 16 of 20 "
+     "pay. The count went down and the number is worth more"),
     ("3.1.69", "the gut pays for the brain, 12.8 W against 11.1 W",
      "withdrawn in 3.1.70, and the arithmetic was never wrong -- the "
      "QUESTION was. It priced an adult standing still, where a brain "

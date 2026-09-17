@@ -139,7 +139,14 @@ def tool_search(gains=None, brains=None):
     produce one rather than price it.
     """
     from engine.ancestry import NEURAL_COST_RATIO
-    gains = gains or [0.0, 0.05, 0.10, 0.20, 0.30, 0.50, 1.00]
+    if gains is None:
+        # The gain is no longer a list somebody picked. engine/tools.py
+        # derives it from how much marrow is in a femur and how much
+        # energy is in marrow, which is why this question's root stopped
+        # being two nodes deep.
+        from engine.tools import marrow_gain
+        gains = [0.0, marrow_gain(0.25), marrow_gain(0.5),
+                 marrow_gain(1.0), marrow_gain(2.0)]
     brains = brains or [0.40, 0.60, 0.90, 1.35]
     base = 0.40 / 70.0 * NEURAL_COST_RATIO
     rows = []

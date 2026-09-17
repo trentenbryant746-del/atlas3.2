@@ -4720,3 +4720,63 @@ by hand instead of read from the check, and no claim was registered to
 catch it. Both tool numbers are now registered.
 
     spine 6/6    roots 5/5    25/25 published numbers reproduce
+
+### 3.1.73 — a tool, produced rather than priced
+
+3.1.72 reported the tool question's root as **2 nodes — one constant
+and itself**, the shallowest anything here stands on, and read that as
+the answer: nothing feeds it because nothing produces a tool.
+
+A tool turns out to be the one piece of architecture that is reachable,
+for a reason that has nothing to do with cleverness: **it is not
+grown.** A pump must be built by a body out of its own budget and
+inherited. A stone is already lying there.
+
+So the question becomes mechanical, and it has an answer.
+
+    bone yields at              1.7e8 Pa   (already in engine/life.py)
+    fist,    1e-3 m2            4.0e5      short by 425x
+    tooth,   2e-5 m2            2.0e7      short by 8x
+    cobble,  1e-4 m2            4.0e6      short by 42x
+    flaked edge, 1e-6 m2        4.0e8      THROUGH
+
+**Picking up a rock is not enough.** An unworked cobble still fails by
+42×. The edge has to be *made* small, and the only variable is contact
+area. That is the line between using an object and making a tool, and
+it is a factor of 100 in area — nothing else.
+
+**The material selects itself.** Wood and limestone fail before bone
+does; granite, obsidian and flint do not. Nobody told these rules to
+prefer flint. For a *different* job — reach — wood wins, because the
+test is never the material, it is the material against the target.
+
+**The payoff is derived, and gated on access.** One femur is 70% of a
+forager's day against the 14% a human brain costs over an ape's —
+**5.2× over**. An earlier version multiplied marrow constants whether
+or not anything could open the bone; remove the flaked edge now and the
+gain goes to exactly zero, not to something smaller.
+
+**A spear is geometry.** An arm reaches 0.75 m, a large predator
+strikes at 1.0 — bare, you are always inside its range and it is never
+inside yours. Haft 1.75 m of wood and predation risk falls 0.40 → 0.16.
+No courage, no tactics; just which of two numbers is larger.
+
+    tool root:   2 nodes  ->  13, reaching life.BONE_COMPRESSIVE
+
+**Two supersessions, both by improvement.** The 2-node depth was
+withdrawn *by being fixed* — the only way a depth claim can be. And
+"21 of 28 configurations pay" became **16 of 20**, because the seven
+intake gains were picked out of the air and are now computed from
+marrow. The count went down and the number is worth more.
+
+**A bug worth naming:** under `python3 -m engine.tools` the module is
+`__main__`, so `import engine.tools as T` loaded a **second copy** and
+a test patched the wrong one — the same two-copies-of-one-thing the
+duplicate-constant rule exists to stop, arriving through the module
+system instead.
+
+This is the first architecture this repository has **produced**. The
+hole in `engine/descent.py` stays open for everything that must be
+built rather than picked up.
+
+    tools 7/7    27/27 published numbers reproduce

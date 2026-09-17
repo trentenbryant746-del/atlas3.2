@@ -1427,3 +1427,66 @@ noble gases give `gcd(0, 0)`.
 A zero valence is not a small one. The bug had been there since the
 module was written and only a table wide enough to contain an inert
 element could reach it.
+
+
+## 3.1.15 — The error bar measured, and a result withdrawn
+
+You said it should guess and then be checked. It can, and the check
+changed the answer.
+
+### Measuring it: mono-isotopic elements
+
+The formula predicts isotope masses. What was missing was something to
+compare against — and there is one. **Some elements have only one
+isotope**, so their standard atomic weight *is* that nuclide's mass and
+the average has a single term.
+
+Which elements those are does not need asserting either. A
+mono-isotopic weight sits close to a whole number (aluminium 26.9815)
+while a mixture lands between them (chlorine 35.45, copper 63.55). The
+model picks its own comparison set.
+
+```
+16 elements (Z >= 8)    median 7.97 MeV   mean 19.27   worst 56.26
+typed value                     3.00 MeV
+```
+
+Light nuclei are worst — hydrogen is out by 25 MeV, because a liquid
+drop is a poor model of four nucleons, so they are excluded and named.
+
+### What the measurement costs
+
+**Real alpha Q-values in the heavy elements are 4–5 MeV. The measured
+error bar is 8.** So a formula honest about its own error **cannot
+resolve alpha decay at all**, and every chain collapses to
+*undetermined*.
+
+That includes the uranium series. 3.1.11 reported that the module
+derives U → Th → Ra → Rn → Po → Pb from Q-values alone, which it did —
+**at a 3.0 MeV bar taken from the literature and never checked here.**
+When the bar was measured it turned out optimistic by more than double.
+
+**That series is withdrawn as a result.** It was not a derivation
+surviving a test; it was an artefact of an under-estimated error. The
+check now requires the opposite — that nothing be claimed at the
+measured bar — and records that the typed value still produces it.
+
+Same for 3.1.12's trace/absent split: radium and radon resolved as
+trace on alpha steps, and those steps are now unresolvable. Everything
+unstable is undetermined.
+
+### Why the measured value is the default anyway
+
+Refusing is correct when the error bar says you cannot tell. Keeping
+3.0 because it gives the nicer answer is choosing the number that
+flatters the model, which is the one thing this project is built not to
+do.
+
+Both values are available and the consequence of each is visible in the
+source. The measurement is an **upper bound** — the near-integer test
+admits chromium and molybdenum, which are not mono-isotopic — so the
+true error sits between 3 and 8 MeV.
+
+And that sharpens the unsolved entry rather than closing it. It is no
+longer *"measure the error bar"*. It is **"decide whether this model can
+see alpha decay at all"**, and it needs per-isotope masses to settle.

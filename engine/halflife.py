@@ -413,12 +413,28 @@ def _split():
     absent, trace, und = g("absent"), g("trace"), g("undetermined")
     if set(absent) - {"Tc", "Pm"}:
         raise ArithmeticError(f"called absent without being sure: {absent}")
-    if not trace:
-        raise ArithmeticError("nothing came out trace")
     if not und:
         raise ArithmeticError("nothing came out undetermined, but the "
                               "beta steps are under the error bar -- "
                               "check the bar is still being applied")
+    if not trace:
+        # AT THE MEASURED BAR, NOTHING IS TRACE. Radium and radon
+        # came out trace on alpha steps alone, and the measured
+        # error bar of ~8 MeV is wider than the 4-5 MeV alpha
+        # Q-values that produced them. So every chain collapses and
+        # everything unstable is undetermined. That is the honest
+        # state: the formula cannot follow a decay chain it cannot
+        # resolve a single step of.
+        from engine import transitions as _tr
+        if len(und) + len(absent) != len(s):
+            raise ArithmeticError("nothing is trace and the rest are not "
+                                  "accounted for")
+        return (f"nothing comes out trace at the measured "
+                f"{_tr.SEMF_MeV:.1f} MeV error bar, because that is wider "
+                f"than the 4-5 MeV alpha steps the chains are made of. "
+                f"{len(und)} undetermined, {len(absent)} absent. At the "
+                f"3.0 MeV literature value Ra and Rn resolved as trace -- "
+                f"an artefact of an optimistic bar rather than a result")
     return (f"trace {trace} on alpha steps alone; undetermined {und}, "
             f"reachable only through beta steps whose Q is under the "
             f"{_bar()} MeV resolution; absent {absent}, unreachable even "

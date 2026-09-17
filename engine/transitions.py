@@ -83,9 +83,58 @@ DERIVED = "DERIVED"
 # thing that would close it. Until then the number is taken from
 # the literature and says so -- and it is load-bearing, because it
 # is the threshold decay_of() refuses inside.
-SEMF_MeV = 3.0
-SEMF_SOURCE = ("accepted liquid-drop accuracy, a few MeV; not measured "
-               "in this repo for want of per-isotope masses")
+SEMF_TYPED = 3.0
+SEMF_SOURCE = ("accepted liquid-drop accuracy from the literature; kept "
+               "as a fallback and as the value the measurement is "
+               "compared against")
+
+
+def _measured_bar():
+    """Measured if it can be, typed if not. See nucleo.error_bar()."""
+    try:
+        from engine.nucleo import error_bar
+        v, _why = error_bar()
+        return v if v > 0 else SEMF_TYPED
+    except Exception:
+        return SEMF_TYPED
+
+
+SEMF_MeV = _measured_bar()
+
+# WHAT THE MEASUREMENT COSTS, STATED BEFORE IT SURPRISES ANYONE.
+#
+# The measured bar is about 8 MeV. Real alpha Q-values in the heavy
+# elements are 4 to 5. So a formula honest about its own error
+# CANNOT RESOLVE ALPHA DECAY AT ALL, and every chain this module
+# used to produce -- including the uranium series in 3.1.11, which
+# came out right -- disappears into "undetermined".
+#
+# That series was not a success. It was riding on a 3.0 MeV bar
+# taken from the literature and never checked here, and when the
+# bar was measured it turned out to be optimistic by more than
+# double. The right response is not to keep the number that gave
+# the nicer answer.
+#
+# Both are available and the consequence of each is visible:
+#
+#   SEMF_TYPED     3.0 MeV   literature; produces the uranium series
+#   measured       ~8 MeV    this repo's own comparison, refuses all
+#
+# The measured one is the default because refusing is correct when
+# the error bar says you cannot tell. The measurement is an UPPER
+# bound -- the mono-isotopic test has false positives, chromium and
+# molybdenum among them -- so the true error is somewhere between,
+# and narrowing it needs per-isotope masses. That is what is on the
+# unsolved list, and it is now a sharper request than before: not
+# "measure the error bar" but "decide whether this model can see
+# alpha decay at all".
+def resolvable(q):
+    """-> (bool, why). Can the formula see a Q-value this size?"""
+    return (q >= SEMF_MeV,
+            f"Q={q:.2f} MeV against a measured error of {SEMF_MeV:.2f}; "
+            + ("resolvable" if q >= SEMF_MeV else
+               "smaller than the formula's own error, so the sign is "
+               "not determined and the sign is the answer"))
 B_ALPHA = 28.296        # measured binding of He-4
 
 # Valences, for the binding half. ASSERTED: which bonds an element

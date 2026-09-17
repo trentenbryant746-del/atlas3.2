@@ -104,14 +104,17 @@ OPEN_TO_US = (
      "turning the fit into a prediction or breaking it"),
     ("initial-final mass relation", "engine/remnants.py; asserted anchors",
      "stellar-evolution modelling, which this repo does not do"),
-    ("the mass formula's own error bar",
-     "engine/transitions.SEMF_MeV = 3.0, taken from the literature. "
-     "It is the threshold every decay refusal turns on, so a wrong "
-     "value silently changes what the repo will and will not say",
-     "per-isotope masses to score the formula against -- standard "
-     "atomic weights are abundance-weighted averages and give a "
-     "spurious 80 MeV median residual, measuring the isotope mix "
-     "rather than the formula"),
+    ("whether the mass formula can see alpha decay at all",
+     "MEASURED, and the answer is probably no. nucleo.error_bar() "
+     "scores the formula on elements whose atomic weight is one "
+     "isotope's mass and gets ~8 MeV median, against alpha Q-values "
+     "of 4-5 MeV. So every decay chain collapses to undetermined, "
+     "and the uranium series this repo derived at the literature's "
+     "3.0 MeV was an artefact of an optimistic bar",
+     "per-isotope masses. The measurement is an UPPER bound -- the "
+     "mono-isotopic test admits chromium and molybdenum, which are "
+     "not -- so the true error is between 3 and 8 and the question "
+     "is which side of the alpha Q-values it falls on"),
     ("nuclear shell closures",
      "engine/nucleo.py is a liquid drop with no shell structure, so "
      "the magic numbers are invisible to it -- provenance.py walks "

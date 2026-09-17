@@ -311,6 +311,42 @@ def tau_co2(body, co2_pa):
     return 0.0 if c <= 0 else K_CO2 * c ** N_CO2
 
 
+# CO2 CONDENSES, AND LEAVING THAT OUT MEANT THE OUTER EDGE OF THE
+# HABITABLE ZONE DID NOT EXIST.
+#
+# The thermostat lets carbon dioxide accumulate until weathering
+# balances outgassing, and on a cold planet weathering is slow, so
+# CO2 piles up and the grey slab turns it into warmth. Run far
+# enough out and the model keeps water liquid past 12 AU, which is
+# nonsense and was reported as UNDETERMINED in 3.1.36 rather than
+# bounded by hand.
+#
+# A real atmosphere cannot do it. Carbon dioxide has a condensation
+# curve like anything else, and a cold planet reaches it: at 195 K
+# the air can hold about 1.1 bar of CO2 and no more. Add any and it
+# snows out. The greenhouse therefore caps ITSELF, and that cap --
+# the maximum-greenhouse limit -- is what sets an outer edge.
+#
+# This is the SAME EQUATION already used for water a few lines
+# below, with carbon dioxide's own triple point and latent heat.
+# The rule was absent, not difficult, which is why it was worth
+# saying so instead of inventing a bound.
+T_TRIPLE_CO2, P_TRIPLE_CO2 = 216.58, 5.185e5     # K, Pa, measured
+L_SUB_CO2 = 5.71e5                               # J/kg, measured
+
+
+def p_sat_co2(T):
+    """Pa. Above this, CO2 snows out. DERIVED from Clausius-Clapeyron."""
+    rv = R_GAS / (MOLAR["CO2"] * 1e-3)
+    return P_TRIPLE_CO2 * math.exp(
+        L_SUB_CO2 / rv * (1.0 / T_TRIPLE_CO2 - 1.0 / T))
+
+
+def co2_ceiling(T):
+    """The most CO2 a surface at T can keep in the air. DERIVED."""
+    return p_sat_co2(T)
+
+
 def p_sat_water(T):
     """Clausius-Clapeyron. Pa. DERIVED from L and the triple point.
 
@@ -350,7 +386,17 @@ def ocean_column(body, kg=None):
 
 
 def tau_total(body, T, co2_pa, ocean_kgm2, humidity=RH_EARTH):
-    """Optical depth at a GIVEN temperature. DERIVED, no iteration."""
+    """Optical depth at a GIVEN temperature. DERIVED, no iteration.
+
+    The CO2 cap belongs HERE, inside the one fixed point that
+    already exists, not in a second loop outside it. Nesting two
+    fixed points -- one for temperature, one for how much CO2 stays
+    aloft -- gave the solver a new family of roots and it found
+    WARMER ones: 289 K at 12 AU against 258 K uncapped, a cap that
+    heated the planet. One loop, and the cap evaluated at whatever
+    temperature that loop is currently testing.
+    """
+    co2_pa = min(co2_pa, p_sat_co2(max(T, 60.0)))
     tw = 0.0
     if ocean_kgm2 > 0:
         pw = min(humidity * p_sat_water(T), ocean_kgm2 * body.gravity())
@@ -653,9 +699,37 @@ _EARTH_BANDS = 1.0
 _EARTH_BANDS = _earth_band_sum()
 
 
+def airborne_co2(body, co2_pa, ocean_kgm2=None, luminosity=L_SUN,
+                 humidity=RH_EARTH, albedo=None, iters=24):
+    """How much of the CO2 can actually stay in the air. DERIVED.
+
+    The cap depends on temperature and the temperature depends on
+    the cap, so it is a fixed point, not a single clamp. A colder
+    surface holds less, which cools it further, which holds less
+    still -- and that loop terminates because the saturation curve
+    is steep.
+    """
+    eff = co2_pa
+    for _ in range(iters):
+        T = surface_T(body, eff, ocean_kgm2, luminosity, humidity,
+                      albedo)[0]
+        if not math.isfinite(T):
+            return co2_pa
+        nxt = min(co2_pa, p_sat_co2(max(T, 60.0)))
+        if abs(nxt - eff) <= 1e-6 * max(eff, 1.0):
+            return nxt
+        eff = 0.5 * eff + 0.5 * nxt
+    return eff
+
+
 def _excess(body, co2_pa, outgassing, ocean_kgm2, luminosity, humidity,
             albedo):
-    """outgassing minus the sink. Positive means CO2 accumulates."""
+    """outgassing minus the sink. Positive means CO2 accumulates.
+
+    CO2 above its own saturation pressure is not in the air, it is
+    on the ground, so the radiative calculation only ever sees what
+    can stay aloft.
+    """
     T, _, _, n = surface_T(body, co2_pa, ocean_kgm2, luminosity, humidity,
                            albedo)
     if not math.isfinite(T):

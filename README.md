@@ -2855,3 +2855,52 @@ be a patch, and the check fails if an outer edge ever appears without
 the rule.
 
     evolve 6/6   5,737 correct, 0 wrong   published claims 11/11
+
+### 3.1.37 — CO₂ condenses, and the outer edge closes
+
+3.1.36 refused to give an outer edge to the habitable zone: the
+thermostat kept water liquid past 12 AU because it let CO₂ accumulate
+without limit. The refusal named the missing rule, and this is it.
+
+**A cold planet cannot hold unlimited CO₂ — it snows out.** Carbon
+dioxide has a condensation curve like anything else, and it is the same
+Clausius-Clapeyron already used for water, with CO₂'s own triple point
+and latent heat of sublimation:
+
+    at 150 K an atmosphere holds   0.011 bar of CO2
+    at 195 K                       1.107 bar
+    at 250 K                      33.490 bar
+
+So the greenhouse caps **itself**. That is the maximum-greenhouse limit,
+and it is what sets an outer edge.
+
+**Derived result:**
+
+    inner edge   0.999 AU   where rain stops and the CO2 sink closes
+    outer edge   1.898 AU   where CO2 condenses out of the air
+
+Published maximum-greenhouse estimates put the outer edge at **1.67–1.77
+AU**. This lands within 8–14%, with nothing fitted — the curve comes from
+CO₂'s measured triple point and latent heat, both laboratory quantities.
+
+**And the first implementation was wrong in a way worth recording.** I
+put the cap in its own iteration outside the temperature solve, nesting
+two fixed points. The solver found a new family of roots and picked
+*warmer* ones — **289 K at 12 AU against 258 K uncapped, a cap that
+heated the planet.** An ablation caught it: comparing with and without
+showed the cap making things hotter, which no condensation rule can do.
+Moving it inside the one fixed point that already existed fixed it.
+
+    2.0 AU   182 K, frozen        (was 259.7 K, 22% liquid)
+    6.0 AU   104 K, frozen        (was 258.5 K, 13% liquid)
+
+Earth is untouched at 288.0 K and 42.56 Pa — the cap is 165 bar there
+and never binds.
+
+**Three gaps became two.** The far-wing CLASH and the CO₂ ceiling
+MISSING_RULE remain. This one closed because 3.1.36 refused to invent a
+bound: a refusal that names what is absent is what makes the next rule
+findable, and inventing an outer edge would have hidden it permanently.
+
+    evolve 6/6   terraform 14/14   5,737 correct, 0 wrong
+    published claims 12/12   audit 21/21

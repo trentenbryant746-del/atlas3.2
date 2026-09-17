@@ -94,6 +94,12 @@ def _table_size():
     return len(MEASURED_BINDING)
 
 
+def _band():
+    from engine.evolve import _solar_band
+    i, o = _solar_band()
+    return (round(i, 3), round(o, 3))
+
+
 def _lab_counts():
     from engine.lab import run, HOLDS, CLASH, MISSING_RULE, REFUSED
     rows, _ = run(stop_on_problem=False)
@@ -126,6 +132,8 @@ CLAIMS = [
      _fold_bar, 0.5729, CURRENT),
     ("3.1.33", "unfitted climate: Earth +12.3 K, Venus -495.6 K",
      _climate, (12.3, -495.6), CURRENT),
+    ("3.1.37", "habitable band derived 0.999 - 1.898 AU",
+     _band, (0.999, 1.898), CURRENT),
     ("3.1.31", "lab: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED",
      _lab_counts, (23, 1, 1, 1), CURRENT),
 ]

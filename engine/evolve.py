@@ -114,9 +114,19 @@ def _solar_band():
     # it is simply absent. Until it is there, the outer edge is
     # UNDETERMINED and saying so is the only honest option. Inventing
     # a bound would be the patch this repository does not allow.
-    far = thermostat(probe(12.0))
-    outer = None if far.get("wet_fraction", 0.0) > 0.0 else 12.0
-    _BAND_CACHE["band"] = (inner, outer)
+    # RESOLVED IN 3.1.37. The outer edge was UNDETERMINED because the
+    # thermostat let CO2 pile up without limit. CO2 condensation now
+    # caps it -- the same Clausius-Clapeyron already used for water --
+    # and the edge converges.
+    lo, hi = inner, 3.0
+    for _ in range(16):
+        m = 0.5 * (lo + hi)
+        if thermostat(probe(m)).get("wet_fraction", 0.0) > 0.0:
+            lo = m
+        else:
+            hi = m
+    outer = 0.5 * (lo + hi)
+    _BAND_CACHE["band"] = (inner, outer if outer < 2.95 else None)
     return _BAND_CACHE["band"]
 
 
@@ -279,20 +289,19 @@ def _edges():
     inner, outer = _solar_band()
     if not 0.8 < inner < 1.15:
         raise ArithmeticError(f"inner edge at {inner:.3f} AU")
-    if outer is not None:
-        raise ArithmeticError(f"an outer edge of {outer} was produced; if "
-                              f"CO2 condensation has been added this "
-                              f"refusal is stale and should be removed")
-    return (f"the inner edge is {inner:.3f} AU, derived by running the "
-            f"carbonate thermostat outward until the oceans vapourise and "
-            f"the sink closes -- not a typed flux threshold. The OUTER "
-            f"edge is refused: the thermostat keeps water liquid past 12 "
-            f"AU because it lets CO2 pile up without limit. Below about "
-            f"195 K CO2 condenses and snows out, capping its own "
-            f"greenhouse, and that rule is missing. Clausius-Clapeyron "
-            f"for CO2 is the same equation already used for water here, "
-            f"so it is absent rather than hard. Inventing a bound would "
-            f"be a patch")
+    if outer is None:
+        raise ArithmeticError("the outer edge stopped converging; CO2 "
+                              "condensation may have been removed")
+    if not 1.3 < outer < 2.6:
+        raise ArithmeticError(f"outer edge at {outer:.2f} AU")
+    return (f"the band is {inner:.3f} to {outer:.3f} AU, both edges run "
+            f"out of the thermostat rather than typed as flux "
+            f"thresholds. The inner is where rain stops and the CO2 sink "
+            f"closes; the outer is where CO2 CONDENSES and caps its own "
+            f"greenhouse. Published maximum-greenhouse estimates put the "
+            f"outer edge at 1.67-1.77 AU. It was UNDETERMINED in 3.1.36 "
+            f"and refused rather than bounded by hand, which is what "
+            f"made the missing rule findable")
 
 
 if __name__ == "__main__":

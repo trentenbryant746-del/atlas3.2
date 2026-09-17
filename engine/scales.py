@@ -127,6 +127,15 @@ def registry():
         out["protein-fold"] = Scale(
             "protein-fold", 0.2, None, "survival rate", REFUSED, str(e))
 
+    try:
+        from engine.terraform import error_bar as _pbar
+        v, pwhy = _pbar()
+        out["planetary-climate"] = Scale("planetary-climate", 0.026, v,
+                                         "K", DERIVED, pwhy)
+    except Exception as e:
+        out["planetary-climate"] = Scale("planetary-climate", 0.026, None,
+                                         "K", REFUSED, str(e))
+
     out["protein-fold-eV"] = Scale(
         "protein-fold-eV", 0.2, None, "eV", REFUSED,
         "engine/folding.py scores folds in dimensionless products of a "
@@ -240,12 +249,17 @@ def _units_never_mix():
     if len(units) < 2:
         raise ArithmeticError(f"every bar is in {units} -- if the kinds of "
                               f"bar do not differ, nothing was learned")
-    ev = [n for n, u in have.items() if u == "eV"]
-    rate = [n for n, u in have.items() if u != "eV"]
-    return (f"{len(ev)} bars are energies ({', '.join(sorted(ev))}) and "
-            f"{len(rate)} is not ({', '.join(rate)}); a residual against a "
-            f"measurement and a rate against another model are different "
-            f"claims and the unit is what keeps them apart")
+    if len(units) < 3:
+        raise ArithmeticError(f"only {len(units)} kinds of bar: {units}")
+    by = {}
+    for n, u in have.items():
+        by.setdefault(u, []).append(n)
+    return ("; ".join(f"{u}: {', '.join(sorted(v))}"
+                      for u, v in sorted(by.items()))
+            + " -- three kinds of claim. A residual in MeV over many "
+              "nuclides, a residual in K over two bodies, and a rate "
+              "against another model where nothing was ever measured. "
+              "The unit is what stops them being compared")
 
 
 def _nuc():

@@ -1755,3 +1755,97 @@ system and nothing here should be read as claiming it is. The Qwen
 artefacts are also sometimes assumed to be external; they are not, they
 are six files totalling 223 MB tracked in this repository, and a fresh
 clone gets them.
+
+### 3.1.19 — a planet that terraforms itself, with nothing doing it
+
+`engine/terraform.py`. The rule the module exists to obey: **nothing acts
+on the planet.** No engineer, no seeding, no intervention, no optimiser
+hunting for a habitable answer. There is a rock with a hot interior, a
+star shining on it, and the consequences. `nothing_acts_on_the_planet`
+enforces it structurally — 41 functions and not one takes a target, a
+goal or a set point.
+
+What makes a world self-regulating is a loop, not a controller:
+
+    interior outgasses CO2   ->  greenhouse warms the surface
+    warmer surface           ->  more rain, faster silicate weathering
+    faster weathering        ->  CO2 buried as carbonate
+    less CO2                 ->  cooler surface
+
+**Derived, not looked up.** Stefan-Boltzmann is `2π⁵k⁴/15h³c²`, agreeing
+with the published value to one part in 10⁹, built from three constants
+that are exact by definition. The gas constant is `k·N_A`. The
+temperature dependence of weathering is `R·T²/Ea` with Ea measured on
+basalt in a beaker — 14.37 K per e-fold, where the climate literature
+quotes 13.7. None of those came from a climate table.
+
+**Earth's own existence fixes the water-vapour physics.** The first
+version reused CO2's optical-depth exponent (1.185, superlinear) for
+water and Earth came out *unstable* at 288 K — a tipping point, not a
+home. The clash was in the rule: absorption growing faster than absorber
+is a runaway with no brake. So the exponent was derived instead from an
+observation that is not a temperature — Earth has stayed liquid for four
+billion years, and a state that persists is a stable one. Setting the
+feedback gain to 1 gives the largest exponent Earth could have and still
+be here:
+
+    n_marginal = 0.5387   ->  absorption MUST saturate
+
+That conclusion comes out of the planet still being here, not out of a
+spectroscopy table. At n = 1/2 the gain is 0.928: stable, and close to
+the edge.
+
+**Results that were not fitted.** Venus, Earth and Mars were spent on the
+three parameters and are calibration, not prediction. What is left:
+
+    Mercury   437.2 K vs 440 observed   +2.8 K   airless, so no greenhouse
+    Titan      84.7 K vs  94 observed   -9.3 K   too cold, and names methane
+    inner edge of the habitable zone at 0.999 AU, where the oceans go to
+      vapour, rain stops, the sink closes and CO2 accumulates unopposed
+    faint young Sun: at 0.7 L_sun Earth with today's CO2 sits at 237 K,
+      frozen solid. Let the loop run and CO2 climbs to 1.06 bar and the
+      surface is liquid again — the paradox answered by the feedback
+
+**Earth has two stable states.** Same sunlight, same equations: 288 K and
+798 K, with an unstable ridge at 298 K between them. Which one a planet
+occupies is history, not physics, so `states()` returns the set. A model
+that returns one number there is picking a branch and calling it a fact.
+
+**Four wrong versions, all kept as checks.** Iterating from the bare-rock
+temperature found 257 K for Earth and called it the answer — a real fixed
+point, just not Earth's. Giving every body 70% humidity returned infinity
+for Venus and Mercury, which is the model correctly saying a planet with
+unlimited water at 440 K has no temperature; water became an inventory.
+Bisecting the carbon balance declared Earth a runaway, because the curve
+crosses zero twice — frozen and boiled both stop the rain — and a method
+assuming one crossing sees neither. And `ocean_column` looked the ocean up
+by `body.name`, so every habitable-zone probe was bone dry and every
+distance ran away; `water_is_a_property_not_a_name` is the regression.
+
+**Weathering is integrated over latitude, not switched.** The hard
+freezing cutoff parked every planet past 1 AU at exactly 273.0 K — the
+thermostat drove the mean onto the switch and sat there. A world averaging
+260 K still has a warm equator and it still rains there. With the bands
+integrated, Earth reports 82% of its surface above freezing, which is
+right, and which the switch was hiding.
+
+**A third kind of error bar.** `engine/scales.py` now holds three:
+
+    nuclear            MeV   residual against measurement, many nuclides
+    planetary-climate  K     residual against measurement, TWO bodies
+    protein-fold       rate  against another model; nothing was measured
+
+6.9 K over Mercury and Titan is a residual in kelvin like the nuclear
+bars, over a sample far too small to behave like one. Reporting it
+without saying so would be the most misleading of the three.
+
+**Stated limits.** The grey slab has no Rayleigh scattering and no CO2
+condensation, so thick atmospheres are over-warmed and the outer edge runs
+past 2.8 AU where real models stop near 1.7. And it puts Earth 0.1% inside
+the runaway threshold, which is too tight — the gain of 0.928 is the grey
+model exaggerating water feedback. Both are left standing rather than
+tuned away.
+
+    engine/terraform.py  13/13     engine/scales.py    6/6
+    eval/audit.py        21/21     eval/heldout.py   165/165 byte-exact
+    eval/benchmark.py    ALL PASS  5,737 correct, 0 wrong

@@ -5202,3 +5202,62 @@ the derived 289 m limit, so the check failed correctly and the figure
 moved to 400 m.
 
     inherit 6/6   empire 5/5   pov 3/3   suite green
+
+### 3.1.82 — sixty million people, every material they ask for
+
+Giving away the materials is the interesting part: it removes the
+answer everyone expects and leaves whatever was actually in the way.
+
+**An industrial revolution, in this repository's own terms.**
+`engine/atoms.py` already kept two books — matter in **circulation** and
+matter **buried**. Burial went in as the leak that stops a cycle being
+a cycle, and the module named it *coal and oil* before anything here
+intended to burn any.
+
+    land photosynthesis, the FLOW        352 TW
+    buried each year at 0.1%             352 GW
+    accumulated over 300 Myr, the STOCK  3.3e27 J
+
+**An industrial revolution is not a new kind of energy. It is the
+burial account run backwards.**
+
+**Free materials do not lift the ceiling.**
+
+    Newcomen 1712          373 K    21.4%
+    Watt 1776              400 K    26.7%
+    triple expansion 1890  480 K    39.0%
+    any steam engine ever  647 K    54.7%
+
+Carnot does not read the parts list, only the temperature — and a
+steam engine cannot run hotter than water stays water. Past 647 K
+there is no liquid to boil. Newcomen managed ~0.5% against a 21%
+ceiling, so **the gap was never a shortage of iron.** Spawning every
+material asked for moves nothing.
+
+**And sixty million is not enough to matter.**
+
+    60M at   100 W each ->  0.02x the burial rate
+    60M at  1000 W each ->  0.17x      inside the flow
+    60M at  5000 W each ->  0.85x
+    the modern world    ->    51x
+
+A Roman industrial revolution would have been **inside the flow** —
+machinery, not a revolution, and not what the word now means. Their
+entire muscle output is 5.8 GW; a thousand watts each is a tenfold
+change in their lives and still invisible to the planet.
+
+**Every year we burn about 51 years of accumulation.** That number,
+not any invention, is what separates an industrial revolution from a
+lot of machinery — and it fell out of a burial rate this repository
+wrote down for an unrelated reason.
+
+### the render, rebuilt
+
+The first one drew flat rectangles and faded the edges to grey.
+**That is not what an eye does** — acuity does not desaturate, it
+leaves things *unresolved*, and those are different pictures. This one
+builds a stack of genuinely blurred copies and blends by eccentricity,
+with the radius set by cone density: **0.1 px at the fovea, 2.3 px at
+50° out.**
+
+    pov 4/4    industry 5/5    suite green

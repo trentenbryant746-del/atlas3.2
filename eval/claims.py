@@ -143,6 +143,15 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _industry():
+    from engine.industry import (steam_ceiling, drawdown, burial_w,
+                                 MODERN_TW, inside_the_flow)
+    return (round(100 * steam_ceiling(), 1),
+            round(drawdown(per_person_w=1000.0), 2),
+            round(MODERN_TW * 1e12 / burial_w()),
+            inside_the_flow(per_person_w=1000.0)[0])
+
+
 def _empire():
     from engine.empire import (empire_radius_km, tolerable_lie_rate,
                                audit_code)
@@ -306,6 +315,8 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.82", "steam caps at 54.7%; Rome 0.17x burial, we run 51x",
+     _industry, (54.7, 0.17, 51, True), CURRENT),
     ("3.1.81", "empire 2250 km, 4.7% lies tolerated, 3 of 10 derive",
      _empire, (2250, 4.7, 3), CURRENT),
     ("3.1.80", "muscle for a 400 N blow is 53 cm2; bone picks no height",

@@ -158,6 +158,15 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "industry.POPULATION": (MEASURED, "Roman empire, about 60 million"),
+    "industry.BURIAL_FRACTION": (
+        CHOSEN, "0.1% of production buried; the number the stock rests on"),
+    "industry.STOCK_MYR": (MEASURED, "Carboniferous onward, ~300 Myr"),
+    "industry.WATER_CRITICAL_K": (EXACT, "647.1 K, above it no liquid"),
+    "industry.MODERN_TW": (MEASURED, "present human power draw, ~18 TW"),
+    "pov.E0_DEG": (MEASURED, "cone density falloff constant, ~2.3 deg"),
+    "pov.HAZE_KM": (CHOSEN, "atmospheric extinction scale; the only "
+                            "free parameter in the picture"),
     "empire.COURIER_KM_DAY": (MEASURED, "Roman cursus publicus, ~50"),
     "empire.CRISIS_DAYS": (
         CHOSEN, "90 days for a revolt to consolidate; a dial"),
@@ -247,6 +256,8 @@ ENACTED_RESULTS = {
         "geometry against an acuity, not a field trial",
     "an empire reaches 2250 km at courier speed":
         "a span computed from a courier speed, not a map",
+    "60 million industrialising stays inside the flow":
+        "a draw against a burial rate, not a history",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -270,6 +281,8 @@ CLAIMS_ON = {
     "speech is 0.0122% of a brain over a lifetime": [],
     "muscle for a 400 N blow is 53 cm2": [],
     "an empire reaches 2250 km at courier speed": ["empire.CRISIS_DAYS"],
+    "steam caps at 54.7% whatever it is made of": [],
+    "we burn 51 years of burial every year": ["industry.BURIAL_FRACTION"],
     "the channel tolerates 4.7% lies": ["empire.WRONG_COST_MULT"],
     "the assigned genome costs 11% more forever": ["inherit.GIVEN_GENOME"],
     "two adults are the smallest viable group": ["civ.FORAGER_W"],

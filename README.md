@@ -1897,3 +1897,60 @@ Which is the strongest possible argument for what comes next. There are
 no more test points to be had here, so validation has to stop being
 "does it match our planets" and become **"does our solar system fall out
 of the space of internally consistent worlds."**
+
+### 3.1.21 — optical depth from molecules, with no planet consulted
+
+`engine/terraform.py` solved its absorption law *from* Venus and Mars and
+then used it to talk about Venus and Mars. That is circular, and a law
+read off three planets cannot be evidence about planets. `engine/radiative.py`
+replaces it with radiative transfer over laboratory band data — strengths,
+line widths, line spacings, all measured on gas in a cell.
+`no_planet_appears_in_this_file` parses the imports to enforce it.
+
+**The square-root exponent is now a consequence, not a choice.** 3.1.19
+picked n = 1/2 inside a bound derived from Earth still existing. Here it
+falls out of the shape of a collision-broadened line: the wings of a
+Lorentz profile drop as an inverse square, so once the line centre is
+black, further gas widens the opaque core as the square root of the
+column. Earth is not mentioned.
+
+**And pressure broadening appears, which the fitted law could not see.**
+Collisions set the line width, so absorption goes as `sqrt(column ×
+pressure)`, not as a pure power of column. The same column absorbs 10×
+more at 1 bar than at 10 mbar. A fit to column alone buries that in the
+exponent and is then right only where it was fitted.
+
+**Two wrong versions, both kept.** The first averaged optical depths
+weighted by spectral coverage and gave Earth τ = 230 and a surface of
+**922 K**. That is a category error, not an approximation: a band opaque
+across a quarter of the spectrum does not make the sky a quarter of
+infinitely opaque — it blocks that quarter, and the rest leaves through
+the window untouched. Bands now combine in transmittance and convert
+back at the end. The second was the check itself: two versions of
+`no_planet_appears_in_this_file` failed by grepping their own source and
+matching the strings they contained. It parses the AST now.
+
+**The unfitted result, with nothing told to it:**
+
+    body    T_eq    tau   predicted  observed    error
+    Earth   254.0  0.435    272.6      288       -15.4 K
+    Mars    209.8  0.307    221.0      210       +11.0 K
+    Titan    84.7  0.000     84.7       94        -9.3 K
+    Venus   226.7  0.067    229.5      737      -507.5 K
+
+Earth recovers 19 K of its 34 K greenhouse from molecular constants alone.
+Mars lands 11 K high. Both are honest numbers in a way the fitted version's
+exact agreement never was.
+
+**Venus is the finding.** Missing by 507 K is not noise, and the model says
+exactly why: CO₂'s 15 µm band covers **26%** of what a 288 K surface
+radiates, so raising CO₂ by *ten orders of magnitude* moves τ by 0.0000.
+One gas cannot close a sky it does not reach. Venus is real, so the rules
+here are incomplete in a specific, named way — collision-induced continuum
+absorption in the window, and sulfuric-acid cloud scattering. The model did
+not fudge its way to Venus; it reported that Venus is impossible under the
+rules it has been given, which is the correct response and tells us which
+rule to add next.
+
+    engine/radiative.py  7/7     engine/terraform.py  14/14
+    eval/audit.py       21/21    eval/heldout.py     165/165 byte-exact

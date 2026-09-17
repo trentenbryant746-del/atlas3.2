@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import sys
 import time
 from pathlib import Path
 
@@ -32,13 +33,27 @@ def _run(mod):
 
 def originals():
     rows = []
+    from eval.cache import cached_eval, load, save
+    c = load()
     for m in ("eval.audit", "eval.integration", "eval.gate", "eval.controls",
               "eval.compress", "eval.induction", "eval.dilution",
               "eval.commit"):
-        ok, dt, out = _run(m)
-        last = out.splitlines()[-1][:58] if out else ""
-        rows.append((m.split(".")[1], ok, dt, last))
+        short = m.split(".")[1]
+
+        def _go(_m=m):
+            ok, _dt, out = _run(_m)
+            return ok, (out.splitlines()[-1][:58] if out else "")
+
+        t0 = time.time()
+        ok, last, hit = cached_eval(short, _go, cache=c,
+                                    use_cache="--verify" not in sys.argv)
+        rows.append((short, ok, 0.0 if hit else time.time() - t0,
+                     (last + "  (cached)") if hit else last))
+    save(c)
     return rows
+
+
+_CACHE_STATE = {}
 
 
 def modules():
@@ -48,11 +63,24 @@ def modules():
               "polytrope", "abundance", "transitions",
               "cosmoschunks", "folding", "provenance",
               "halflife", "variantlife", "valence", "scales", "terraform", "radiative", "lab", "constants", "ablate",
-              "shells", "thermo", "genesis", "evolve", "potential", "clouds", "census"):
+              "shells", "thermo", "genesis", "evolve", "potential", "clouds", "census", "watch"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()
-            ok, res = mod.check()
+            try:
+                from eval.cache import cached_check, load, save
+                _c = _CACHE_STATE.setdefault("d", load())
+                _ok, _n, _hit = cached_check(
+                    m, mod.check, cache=_c,
+                    use_cache="--verify" not in sys.argv)
+                save(_c)
+                if _hit:
+                    rows.append((m, _ok, 0.0,
+                                 f"{_n}/{_n} checks (cached)"))
+                    continue
+                ok, res = mod.check()
+            except ImportError:
+                ok, res = mod.check()
             rows.append((m, ok, time.time() - t0,
                          f"{sum(1 for r in res if r[1])}/{len(res)} checks"))
         except Exception as e:

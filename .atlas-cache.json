@@ -1,0 +1,202 @@
+{
+ "ablate": {
+  "key": "22ef3826e8956f14",
+  "n": 4,
+  "ok": true
+ },
+ "abundance": {
+  "key": "85ed8ad3bc5467fa",
+  "n": 8,
+  "ok": true
+ },
+ "biomatter": {
+  "key": "5b9638fe7fddc7cc",
+  "n": 13,
+  "ok": true
+ },
+ "bridge": {
+  "key": "496ba605e229dd22",
+  "n": 3,
+  "ok": true
+ },
+ "census": {
+  "key": "21fd09c071e9cd07",
+  "n": 3,
+  "ok": true
+ },
+ "clouds": {
+  "key": "5113eab9b02f5f15",
+  "n": 5,
+  "ok": true
+ },
+ "constants": {
+  "key": "2753b56f21da41e5",
+  "n": 3,
+  "ok": true
+ },
+ "cosmoschunks": {
+  "key": "edfcb023775ca96b",
+  "n": 5,
+  "ok": true
+ },
+ "eos": {
+  "key": "286c42705ac461bc",
+  "n": 5,
+  "ok": true
+ },
+ "eval.audit": {
+  "detail": "21/21 claims verified",
+  "key": "c07d4925390cdc03",
+  "ok": true
+ },
+ "eval.commit": {
+  "detail": "all: True",
+  "key": "126017b111767a91",
+  "ok": true
+ },
+ "eval.compress": {
+  "detail": "  crippled basis fails on 1894 records -- the check has te",
+  "key": "d5ab074a160c33d0",
+  "ok": true
+ },
+ "eval.controls": {
+  "detail": "  1 ASSERTED rule(s) correctly reported as unverifiable ra",
+  "key": "4674483cac00e3de",
+  "ok": true
+ },
+ "eval.dilution": {
+  "detail": "PASS  correction_is_not_circular      iron's miss implies ",
+  "key": "25da5f3685760cfa",
+  "ok": true
+ },
+ "eval.gate": {
+  "detail": "   all refused -- the gate can tell coverage from competen",
+  "key": "b07e491563d6831a",
+  "ok": true
+ },
+ "eval.induction": {
+  "detail": "held-out means the induced rule never saw these prompts.",
+  "key": "0e60ba9747ab9fd9",
+  "ok": true
+ },
+ "eval.integration": {
+  "detail": "PASS",
+  "key": "c1f78f9a50bb4213",
+  "ok": true
+ },
+ "evolve": {
+  "key": "ae65f4453b1824a8",
+  "n": 6,
+  "ok": true
+ },
+ "folding": {
+  "key": "d9228ef443b8832b",
+  "n": 11,
+  "ok": true
+ },
+ "genesis": {
+  "key": "8096bc2943b3d5a0",
+  "n": 8,
+  "ok": true
+ },
+ "halflife": {
+  "key": "ca926853f01d71d5",
+  "n": 6,
+  "ok": true
+ },
+ "lab": {
+  "key": "2def7157048ae396",
+  "n": 5,
+  "ok": true
+ },
+ "life": {
+  "key": "ad42d79749d5d02e",
+  "n": 6,
+  "ok": true
+ },
+ "polytrope": {
+  "key": "68dcc50098984645",
+  "n": 4,
+  "ok": true
+ },
+ "potential": {
+  "key": "f6d439339b517008",
+  "n": 5,
+  "ok": true
+ },
+ "provenance": {
+  "key": "a70b95a2ed9f6551",
+  "n": 7,
+  "ok": true
+ },
+ "qwenaccounts": {
+  "key": "c88e2501fcab1c7c",
+  "n": 3,
+  "ok": true
+ },
+ "qwenmap": {
+  "key": "78145ff3b5268962",
+  "n": 6,
+  "ok": true
+ },
+ "qwenmatter": {
+  "key": "a07f7b36723a2deb",
+  "n": 8,
+  "ok": true
+ },
+ "radiative": {
+  "key": "18661de2c437e99e",
+  "n": 10,
+  "ok": true
+ },
+ "remnants": {
+  "key": "397f06e86535729a",
+  "n": 9,
+  "ok": true
+ },
+ "scales": {
+  "key": "b4e618fcdd329344",
+  "n": 7,
+  "ok": true
+ },
+ "shells": {
+  "key": "0b1a45ae0deee001",
+  "n": 8,
+  "ok": true
+ },
+ "terraform": {
+  "key": "3a53de54773006c0",
+  "n": 14,
+  "ok": true
+ },
+ "thermo": {
+  "key": "3a53de54773006c0",
+  "n": 5,
+  "ok": true
+ },
+ "transitions": {
+  "key": "488176be3de0f9f2",
+  "n": 8,
+  "ok": true
+ },
+ "unsolved": {
+  "key": "18adb3f4425ca035",
+  "n": 4,
+  "ok": true
+ },
+ "valence": {
+  "key": "88c4ed028e9da62f",
+  "n": 5,
+  "ok": true
+ },
+ "variantlife": {
+  "key": "e0dfa51306357694",
+  "n": 5,
+  "ok": true
+ },
+ "watch": {
+  "key": "a7b8e8cdf8c186ef",
+  "n": 2,
+  "ok": true
+ }
+}

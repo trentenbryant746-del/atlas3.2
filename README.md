@@ -3316,3 +3316,50 @@ instead of a few. Nothing was told to prefer small stars. It fell out of
 running many and looking, which is what the census is for.
 
     census 3/3   genesis 8/8   5,737 correct, 0 wrong   claims 14/14
+
+### 3.1.45 — caching keyed on the dependency closure, and four worlds watched
+
+**The suite reruns in 32 seconds instead of 3 minutes 11.** `eval/cache.py`
+keys each result on a hash — but of the **transitive closure**, not the
+file. `engine/terraform.py` imports `engine/constants.py`, so editing a
+constant must invalidate terraform even though terraform's own bytes did
+not change. Hashing the file alone would keep serving the old answer,
+and a stale PASS is a lie that looks like work.
+
+    terraform reaches 10 engine modules; touching constants.py changes
+    its key. Touching terraform.py leaves folding.py alone.
+
+Eval scripts key on the whole engine, because a script that exercises
+it end to end can be changed by anything in it — coarse and correct
+beats fast and wrong. `--verify` ignores the cache entirely and reruns
+everything, which is what a release does. Speed is for the edit loop.
+
+**And the four worlds, followed instead of counted.**
+
+    star 0.54 Msun, main sequence 47 Gyr
+    world at 0.59 AU, 3.82 Earth masses
+      0.0 Gyr   frozen
+     14.0 Gyr   enters the band
+     51.2 Gyr   too hot  [post main sequence]
+      temperate for 32.6 Gyr
+
+    star 0.52 Msun, main sequence 50 Gyr
+    world at 0.35 AU, 0.77 Earth masses
+      0.0 Gyr   enters the band
+     35.1 Gyr   too hot
+      temperate for 30.1 Gyr
+
+**They are not the same story, and a census total cannot tell them
+apart.** The worlds at 0.35 AU are warm from the beginning and lose it
+as the star brightens. The ones at 0.55–0.59 AU start **frozen**, wait
+14 to 15 billion years for the star to warm enough to reach them, and
+then hold it for 33 to 35 Gyr — several times the present age of the
+universe. One kind of world is running out of time; the other has not
+started yet.
+
+Every one ends the same way: **too hot**, as the band sweeps outward
+past it. None freezes at the end. The failure mode of a habitable world
+around a small star is its star brightening, not dying.
+
+    watch 2/2   cache 4/4   suite 3:11 -> 0:32 warm
+    5,737 correct, 0 wrong   claims 14/14   audit 21/21

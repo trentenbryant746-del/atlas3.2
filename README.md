@@ -3869,3 +3869,47 @@ is real — a warm run is 32 seconds against 3 minutes 11 — but it only
 shows when the tree is not being edited.
 
     biosphere 10/10
+
+### 3.1.57 — land, and the pattern that has now repeated three times
+
+Four things change when a body leaves water, and **only one is a
+planetary condition.**
+
+    open  uv shield        ozone 300 DU passes 3.1e-39 of the damaging band
+    SHUT  water retention  air pulls 850 Pa against a body wet inside
+    SHUT  support          buoyancy gone; the skeleton carries everything
+    open  gas exchange     air holds ~30x more oxygen per volume than water
+
+**The UV shield is made of the thing it protects.** Ozone comes from
+oxygen, so a planet cannot shield its land before its air is
+breathable — the same molecule does both. And it saturates fast: at
+0.5% of present oxygen two parts in a thousand reach the ground, at 5%
+four parts in a billion. Coming ashore was never blocked by ultraviolet
+for long.
+
+**Gas exchange gets *easier*.** Air carries about thirty times more
+oxygen per volume than water. It is the one thing land simplifies.
+
+**And the two that stay shut are a skin and a skeleton.** Adding them
+opens everything, at the same oxygen that could not open them before.
+
+**That is the third time in a row:**
+
+    a thick body     needed a pump
+    a large animal   needed circulation
+    land             needs a cuticle and bones
+
+Not one of them is something a planet supplies. Every environmental
+gate this simulation can state now opens on Earth, and **every barrier
+left is architecture.**
+
+**Which is the honest end of this line of work.** The rules can say
+what conditions permit a land vertebrate, and they do: oxygen,
+shielding, a size window between closure and diffusion, a pump costing
+0.01% of budget, a skeleton good to 173 m. They cannot produce one. The
+missing mechanism is whatever generates architecture — variation and
+selection — and this repository has no rule for it. That is a single
+named absence standing behind three separate gates, which is a better
+position than three unrelated mysteries.
+
+    biosphere 12/12

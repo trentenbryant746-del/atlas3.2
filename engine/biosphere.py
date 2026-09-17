@@ -243,6 +243,73 @@ def body_gates(o2_fraction, circulation=False):
     return out
 
 
+# LAND. Four things change when a body leaves water, and only one
+# of them is a planetary condition.
+#
+# UV: ozone is made FROM oxygen, so land needs oxygen twice -- to
+# breathe and to build the shield. The Chapman steady state puts
+# the column near sqrt(O2), and Beer-Lambert through ozone's
+# Hartley band does the rest. It saturates fast: at 0.5% of present
+# oxygen two parts in a thousand still reach the ground, and at 5%
+# it is four parts in a billion. The shield is not a hard gate.
+#
+# DESICCATION: air at 288 K and half saturation pulls with 850 Pa
+# against a body that is wet inside. A barrier is required.
+#
+# SUPPORT: buoyancy is gone and the skeleton carries everything.
+# engine/life.py caps a land skeleton at 173 m.
+#
+# GAS: air holds about thirty times more oxygen per volume than
+# water, so breathing gets EASIER. It is the one thing land makes
+# simpler.
+#
+# AND THE PATTERN REPEATS. The planetary gate opens; the shut ones
+# are a skin and a skeleton. That is the third time -- thick bodies
+# needed a pump, land needs a cuticle and bones, and none of them
+# is something a planet supplies.
+OZONE_PRESENT_DU = 300.0
+O3_CROSS_SECTION_CM2 = 1.1e-17
+DU_TO_MOLECULES_CM2 = 2.687e16
+
+
+def ozone_column(o2_fraction_of_present):
+    """Dobson units. DERIVED: Chapman steady state goes as sqrt(O2)."""
+    return OZONE_PRESENT_DU * math.sqrt(max(o2_fraction_of_present, 0.0))
+
+
+def uv_transmitted(o2_fraction_of_present):
+    """Fraction of damaging UV reaching the ground. DERIVED."""
+    n = ozone_column(o2_fraction_of_present) * DU_TO_MOLECULES_CM2
+    return math.exp(-n * O3_CROSS_SECTION_CM2)
+
+
+def land_gates(o2_fraction, barrier=False, skeleton=False):
+    """-> [(name, OPEN/SHUT, why)]. What leaving water requires."""
+    from engine.terraform import p_sat_water
+    from engine.life import square_cube_limit
+    out = []
+    uv = uv_transmitted(o2_fraction)
+    out.append(("uv shield", "OPEN" if uv < 1e-6 else "SHUT",
+                f"ozone {ozone_column(o2_fraction):.0f} DU passes "
+                f"{uv:.1e} of the damaging band. Made from oxygen, so "
+                f"land needs oxygen twice -- and it saturates fast"))
+    deficit = 0.5 * p_sat_water(288.0)
+    out.append(("water retention", "OPEN" if barrier else "SHUT",
+                f"air at half saturation pulls {deficit:.0f} Pa against a "
+                f"body wet inside; a cuticle or skin is "
+                + ("present" if barrier else "ABSENT")))
+    h = float(square_cube_limit().value)
+    out.append(("support", "OPEN" if skeleton else "SHUT",
+                f"buoyancy is gone and the skeleton carries everything, "
+                f"up to {h:.0f} m; a skeleton is "
+                + ("present" if skeleton else "ABSENT")))
+    out.append(("gas exchange", "OPEN",
+                "air holds about thirty times more oxygen per volume "
+                "than water, so breathing is the one thing land makes "
+                "easier"))
+    return out
+
+
 def prime_earth(steps=14):
     """Earth with every condition set as favourably as the rules allow."""
     return history(steps=steps, t_max_gyr=1.0, productivity=1.0,
@@ -268,6 +335,8 @@ def check():
     t("prime_earth_reaches_animals_but_not_by_air", _prime)
     t("circulation_is_cheap_and_that_is_derivable", _pump)
     t("but_the_organ_itself_is_not_derived", _organ)
+    t("the_uv_shield_is_made_of_the_thing_it_protects", _uv)
+    t("every_remaining_gate_is_architecture", _arch)
     return all(o[1] for o in out), out
 
 
@@ -419,6 +488,37 @@ def _organ():
             "still an absence, and a smaller one than it looked")
 
 
+def _uv():
+    weak, ok = uv_transmitted(0.005), uv_transmitted(0.05)
+    if not (weak > ok):
+        raise ArithmeticError("more oxygen did not block more UV")
+    return (f"ozone is made from oxygen, so a planet cannot shield its "
+            f"land before its air is breathable -- the same molecule "
+            f"does both. It saturates quickly: {weak:.1e} of the "
+            f"damaging band reaches the ground at 0.5% of present "
+            f"oxygen and {ok:.1e} at 5%. The shield is not the hard "
+            f"part of coming ashore")
+
+
+def _arch():
+    best = max(r["o2_fraction"] for r in prime_earth())
+    bare = {n: s for n, s, _w in land_gates(best)}
+    built = {n: s for n, s, _w in land_gates(best, barrier=True,
+                                             skeleton=True)}
+    env = [n for n, s in bare.items() if s == "OPEN"]
+    shut = [n for n, s in bare.items() if s == "SHUT"]
+    if not all(built[n] == "OPEN" for n in shut):
+        raise ArithmeticError("a skin and a skeleton do not open the "
+                              "remaining land gates")
+    return (f"on prime Earth the environmental gates open ({', '.join(env)}) "
+            f"and the shut ones are {', '.join(shut)} -- a skin and a "
+            f"skeleton. Adding them opens everything at the same "
+            f"oxygen. THIS IS THE THIRD TIME: a thick body needed a "
+            f"pump, land needs a cuticle and bones, and not one of "
+            f"them is something a planet supplies. Every barrier left "
+            f"in this simulation is architecture")
+
+
 if __name__ == "__main__":
     print(f"  {'t Gyr':>7}{'sink':>7}{'O2':>7}{'CH4 ppm':>10}"
           f"{'T surf':>9}   state")
@@ -438,6 +538,13 @@ if __name__ == "__main__":
         print(f"  {label}:")
         for n, st, w in body_gates(best, circ):
             print(f"    {'open' if st == 'OPEN' else 'SHUT'} {n:15}{w[:66]}")
+    print("\n  ON LAND, at prime oxygen:")
+    for label, kw in (("as a sea creature", {}),
+                      ("with skin and skeleton",
+                       {"barrier": True, "skeleton": True})):
+        print(f"  {label}:")
+        for n, st, w in land_gates(best, **kw):
+            print(f"    {'open' if st == 'OPEN' else 'SHUT'} {n:16}{w[:62]}")
     ok, res = check()
     print()
     for n, o, d in res:

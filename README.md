@@ -1713,3 +1713,45 @@ answer instead of two.
     eval/audit.py      21/21
     eval/heldout.py   165/165    byte-exact
     eval/benchmark.py  ALL PASS  5,737 correct, 0 wrong
+
+### Known weak points, deferred to Atlas 3.3
+
+Raised in outside review and confirmed here. None of them affects a
+machine that has the full tree, which is why they are deferred rather
+than fixed now. They are recorded so that nobody has to rediscover them.
+
+**1. `eval/audit.py` fails on a machine without Godot, and should not.**
+`engine/ir.py:183` degrades correctly — `EXECUTABLE` drops `gdscript`
+when Godot is absent — but `eval/audit.py:135` asserts `len(EXECUTABLE)
+== 3`. So a clean Linux or Windows box reports 20/21 while the system is
+working. This contradicts "runs on any computer" and is the one item
+here that is a real bug. The claim being audited is that the executable
+backends AGREE, not that there are three of them; two agreeing is still
+cross-verification.
+
+**2. No packaging, and the checks are not discoverable.** There is no
+`pyproject.toml` and no `setup.py`. There are 10 scripts in `eval/` and a
+`check()` in every engine module — over 200 self-checks — but nothing a
+standard runner finds on its own, so a reviewer has to be told where to
+look. That matters when independent peer review is a stated goal.
+
+**3. `ui/server.py` is a local demonstration and is not hardened.**
+Stdlib `HTTPServer`, no authentication, no persistence, and
+`traceback.format_exc()[-800:]` in the error body at line 114. Fine on
+localhost, not fit to face a network. It should say so and bind
+accordingly.
+
+**4. `tools/get_godot.py` only carries the macOS URL.** It does detect
+the platform and does honour `ATLAS_GODOT`, so the escape hatch exists;
+the download table is just incomplete. Minor, and only visible once (1)
+is fixed.
+
+**Not defects.** Coverage is narrow and the natural-language layer is
+regexes and overlap scoring. Both are accurate descriptions and both
+limit RECALL, not PRECISION: the system abstains where it cannot derive,
+and the number that must be zero is wrong answers, not abstentions
+(5,737 correct, 0 wrong). This is not a general question-answering
+system and nothing here should be read as claiming it is. The Qwen
+artefacts are also sometimes assumed to be external; they are not, they
+are six files totalling 223 MB tracked in this repository, and a fresh
+clone gets them.

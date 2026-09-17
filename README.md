@@ -26,6 +26,55 @@ why("why is a quarter of the universe helium") # the whole derivation
 
 ---
 
+## Two rules that govern everything below
+
+**1. A claim is only as good as its worst input.**
+
+Every number in this repository is one of three things, and the kind
+decides what may be said about any result depending on it:
+
+    EXACT      fixed by definition. No error, ever.
+    MEASURED   someone went and found out. Carries their error.
+    CHOSEN     nobody measured it and nothing derives it. It was
+               picked so a model would run.
+
+A CHOSEN number is not forbidden — a model that refuses every
+unmeasured quantity does nothing at all. **Citing a result that rests
+on one as though it were derived is forbidden.** `engine/inputs.py`
+classifies all 33 and grades every registered claim by its weakest
+input. Currently **18 are CHOSEN**, and the results resting on them say
+so wherever they appear. The planet results — habitable band, Earth's
+composition, the biosignature — rest on nothing chosen. Several biology
+results do.
+
+**2. There is no prediction here. There are rules and their
+consequences.**
+
+Nothing is scored, fitted to an answer, or estimated with a confidence.
+Where a number is compared against reality it is a *consequence being
+checked*, not a guess being graded. `engine/folding.py` refuses to
+predict a protein structure and says AlphaFold does that with 93
+million learned parameters. `engine/newatom.py` uses a flexible fit
+**only as a diagnostic** for whether a law exists at all, never as an
+answer — *"an atom that does not make anything findable is not an atom,
+it is a parameter."*
+
+The chain is recorded rather than asserted. `engine/provenance.py`
+hash-links an atom from a universe seed through the epoch that made it
+and every decay since, and `engine/planetlab.py` carries it up to a
+folding residue:
+
+    seed          universe hash d59bc58bc3456775c6831abc...
+    stellar_c     formed: alpha-chain, Z=6 even and below the peak
+    stellar_c     decay: C -> N by beta-minus, Q=0.16 MeV
+    abundance     C is 2.36e-03 of baryonic mass
+    valence       C bonds 4 ways, from shell filling
+    residue       G is C2H5NO2 -- 2 atoms of C in it
+    fold          G scores 0.667 on carbon-to-polar
+
+Nothing in it is computed for the occasion. That is what makes it a
+root rather than a story.
+
 ## Summary
 
 Atlas 3 is the third version of a system built on one idea: **answers
@@ -4177,3 +4226,48 @@ manifestation. This says a *claim* belongs to its weakest input, which
 is the rule those two were special cases of.
 
     inputs 4/4   18 of 33 numbers are CHOSEN and now say so
+
+### 3.1.64 — the earliest ancestor, checked rather than produced
+
+LUCA is not a fossil and not a model output. It is a
+**reconstruction**: whatever bacteria and archaea both have, their
+common ancestor had. That makes it the one early organism there is
+independent evidence about, and the only one worth testing rules
+against.
+
+So `engine/luca.py` does not simulate it into existence. It asks
+whether what this repository derives **contradicts** what comparison
+already establishes.
+
+    AGREES     [MEASURED] ran on ion gradients
+    AGREES     [CHOSEN  ] was enclosed, by something not a modern membrane
+    AGREES     [MEASURED] had DNA but not the enzymes to copy it
+    AGREES     [CHOSEN  ] was a cell
+    AGREES     [EXACT   ] used the genetic code we still use
+    CANNOT SAY [CHOSEN  ] lived where the gradient was
+
+**Five agree, none contradict, one the rules cannot speak to.**
+
+**The useful half of the reconstruction is what the two domains do
+*differently*.** Both have membranes and both copy DNA — with
+machinery that is *not homologous*. So LUCA had a compartment and a
+genome and **not** the modern apparatus for either. It was enclosed by
+something else and copied by something else.
+
+That is precisely the regime these rules describe: a bilayer that
+assembles from C10 tails with no enzyme, and a 200-base replicase
+reached by ligating ten 20-base pieces because no polymerase exists
+yet. Neither was built to match LUCA.
+
+**Three of the six rest on CHOSEN numbers and say so.** The
+compartment leans on an ocean concentration nobody measured; the cell
+size on a catalysis probability picked from the middle of five orders
+of magnitude. Those are not derivations and are not cited as such.
+
+**And agreement is weak evidence.** It is the contradictions that
+would have been informative, and there are none to report — which is
+a much weaker statement than having produced an ancestor. The rules
+are consistent with the earliest organism we have evidence for. They
+did not make it.
+
+    luca 4/4   5 agree, 0 contradict, 1 cannot say

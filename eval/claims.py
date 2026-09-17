@@ -126,8 +126,31 @@ def _lab_counts():
             c.get(MISSING_RULE, 0), c.get(REFUSED, 0))
 
 
+def _race():
+    from engine.biome import escalation_stops_at, tallest_worthwhile
+    return (round(escalation_stops_at(1.0), 1),
+            round(tallest_worthwhile(rival_height=0.0)[0], 2))
+
+
+def _crowns():
+    from engine.biome import escalation_stops_at
+    return tuple(round(escalation_stops_at(c))
+                 for c in (0.1, 1.0, 10.0, 100.0, 1000.0))
+
+
+def _chainlen():
+    from engine.biome import food_chain_length, hydraulic_ceiling
+    return food_chain_length(), round(hydraulic_ceiling())
+
+
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.68", "the light race stops at 11.4 m, and at 0.05 m alone",
+     _race, (11.4, 0.05), CURRENT),
+    ("3.1.68", "height scales as crown^0.4: 6, 11, 26, 64, 161 m",
+     _crowns, (6, 11, 26, 64, 161), CURRENT),
+    ("3.1.68", "4 trophic levels under a 204 m cavitation ceiling",
+     _chainlen, (4, 204), CURRENT),
     ("3.1.31", "decay score is 8 right, 0 wrong, 6 refused",
      _decay, (8, 0, 6), CURRENT),
     ("3.1.27", "the derived magic numbers",

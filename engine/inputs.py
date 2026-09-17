@@ -110,6 +110,23 @@ INPUTS = {
     "genesis.SCATTERED_FRACTION": (CHOSEN, "fraction thrown inward, picked"),
     "ecology.CARRYING_ENERGY_W": (CHOSEN, "total world energy, picked"),
     "ecology.NICHE_WIDTH": (CHOSEN, "how similar two species must be"),
+    "biome.PHOTOSYNTHETIC_EFFICIENCY": (
+        CHOSEN, "1% of incident light fixed; real leaves run 0.5-2%"),
+    "biome.EXTINCTION_K": (
+        MEASURED, "Beer-Lambert canopy coefficient, 0.3-0.7 observed"),
+    "biome.TRANSFER_FRACTION": (
+        MEASURED, "10% up each trophic step, Lindeman; 2-20% observed"),
+    "biome.TRUNK_DENSITY": (MEASURED, "wood, 400-700 kg/m3"),
+    "biome.WOOD_MODULUS": (MEASURED, "Young's modulus of wood, 8-15 GPa"),
+    "biome.GREENHILL_C": (
+        EXACT, "0.792 from the Bessel root for a self-loaded column"),
+    "biome.SAPWOOD_M": (CHOSEN, "living shell thickness, order only"),
+    "biome.RESP_PER_KG": (CHOSEN, "W per kg of living plant tissue"),
+    "biome.XYLEM_TENSION": (
+        MEASURED, "sap sustains about -2 MPa before cavitating"),
+    "biome.CROWN_M2": (CHOSEN, "leaf area a plant holds up; a dial"),
+    "ancestry.NEURAL_COST_RATIO": (
+        MEASURED, "neural tissue costs about 10x average tissue"),
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -122,6 +139,12 @@ CLAIMS_ON = {
     "the cell size window 1.58-47.5 um": ["earthlab.CATALYSIS_P",
                                           "earthlab.CROWDED_M"],
     "life cools its own planet by 1.9 K": ["biosphere.CH4_ANOXIC_PPM"],
+    "the light race stops at 11 m": ["biome.CROWN_M2",
+                                    "biome.RESP_PER_KG",
+                                    "biome.PHOTOSYNTHETIC_EFFICIENCY"],
+    "height is worthless without a rival": [],
+    "the food chain runs 4 levels": ["biome.PHOTOSYNTHETIC_EFFICIENCY"],
+    "a brain must raise intake by a fifth": [],
     "seeded life stays microbial": ["descent.INTAKE_COEFFICIENT",
                                     "descent.TRAIT_COST"],
     "competition prevents the collapse": ["ecology.CARRYING_ENERGY_W",

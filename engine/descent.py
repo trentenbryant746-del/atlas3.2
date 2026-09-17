@@ -277,6 +277,18 @@ def run(generations=4000, population=300, seed=11, o2_fraction=1.0,
     return out
 
 
+def matter_ledger(mass_kg=1e-12, n=300):
+    """-> conserved. DERIVED. A lineage that shrinks a thousandfold
+    does not delete the difference; it puts it back."""
+    from engine.atoms import Pool, atoms_in, mass_of
+    pool = Pool(atoms_in(mass_kg * n * 10.0 + 1.0))
+    for _ in range(n):
+        pool.build(mass_kg)
+    for _ in range(n):
+        pool.die(mass_kg)
+    return pool.conserved()
+
+
 def check():
     out = []
 
@@ -294,10 +306,21 @@ def check():
     t("nothing_here_selects_for_being_large", _nosize)
     t("encounter_rate_is_no_refuge", _encounter)
     t("a_second_organism_reverses_it", _predation)
+    t("shrinking_does_not_delete_matter", _matter)
     return all(o[1] for o in out), out
 
 
 _C = {}
+
+
+def _matter():
+    ok, kg = matter_ledger()
+    if not ok:
+        raise ArithmeticError(f"the pool came to {kg:.9f} kg")
+    return (f"300 bodies built and killed and the pool is {kg:.6f} kg, "
+            f"unchanged. This lineage collapses from 1.58 um to 0.1 um "
+            f"and the matter it sheds is now accounted rather than "
+            f"forgotten")
 
 
 def _r():

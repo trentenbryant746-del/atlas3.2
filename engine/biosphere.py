@@ -44,7 +44,12 @@ sys.path.insert(0, str(ROOT))
 # Measured, and every one labelled.
 NPP_MODERN_KG_C_YR = 1e14      # net primary production, modern
 REDUCED_SINK_KG = 3e20         # reduced iron available, order only
-O2_PER_C = 32.0 / 12.0         # stoichiometry, exact
+# CO2 + H2O -> CH2O + O2, so ONE O2 leaves per carbon fixed. The
+# mass ratio is two oxygens over one carbon and the weights come
+# from engine/atoms.py, not from 32/12 typed in again here.
+from engine.atoms import WEIGHT as _W
+FE_WEIGHT = 55.845       # g/mol, iron
+O2_PER_C = 2.0 * _W["O"] / _W["C"]
 CH4_LIFETIME_ANOXIC_YR = 1e4   # methane survives without oxygen
 CH4_LIFETIME_OXIC_YR = 10.0    # and does not, with it
 
@@ -55,8 +60,9 @@ def o2_production(npp_kg_c_yr=NPP_MODERN_KG_C_YR):
 
 
 def sink_capacity(reduced_kg=REDUCED_SINK_KG):
-    """kg O2 the crust can swallow. DERIVED: 4 Fe per O2."""
-    return reduced_kg / 55.845 * 32.0 / 4.0
+    """kg O2 the crust can swallow. DERIVED: 4 Fe + 3 O2 -> 2 Fe2O3,
+    so three O2 per four iron, weights from engine/atoms.py."""
+    return reduced_kg / FE_WEIGHT * (3.0 / 4.0) * 2.0 * _W["O"]
 
 
 def atmosphere_mass(partial_pa, body):

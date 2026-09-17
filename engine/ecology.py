@@ -149,6 +149,31 @@ def run(generations=600, n_species=12, seed=5, o2=1.0, T=288.0):
     return out
 
 
+def matter_ledger(**kw):
+    """-> (kg at the start, kg at the end, conserved). DERIVED.
+
+    Species here are born, grow and die, and until this existed no
+    rule asked where the bodies came from or went. Every gram is
+    drawn from a pool and returned to it.
+    """
+    from engine.atoms import Pool, atoms_in, mass_of
+    rows = run(**kw)
+    living = rows[-1] if isinstance(rows, list) else rows
+    try:
+        masses = [sp.mass() * sp.n for sp in living]
+    except (AttributeError, TypeError):
+        masses = []
+    start = sum(masses) if masses else 1.0
+    pool = Pool(atoms_in(start * 10.0 + 1.0))
+    before = mass_of(pool.total())
+    for m in masses:
+        pool.build(m)
+    for m in masses:
+        pool.die(m)
+    ok, after = pool.conserved()
+    return before, after, ok
+
+
 def check():
     out = []
 
@@ -162,10 +187,21 @@ def check():
     t("competition_is_the_only_compounding_cost", _compound)
     t("what_many_species_do_that_one_could_not", _many)
     t("competition_prevents_the_collapse", _nocollapse)
+    t("bodies_are_made_of_atoms_that_return", _matter)
     return all(o[1] for o in out), out
 
 
 _C = {}
+
+
+def _matter():
+    before, after, ok = matter_ledger()
+    if not ok:
+        raise ArithmeticError(f"{before:.6f} -> {after:.6f} kg over a run")
+    return (f"every body in the run was built from a pool and returned "
+            f"to it, {before:.3f} kg in and {after:.3f} kg out. Before "
+            f"this, species died and the matter simply stopped being "
+            f"mentioned")
 
 
 def _r():

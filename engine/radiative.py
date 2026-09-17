@@ -260,7 +260,7 @@ def collision_cutoff(species, T):
     return 1.0 / (2 * math.pi * C_CM * DIAMETER_M[species] / v)
 
 
-def opaque_width(species, column_kg_m2, pressure_pa, band=0, T=288.0):
+def opaque_width(species, column_kg_m2, pressure_pa, band, T):
     """cm^-1 of spectrum this band actually blacks out. DERIVED."""
     bl = BANDS[species]
     if not bl or column_kg_m2 <= 0:
@@ -423,7 +423,7 @@ def _spectral_bins(n=400, lo=1.0, hi=4000.0):
 # so a widened band is a tall narrow core with long thin shoulders,
 # and adding gas raises the shoulders gradually rather than
 # switching the sky from open to shut.
-def line_tau(species, column_kg_m2, pressure_pa, band, nu_cm, T=288.0):
+def line_tau(species, column_kg_m2, pressure_pa, band, nu_cm, T):
     """Optical depth AT a wavenumber. DERIVED from the line shape."""
     bl = BANDS[species]
     if not bl or column_kg_m2 <= 0:

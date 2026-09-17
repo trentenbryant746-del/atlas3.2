@@ -3150,3 +3150,58 @@ default is how one thing's properties become another's without anyone
 writing it down.
 
     clouds 5/5   5,737 correct, 0 wrong   claims 14/14   audit 21/21
+
+### 3.1.42 — the leak audit, and measuring before optimising
+
+**A principle, stated because it changed how this session ran:** when a
+measurement is off, do not reach for the number. Ask whether the rules
+have enough context. Every real fix in this repository has been a rule
+added, not a value adjusted.
+
+**The sulfuric-acid leak was not unique, and is now a rule.** A function
+that takes a species or a body and *defaults* a physical quantity is a
+place where one thing silently wears another's properties. An AST sweep
+of every engine module found six live cases beyond the original:
+
+    condensation_gradient(lapse=0.0065)   Earth's moist adiabat
+    condensation_gradient(P=101325)       Earth's surface pressure
+    standing_water_path(depth=3000)       Earth's cloud layer
+    standing_water_path(P=101325)         Earth's pressure
+    opaque_width(T=288)                   Earth's temperature
+    cv_molar / cp_molar / gamma (T=288)   Earth's temperature
+
+The temperature ones mattered most: CO₂'s heat capacity varies **59%**
+between 200 K and 800 K, so a caller who forgot `T` gave Venus Earth's
+gas. All are now required arguments or derived from the body in hand.
+`no_shared_physical_default` enforces it, exempting only names ending
+`_ref`, which are stated normalisation points rather than properties of
+the body.
+
+**Cloud depth got the same treatment and is now honest about being a
+bound.** Replacing Earth's 3,000 m with the scale height puts Earth at
+optical depth 69 against a real 5–20 — about three times too deep,
+which is exactly the ratio of a scale height to a real cloud layer.
+Kept as a bound that at least scales with the body, with the missing
+rule named: the lifting condensation level and the level of neutral
+buoyancy.
+
+**Chunking the band search made it seven times slower.** Eight threads
+took **174 seconds against 24 serial**. Python holds one interpreter
+lock, so CPU-bound threads take turns rather than run, and the chunked
+search does 40 solves where bisection does 28. Slower work, done slower.
+
+**Profiling found the actual cost.** One thermostat call ran
+`fixed_points` **586 times, each scanning 3,400 points** — two million
+evaluations of a smooth function to bracket a handful of roots. At 200
+steps the roots are identical to the last decimal, because the scan only
+has to find a sign change and the bisection after it does the precision.
+
+    thermostat      6.43s -> 0.67s     9.6x
+    band search    ~24s   -> 12.7s
+    terraform      31.4s  ->  5.8s
+
+The outer edge moved by 0.001 AU, inside the bisection tolerance, and
+the claims checker caught that too.
+
+    lab 27: 25 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED
+    5,737 correct, 0 wrong   claims 14/14   audit 21/21

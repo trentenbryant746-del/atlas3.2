@@ -422,7 +422,7 @@ def _imbalance(body, T, co2_pa, ocean_kgm2, luminosity, humidity, albedo):
 
 def fixed_points(body, co2_pa, ocean_kgm2=None, luminosity=L_SUN,
                  humidity=RH_EARTH, albedo=None, lo=None, hi=1800.0,
-                 steps=3400):
+                 steps=420):
     """-> [(T, "stable"|"unstable")]. EVERY solution, not the first.
 
     Iterating from the bare-rock temperature found 257 K for Earth and
@@ -435,6 +435,13 @@ def fixed_points(body, co2_pa, ocean_kgm2=None, luminosity=L_SUN,
     """
     if ocean_kgm2 is None:
         ocean_kgm2 = ocean_column(body)
+    # 3,400 STEPS WERE BUYING NOTHING. Profiling one thermostat call
+    # found fixed_points running 586 times at 3,400 points each --
+    # two million evaluations of a smooth function to locate a
+    # handful of roots. At 200 steps the roots are identical to the
+    # last decimal, because the scan only has to BRACKET a sign
+    # change and the bisection that follows does the precision. 420
+    # keeps a wide margin over the coarsest that still worked.
     if lo is None:
         # The floor must sit below the bare-rock temperature or the
         # scan misses the only root a body with no atmosphere has.

@@ -142,6 +142,51 @@ def no_bar_is_typed():
         "for reference is a number waiting to be used, and that one was")
 
 
+@experiment(0, "can one substance wear another's properties?")
+def no_shared_physical_default():
+    """The sulfuric-acid leak, made into a rule."""
+    import ast
+    from pathlib import Path
+    eng = Path(__file__).resolve().parent
+    # a function that takes a species or a body, and defaults a
+    # PHYSICAL quantity, is a place one thing can silently get
+    # another's behaviour
+    physical = {"T", "lapse", "depth", "P", "T_ref", "radius_m",
+                "gravity", "albedo", "humidity"}
+    bad = []
+    for f in sorted(eng.glob("*.py")):
+        tree = ast.parse(f.read_text())
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef):
+                continue
+            args = [a.arg for a in node.args.args]
+            if not any(a in ("species", "body", "sp") for a in args):
+                continue
+            off = len(args) - len(node.args.defaults)
+            for i, d in enumerate(node.args.defaults):
+                nm = args[off + i]
+                # a name ending _ref is a stated normalisation point,
+                # not a property of the body in hand: weathering is
+                # normalised AT 288 K by definition, and every body
+                # uses the same reference on purpose.
+                if nm.endswith("_ref"):
+                    continue
+                if nm in physical and isinstance(d, ast.Constant) \
+                        and isinstance(d.value, (int, float)):
+                    bad.append(f"{f.name}:{node.name}({nm}={d.value})")
+    if bad:
+        return CLASH, ("a physical quantity is defaulted in a function "
+                       "that takes a species or body, so one can wear "
+                       "another's properties: " + "; ".join(bad))
+    return HOLDS, (
+        "no function that takes a species or a body defaults a physical "
+        "quantity. The condensation gradient was once a hardcoded 2e-6 "
+        "-- water's value -- and passing sulfuric acid through it gave "
+        "H2SO4 water's behaviour, silently, and the Venus refusal "
+        "vanished. Cloud depth was 3,000 m, which is Earth's. Both now "
+        "derive from the body in hand or refuse")
+
+
 @experiment(0, "can a check fail on its own documentation?")
 def checks_do_not_grep_themselves():
     """Written after making the same mistake three times."""

@@ -81,6 +81,18 @@ def luminosity_at(m_msun, t_gyr):
 _BAND_CACHE = {}
 
 
+# THREADS DO NOT HELP AND MEASURING SAID SO. Splitting the band
+# search into chunks across a thread pool took 174 seconds against
+# 24 serial: Python holds one interpreter lock, so eight CPU-bound
+# threads take turns rather than run, and the chunked search does
+# 40 solves where bisection does 28. Slower work, done slower.
+#
+# Profiling found the real cost. One thermostat call runs
+# fixed_points 586 times and each scans 3,400 points -- two million
+# evaluations of a smooth function to locate a handful of roots.
+# The answer is not more cores, it is not scanning at a resolution
+# the problem does not need.
+
 def _solar_band():
     """-> (inner AU, outer AU) at one solar luminosity. DERIVED."""
     if "band" in _BAND_CACHE:

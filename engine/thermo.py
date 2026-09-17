@@ -89,7 +89,7 @@ def einstein_cv(nu_cm, T):
     return x * x * ex / (ex - 1.0) ** 2
 
 
-def cv_molar(species, T=288.0):
+def cv_molar(species, T):
     """J/mol/K. DERIVED from shape and measured band frequencies."""
     c = 1.5 + 0.5 * rotational_dof(species)
     for nu, deg in EXTRA_MODES.get(species, []):
@@ -97,12 +97,12 @@ def cv_molar(species, T=288.0):
     return c * R_GAS
 
 
-def cp_molar(species, T=288.0):
+def cp_molar(species, T):
     """cp = cv + R for an ideal gas. DERIVED."""
     return cv_molar(species, T) + R_GAS
 
 
-def cp_specific(species, T=288.0):
+def cp_specific(species, T):
     """J/kg/K, which is what a lapse rate needs. DERIVED."""
     from engine.radiative import MU, _molar
     # One parser for formulas, the one engine/radiative.py already
@@ -114,12 +114,12 @@ def cp_specific(species, T=288.0):
     return cp_molar(species, T) / (mu * 1e-3)
 
 
-def gamma(species, T=288.0):
+def gamma(species, T):
     """Adiabatic index cp/cv. DERIVED."""
     return cp_molar(species, T) / cv_molar(species, T)
 
 
-def lapse_rate(gravity, species, T=288.0):
+def lapse_rate(gravity, species, T):
     """K/m. DERIVED: g over the specific heat, no typed constant."""
     return gravity / cp_specific(species, T)
 
@@ -164,7 +164,7 @@ def check():
 def _cp():
     rows = []
     for sp, typed in (("N2", 1040.0), ("CO2", 850.0)):
-        got = cp_specific(sp)
+        got = cp_specific(sp, 288.0)
         rows.append(f"{sp} {got:.0f} against a typed {typed:.0f}")
         if abs(got - typed) / typed > 0.10:
             raise ArithmeticError(f"{sp}: derived {got:.1f} vs {typed}")
@@ -219,8 +219,8 @@ if __name__ == "__main__":
     print(f"  Sun's surface: {solar_surface()[0]:.0f} K (derived)\n")
     print(f"  {'species':8}{'cv/R':>7}{'cp J/kg/K':>11}{'gamma':>8}")
     for sp in ("Ar", "N2", "O2", "CO2", "H2O", "CH4"):
-        print(f"  {sp:8}{cv_molar(sp)/R_GAS:>7.2f}{cp_specific(sp):>11.0f}"
-              f"{gamma(sp):>8.3f}")
+        print(f"  {sp:8}{cv_molar(sp, 288.0)/R_GAS:>7.2f}"
+              f"{cp_specific(sp, 288.0):>11.0f}{gamma(sp, 288.0):>8.3f}")
     ok, res = check()
     print()
     for n, o, d in res:

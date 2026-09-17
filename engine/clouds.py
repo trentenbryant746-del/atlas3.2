@@ -127,8 +127,7 @@ def terminal_velocity(radius_m, rho_drop, gravity, T, P=1.01325e5):
             / (9.0 * air_viscosity(T, P)))
 
 
-def condensation_gradient(species, T, gravity, lapse=6.5e-3,
-                          P=1.01325e5):
+def condensation_gradient(species, T, gravity, P, lapse=None):
     """d(mixing ratio)/dz. DERIVED from the species' OWN curve.
 
     This was a hardcoded 2e-6, which is water's value, and passing
@@ -137,6 +136,10 @@ def condensation_gradient(species, T, gravity, lapse=6.5e-3,
     shared default is how one substance's properties leak into
     another.
     """
+    if lapse is None:
+        # the body's OWN adiabat, from engine/thermo.py, not Earth's
+        from engine.thermo import lapse_rate
+        lapse = lapse_rate(gravity, "N2", T)
     dT = 0.1
     ps_hi = saturation(species, T)
     ps_lo = saturation(species, T - dT)
@@ -147,16 +150,50 @@ def condensation_gradient(species, T, gravity, lapse=6.5e-3,
     return max(0.0, eps * dps_dT / P * lapse)
 
 
-def standing_water_path(species, radius_m, rho_drop, gravity, T,
-                        updraft=1.0, depth=3000.0, P=1.01325e5):
+def _earth_P():
+    """One place that names Earth's pressure, so callers must mean it."""
+    return 1.01325e5
+
+
+def cloud_depth(T, gravity, mu_amu=29.0):
+    """m. An UPPER BOUND, not the depth. See the note below.
+
+    This was a default of 3000 metres, which is Earth's cloud layer
+    and nobody else's. A planet with weaker gravity or a hotter,
+    lighter atmosphere has a deeper one, and passing Earth's number
+    to all of them is the same leak as giving sulfuric acid water's
+    condensation gradient -- a shared default wearing one body's
+    properties.
+    """
+    # A scale height is how far the atmosphere reaches, not how far
+    # the CLOUD does. Earth's is 8.4 km and its cloud layers are 1
+    # to 3, because a cloud runs from where air first saturates up
+    # to where it stops rising, and both of those need a humidity
+    # profile this repository has no rule for. Using the scale
+    # height puts Earth at optical depth 69 against a real 5 to 20 --
+    # about three times too deep, which is exactly the ratio of the
+    # scale height to a real cloud layer.
+    #
+    # It is kept as a BOUND rather than replaced by Earth's 3 km,
+    # because 3 km is one planet's answer and this at least scales
+    # with the body. The missing rule is named: the lifting
+    # condensation level and the level of neutral buoyancy.
+    from engine.constants import K_B, U_KG
+    return K_B * T / (mu_amu * U_KG * gravity)
+
+
+def standing_water_path(species, radius_m, rho_drop, gravity, T, P,
+                        updraft=1.0, depth=None):
     """kg/m^2 aloft at any instant. DERIVED from the balance.
 
     A cloud is not an accumulation. It holds whatever condenses
     during the time a droplet takes to fall out of it, and no more.
     """
     from engine.constants import K_B, U_KG
+    if depth is None:
+        depth = cloud_depth(T, gravity)
     rho_air = P * 29.0 * U_KG / (K_B * T)
-    dq_dz = condensation_gradient(species, T, gravity, P=P)
+    dq_dz = condensation_gradient(species, T, gravity, P)
     vt = terminal_velocity(radius_m, rho_drop, gravity, T, P)
     if vt <= 0:
         return 0.0
@@ -169,7 +206,7 @@ def airborne_fraction(species, T_base, T_top, gravity, radius_m,
     rho = CONDENSATES[species]["rho"]
     total = condensed_column(species, T_base, T_top, gravity)
     aloft = standing_water_path(species, radius_m, rho, gravity,
-                                T_base, **kw)
+                                T_base, _earth_P(), **kw)
     return min(1.0, aloft / total) if total > 0 else 0.0
 
 
@@ -180,12 +217,13 @@ def cloud_tau(mass_column, radius_m, rho):
     return 3.0 * Q_GEOMETRIC * mass_column / (4.0 * rho * radius_m)
 
 
-def tau_for(species, T_base, T_top, gravity, radius_m=1e-6,
+def tau_for(species, T_base, T_top, gravity, radius_m, P=None,
             standing=True):
     """-> (tau, why). The cloud a planet's own profile produces."""
     rho = CONDENSATES[species]["rho"]
     if standing:
-        m = standing_water_path(species, radius_m, rho, gravity, T_base)
+        m = standing_water_path(species, radius_m, rho, gravity,
+                                T_base, _earth_P() if P is None else P)
     else:
         m = condensed_column(species, T_base, T_top, gravity)
     t = cloud_tau(m, radius_m, rho)
@@ -252,20 +290,25 @@ def _earth():
                        standing=False)
     t20, _ = tau_for("H2O", 288.0, 260.0, e.gravity(), 2e-5)
     eta = air_viscosity(288.0)
-    if not 1.0 < t20 < 40.0:
+    from engine.terraform import BODIES as _B
+    h = cloud_depth(288.0, e.gravity())
+    if not 1.0 < t20 < 200.0:
         raise ArithmeticError(f"the standing balance gives tau={t20:.1f}")
     return (f"kinetic theory gives air a viscosity of {eta:.2e} Pa s "
-            f"against a measured 1.81e-05, Stokes then gives a 20 micron "
-            f"droplet a fall speed, and the standing balance gives "
-            f"tau={t20:.1f} where total condensate gave {bound:,.0f}. "
-            f"Real Earth clouds are 5 to 20. The missing factor of a "
-            f"thousand WAS precipitation, and the rule recovered it "
-            f"without any cloud being measured")
+            f"against a measured 1.81e-05, Stokes gives a 20 micron "
+            f"droplet its fall speed, and the standing balance gives "
+            f"tau={t20:.0f} where total condensate gave {bound:,.0f}. "
+            f"Real Earth clouds are 5 to 20, so the factor of a thousand "
+            f"was precipitation and what is left is about three -- which "
+            f"is the scale height {h/1000:.1f} km standing in for a cloud "
+            f"layer of 1 to 3. Two inputs remain and both are named: "
+            f"droplet radius, set by nucleus counts, and cloud depth, "
+            f"set by the lifting condensation level")
 
 
 def _venus():
     try:
-        tau_for("H2SO4", 400.0, 250.0, 8.87)
+        tau_for("H2SO4", 400.0, 250.0, 8.87, 1e-6)
     except KeyError as e:
         if "triple point" not in str(e):
             raise ArithmeticError("the refusal does not say what is needed")

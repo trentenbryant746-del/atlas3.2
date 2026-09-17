@@ -143,10 +143,10 @@ CLAIMS = [
      _fold_bar, 0.5729, CURRENT),
     ("3.1.39", "unfitted climate: Earth +21.0 K, Venus -488.3 K",
      _climate, (21.0, -488.3), CURRENT),
-    ("3.1.37", "habitable band derived 0.999 - 1.898 AU",
-     _band, (0.999, 1.898), CURRENT),
-    ("3.1.39", "lab: 24 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED",
-     _lab_counts, (24, 0, 1, 1), CURRENT),
+    ("3.1.42", "habitable band derived 0.999 - 1.899 AU",
+     _band, (0.999, 1.899), CURRENT),
+    ("3.1.42", "lab: 25 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED",
+     _lab_counts, (25, 0, 1, 1), CURRENT),
     ("3.1.39", "derived CO2 wing cutoff 11.2 cm-1 at 737 K",
      _cutoff, 11.2, CURRENT),
     ("3.1.39", "derived CO2 well depth 180 K",
@@ -156,6 +156,10 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.37", "habitable band outer edge 1.898 AU",
+     "3.1.42 coarsened the root scan from 3,400 points to 420 after "
+     "profiling showed it bought nothing; the outer edge moved by "
+     "0.001 AU, which is inside the bisection tolerance"),
     ("3.1.31", "lab reported 1 CLASH",
      "resolved in 3.1.39: the far-wing clash was between two "
      "hand-waves, and deriving the intermolecular potential replaced "

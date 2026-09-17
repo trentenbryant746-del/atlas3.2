@@ -3826,3 +3826,46 @@ and open on prime Earth. The one that stays shut is about
 *architecture*, and architecture is not something a planet provides.
 
     biosphere 8/8   5,737 correct, 0 wrong   claims 16/16   audit 21/21
+
+### 3.1.56 — circulation is derivable, and it is cheap
+
+**Yes, and the answer makes the gap smaller than it looked.** A pump
+moves fluid against viscous resistance; Poiseuille gives what a flow
+costs and `engine/life.py`'s Kleiber relation gives how much flow a
+body of a given mass needs. Blood carries about 4 × 10⁶ joules of
+oxygen per cubic metre.
+
+      1 ug     0.60% of the metabolic budget
+      1 g      0.11%
+      1 kg     0.02%
+     70 kg     0.01%     (a real heart is 1-2%, with a branching
+                          tree this single-vessel model omits)
+
+**Pumping is affordable at every size and gets cheaper as bodies grow**,
+because demand rises as mass^0.75 while a wider vessel's resistance
+falls as r⁻⁴. So circulation was never a barrier that had to be
+crossed. It is the cheap answer to a problem that becomes unavoidable
+at about 55 microns — below that a pump is pure cost, above it there is
+no alternative.
+
+**What is not derived is the organ.** That a pump pays for itself does
+not say how a lineage builds one, and there is no rule here for that.
+The honest claim is narrower than "circulation is derivable": *nothing
+forbids it, and the economics favour it at exactly the size diffusion
+fails.* The absence is real and much smaller than it appeared.
+
+**A unit error worth recording.** The first pass had pumping costing
+**6,528% of a human's budget** — I mixed millilitres and cubic metres
+in blood's oxygen capacity, a factor of a thousand. It was caught by
+comparing against a known quantity: a real heart is 1–2 W of a 100 W
+budget, and 5,355 W is not. Checking a derivation against something
+measured is what stops a unit slip becoming a conclusion.
+
+**On the CPU, plainly:** the suite has not got faster *for you* because
+`--verify` bypasses the cache by design, and because every edit to an
+engine module invalidates everything downstream of it. Both are correct
+behaviour and both mean the runs you have seen were cold. The caching
+is real — a warm run is 32 seconds against 3 minutes 11 — but it only
+shows when the tree is not being edited.
+
+    biosphere 10/10

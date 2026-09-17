@@ -157,6 +157,63 @@ def tissue_thickness(o2_fraction_of_present, consumption=1.0):
     return diffusion_limit(consumption, D=D_O2_WATER, C0=c0).value
 
 
+# IS CIRCULATION DERIVABLE, OR JUST ASSERTED? It is derivable, and
+# the answer is that it is CHEAP -- which is why calling it a
+# missing organ overstated the difficulty.
+#
+# A pump moves fluid against viscous resistance. Poiseuille gives
+# the pressure a flow costs, Q = pi r^4 dP / (8 eta L), and the
+# power is Q dP. The flow itself is set by demand: blood carries
+# about 4e6 joules of oxygen per cubic metre, and engine/life.py's
+# Kleiber relation says how many joules a body of a given mass
+# needs.
+#
+#      1 ug     0.60% of the metabolic budget
+#      1 g      0.11%
+#      1 kg     0.02%
+#     70 kg     0.01%     (a real heart is 1-2%, with a branching
+#                          tree this single-vessel model omits)
+#
+# Pumping is affordable at every size and gets CHEAPER as bodies
+# grow, because demand rises as mass^0.75 while a wider vessel's
+# resistance falls as r^-4. So circulation is not a barrier that
+# had to be crossed; it is the cheap answer to a problem that
+# becomes unavoidable at about 55 microns, where diffusion stops
+# reaching. Below that a pump is pure cost. Above it there is no
+# alternative.
+#
+# WHAT IS NOT DERIVED IS THE ORGAN. That a pump pays for itself
+# does not say how a lineage builds one, and this repository has no
+# rule for that. The honest statement is narrower than "circulation
+# is derivable": what is derivable is that nothing forbids it and
+# the economics favour it at exactly the size diffusion fails.
+BLOOD_VISCOSITY = 3.5e-3       # Pa s, measured
+BLOOD_O2_J_PER_M3 = 0.2e6 * 20.0
+
+
+def pump_cost(mass_kg, vessel_ratio=0.01):
+    """-> (watts, fraction of budget). DERIVED from Poiseuille."""
+    from engine.life import kleiber
+    k = kleiber(mass_kg)
+    bmr = float(k.value if hasattr(k, "value") else k)
+    length = (mass_kg / 1000.0) ** (1.0 / 3.0)
+    radius = length * vessel_ratio
+    flow = bmr / BLOOD_O2_J_PER_M3
+    dp = 8 * BLOOD_VISCOSITY * length * flow / (math.pi * radius ** 4)
+    power = flow * dp
+    return power, (power / bmr if bmr else float("inf"))
+
+
+def circulation_pays(mass_kg):
+    """-> (bool, why). Does the pump cost less than it enables?"""
+    p, frac = pump_cost(mass_kg)
+    return frac < 0.1, (
+        f"a {mass_kg:g} kg body spends {100*frac:.2f}% of its metabolic "
+        f"budget on pumping ({p:.2e} W). Affordable, and it gets "
+        f"cheaper with size because demand rises as mass^0.75 while a "
+        f"wider vessel's resistance falls as r^-4")
+
+
 def body_gates(o2_fraction, circulation=False):
     """-> [(name, OPEN/SHUT, why)]. What a body can be at this O2."""
     from engine.life import square_cube_limit
@@ -209,6 +266,8 @@ def check():
     t("life_cools_its_own_planet", _cool)
     t("oxygen_alone_cannot_thicken_a_body", _thick)
     t("prime_earth_reaches_animals_but_not_by_air", _prime)
+    t("circulation_is_cheap_and_that_is_derivable", _pump)
+    t("but_the_organ_itself_is_not_derived", _organ)
     return all(o[1] for o in out), out
 
 
@@ -329,6 +388,35 @@ def _prime():
             f"immediately at the same oxygen. So the step to a large "
             f"animal is not an atmosphere, it is an organ, and no "
             f"amount of prime conditions substitutes")
+
+
+def _pump():
+    rows = [(m, pump_cost(m)[1]) for m in (1e-6, 1e-3, 1.0, 70.0, 1e4)]
+    if any(f > 0.1 for _m, f in rows):
+        raise ArithmeticError("pumping costs more than a tenth of the "
+                              "budget somewhere; it is not obviously "
+                              "affordable and this reasoning changes")
+    if rows[0][1] <= rows[-1][1]:
+        raise ArithmeticError("pumping did not get cheaper with size")
+    return ("Poiseuille against Kleiber: pumping costs "
+            + ", ".join(f"{100*f:.2f}% at {m:g} kg" for m, f in rows)
+            + ". Affordable everywhere and cheaper as bodies grow, "
+              "because demand rises as mass^0.75 and resistance falls "
+              "as r^-4. Circulation is not a barrier that had to be "
+              "crossed -- it is the cheap answer to a problem that "
+              "becomes unavoidable at 55 microns")
+
+
+def _organ():
+    ok, _w = circulation_pays(70.0)
+    if not ok:
+        raise ArithmeticError("the economics no longer favour a pump")
+    return ("that a pump PAYS FOR ITSELF does not say how a lineage "
+            "builds one, and there is no rule here for that. The "
+            "derivable claim is narrower than 'circulation is "
+            "derivable': nothing forbids it, and the economics favour "
+            "it at exactly the size diffusion fails. The organ is "
+            "still an absence, and a smaller one than it looked")
 
 
 if __name__ == "__main__":

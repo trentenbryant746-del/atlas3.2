@@ -2279,3 +2279,69 @@ bounds goes stale the first time the thing changes. It now reads
 `max(LAYERS)`.
 
     lab   21 experiments over 8 rungs: 19 HOLDS, 1 CLASH, 1 MISSING_RULE
+
+### 3.1.27 — shell corrections, and a right answer for the wrong reason
+
+**The magic numbers are derived, not typed.** A list of 2, 8, 20, 28, 50,
+82, 126 would be exactly the kind of table this project keeps removing.
+`engine/shells.py` gets them from a potential instead:
+
+    E / hbar omega = (N + 3/2) - kappa[ 2 l.s + mu( l^2 - <l^2>_N ) ]
+
+A harmonic oscillator alone gives 2, 8, 20, 40, 70, 112 — the first three
+right and then wrong for ever. Spin-orbit coupling pulls the aligned
+`j = l+1/2` orbital down far enough to join the shell below, and the l²
+term accounts for a real nucleus flattening towards its surface. **Only
+4.2% of the (κ, μ) plane reproduces all seven closures** — 51 of 1,209
+grid points, κ in 0.028–0.045 and μ in 0.28–0.75, which is where the
+Nilsson model's own values sit. Seven integers pinning two continuous
+parameters into 4% of a plane.
+
+It also predicts **40**, which was not in the target list and is real —
+the N=40 sub-shell closure shows in zirconium-90 and calcium-48. A
+derivation that produced only what it was aimed at would be weaker.
+
+**Then the shell corrections exposed something much worse.** Every alpha
+Q-value in the repository was built as
+
+    Q = B_semf(daughter) + B_MEASURED(helium-4) - B_semf(parent)
+
+taking one of three terms from a different source. The SEMF gives
+helium-4 22.841 MeV; the measured value is 28.296. **Every alpha channel
+carried a +5.455 MeV bias — 4.5× its own error bar.**
+
+And it breaks precisely the argument 3.1.16 rests on. A Q-value is a
+*difference*, and its bar is 1.21 MeV instead of the 4.76 MeV absolute
+mass error **only because the formula's errors cancel between the two
+sides**. Take one term from elsewhere and the cancellation is gone, so
+the bar no longer describes the quantity it is applied to.
+
+**That bias was doing real work.** The SEMF under-predicts heavy alpha
+Q-values by 5–11 MeV, and the borrowed helium supplied most of it. Two
+errors in opposite directions, partly cancelling:
+
+    as shipped (mixed sources)         8 right, 3 WRONG, 3 refused
+    consistent sources                 4 right, 3 WRONG, 7 refused
+    consistent + derived shells        4 right, 2 WRONG, 8 refused
+
+Four of the eight "right" answers were right for the wrong reason and
+are now correctly refused as unresolvable. **Wrong went from 3 to 2** —
+polonium-212 stopped being called stable, because its daughter lead-208
+sits on a double closure a smooth formula cannot see. Wrong is the number
+that must reach zero, and it fell.
+
+**The uranium series is withdrawn a third time.** 3.1.15 withdrew it on
+the wrong bar. 3.1.16 withdrew that withdrawal, correctly. Both were
+right. Now U-238's alpha Q comes out **−0.024 MeV against a measured
++4.27**, the channel never opens, and the chain walks into beta decays
+that do not happen. The earlier reasoning survives intact; what changed
+is that the derivation rested on an inconsistency rather than on the bar.
+The gap is named: the liquid drop is ~4.3 MeV short on that step even
+with shells.
+
+**Restoring the mixed source would have kept the score.** That is the
+definition of a patch — keeping a broken mechanism because it produces
+right answers — and it is why the score is allowed to fall.
+
+    engine/shells.py 6/6   lab 22 experiments   5,737 correct, 0 wrong
+    audit 21/21            heldout 165/165 byte-exact

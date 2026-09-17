@@ -178,6 +178,34 @@ def degenerate_inputs_are_refused():
         "should have refused; these were the load-bearing ones")
 
 
+@experiment(0, "does one equation ever mix two sources?")
+def a_q_value_uses_one_source():
+    """The bar argument depends on this and nothing was checking it."""
+    from engine import nucleo, shells
+    semf_he4 = nucleo.binding_per_nucleon(2, 2) * 4
+    measured = 28.296
+    bias = measured - semf_he4
+    bar = nucleo.error_bar("decay")[0]
+    import inspect
+    from engine import transitions
+    src = inspect.getsource(transitions.q_values)
+    if "B_ALPHA" in src:
+        return CLASH, (
+            f"an alpha Q-value mixes a measured helium-4 binding "
+            f"({measured}) with SEMF values for parent and daughter "
+            f"({semf_he4:.3f}), biasing every alpha channel by "
+            f"{bias:+.3f} MeV -- {bias/bar:.1f} times its own bar")
+    return HOLDS, (
+        f"every term in a Q-value comes from the same formula. This is "
+        f"not tidiness: a Q-value is a DIFFERENCE, and its bar is "
+        f"{bar:.2f} MeV rather than the {nucleo.error_bar('mass')[0]:.2f} "
+        f"MeV absolute mass error ONLY because the formula's errors "
+        f"cancel between the two sides. Taking one term from elsewhere "
+        f"destroys the cancellation. It used to, by {bias:+.3f} MeV, "
+        f"which is {bias/bar:.1f} times the bar the result was judged "
+        f"against")
+
+
 # ------------------------------------------------ layer 1, molecule
 @experiment(1, "is a band's strength independent of how much gas there is?")
 def band_data_is_intensive():

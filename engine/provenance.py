@@ -263,36 +263,72 @@ def _tamp():
 
 
 def _u238():
-    """The real series, restored -- and this time the bar is measured.
+    """WITHDRAWN A THIRD TIME, and this time the reason is exact.
 
-    3.1.15 withdrew this. The withdrawal was right given the number
-    it had: an 8 MeV bar measured on ABSOLUTE masses, wider than
-    the alpha Q-values the chain is made of. But the absolute mass
-    error is the wrong quantity for a decay, which is a DIFFERENCE
-    of two binding energies -- and the formula's errors cancel in
-    that difference. Measured on the same nuclides, 1.21 MeV
-    against 4.76.
+    3.1.15 withdrew this series on an 8 MeV bar measured against
+    ABSOLUTE masses. 3.1.16 withdrew that withdrawal, correctly: a
+    decay is a DIFFERENCE of two binding energies and the formula's
+    errors cancel in it, so the right bar is 1.21 MeV, not 4.76.
+    Both of those moves were right.
 
-    So the series stands, on a bar measured here rather than taken
-    from the literature, and the withdrawal is itself withdrawn.
-    Both corrections were right at the time and the second one
-    needed the first to have happened.
+    3.1.27 withdraws it again, and the earlier reasoning survives
+    intact -- what changed is that the derivation turned out to rest
+    on an inconsistency rather than on the bar.
+
+    engine/transitions.py built every alpha Q-value as
+
+        Q = B_semf(daughter) + B_MEASURED(helium-4) - B_semf(parent)
+
+    taking one of the three terms from a different source. The SEMF
+    gives helium-4 22.841 MeV and the measured value is 28.296, so
+    every alpha channel in the repository carried a +5.455 MeV
+    bias -- 4.5 times its own bar. And it is precisely the bar
+    argument of 3.1.16 that this breaks: errors cancel in a
+    difference ONLY if both sides come from the same formula.
+
+    That bias was doing real work. The SEMF under-predicts alpha
+    Q-values for heavy nuclei by 5 to 11 MeV, and the 5.455 MeV of
+    borrowed helium happened to supply most of it. Two errors, in
+    opposite directions, partly cancelling -- and the series came
+    out right for the wrong reason.
+
+    With the sources made consistent and the derived shell
+    corrections added, U-238's alpha Q is -0.024 MeV against a
+    measured +4.27, so the channel does not open and the chain walks
+    off into beta decays that do not happen. The honest position is
+    that this repository cannot currently derive the uranium series,
+    and the gap is named: the liquid drop is about 4.3 MeV short on
+    this step even with shells.
+
+    The shell corrections were not wasted. They took the
+    confidently-wrong decay count from 3 to 2 -- polonium-212
+    stopped being called stable, because its daughter lead-208 sits
+    on a double closure that a smooth formula cannot see.
     """
     from engine import transitions as _tr
+    from engine import nucleo as _nu
+    from engine.shells import shell_term, SCALE
+
+    def b(z, n):
+        return _nu.binding_per_nucleon(z, n) * (z + n) + shell_term(
+            z, n, SCALE)
+
+    q = b(90, 144) + b(2, 2) - b(92, 146)
+    bar = _nu.error_bar("decay")[0]
+    if q > bar:
+        raise ArithmeticError(
+            f"U-238's alpha channel now opens at Q={q:.3f} MeV. If that "
+            f"is real the series may be derivable again and this "
+            f"withdrawal should be revisited rather than left standing")
     els = [e.element for e in history("u0", 0, "U", 0)]
-    real = ["U", "Th", "Ra", "Rn", "Po", "Pb"]
-    got = els[:len(real)]
-    if got != real:
-        raise ArithmeticError(f"the series came out {got}, not {real}")
-    if "Pb" not in els or els[-1] == "Pb":
-        raise ArithmeticError("it stopped at lead, which the SEMF cannot "
-                              "know -- check what changed")
-    after = els[els.index("Pb") + 1:]
-    return (f"{' -> '.join(real)} derived from Q-values at a "
-            f"{_tr.SEMF_MeV:.2f} MeV bar measured on differences, not "
-            f"the 4.76 MeV absolute error and not the literature's 3.0. "
-            f"Then it overruns into {after[:4]}, because Pb-208 is doubly "
-            f"magic and a liquid drop has no shells")
+    return (f"WITHDRAWN: U-238's alpha Q comes out {q:.3f} MeV against a "
+            f"measured +4.27, so the channel never opens and the walk "
+            f"gives {'->'.join(els[:5])} instead of U->Th->Ra->Rn->Po->Pb. "
+            f"The previous derivation worked because a measured helium-4 "
+            f"binding was mixed into an otherwise-SEMF Q-value, adding "
+            f"+5.455 MeV -- 4.5 times the alpha bar -- which cancelled "
+            f"most of the formula's 5-to-11 MeV deficit on heavy alpha "
+            f"steps. Right answer, wrong reason, and the reason is gone")
 
 
 def _u238_old():

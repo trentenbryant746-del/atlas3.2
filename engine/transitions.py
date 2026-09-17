@@ -201,9 +201,20 @@ class Edge:
 
 
 def _b(z, n):
+    """Binding energy, liquid drop PLUS shell structure.
+
+    The semi-empirical mass formula has no orbitals in it, so it
+    cannot see a closed shell. engine/shells.py derives the closures
+    from a potential -- they are not typed anywhere -- and supplies
+    the level-density correction. Adding it took the confidently
+    wrong count from 3 to 2: polonium-212 stopped being called
+    stable, because its alpha daughter lead-208 sits on a double
+    closure and the smooth formula could not know that.
+    """
     if z < 0 or n < 0 or z + n < 1:
         return None
-    return binding_energy_MeV(z, n)
+    from engine.shells import shell_term, SCALE
+    return binding_energy_MeV(z, n) + shell_term(z, n, SCALE)
 
 
 def q_values(z, n):
@@ -228,8 +239,27 @@ def q_values(z, n):
         if q is not None:
             out[mode] = q
     b = _b(z - 2, n - 2)
-    if b is not None:
-        out["alpha"] = (b + B_ALPHA) - here
+    if b is not None and z > 2 and n > 2:
+        # EVERY TERM IN A Q-VALUE MUST COME FROM THE SAME SOURCE.
+        #
+        # This used to read (b + B_ALPHA) - here, mixing the MEASURED
+        # helium-4 binding, 28.296 MeV, with SEMF values for the
+        # parent and the daughter. The SEMF gives helium-4 only
+        # 22.841, so every alpha Q-value carried a +5.455 MeV bias --
+        # 4.5 times the measured alpha bar of 1.208.
+        #
+        # It is not a small inconsistency, it is the exact thing the
+        # bar analysis in 3.1.16 depends on. A Q-value is a
+        # DIFFERENCE, and the reason its bar is 1.21 MeV while the
+        # absolute mass error is 4.76 is that the formula's errors
+        # CANCEL in a difference. Taking one term from a different
+        # source destroys the cancellation, and the bar no longer
+        # describes the quantity it is applied to.
+        #
+        # z > 2 and n > 2 because alpha decay of something lighter
+        # than helium has no daughter; the old code computed
+        # binding for Z = -1 on tritium.
+        out["alpha"] = (b + _b(2, 2)) - here
     return out
 
 

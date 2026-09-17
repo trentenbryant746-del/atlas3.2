@@ -38,6 +38,32 @@ sys.path.insert(0, str(ROOT))
 
 EXACT, MEASURED, CHOSEN = "EXACT", "MEASURED", "CHOSEN"
 
+# A FOURTH KIND, AND ITS ABSENCE WAS MAKING CONTINGENCY LOOK LIKE A
+# HOLE IN THE PHYSICS.
+#
+# engine/ancestry.py went SILENT on the last step -- nothing
+# distinguishes one large-brained land endotherm from another -- and
+# I called that a gap the rules could not close. That was the wrong
+# reading. It is not a missing rule. It is a fact of a kind this
+# repository had no slot for.
+#
+#   MEASURED   can be measured again tomorrow
+#   RECORDED   happened ONCE, left evidence, and no rule predicts it
+#
+# The Chicxulub impact at 66 Mya. The single endosymbiosis that made
+# mitochondria. The Great Oxidation. A primate lineage surviving an
+# impact that killed the large dinosaurs. Not one is derivable and
+# every one is CHECKABLE -- against strata, against phylogeny,
+# against isotope ratios -- and checkability, not derivability, is
+# the standard this repository actually holds to.
+#
+# So a chain that reaches contingency does not stop. It CHANGES
+# KIND, the same way engine/atlas.py's cascade changes layer when a
+# question stops being arithmetic and starts being a date. Crossing
+# topics is what the system does; the only thing missing was
+# admitting that history is one of the topics.
+RECORDED = "RECORDED"
+
 # The audit. Every typed number in the modules added recently,
 # classified honestly rather than generously.
 INPUTS = {
@@ -100,6 +126,26 @@ CLAIMS_ON = {
         "descent.PREDATION_PRESSURE", "descent.PREDATOR_RATIO",
         "descent.INTAKE_COEFFICIENT"],
     "Earth reads as driven and Mars does not": [],
+    "it was us and not another large-brained endotherm": ["RECORDED"],
+    "eukaryotes exist at all": ["RECORDED"],
+}
+
+
+# Contingent facts. Not derived, not repeatable, all checkable.
+RECORDS = {
+    "great oxidation": (2.4e9, "isotope ratios in sediment; oxygen "
+                                "became free once the crustal sink filled"),
+    "mitochondrial endosymbiosis": (1.8e9, "one archaeal host took up "
+                                            "one bacterium, ONCE -- "
+                                            "every eukaryote descends "
+                                            "from that single event"),
+    "chicxulub": (6.6e7, "an iridium layer worldwide and a crater; "
+                          "nothing in orbital mechanics required it "
+                          "to arrive then"),
+    "primates survive it": (6.6e7, "phylogeny places the split before "
+                                    "the boundary and the lineage after "
+                                    "it -- a fact about what happened, "
+                                    "not about what had to"),
 }
 
 
@@ -112,6 +158,10 @@ def grade(claim):
     deps = CLAIMS_ON.get(claim)
     if deps is None:
         return CHOSEN, f"{claim!r} is not registered"
+    if deps == ["RECORDED"]:
+        return RECORDED, ("rests on something that happened once and "
+                          "left evidence. Not derivable, and checkable, "
+                          "which is the standard here")
     if not deps:
         return EXACT, (f"rests on no chosen input -- every number "
                        f"under it is exact, measured or derived")
@@ -135,6 +185,7 @@ def check():
     t("chosen_numbers_are_admitted", _chosen)
     t("results_are_graded_by_worst_input", _graded)
     t("the_planet_chain_rests_on_nothing_chosen", _planet)
+    t("history_is_a_kind_not_a_gap", _recorded)
     return all(o[1] for o in out), out
 
 
@@ -185,6 +236,25 @@ def _planet():
             "The BIOLOGY results do. That split is the honest state: "
             "the physics derives and the evolutionary modelling has "
             "dials in it")
+
+
+def _recorded():
+    if not RECORDS:
+        raise ArithmeticError("no recorded facts, so contingency still "
+                              "has no slot")
+    k, _w = grade("it was us and not another large-brained endotherm")
+    if k != RECORDED:
+        raise ArithmeticError(f"contingency graded {k}, not RECORDED")
+    return (f"{len(RECORDS)} contingent facts registered, each one "
+            f"unrepeatable and each one checkable -- Chicxulub against "
+            f"an iridium layer, endosymbiosis against every eukaryote "
+            f"genome, the Great Oxidation against sediment isotopes. "
+            f"engine/ancestry.py went SILENT on its last step and I "
+            f"read that as a hole in the physics. It is not. It is a "
+            f"fact of a kind that had no slot, and a chain reaching it "
+            f"should CHANGE KIND rather than stop -- the same way the "
+            f"cascade changes layer when a question stops being "
+            f"arithmetic and starts being a date")
 
 
 if __name__ == "__main__":

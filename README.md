@@ -4321,3 +4321,41 @@ was us and not some other large-brained endotherm. The first might be
 derivable. The second is not the same kind of question.
 
     ancestry 4/4   8 transitions, 0 forbidden, 1 silent
+
+### 3.1.66 — contingency is a kind of fact, not a hole in the physics
+
+3.1.65 reported the last step as **SILENT** — nothing distinguishes one
+large-brained land endotherm from another — and called it a gap the
+rules could not close. **That was the wrong reading.**
+
+It is not a missing rule. It is a fact of a kind this repository had no
+slot for:
+
+    EXACT      fixed by definition
+    MEASURED   can be measured again tomorrow
+    CHOSEN     picked so a model would run
+    RECORDED   happened ONCE, left evidence, and no rule predicts it
+
+**Checkability, not derivability, is the standard here** — and a
+recorded fact is entirely checkable, just not repeatable. Chicxulub
+against a worldwide iridium layer and a crater. Mitochondrial
+endosymbiosis against every eukaryote genome, from a single event.
+The Great Oxidation against sediment isotopes. A primate lineage
+surviving an impact, against phylogeny placing the split before the
+boundary and the lineage after it.
+
+None derivable. All corroborable.
+
+**So the chain does not stop where physics does — it crosses.**
+
+    ALLOWED  [MEASURED] endotherm -> large brain
+    CROSSES  [RECORDED] large brain -> us
+
+That is what this system has always done. `engine/atlas.py`'s cascade
+changes layer when a question stops being arithmetic and starts being
+a date; `engine/planetlab.py`'s root crosses from nucleosynthesis to
+valence to a folding residue. Crossing topics is the architecture. The
+only thing missing was admitting that **history is one of the topics.**
+
+    8 transitions, 0 forbidden, 0 silent, 1 crossing into record
+    inputs 5/5   ancestry 4/4

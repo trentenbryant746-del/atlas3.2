@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 ALLOWED, FORBIDDEN, SILENT = "ALLOWED", "FORBIDDEN", "SILENT"
+CROSSES = "CROSSES"
 
 # Measured
 NEURAL_COST_RATIO = 10.0       # neural vs average tissue metabolism
@@ -132,11 +133,21 @@ def steps():
         f"{100*brain_share(0.10):.0f}% -- a human sits most of the way "
         f"to a hard wall"))
 
+    # NOT SILENT -- IT CROSSES. Reporting this as silence was wrong,
+    # and it made contingency look like a hole in the physics. It is
+    # not a missing rule; it is a fact of a different KIND, and
+    # engine/inputs.py now has a slot for it. A chain that reaches
+    # history changes kind the same way engine/atlas.py's cascade
+    # changes layer when a question stops being arithmetic and starts
+    # being a date. Crossing topics is what this system does.
+    from engine.inputs import RECORDS, RECORDED
+    ev = RECORDS["chicxulub"][1]
     out.append((
-        "large brain", "us", SILENT, CHOSEN,
-        "nothing here distinguishes one large-brained land endotherm "
-        "from another. The rules stop being about physics and start "
-        "being about history, and this repository has no history"))
+        "large brain", "us", CROSSES, RECORDED,
+        f"no rule distinguishes one large-brained land endotherm from "
+        f"another, and none should -- the question has changed kind. "
+        f"Which lineage carried on is RECORDED, not derived: {ev}. "
+        f"Unrepeatable and checkable, which is the standard here"))
     return out
 
 
@@ -162,12 +173,15 @@ def _allowed():
     if bad:
         raise ArithmeticError(f"forbidden transitions: {bad}")
     silent = [(a, b) for a, b, v, _g, _w in rows if v == SILENT]
+    crosses = [(a, b) for a, b, v, _g, _w in rows if v == CROSSES]
     from engine.inputs import CHOSEN
     ch = sum(1 for r in rows if r[3] == CHOSEN)
     return (f"{len(rows)} transitions from LUCA to us: none forbidden, "
-            f"{len(silent)} the rules are silent on, {ch} resting on "
-            f"chosen numbers. A complete chain makes its own gaps "
-            f"legible, which is the only reason to run it this far")
+            f"{len(silent)} silent, {len(crosses)} that CROSS into "
+            f"recorded history, {ch} resting on chosen numbers. The "
+            f"chain does not stop where physics does -- it changes "
+            f"kind, which is what this system has always done when a "
+            f"question stops being one sort of thing")
 
 
 def _fur():
@@ -202,19 +216,20 @@ def _brain():
 
 def _humble():
     rows = steps()
-    silent = [r for r in rows if r[2] == SILENT]
-    if not silent:
+    beyond = [r for r in rows if r[2] in (SILENT, CROSSES)]
+    if not beyond:
         raise ArithmeticError("the rules answer every step, which for "
                               "a chain ending in a species would mean "
                               "the question was fitted to them")
-    return ("every row says ALLOWED or SILENT, never HAPPENED. A "
+    return ("every row says ALLOWED or CROSSES, never HAPPENED. A "
             "transition needs a mechanism producing the variation "
             "being selected, and engine/descent.py showed there is "
             "none here -- seeded life stays microbial and predation "
-            "does not move it. The last step is silent outright: "
-            "nothing distinguishes one large-brained land endotherm "
-            "from another, because at that point the rules stop being "
-            "physics and start being history")
+            "does not move it. The last step CROSSES rather than "
+            "stopping: which large-brained endotherm carried on is "
+            "recorded, not derived, and a chain reaching history "
+            "changes kind the same way the cascade changes layer when "
+            "arithmetic becomes a date")
 
 
 if __name__ == "__main__":

@@ -125,6 +125,73 @@ def first_oxygen(**kw):
     return None
 
 
+# FROM ONE CELL TO MANY, AND WHAT STOPS IT.
+#
+# Oxygen is the usual answer and it is not the whole one. Tissue
+# thickness without a transport system is the same diffusion limit
+# engine/life.py derives for a single cell, and it goes as the
+# square root of oxygen -- so even FIVE TIMES present atmospheric
+# oxygen buys only 120 microns. A body cannot be made thick by
+# adding oxygen to the air.
+#
+#   0.5% of present O2      3.8 um of tissue
+#   100%                   54.8 um
+#   500%                  119.5 um
+#
+# That is a sheet a few cells deep, and it is what the earliest
+# multicellular fossils look like: fronds and quilts, thin in one
+# dimension. Getting thicker needs CIRCULATION -- a pump moving
+# oxygen to tissue rather than tissue waiting for it -- and that is
+# a different kind of thing from an atmosphere.
+#
+# Above that, the square-cube law takes over: engine/life.py puts a
+# land skeleton's ceiling at 173 m before its own weight reaches
+# bone's compressive strength.
+AEROBIC_MIN_FRACTION = 0.01     # of present O2, for aerobic metabolism
+
+
+def tissue_thickness(o2_fraction_of_present, consumption=1.0):
+    """m of tissue suppliable without circulation. DERIVED."""
+    from engine.life import diffusion_limit, D_O2_WATER, C_O2_WATER
+    c0 = C_O2_WATER * max(o2_fraction_of_present, 1e-9)
+    return diffusion_limit(consumption, D=D_O2_WATER, C0=c0).value
+
+
+def body_gates(o2_fraction, circulation=False):
+    """-> [(name, OPEN/SHUT, why)]. What a body can be at this O2."""
+    from engine.life import square_cube_limit
+    out = []
+    aer = o2_fraction >= AEROBIC_MIN_FRACTION
+    out.append(("aerobic", "OPEN" if aer else "SHUT",
+                f"oxygen at {100*o2_fraction:.1f}% of present against the "
+                f"{100*AEROBIC_MIN_FRACTION:.0f}% aerobic metabolism "
+                f"needs -- below it a cell ferments, which yields about "
+                f"a sixteenth as much and cannot pay for a body"))
+    th = tissue_thickness(o2_fraction)
+    out.append(("thin body", "OPEN" if th > 1e-5 else "SHUT",
+                f"diffusion supplies {th*1e6:.1f} microns of tissue, so a "
+                f"sheet a few cells deep. This is what the earliest "
+                f"multicellular fossils are"))
+    out.append(("thick body", "OPEN" if circulation else "SHUT",
+                f"tissue thickness goes as the SQUARE ROOT of oxygen, so "
+                f"five times present air buys 120 microns. A body cannot "
+                f"be made thick by enriching the atmosphere; it needs a "
+                f"pump, and circulation is "
+                + ("present" if circulation else "ABSENT here")))
+    h = float(square_cube_limit().value)
+    out.append(("large on land", "OPEN" if circulation else "SHUT",
+                f"once thick bodies exist the square-cube law binds "
+                f"instead: {h:.0f} m before a skeleton crushes itself at "
+                f"1% bone cross-section"))
+    return out
+
+
+def prime_earth(steps=14):
+    """Earth with every condition set as favourably as the rules allow."""
+    return history(steps=steps, t_max_gyr=1.0, productivity=1.0,
+                   reduced_kg=REDUCED_SINK_KG * 0.1)
+
+
 def check():
     out = []
 
@@ -140,6 +207,8 @@ def check():
     t("the_delay_is_wrong_and_says_so", _wrong)
     t("cells_are_the_size_the_lab_derived", _size)
     t("life_cools_its_own_planet", _cool)
+    t("oxygen_alone_cannot_thicken_a_body", _thick)
+    t("prime_earth_reaches_animals_but_not_by_air", _prime)
     return all(o[1] for o in out), out
 
 
@@ -230,6 +299,38 @@ def _cool():
             f"first oxygen")
 
 
+def _thick():
+    a = tissue_thickness(1.0)
+    b = tissue_thickness(5.0)
+    if b / a > 3.0:
+        raise ArithmeticError("thickness is not going as a square root")
+    return (f"at present oxygen a body can be {a*1e6:.1f} microns thick "
+            f"without circulation, and at FIVE times present only "
+            f"{b*1e6:.1f} -- {b/a:.2f}x for 5x the air, because "
+            f"diffusion goes as the square root. Thickness is not "
+            f"bought from the atmosphere. It is bought with a pump")
+
+
+def _prime():
+    rows = prime_earth()
+    best = max(r["o2_fraction"] for r in rows)
+    g_no = {n: s for n, s, _w in body_gates(best, circulation=False)}
+    g_yes = {n: s for n, s, _w in body_gates(best, circulation=True)}
+    if g_no["aerobic"] != "OPEN":
+        raise ArithmeticError("prime Earth cannot even reach aerobic")
+    if g_no["thick body"] == "OPEN":
+        raise ArithmeticError("a thick body formed without circulation")
+    if g_yes["thick body"] != "OPEN":
+        raise ArithmeticError("circulation did not open a thick body")
+    return (f"Earth run at its best -- full productivity, a tenth the "
+            f"reduced sink -- reaches {100*best:.0f}% of present oxygen. "
+            f"That opens aerobic metabolism and a thin body, and it "
+            f"does NOT open a thick one. Adding circulation opens it "
+            f"immediately at the same oxygen. So the step to a large "
+            f"animal is not an atmosphere, it is an organ, and no "
+            f"amount of prime conditions substitutes")
+
+
 if __name__ == "__main__":
     print(f"  {'t Gyr':>7}{'sink':>7}{'O2':>7}{'CH4 ppm':>10}"
           f"{'T surf':>9}   state")
@@ -242,6 +343,13 @@ if __name__ == "__main__":
         print(f"  {r['t_gyr']:>7.2f}{100*r['sink_filled']:>6.0f}%"
               f"{r['o2_fraction']:>7.2f}{r['ch4_ppm']:>10.1f}"
               f"{r['T_surface']:>9.1f}   {r['state'][:28]}{mark}")
+    best = max(r["o2_fraction"] for r in prime_earth())
+    print(f"\n  PRIME EARTH reaches {100*best:.0f}% of present O2\n")
+    for label, circ in (("without circulation", False),
+                        ("with circulation", True)):
+        print(f"  {label}:")
+        for n, st, w in body_gates(best, circ):
+            print(f"    {'open' if st == 'OPEN' else 'SHUT'} {n:15}{w[:66]}")
     ok, res = check()
     print()
     for n, o, d in res:

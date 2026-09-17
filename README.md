@@ -3782,3 +3782,47 @@ combinations. The compiled path is a *second implementation*, not a
 replacement, so a disagreement between them would be a finding.
 
     biosphere 6/6   radiative 11/11   5,737 correct, 0 wrong
+
+### 3.1.55 — prime Earth, and why a big animal is an organ not an atmosphere
+
+Earth run at every advantage the rules allow — full productivity, a
+tenth the reduced sink — reaches **100% of present oxygen**. Then the
+question is what a body can be.
+
+    without circulation          with circulation
+      open  aerobic                open  aerobic
+      open  thin body              open  thin body
+      SHUT  thick body             open  thick body
+      SHUT  large on land          open  large on land
+
+**Oxygen is the usual answer and it is not the whole one.** Tissue
+thickness without a transport system is the same diffusion limit
+`engine/life.py` derives for one cell, and it goes as the **square root**
+of oxygen:
+
+    0.5% of present O2      3.8 um of tissue
+    100%                   54.8 um
+    500%                  119.5 um
+
+**Five times the oxygen buys 2.2 times the thickness.** A body cannot be
+made thick by enriching the air. Fifty-five microns is a sheet a few
+cells deep — and that is exactly what the earliest multicellular fossils
+are: fronds and quilts, thin in one dimension.
+
+**So the step to a large animal is not an atmosphere, it is an organ.**
+Adding circulation opens a thick body immediately, at the *same* oxygen
+that could not open it before. No amount of prime conditions
+substitutes, and the model says so by leaving the gate shut however
+favourably Earth is run.
+
+Above that the constraint changes again: once thick bodies exist the
+square-cube law binds instead, at **173 m** before a land skeleton
+reaches bone's compressive strength at 1% cross-section.
+
+**What this run says, deconstructed:** a planet can be given every
+advantage and still not produce a large organism, because the missing
+thing is not a resource. Three of the four gates here are about supply
+and open on prime Earth. The one that stays shut is about
+*architecture*, and architecture is not something a planet provides.
+
+    biosphere 8/8   5,737 correct, 0 wrong   claims 16/16   audit 21/21

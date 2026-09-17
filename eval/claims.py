@@ -143,6 +143,22 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _empire():
+    from engine.empire import (empire_radius_km, tolerable_lie_rate,
+                               audit_code)
+    a = audit_code()
+    return (round(empire_radius_km()),
+            round(100 * tolerable_lie_rate(), 1),
+            len([x for x in a if x[1] == "DERIVED"]))
+
+
+def _muscle():
+    from engine.inherit import muscle_area_m2, height_is_determined
+    from engine.tools import ARM_BLOW_N
+    return (round(1e4 * muscle_area_m2(ARM_BLOW_N)),
+            height_is_determined()[0])
+
+
 def _speech():
     from engine.civ import channel_ratio, speech_as_fraction_of_a_brain
     return (round(channel_ratio()),
@@ -290,6 +306,10 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.81", "empire 2250 km, 4.7% lies tolerated, 3 of 10 derive",
+     _empire, (2250, 4.7, 3), CURRENT),
+    ("3.1.80", "muscle for a 400 N blow is 53 cm2; bone picks no height",
+     _muscle, (53, False), CURRENT),
     ("3.1.79", "speech is 256410x narrower than sight, 0.0122% of a brain",
      _speech, (256410, 0.0122), CURRENT),
     ("3.1.79", "two adults are the smallest viable group",

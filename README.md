@@ -5112,3 +5112,93 @@ routes to one answer is the strongest thing available short of a
 measurement.
 
     civ 6/6    recognize 5/5    9 results enacted
+
+### 3.1.80 — the DNA is not good enough, and the three traits fail differently
+
+`engine/biomatter.py` holds real DNA — four nucleotides by formula, the
+standard code, B-form geometry at 0.34 nm a base. `engine/descent.py`
+holds a radius that mutates and three traits that switch on and off.
+**Neither file mentions the other.** Chemistry at one end, a label at
+the other, no map between. So no, and it is not a close no.
+
+But the three asked for fail in three different ways, and that is the
+result:
+
+**Muscle is DERIVED.** Force is stress times area. Vertebrate muscle
+pulls at 0.3 MPa, an elbow gives up 4:1, so the 400 N blow
+`engine/tools.py` needs wants **1,600 N across 53 cm²**. That is an
+arm. No gene had to be invented — the number was already implied by a
+module that only wanted a hammer.
+
+**Height is BOUNDED and free inside the bound.** Bone carries 1.4 m and
+2.5 m at 0.11% and 0.64% of its strength. Physics does not pick, so
+height is GIVEN — which is a real answer, not a shrug: these rules
+*constrain* the trait and do not *determine* it.
+
+**Health is a load with no purge.** 1.5 harmful mutations a generation
+reach 75 in fifty, and nothing here removes any. `engine/civ.py` hit
+the same hole from the other side when sex came back only PARTLY
+DERIVED. **The ratchet is named in two modules and turned by neither.**
+
+    assigned genome (GIVEN)   1.80 m, 60 cm2, zero load
+    mass                      83.1 kg   DERIVED
+    hand force               450.0 N    DERIVED
+    upkeep                    93.3 W    DERIVED
+
+**Being given a genome exempts it from nothing.** It makes 450 N so it
+opens a bone — and it eats 93 W against 82, **11% more forever**,
+charged by rules that never heard of it. "Preferable" needs a measure
+of better and no rule supplies one. Taller is not fitter; it is
+hungrier.
+
+### 3.1.81 — a code and an empire, handed over then audited
+
+**How big can an empire be?** Not a question about ambition. A centre
+that cannot answer a crisis before the crisis finishes does not govern
+the place, so the radius is signal speed times half the window:
+
+    runner on foot          40 km/day  ->  1,800 km
+    Roman cursus publicus   50         ->  2,250 km
+    mounted relay          200         ->  9,000 km
+    optical telegraph      800         ->  the whole planet
+
+Rome to Hadrian's Wall is ~1,900 km and Rome to the Euphrates ~2,500.
+**The derived 2,250 lands between them**, out of a courier speed and a
+crisis window and nothing else. This is the one place in the whole
+human chain where a number here meets something that actually happened.
+
+It also predicts that global empires cannot precede fast signals — and
+they did not.
+
+**And one commandment derives from the channel itself.** Language is
+worth having only because it carries a selection the receiver need not
+check. If that fails, verifying costs what deriving would have, and you
+pay the telling *and* the thinking.
+
+    tolerable lie rate    4.7%
+
+**"Do not bear false witness" is not an ethical premise here.** It is
+the condition under which speech stays cheaper than thought.
+
+Of ten injunctions: **3 derive** (false witness, do not kill — removing
+one of two adults kills the child too, honour your parents — the
+provisioning ledger ran 3.0 adult-years one way first), 2 are partial,
+and **5 do not derive at all**. Nothing here prices belief, rank or
+rest. Those are *absences*, not refutations.
+
+### seeing it from in there
+
+`data/pov.png`, written from stdlib alone — PNG is a zlib stream and a
+few headers. Every pixel is placed by a rule derived elsewhere: acuity
+from `senses.py`, the fovea and the naming range from `recognize.py`.
+The red box is the sharp patch **to scale**: 2° of 120, **0.06% of the
+frame**. Everything outside it is drawn at the resolution the eye
+actually has there, which is why the edges are mush.
+
+**The picture is a claim and can be wrong**, which is the only reason
+it is worth drawing — and it caught me once. The scene first put a
+distant figure at 240 m expecting them to be unnameable; 240 is inside
+the derived 289 m limit, so the check failed correctly and the figure
+moved to 400 m.
+
+    inherit 6/6   empire 5/5   pov 3/3   suite green

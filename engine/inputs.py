@@ -158,6 +158,22 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "empire.COURIER_KM_DAY": (MEASURED, "Roman cursus publicus, ~50"),
+    "empire.CRISIS_DAYS": (
+        CHOSEN, "90 days for a revolt to consolidate; a dial"),
+    "empire.TELL_S": (CHOSEN, "60 s to be told a thing"),
+    "empire.DERIVE_S": (CHOSEN, "3600 s to work it out unaided"),
+    "empire.WRONG_COST_MULT": (CHOSEN, "acting on a falsehood, 20x"),
+    "empire.COMMANDMENTS": (CHOSEN, "a code, HANDED over"),
+    "pov.SCENE": (CHOSEN, "objects placed to exercise the limits"),
+    "inherit.MUSCLE_PA": (
+        MEASURED, "vertebrate specific tension, about 0.3 MPa"),
+    "inherit.ELBOW_LEVER": (MEASURED, "about 4:1 mechanical disadvantage"),
+    "inherit.MUTATIONS_PER_GEN": (MEASURED, "about 70 de novo in humans"),
+    "inherit.DELETERIOUS_PER_GEN": (MEASURED, "about 1.5 of those harmful"),
+    "inherit.GIVEN_GENOME": (
+        CHOSEN, "height and load HANDED over; bone does not pick a "
+                "height and nothing purges a mutation"),
     "civ.SPEECH_BITS_S": (
         MEASURED, "39 bit/s across 17 languages, Coupe et al."),
     "civ.FORAGER_W": (MEASURED, "2000 kcal/day net, about 97 W"),
@@ -229,6 +245,8 @@ ENACTED_RESULTS = {
         "an energy balance over modelled foragers",
     "a person is nameable to 289 m":
         "geometry against an acuity, not a field trial",
+    "an empire reaches 2250 km at courier speed":
+        "a span computed from a courier speed, not a map",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -250,6 +268,10 @@ CLAIMS_ON = {
     "the eye sits at its own diffraction limit": [],
     "worn insulation runs out at 19 C": [],
     "speech is 0.0122% of a brain over a lifetime": [],
+    "muscle for a 400 N blow is 53 cm2": [],
+    "an empire reaches 2250 km at courier speed": ["empire.CRISIS_DAYS"],
+    "the channel tolerates 4.7% lies": ["empire.WRONG_COST_MULT"],
+    "the assigned genome costs 11% more forever": ["inherit.GIVEN_GENOME"],
     "two adults are the smallest viable group": ["civ.FORAGER_W"],
     "the fovea is 0.028% of the field": [],
     "a person is nameable to 289 m": ["recognize.CELLS_TO_IDENTIFY"],

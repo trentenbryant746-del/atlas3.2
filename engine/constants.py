@@ -61,8 +61,17 @@ L_SUN_W = 3.828e26             # W
 YEAR_S = 3.155693e7            # s                Julian year
 B_ALPHA_MEV = 28.296           # MeV              binding of helium-4
 
+# Derived, not stored as data: hbar is h over two pi. It lived as a
+# typed 1.054571817e-34 in engine/remnants.py, which is a second home
+# for a number that can be computed -- the same defect as the four
+# duplicated constants above, caught by the rule that forbids a typed
+# error bar because "HBAR" contains "BAR".
+import math as _math
+HBAR = H_PLANCK / (2 * _math.pi)
+
 PROVENANCE = {
     "H_PLANCK": (EXACT, "defines the kilogram"),
+    "HBAR": (EXACT, "h over two pi; derived here, never stored"),
     "C_LIGHT": (EXACT, "defines the metre"),
     "K_B": (EXACT, "defines the kelvin"),
     "N_A": (EXACT, "defines the mole"),

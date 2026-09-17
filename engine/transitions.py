@@ -83,7 +83,12 @@ DERIVED = "DERIVED"
 # thing that would close it. Until then the number is taken from
 # the literature and says so -- and it is load-bearing, because it
 # is the threshold decay_of() refuses inside.
-SEMF_TYPED = 3.0
+# SEMF_TYPED is gone. It was 3.0 MeV taken from the literature and
+# it had no derivation beside it. Its only remaining users were two
+# silent fallbacks, both removed in 3.1.25, and a message that
+# quoted it. A number kept "for reference" is a number waiting to be
+# used, and this one was: it stood in for a measured bar every time
+# anything raised.
 SEMF_SOURCE = ("accepted liquid-drop accuracy from the literature; kept "
                "as a fallback and as the value the measurement is "
                "compared against")
@@ -282,7 +287,7 @@ def bar_for(mode):
     if not isinstance(mode, str):
         raise TypeError(f"a decay mode is a string, not {type(mode).__name__}"
                         f" -- {mode!r} was passed and used to return "
-                        f"{SEMF_TYPED} MeV silently")
+                        f"a typed bar silently")
     if not (mode.startswith("beta") or mode in ("alpha", "electron-capture",
                                                 "decay")):
         raise ValueError(f"unknown decay mode {mode!r}; known: alpha, "

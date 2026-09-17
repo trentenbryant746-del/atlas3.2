@@ -99,6 +99,49 @@ def sigma_from_exact_constants():
                    f"on it at all")
 
 
+@experiment(0, "does any bar ignore what state the thing is in?")
+def a_bar_names_its_manifestation():
+    from engine import scales
+    ok, res = scales.check()
+    bad = [d for n, o, d in res
+           if not o and "manifestation" in n]
+    if bad:
+        return CLASH, bad[0]
+    lo = scales.bar_of("nuclear-mass", "in-domain")[0] / 1e6
+    hi = scales.bar_of("nuclear-mass", "out-of-domain")[0] / 1e6
+    return HOLDS, (
+        f"a domain with more than one state refuses to give a bar until "
+        f"it is told which: {lo:.3f} MeV where the liquid drop applies "
+        f"and {hi:.3f} where it does not, {hi/lo:.1f}x apart. The bar "
+        f"shipped until now was {4.763:.3f}, measured across both, and "
+        f"described neither population. The same rule that separates MeV "
+        f"from a folding rate from kelvin separates two states of one "
+        f"formula")
+
+
+@experiment(0, "is any error bar a typed number?")
+def no_bar_is_typed():
+    import re
+    from pathlib import Path
+    eng = Path(__file__).resolve().parent
+    bad = []
+    pat = re.compile(r"^([A-Z_]*(?:BAR|TYPED|SEMF)[A-Z_]*)\s*=\s*"
+                     r"([-+]?[0-9][0-9.eE+-]*)", re.M)
+    for f in sorted(eng.glob("*.py")):
+        for m in pat.finditer(f.read_text()):
+            if m.group(1).endswith(("_SEED", "_N", "_LEN")):
+                continue
+            bad.append(f"{f.name}: {m.group(1)} = {m.group(2)}")
+    if bad:
+        return CLASH, ("a bar is typed rather than measured: "
+                       + "; ".join(bad))
+    return HOLDS, (
+        "no module carries a typed error bar. SEMF_TYPED = 3.0 was the "
+        "last one, taken from the literature with no derivation beside "
+        "it, and its only users were two silent fallbacks. A number kept "
+        "for reference is a number waiting to be used, and that one was")
+
+
 @experiment(0, "can a check fail on its own documentation?")
 def checks_do_not_grep_themselves():
     """Written after making the same mistake three times."""

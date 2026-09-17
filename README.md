@@ -2411,3 +2411,54 @@ provenance beside them, including `RH_EARTH = 0.7`, `D_CONTRAST = 45.0`,
 
     lab 23 experiments, 21 HOLDS, 1 CLASH, 1 MISSING_RULE
     5,737 correct, 0 wrong   audit 21/21   heldout 165/165 byte-exact
+
+### 3.1.29 — a bar belongs to a manifestation, and that is now a rule
+
+3.1.18 established that a bar belongs to a **domain** — MeV for nuclei,
+a survival rate for folding, kelvin for climate — and that they must
+never be compared. 3.1.16 established that it belongs to a **question** —
+mass, alpha and beta are three different numbers. This is the third and
+last piece: it belongs to a **manifestation**, the state the thing is
+actually in. And it is a rule now, not a convention.
+
+Measured on the fixture, after shell corrections:
+
+    inside the liquid drop's domain    rms 1.850 MeV   (n=15)
+    outside it                         rms 6.249 MeV   (n=2)
+    mixed together, as shipped               4.763 MeV
+
+**A factor of 3.4, and the shipped bar is neither of them** — too loose
+where the formula works, far too tight where it does not. Every refusal
+judged against 4.763 MeV inside the domain was refusing things the
+formula could resolve.
+
+So `engine/scales.py` now **refuses to hand out a bar** for a domain with
+more than one state until it is told which:
+
+    scales.bar_of("nuclear-mass")                -> ValueError
+    scales.bar_of("nuclear-mass", "in-domain")   -> 1.850 MeV
+
+Asking for "the bar" is not a well-formed question where states exist.
+
+**A second result, and it is the encouraging one.** Closed-shell against
+mid-shell now measures **0.98** — no difference at all. Before shell
+corrections that split was 3.6 to 1. Adding the rule *absorbed* the
+manifestation. **A manifestation stops mattering once the rule that
+explains it exists**, which is how you know the rule was the right one
+rather than a curve through the points.
+
+**The last typed bar is gone.** `SEMF_TYPED = 3.0` came from the
+literature with no derivation beside it. Its only users were two silent
+fallbacks removed in 3.1.25 and a message quoting it. A number kept for
+reference is a number waiting to be used, and that one was.
+`no_bar_is_typed` forbids the category.
+
+**And that rule found something by being wrong.** It flagged
+`HBAR = 1.054571817e-34` in `engine/remnants.py` — a false positive,
+since ħ is not an error bar, my pattern just matched the letters. But ħ
+is h/2π: a **derivable quantity with a second home**, the same defect as
+the four duplicated constants in 3.1.24. It is now computed in
+`engine/constants.py` and imported. The pattern matches whole words now.
+
+    lab 25 experiments, 23 HOLDS, 1 CLASH, 1 MISSING_RULE
+    5,737 correct, 0 wrong   audit 21/21   heldout 165/165 byte-exact

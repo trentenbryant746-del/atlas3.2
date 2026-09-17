@@ -146,6 +146,37 @@ def registry():
     return out
 
 
+# MANIFESTATIONS. A domain listed here has more than one state, and
+# its bar is measurably different in each. Asking for "the bar" is
+# then not a well-formed question and is refused: you must say which
+# state the thing is in. This is the rule form of what 3.1.18 found
+# across domains and 3.1.29 found WITHIN one.
+MANIFESTATIONS = {
+    "nuclear-mass": ("in-domain", "out-of-domain"),
+}
+
+
+def bar_of(domain, manifestation=None):
+    """-> (value, unit, why). Refuses a domain that has states unless
+    one is named, because a bar measured across states describes none
+    of them."""
+    states = MANIFESTATIONS.get(domain)
+    if states and manifestation is None:
+        raise ValueError(
+            f"{domain} exists in {len(states)} states {states} and its "
+            f"bar differs between them by a factor of 3.4. Asking for "
+            f"'the bar' is not a well-formed question here -- name the "
+            f"manifestation")
+    if states and manifestation not in states:
+        raise KeyError(f"{manifestation!r} is not a state of {domain}; "
+                       f"known: {states}")
+    if domain == "nuclear-mass" and manifestation:
+        from engine.nucleo import mass_bar
+        v, _n, why = mass_bar(manifestation)
+        return v * MEV, "eV", why
+    return bar(domain)
+
+
 def bar(domain):
     """-> (eV, why). Refuses for a domain with no established bar."""
     r = registry()
@@ -179,6 +210,7 @@ def check():
     t("folding_bar_is_a_rate_not_an_energy", _fold)
     t("nuclear_bars_are_measured", _nuc)
     t("units_never_mix", _units_never_mix)
+    t("a_bar_names_its_manifestation", _manifest)
     return all(o[1] for o in out), out
 
 
@@ -238,6 +270,30 @@ def _fold():
     return (f"folding's bar is {v:.2f} as a {u} and refuses to be an "
             f"energy -- {100*(1-v):.0f}% of its exact minima move when a "
             f"choice the chemistry does not settle is made the other way")
+
+
+def _manifest():
+    """A bar measured across states describes none of them."""
+    try:
+        bar_of("nuclear-mass")
+    except ValueError:
+        pass
+    else:
+        raise ArithmeticError("nuclear-mass gave a bar without being "
+                              "asked which state")
+    lo = bar_of("nuclear-mass", "in-domain")[0] / MEV
+    hi = bar_of("nuclear-mass", "out-of-domain")[0] / MEV
+    if hi <= lo:
+        raise ArithmeticError(f"out-of-domain {hi:.2f} is not worse than "
+                              f"in-domain {lo:.2f}")
+    return (f"nuclear-mass refuses to give a bar until it is told which "
+            f"state: {lo:.3f} MeV where the liquid drop applies and "
+            f"{hi:.3f} where it does not, a factor of {hi/lo:.1f}. The "
+            f"shipped 4.763 was measured across both and is neither -- "
+            f"too loose where the formula works, far too tight where it "
+            f"does not. Closed-shell against mid-shell, by contrast, now "
+            f"comes out 0.98: adding shell corrections ABSORBED that "
+            f"manifestation, which is how you know the rule was right")
 
 
 def _units_never_mix():

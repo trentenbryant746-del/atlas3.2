@@ -55,7 +55,7 @@ DERIVED, ASSERTED = "DERIVED", "ASSERTED"
 INHERITED = "DERIVED_FROM_ASSERTED"
 
 # measured constants
-HBAR = 1.054571817e-34      # J s
+from engine.constants import HBAR  # noqa: E402
 from engine.constants import (C_LIGHT, G_GRAV as G_NEWTON,  # noqa: E402
                               M_SUN_KG as M_SUN)
 M_H = 1.67262192369e-27     # kg, hydrogen (proton) mass

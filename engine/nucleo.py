@@ -269,6 +269,73 @@ def q_error():
             "pairs": out}
 
 
+# A BAR BELONGS TO A MANIFESTATION, NOT JUST TO A QUESTION.
+#
+# 3.1.16 established that the bar depends on the QUESTION -- a mass,
+# an alpha step and a beta step are three different quantities and
+# get three different numbers. That was half of it. The other half
+# is that the same question has a different answer depending on WHAT
+# STATE THE THING IS IN, and measuring across mixed states produces
+# a number that describes neither.
+#
+# Measured on the fixture, after shell corrections:
+#
+#     inside the liquid drop's domain    rms 1.850 MeV   (n=15)
+#     outside it                         rms 6.249 MeV   (n=2)
+#     mixed together, as shipped               4.763 MeV
+#
+# A factor of 3.4 between two populations, and the shipped bar is
+# neither of them -- too loose where the formula works, far too
+# tight where it does not. Every refusal judged against 4.763 MeV
+# inside the domain was refusing things the formula could actually
+# resolve.
+#
+# Closed-shell against mid-shell now comes out at 0.98, no
+# difference at all, which is a second result: before shell
+# corrections that split was 3.6 to 1, and adding them absorbed it.
+# A manifestation stops mattering once the rule that explains it
+# exists, and that is how you know the rule was the right one.
+MANIFESTATIONS = ("in-domain", "out-of-domain", "mixed")
+
+
+def _by_manifestation(kind, manifestation):
+    from engine.shells import in_domain
+    keep = []
+    for (z, n) in BINDING_FIXTURE:
+        ok = in_domain(z, n)
+        if manifestation == "in-domain" and ok:
+            keep.append((z, n))
+        elif manifestation == "out-of-domain" and not ok:
+            keep.append((z, n))
+        elif manifestation == "mixed":
+            keep.append((z, n))
+    return keep
+
+
+def mass_bar(manifestation):
+    """-> (MeV, n, why). Measured over ONE manifestation only."""
+    if manifestation not in MANIFESTATIONS:
+        raise KeyError(
+            f"a bar needs a manifestation, not just a question: "
+            f"{manifestation!r} is not one of {MANIFESTATIONS}. The same "
+            f"formula has a 1.85 MeV error where it applies and 6.25 "
+            f"where it does not, and a bar measured across both "
+            f"describes neither")
+    from engine.shells import shell_term, SCALE
+    errs = []
+    for (z, n) in _by_manifestation("mass", manifestation):
+        a = z + n
+        errs.append(abs(binding_per_nucleon(z, n) * a
+                        + shell_term(z, n, SCALE) - BINDING_FIXTURE[(z, n)]))
+    if not errs:
+        raise ValueError(f"no fixture nuclides are {manifestation}")
+    rms = (sum(e * e for e in errs) / len(errs)) ** 0.5
+    return rms, len(errs), (
+        f"{rms:.3f} MeV rms over {len(errs)} {manifestation} nuclides. "
+        f"Measured on this manifestation alone; mixing it with the other "
+        f"gives 4.763, which describes neither population")
+
+
 def error_bar(kind="decay"):
     """-> (MeV, why). The bar for the question actually being asked."""
     if kind == "mass":

@@ -97,12 +97,20 @@ def _measured_bar():
     formula's errors largely cancel in it. Using the mass error
     made alpha decay unresolvable and withdrew a correct result.
     """
-    try:
-        from engine.nucleo import error_bar
-        v, _why = error_bar("decay")
-        return v if v > 0 else SEMF_TYPED
-    except Exception:
-        return SEMF_TYPED
+    # NO SILENT FALLBACK. This used to catch every exception and
+    # return SEMF_TYPED, substituting a typed 3.0 MeV for a measured
+    # 1.21 whenever anything at all went wrong -- a bad import, a
+    # renamed kind, a typo in a mode. The answer still looked like a
+    # number, which is the whole problem: a wrong bar makes decays
+    # look resolvable or unresolvable and nothing says why. If the
+    # measurement cannot be obtained, that is a failure and it is
+    # allowed to be one.
+    from engine.nucleo import error_bar
+    v, _why = error_bar("decay")
+    if not v > 0:
+        raise ArithmeticError(f"the measured decay bar came back {v}, "
+                              f"which is not a bar")
+    return v
 
 
 SEMF_MeV = _measured_bar()
@@ -233,12 +241,20 @@ def bar_for(mode):
     MeV for alpha, 1.06 for beta. One bar for both is the same
     category error as using the absolute mass error for either.
     """
-    try:
-        from engine.nucleo import error_bar
-        return error_bar("beta" if mode.startswith("beta")
-                         else "decay")[0]
-    except Exception:
-        return SEMF_TYPED
+    # Same silent fallback, same removal. A stress probe passed -1 as
+    # a mode and got 3.0 MeV back: the AttributeError from calling
+    # .startswith on an integer was swallowed and a typed bar
+    # returned. An unrecognised mode now says so.
+    if not isinstance(mode, str):
+        raise TypeError(f"a decay mode is a string, not {type(mode).__name__}"
+                        f" -- {mode!r} was passed and used to return "
+                        f"{SEMF_TYPED} MeV silently")
+    if not (mode.startswith("beta") or mode in ("alpha", "electron-capture",
+                                                "decay")):
+        raise ValueError(f"unknown decay mode {mode!r}; known: alpha, "
+                         f"beta-minus, beta-plus, electron-capture")
+    from engine.nucleo import error_bar
+    return error_bar("beta" if mode.startswith("beta") else "decay")[0]
 
 
 def decay_of(z, n):

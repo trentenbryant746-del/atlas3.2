@@ -2139,3 +2139,52 @@ treatment is owed to unit consistency, to dimensional agreement across
 module boundaries, and to every place two modules compute a quantity that
 ought to match. The expectation is that it uproots things that currently
 look right.
+
+### 3.1.25 — stress-testing every rule, not just the new ones
+
+The constants sweep was one pass over one kind of rule. This is the
+start of the full stress test, and it found the "never patch" principle
+being violated by code already in the repo.
+
+**A silent fallback is a patch with a number on it.** `transitions.bar_for`
+selected the error bar for a decay mode, and ended:
+
+    except Exception:
+        return SEMF_TYPED        # 3.0 MeV, typed
+
+Any failure at all — a bad import, a renamed kind, a mode that was not a
+string — was swallowed, and a **typed 3.0 MeV was substituted for a
+measured 1.21**. The answer still looked like a number. That is the whole
+problem: a wrong bar makes decays look resolvable or unresolvable and
+nothing says why. Two of these existed. Both are gone; a bar that cannot
+be measured is now a failure and is allowed to be one.
+
+**How it was found: probe every rule with inputs it should refuse.** A
+sweep of every single-argument function in the engine against zero,
+negative, huge, tiny and NaN found **eight** that returned a number where
+they should have refused. `bar_for(-1)` returned 3.0 — calling
+`.startswith` on an integer raised, the bare `except` ate it, and a bar
+came back anyway.
+
+**A second find, same shape as the constants.** `radiative.MU` held four
+typed molar masses, and `CIA` held them again. The periodic table already
+in the repo derives all of them. They agreed to three decimal places,
+which is exactly how a typed table survives long enough to go wrong.
+`MU` is now computed from `engine/experts.py`'s table, and the duplicates
+in `CIA` are deleted.
+
+**Both are now rules, at layer 0, so they cannot come back:**
+
+    no_silent_fallback_on_a_bar    scans every module for an exception
+                                   handler that substitutes a bar value
+    degenerate_inputs_are_refused  the bar selectors must refuse a
+                                   non-string mode, an unknown mode and
+                                   an unknown kind
+
+    lab   17 experiments, 15 HOLDS, 1 CLASH, 1 MISSING_RULE
+    5,737 correct, 0 wrong    audit 21/21    heldout 165/165 byte-exact
+
+**Still owed before 3.3.** Dimensional agreement across module
+boundaries; every place two modules compute a quantity that ought to
+match; monotonicity of each rule in its own arguments; and the
+convective-adjustment rule that the missing-rule analysis points to.

@@ -133,13 +133,13 @@ BANDS = {
 # temperature, the molecular mass and the body's own gravity.
 LOSCHMIDT = 2.6867811e25        # m^-3, exact by definition
 CIA = {
-    "CO2": dict(k=1.0e-8, lo=50.0, hi=550.0, mu=44.009,
+    "CO2": dict(k=1.0e-8, lo=50.0, hi=550.0,
                 note="CO2-CO2 induced dipole, measured in cm^-1 per "
                      "amagat squared; it fills the far-infrared window "
                      "that the 15 micron band leaves open"),
-    "H2O": dict(k=4.0e-8, lo=800.0, hi=1200.0, mu=18.015,
+    "H2O": dict(k=4.0e-8, lo=800.0, hi=1200.0,
                 note="the water continuum across the 8-12 micron window"),
-    "N2": dict(k=1.0e-9, lo=50.0, hi=350.0, mu=28.013,
+    "N2": dict(k=1.0e-9, lo=50.0, hi=350.0,
                note="N2-N2, weak, but it is what warms Titan"),
 }
 
@@ -157,7 +157,7 @@ def cia_tau(species, partial_pa, T, gravity):
     c = CIA[species]
     n = partial_pa / (K_B * T)                 # molecules per m^3
     amagat = n / LOSCHMIDT
-    L_cm = scale_height(T, c["mu"], gravity) * 100.0
+    L_cm = scale_height(T, MU[species], gravity) * 100.0
     return c["k"] * amagat ** 2 * L_cm
 
 
@@ -166,7 +166,33 @@ def molecules_per_cm2(column_kg_m2, mu_g_mol):
     return column_kg_m2 * 0.1 / mu_g_mol * N_A
 
 
-MU = {"CO2": 44.009, "H2O": 18.015, "CH4": 16.04, "N2": 28.013}
+def _molar(formula):
+    """g/mol from the periodic table. DERIVED, not typed.
+
+    These were four typed numbers, and a stress sweep caught them for
+    the same reason the duplicated constants were caught: a quantity
+    that can be computed had a second home. They agreed to three
+    decimal places, which is exactly how a typed table survives long
+    enough to go wrong.
+    """
+    from engine.experts import PT
+    w = {sym: m for sym, _name, m in PT}
+    tot, i = 0.0, 0
+    while i < len(formula):
+        j = i + 1
+        while j < len(formula) and formula[j].islower():
+            j += 1
+        sym = formula[i:j]
+        k = j
+        while k < len(formula) and formula[k].isdigit():
+            k += 1
+        tot += w[sym] * int(formula[j:k] or 1)
+        i = k
+    return tot
+
+
+FORMULAE = {"CO2": "CO2", "H2O": "H2O", "CH4": "CH4", "N2": "N2"}
+MU = {k: _molar(v) for k, v in FORMULAE.items()}
 
 
 # A BAND DOES NOT ONLY SATURATE, IT WIDENS -- AND THAT IS WHAT CLOSES

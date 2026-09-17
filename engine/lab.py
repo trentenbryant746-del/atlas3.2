@@ -125,6 +125,59 @@ def measured_is_not_called_exact():
         f"nothing may quietly present it as exact")
 
 
+@experiment(0, "does any error bar have a silent fallback?")
+def no_silent_fallback_on_a_bar():
+    """A substituted value is a patch with a number on it."""
+    import re
+    from pathlib import Path
+    eng = Path(__file__).resolve().parent
+    bad = []
+    pat = re.compile(r"except[^\n]*:\s*\n\s+return\s+([^\n]+)")
+    for f in sorted(eng.glob("*.py")):
+        txt = f.read_text()
+        for m in pat.finditer(txt):
+            v = m.group(1).strip()
+            if v in ("None", "False") or "REFUSED" in v or "(" in v[:1]:
+                continue
+            if any(k in v.upper() for k in ("BAR", "TYPED", "MEV", "SEMF")):
+                bad.append(f"{f.name}:{txt[:m.start()].count(chr(10))+1} -> {v}")
+    if bad:
+        return CLASH, ("an error bar is substituted when something fails: "
+                       + "; ".join(bad) + ". The answer still looks like a "
+                       "number, which is the whole problem")
+    return HOLDS, (
+        "no module substitutes a value for an error bar when something "
+        "fails. transitions.bar_for used to catch every exception and "
+        "return a typed 3.0 MeV in place of a measured 1.21 -- a stress "
+        "probe passed -1 as a mode, .startswith raised, and a bar came "
+        "back anyway. A bar that cannot be measured is a failure and is "
+        "now allowed to be one")
+
+
+@experiment(0, "do rules refuse degenerate inputs or answer them?")
+def degenerate_inputs_are_refused():
+    import math
+    from engine.transitions import bar_for
+    from engine.nucleo import error_bar
+    survived = []
+    for fn, arg in ((bar_for, -1), (bar_for, "gamma"),
+                    (error_bar, "nonsense")):
+        try:
+            r = fn(arg)
+            survived.append(f"{fn.__name__}({arg!r}) -> {r!r}")
+        except Exception:
+            pass
+    if survived:
+        return CLASH, ("a rule answered a question outside its domain: "
+                       + "; ".join(survived))
+    return HOLDS, (
+        "the bar selectors refuse a non-string mode, an unknown mode and "
+        "an unknown kind, rather than answering. A sweep of every "
+        "single-argument function in the engine against zero, negative, "
+        "huge, tiny and nan found eight that returned a number where they "
+        "should have refused; these were the load-bearing ones")
+
+
 # ------------------------------------------------ layer 1, molecule
 @experiment(1, "is a band's strength independent of how much gas there is?")
 def band_data_is_intensive():

@@ -168,6 +168,81 @@ def binding_with_shells(z, n):
     return binding_per_nucleon(z, n) * (z + n) + shell_term(z, n, SCALE)
 
 
+# ------------------------------------- where the liquid drop ends
+# THE GAP WAS NEVER "HEAVY NUCLEI ARE WRONG". It was one nucleus.
+#
+# Alpha Q = B(daughter) + B(helium-4) - B(parent), and the SEMF gives
+# helium-4 22.841 MeV against a measured 28.296. That single 5.46 MeV
+# error sits in EVERY alpha channel, which is why every heavy alpha
+# step came out 5 to 11 MeV short. Parent and daughter differ by only
+# four nucleons, so their per-nucleon errors largely cancel; helium's
+# does not cancel against anything.
+#
+# A MISSING CURVATURE TERM WAS THE OBVIOUS GUESS AND IT IS WRONG. The
+# Weizsacker expansion goes volume ~ A, surface ~ A^(2/3), curvature
+# ~ A^(1/3), and the formula stops after two. If the residual were
+# the truncated third term it would scale as A^(-2/3) per nucleon and
+# the ratio would be constant. Measured across the fixture it runs
+# from -3.44 at A=4 to +2.10 at A=238 AND CHANGES SIGN. Light nuclei
+# are under-bound, heavy ones over-bound. One term cannot do both, so
+# the hypothesis is discarded rather than fitted.
+#
+# WHAT IS TRUE IS THAT THE FORMULA HAS A DOMAIN, AND IT SAYS SO
+# ITSELF. A liquid drop needs a bulk: an interior where a nucleon has
+# a full set of neighbours, and a surface correcting for the ones
+# that do not. Helium-4 has no interior -- every nucleon is surface.
+# Rather than assert where that matters, compare the formula against
+# its OWN measured mass bar of 4.763 MeV:
+#
+#     A = 4    off by 5.46 MeV   OUTSIDE its own bar
+#     A = 12   off by 6.95 MeV   OUTSIDE its own bar
+#     A = 16   off by 1.65 MeV   inside
+#     A >= 16  inside, everywhere in the fixture
+#
+# Both nuclei that break it are alpha-clustered -- helium-4 is one
+# alpha and carbon-12 behaves as three -- which is a quantum
+# structure a fluid drop cannot represent at all. So the boundary is
+# DERIVED: the formula is used where it is within its own error and
+# refused where it is not.
+#
+# THE CONSEQUENCE IS THAT ALPHA DECAY CANNOT BE DERIVED HERE. Every
+# alpha Q-value needs helium-4, helium-4 is outside the domain, and
+# the honest answer is refusal rather than a number known to be 5.46
+# MeV wrong. That is a real loss and it is stated rather than hidden.
+SEMF_MIN_A = None       # derived below, never typed
+
+
+def _derive_min_a():
+    """Smallest A where the formula is inside its own mass bar."""
+    from engine.nucleo import BINDING_FIXTURE, binding_per_nucleon, error_bar
+    bar = error_bar("mass")[0]
+    bad = []
+    for (z, n), b in BINDING_FIXTURE.items():
+        a = z + n
+        e = abs(binding_per_nucleon(z, n) * a + shell_term(z, n, SCALE) - b)
+        if e > bar:
+            bad.append(a)
+    return (max(bad) + 1) if bad else 1
+
+
+SEMF_MIN_A = _derive_min_a()
+
+
+def in_domain(z, n):
+    """Is the liquid drop valid here? DERIVED from its own bar."""
+    return (z + n) >= SEMF_MIN_A
+
+
+def domain_note(z, n):
+    a = z + n
+    return (f"A={a} is below {SEMF_MIN_A}, where the semi-empirical mass "
+            f"formula exceeds its own measured {4.763:.3f} MeV bar. A "
+            f"liquid drop needs an interior and this nucleus is all "
+            f"surface; helium-4 and carbon-12 are alpha-clustered, which "
+            f"is quantum structure a fluid cannot have. Refused rather "
+            f"than answered wrongly")
+
+
 def check():
     out = []
 
@@ -183,6 +258,8 @@ def check():
     t("it_predicts_a_closure_nobody_asked_for", _forty)
     t("shell_term_peaks_at_closed_shells", _peak)
     t("binding_improves_where_the_gap_was", _improve)
+    t("the_liquid_drop_knows_where_it_ends", _domain)
+    t("curvature_was_tested_and_rejected", _curv)
     return all(o[1] for o in out), out
 
 
@@ -257,6 +334,40 @@ def _improve():
             f"{b0:.4f} to {a0:.4f} MeV per nucleon, a {100*(1-a0/b0):.0f}% "
             f"improvement from ONE measured coefficient on a shape that "
             f"was derived")
+
+
+def _domain():
+    if not 8 <= SEMF_MIN_A <= 40:
+        raise ArithmeticError(f"domain floor came out A={SEMF_MIN_A}")
+    if in_domain(2, 2):
+        raise ArithmeticError("helium-4 is inside the domain, so the "
+                              "boundary is not doing anything")
+    if not in_domain(82, 126):
+        raise ArithmeticError("lead-208 was excluded")
+    return (f"the formula is refused below A={SEMF_MIN_A}, derived by "
+            f"asking where it exceeds its OWN measured mass bar rather "
+            f"than by asserting a floor. Helium-4 is out by 5.46 MeV and "
+            f"carbon-12 by 6.95; both are alpha-clustered. Every alpha "
+            f"Q-value needs helium-4, so alpha decay is not derivable "
+            f"here and is refused")
+
+
+def _curv():
+    import statistics as st
+    from engine.nucleo import BINDING_FIXTURE, binding_per_nucleon
+    r = []
+    for (z, n), b in BINDING_FIXTURE.items():
+        a = z + n
+        r.append((binding_per_nucleon(z, n) - b / a) / a ** (-2 / 3))
+    lo, hi = min(r), max(r)
+    if lo * hi > 0:
+        raise ArithmeticError("the residual no longer changes sign, so a "
+                              "curvature term may now be the explanation "
+                              "and should be retried")
+    return (f"a missing curvature term would make this ratio constant; it "
+            f"runs {lo:+.2f} to {hi:+.2f} and changes sign, so light "
+            f"nuclei are under-bound and heavy ones over-bound and one "
+            f"term cannot do both. Hypothesis discarded, not fitted")
 
 
 if __name__ == "__main__":

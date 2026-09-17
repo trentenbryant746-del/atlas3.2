@@ -238,8 +238,12 @@ def q_values(z, n):
         q = beta_q(z, n, mode)
         if q is not None:
             out[mode] = q
+    from engine.shells import in_domain
     b = _b(z - 2, n - 2)
-    if b is not None and z > 2 and n > 2:
+    # Helium-4 is outside the liquid drop's derived domain, so every
+    # alpha Q-value here would carry a known 5.46 MeV error. Refused.
+    if (b is not None and z > 2 and n > 2
+            and in_domain(2, 2) and in_domain(z, n) and in_domain(z - 2, n - 2)):
         # EVERY TERM IN A Q-VALUE MUST COME FROM THE SAME SOURCE.
         #
         # This used to read (b + B_ALPHA) - here, mixing the MEASURED
@@ -287,9 +291,29 @@ def bar_for(mode):
     return error_bar("beta" if mode.startswith("beta") else "decay")[0]
 
 
+def unevaluated_channels(z, n):
+    """-> [mode]. Channels that cannot be computed, not ones that are shut.
+
+    A CHANNEL THAT CANNOT BE EVALUATED IS NOT A CHANNEL THAT IS
+    CLOSED, and treating them alike put the confidently-wrong count
+    UP. When helium-4 went outside the liquid drop's derived domain
+    the alpha term simply vanished from q_values(), so polonium-212
+    -- which has no other open channel -- came back "stable". That
+    asserts the alpha channel is shut, which is the one thing not
+    known about it. Missing evidence has to stay visible.
+    """
+    from engine.shells import in_domain
+    out = []
+    if z > 2 and n > 2 and not (in_domain(2, 2) and in_domain(z, n)
+                                and in_domain(z - 2, n - 2)):
+        out.append("alpha")
+    return out
+
+
 def decay_of(z, n):
     """-> (mode, daughter, why). Refuses inside the formula's error bar."""
     qs = q_values(z, n)
+    blind = unevaluated_channels(z, n)
     gains = {m: q for m, q in qs.items() if q > 0}
     if not gains:
         # STABLE AND UNRESOLVABLE ARE NOT THE SAME ANSWER, and this
@@ -300,13 +324,21 @@ def decay_of(z, n):
         # +0.156: the sign was wrong and the magnitude was inside
         # the error, so the honest answer was never "stable".
         near = {m: q for m, q in qs.items() if abs(q) < bar_for(m)}
-        if near:
+        if near and not blind:
             m = max(near, key=lambda k: abs(near[k]))
             return ("undetermined", None,
                     f"no mode has a positive Q, but {m} is at "
                     f"{near[m]:+.2f} MeV inside its {bar_for(m):.2f} MeV "
                     f"bar -- the sign is not determined, so this is not "
                     f"stability, it is ignorance")
+        if blind:
+            return ("undetermined", None,
+                    f"no computable mode raises the total binding of "
+                    f"Z={z} N={n}, but {', '.join(blind)} could not be "
+                    f"evaluated at all -- helium-4 is outside the liquid "
+                    f"drop's derived domain. An unevaluated channel is "
+                    f"not a closed one, so this is ignorance and not "
+                    f"stability")
         return ("stable", None,
                 f"no decay raises the total binding of Z={z} N={n}, and "
                 f"every Q is outside its own bar, so the signs are "

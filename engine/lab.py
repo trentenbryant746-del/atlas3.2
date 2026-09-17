@@ -99,6 +99,28 @@ def sigma_from_exact_constants():
                    f"on it at all")
 
 
+@experiment(0, "can a check fail on its own documentation?")
+def checks_do_not_grep_themselves():
+    """Written after making the same mistake three times."""
+    import inspect
+    import engine.lab as me
+    bad = []
+    for e in EXPERIMENTS:
+        src = inspect.getsource(e.fn)
+        if "read_text()" in src and "ast" not in src and "glob" not in src:
+            bad.append(e.name)
+    if bad:
+        return CLASH, ("these read a source file as text and may match "
+                       "their own wording: " + ", ".join(bad))
+    return HOLDS, (
+        "no experiment decides anything by searching a file for a string "
+        "it also contains. Three checks have failed this way -- two in "
+        "engine/radiative.py matching 'observed_T' and its own module "
+        "name, one here matching the comment that explains a bug it was "
+        "testing for. A check written as a text search over its own file "
+        "will always find itself; test the arithmetic or parse the AST")
+
+
 @experiment(0, "does any constant have two homes?")
 def constants_are_not_duplicated():
     from engine.constants import check as ccheck
@@ -186,15 +208,23 @@ def a_q_value_uses_one_source():
     measured = 28.296
     bias = measured - semf_he4
     bar = nucleo.error_bar("decay")[0]
-    import inspect
+    # TEST THE ARITHMETIC, NOT THE TEXT. Grepping the source for
+    # "B_ALPHA" matched the comment in q_values that EXPLAINS the old
+    # bug, so the check failed on its own documentation. This is the
+    # third time a check here has been written as a text search over
+    # a file that contains the search term; it is now a rule of its
+    # own (checks_do_not_grep_themselves).
     from engine import transitions
-    src = inspect.getsource(transitions.q_values)
-    if "B_ALPHA" in src:
-        return CLASH, (
-            f"an alpha Q-value mixes a measured helium-4 binding "
-            f"({measured}) with SEMF values for parent and daughter "
-            f"({semf_he4:.3f}), biasing every alpha channel by "
-            f"{bias:+.3f} MeV -- {bias/bar:.1f} times its own bar")
+    probe = transitions.q_values(84, 128).get("alpha")
+    if probe is not None:
+        expect_mixed = (transitions._b(82, 126) + measured
+                        - transitions._b(84, 128))
+        if abs(probe - expect_mixed) < 1e-9:
+            return CLASH, (
+                f"an alpha Q-value still mixes a measured helium-4 "
+                f"binding ({measured}) with SEMF parent and daughter "
+                f"({semf_he4:.3f}), biasing every alpha channel by "
+                f"{bias:+.3f} MeV -- {bias/bar:.1f} times its own bar")
     return HOLDS, (
         f"every term in a Q-value comes from the same formula. This is "
         f"not tidiness: a Q-value is a DIFFERENCE, and its bar is "

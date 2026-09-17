@@ -2345,3 +2345,69 @@ right answers — and it is why the score is allowed to fall.
 
     engine/shells.py 6/6   lab 22 experiments   5,737 correct, 0 wrong
     audit 21/21            heldout 165/165 byte-exact
+
+### 3.1.28 — filling the liquid-drop gap: a domain, not a number
+
+The gap was 5–11 MeV on heavy alpha steps. It turned out to be **one
+nucleus**, not a trend. Alpha Q is `B(daughter) + B(helium-4) −
+B(parent)`, and the SEMF gives helium-4 22.841 MeV against a measured
+28.296. Parent and daughter differ by four nucleons so their per-nucleon
+errors largely cancel; helium's cancels against nothing and lands in
+**every** alpha channel.
+
+**The obvious guess was a missing curvature term, and it is wrong.** The
+Weizsäcker expansion runs volume ~A, surface ~A^(2/3), curvature ~A^(1/3),
+and the formula stops after two. If the residual were the truncated third
+term it would scale as A^(-2/3) per nucleon and the ratio would be
+constant. Measured across the fixture it runs **−3.44 at A=4 to +2.10 at
+A=238 and changes sign** — light nuclei under-bound, heavy ones
+over-bound. One term cannot do both, so the hypothesis is discarded
+rather than fitted.
+
+**What is true is that the formula has a domain, and it says so itself.**
+Rather than assert a floor, compare the formula against its own measured
+4.763 MeV mass bar:
+
+    A = 4    off by 5.46 MeV   OUTSIDE its own bar
+    A = 12   off by 6.95 MeV   OUTSIDE its own bar
+    A = 16   off by 1.65 MeV   inside
+    A >= 13  inside, everywhere in the fixture
+
+Both nuclei that break it are alpha-clustered — helium-4 is one alpha,
+carbon-12 behaves as three — which is quantum structure a fluid drop
+cannot represent. The boundary is **derived from the formula's own error**,
+not typed. This is the shape the request asked for: a rule, not a number.
+
+**The consequence is severe and is stated rather than hidden.** Every
+alpha Q-value needs helium-4, helium-4 is outside the domain, so **alpha
+decay cannot be derived here at all**.
+
+    mixed sources (3.1.26)        8 right, 3 WRONG,  3 refused
+    consistent + shells (3.1.27)  4 right, 2 WRONG,  8 refused
+    + derived domain (3.1.28)     1 right, 1 WRONG, 12 refused
+
+Wrong is the number that must reach zero and it is now **1** — K-40, a
+beta case. One right out of fourteen is the price, and it is the correct
+price: the other thirteen are things this formula cannot resolve.
+
+**Refusing a channel is not the same as closing it, and getting that
+wrong put the count back up.** When alpha went dark, polonium-212 came
+back "stable" — no computable channel raises its binding — which asserts
+the alpha channel is *shut*, the one thing not known about it. The same
+error made `halflife` report radium, radon, polonium and astatine as
+**absent**, when every chain that feeds them is an alpha series and they
+are demonstrably here. Unreachable by a walk that cannot walk is not
+absent. Both now return undetermined.
+
+**A recurring bug, now a rule.** Three checks have failed by grepping
+their own source and matching text they themselves contain — two in
+`engine/radiative.py`, one in the lab experiment testing for the very
+string its comment explained. `checks_do_not_grep_themselves` forbids it:
+test the arithmetic, or parse the AST.
+
+**Still owed:** 12 module-level constants have no derivation or
+provenance beside them, including `RH_EARTH = 0.7`, `D_CONTRAST = 45.0`,
+`M_REF = 18.0` and `SEMF_TYPED = 3.0`.
+
+    lab 23 experiments, 21 HOLDS, 1 CLASH, 1 MISSING_RULE
+    5,737 correct, 0 wrong   audit 21/21   heldout 165/165 byte-exact

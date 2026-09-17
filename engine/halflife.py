@@ -337,12 +337,36 @@ def trace_or_absent():
                         f"not reached, but the search was truncated "
                         f"before the frontier emptied -- stopping early "
                         f"says nothing about what was not visited")
+        elif _alpha_blind():
+            # AND NEVER SAY ABSENT WHEN A WHOLE CHANNEL IS DARK.
+            # Helium-4 fell outside the liquid drop's derived domain,
+            # so alpha steps cannot be evaluated AT ALL -- not
+            # "under the bar", not computable. Every decay series
+            # that feeds radium, radon, polonium and astatine is an
+            # alpha series, so with alpha dark the walk cannot reach
+            # them and they were being reported absent. They are
+            # not absent; radium and radon are demonstrably here.
+            # An unevaluable channel is ignorance, and ignorance
+            # does not become a negative result by default.
+            out[sym] = ("undetermined",
+                        f"not reached, but alpha steps cannot be "
+                        f"evaluated at all -- helium-4 is outside the "
+                        f"mass formula's derived domain -- and every "
+                        f"chain that could feed this element is an alpha "
+                        f"series. Unreachable by a walk that cannot walk "
+                        f"is not the same as absent")
         else:
             out[sym] = ("absent",
                         f"unreachable from any primordial parent even "
                         f"with the error bar switched off, and the search "
                         f"ran to completion")
     return out
+
+
+def _alpha_blind():
+    """Is the alpha channel unevaluable anywhere it matters?"""
+    from engine.transitions import unevaluated_channels
+    return "alpha" in unevaluated_channels(92, 146)
 
 
 def _bar():

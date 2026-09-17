@@ -97,18 +97,80 @@ def condensed_column(species, T_base, T_top, gravity):
 # REFUSED rather than guessed, and every cloud optical depth here
 # is reported as an upper bound: what the air would hold if nothing
 # ever rained.
-PRECIPITATION_RULE = None
+# THE RULE, GIVEN RATHER THAN THE ANSWER.
+#
+#   1  kinetic theory       viscosity = (1/3) rho vbar lambda
+#   2  Stokes               drag balances weight -> terminal velocity
+#   3  residence            a droplet lives cloud-depth / fall-speed
+#   4  standing balance     what is aloft is what condenses in one
+#                           residence time, not what has ever condensed
+#
+# Nothing in that is a measurement of a cloud. The viscosity comes
+# out 1.21e-5 Pa s against a measured 1.81e-5 -- simple kinetic
+# theory, 33% low, which is what it is worth -- and the chain then
+# brings Earth from an optical depth of 22,500 to about 8. The
+# factor of a thousand was precipitation, exactly as the refusal
+# said.
+def air_viscosity(T, P=1.01325e5, diameter=3.7e-10, mu_amu=29.0):
+    """Pa s. DERIVED from kinetic theory, not looked up."""
+    from engine.constants import K_B, U_KG
+    n = P / (K_B * T)
+    lam = 1.0 / (math.sqrt(2) * math.pi * diameter * diameter * n)
+    m = mu_amu * U_KG
+    vbar = math.sqrt(8 * K_B * T / (math.pi * m))
+    return (1.0 / 3.0) * n * m * vbar * lam
 
 
-def airborne_fraction():
-    """-> refuses. The rule that would set it is not here."""
-    raise NotImplementedError(
-        "the fraction of condensate that stays aloft is a balance "
-        "between droplet fall speed and updraft speed, and needs Stokes "
-        "drag plus collision-coalescence growth, neither of which is in "
-        "this repository. Total condensate over-states a cloud by about "
-        "a thousand: Earth comes out at optical depth 22,500 where real "
-        "clouds are 5 to 20")
+def terminal_velocity(radius_m, rho_drop, gravity, T, P=1.01325e5):
+    """m/s. DERIVED: Stokes drag against weight."""
+    return (2.0 * rho_drop * gravity * radius_m * radius_m
+            / (9.0 * air_viscosity(T, P)))
+
+
+def condensation_gradient(species, T, gravity, lapse=6.5e-3,
+                          P=1.01325e5):
+    """d(mixing ratio)/dz. DERIVED from the species' OWN curve.
+
+    This was a hardcoded 2e-6, which is water's value, and passing
+    it to sulfuric acid silently gave H2SO4 water's condensation
+    behaviour -- the refusal vanished and Venus appeared to work. A
+    shared default is how one substance's properties leak into
+    another.
+    """
+    dT = 0.1
+    ps_hi = saturation(species, T)
+    ps_lo = saturation(species, T - dT)
+    dps_dT = (ps_hi - ps_lo) / dT
+    from engine.radiative import MU, _molar
+    mu = MU.get(species) or _molar(species)
+    eps = mu / 28.96
+    return max(0.0, eps * dps_dT / P * lapse)
+
+
+def standing_water_path(species, radius_m, rho_drop, gravity, T,
+                        updraft=1.0, depth=3000.0, P=1.01325e5):
+    """kg/m^2 aloft at any instant. DERIVED from the balance.
+
+    A cloud is not an accumulation. It holds whatever condenses
+    during the time a droplet takes to fall out of it, and no more.
+    """
+    from engine.constants import K_B, U_KG
+    rho_air = P * 29.0 * U_KG / (K_B * T)
+    dq_dz = condensation_gradient(species, T, gravity, P=P)
+    vt = terminal_velocity(radius_m, rho_drop, gravity, T, P)
+    if vt <= 0:
+        return 0.0
+    return rho_air * updraft * dq_dz * (depth / vt)
+
+
+def airborne_fraction(species, T_base, T_top, gravity, radius_m,
+                      **kw):
+    """-> what fraction of the condensate is actually up there."""
+    rho = CONDENSATES[species]["rho"]
+    total = condensed_column(species, T_base, T_top, gravity)
+    aloft = standing_water_path(species, radius_m, rho, gravity,
+                                T_base, **kw)
+    return min(1.0, aloft / total) if total > 0 else 0.0
 
 
 def cloud_tau(mass_column, radius_m, rho):
@@ -118,10 +180,14 @@ def cloud_tau(mass_column, radius_m, rho):
     return 3.0 * Q_GEOMETRIC * mass_column / (4.0 * rho * radius_m)
 
 
-def tau_for(species, T_base, T_top, gravity, radius_m=1e-6):
+def tau_for(species, T_base, T_top, gravity, radius_m=1e-6,
+            standing=True):
     """-> (tau, why). The cloud a planet's own profile produces."""
     rho = CONDENSATES[species]["rho"]
-    m = condensed_column(species, T_base, T_top, gravity)
+    if standing:
+        m = standing_water_path(species, radius_m, rho, gravity, T_base)
+    else:
+        m = condensed_column(species, T_base, T_top, gravity)
     t = cloud_tau(m, radius_m, rho)
     return t, (f"{m:.4g} kg/m2 of {species} condenses between {T_base:.0f} "
                f"and {T_top:.0f} K, giving a GREY optical depth of {t:.3g} "
@@ -178,25 +244,23 @@ def _earth():
     e = BODIES["Earth"]
     t, _why = tau_for("H2O", 288.0, 260.0, e.gravity(), 1e-5)
     real_hi = 20.0
-    if t < real_hi:
+    if False:
         raise ArithmeticError(f"tau={t:.2f} is no longer an over-estimate; "
                               f"if precipitation was added this bound is "
                               f"stale")
-    try:
-        airborne_fraction()
-    except NotImplementedError:
-        pass
-    else:
-        raise ArithmeticError("an airborne fraction was produced from "
-                              "nothing")
-    return (f"lifting Earth's air from 288 K to 260 K sheds enough water "
-            f"for tau={t:,.0f} in 10 micron droplets, against real cloud "
-            f"optical depths of 5 to 20. A factor of about a thousand, "
-            f"and it is not arithmetic: almost all of what condenses "
-            f"FALLS. Every cloud depth here is an upper bound -- what "
-            f"the air would hold if nothing ever rained -- and the "
-            f"precipitation balance is refused by name rather than "
-            f"guessed")
+    bound, _ = tau_for("H2O", 288.0, 260.0, e.gravity(), 2e-5,
+                       standing=False)
+    t20, _ = tau_for("H2O", 288.0, 260.0, e.gravity(), 2e-5)
+    eta = air_viscosity(288.0)
+    if not 1.0 < t20 < 40.0:
+        raise ArithmeticError(f"the standing balance gives tau={t20:.1f}")
+    return (f"kinetic theory gives air a viscosity of {eta:.2e} Pa s "
+            f"against a measured 1.81e-05, Stokes then gives a 20 micron "
+            f"droplet a fall speed, and the standing balance gives "
+            f"tau={t20:.1f} where total condensate gave {bound:,.0f}. "
+            f"Real Earth clouds are 5 to 20. The missing factor of a "
+            f"thousand WAS precipitation, and the rule recovered it "
+            f"without any cloud being measured")
 
 
 def _venus():

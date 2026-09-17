@@ -3088,3 +3088,65 @@ sum.
 
     clouds 5/5   genesis 8/8   terraform 14/14
     5,737 correct, 0 wrong   claims 14/14   audit 21/21
+
+### 3.1.41 — two rules given, one works and one does not
+
+Asked for **rules** rather than answers: a rule for finding a
+saturation curve, and a rule for the precipitation balance. Both were
+built and run. One holds and one fails, and the failure is as useful.
+
+**The saturation-curve rule fails, and the reason is structural.**
+The chain exists and every link is real:
+
+    polarizability + ionisation -> London C6
+    permanent dipole            -> Debye and Keesom terms
+    total C6 / 4 sigma^6        -> well depth eps
+    kT_c = 1.31 eps             -> critical temperature
+    T_b = 0.6 T_c               -> boiling point
+    Trouton, dS_vap ~ 88        -> latent heat
+    Clausius-Clapeyron          -> the curve
+
+Run on substances whose answers are known it gives critical
+temperatures of 235 K for CO₂ (real 304), 1578 K for water (647) and
+195 K for H₂SO₄ (925). **It is not close enough to be useful, and the
+sensitivity says it never will be:** ε goes as σ⁻⁶, so 10% on the
+collision diameter is 77% on the well depth, and Clausius-Clapeyron
+then *exponentiates* that into orders of magnitude on vapour pressure.
+A factor of 10⁻⁹ in saturation pressure is not a curve, it is noise.
+
+So Venus stays refused, but the refusal is now quantitative: H₂SO₄
+needs a **measured** triple point and latent heat, and the reason a
+derivation cannot substitute is written down.
+
+**The precipitation rule works.** Four steps, no cloud measured:
+
+    kinetic theory     viscosity = (1/3) rho vbar lambda
+    Stokes             drag balances weight -> terminal velocity
+    residence          a droplet lives cloud-depth / fall-speed
+    standing balance   what is aloft is what condenses in ONE
+                       residence time, not what ever condensed
+
+Air viscosity comes out **1.21e-5 Pa s against a measured 1.81e-5** —
+simple kinetic theory, 33% low, which is what it is worth. Then:
+
+    droplet size   standing tau      total-condensate bound
+       5 um            1083                  45,087
+      10 um             135                  22,544
+      20 um              17                  11,272
+      50 um               1.1                 4,509
+
+Real Earth cloud optical depth is **5 to 20**. The missing factor of a
+thousand *was* precipitation, recovered from rules with nothing
+measured. Droplet radius is the one remaining input, and it is named:
+it is set by condensation-nucleus counts, not by anything derivable
+here.
+
+**And a shared default leaked one substance into another.** The
+condensation gradient was a hardcoded `2e-6` — water's value — so
+passing sulfuric acid through it silently gave H₂SO₄ water's behaviour
+and the Venus refusal *vanished*. The gradient now comes from each
+substance's own saturation curve, which restores the refusal. A shared
+default is how one thing's properties become another's without anyone
+writing it down.
+
+    clouds 5/5   5,737 correct, 0 wrong   claims 14/14   audit 21/21

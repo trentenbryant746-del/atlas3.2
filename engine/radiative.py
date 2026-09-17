@@ -390,6 +390,51 @@ def _spectral_bins(n=400, lo=1.0, hi=4000.0):
     return [(lo + i * step, lo + (i + 1) * step) for i in range(n)], step
 
 
+# A WING FALLS OFF. IT IS NOT A WIDER BOX.
+#
+# opaque_width() answers "how far out is this band still opaque",
+# and the previous version used that as the edge of a rectangle,
+# assigning the BAND-CENTRE optical depth to every wavenumber inside
+# it. A band with tau of ten billion and a wing reaching 100,000
+# cm^-1 therefore had tau of ten billion everywhere across it.
+#
+# The result was a switch. Below a wing cutoff of about 29 cm^-1
+# Venus came out 479 K too cold; above 96 cm^-1 it came out 349 K
+# too hot, with nothing in between. Real absorption does not behave
+# like that, and neither does a Lorentz profile: the whole content
+# of a wing is that it WEAKENS with distance from the line centre,
+#
+#     tau(nu)  =  S u / pi  *  gamma / ((nu - nu0)^2 + gamma^2)
+#
+# so a widened band is a tall narrow core with long thin shoulders,
+# and adding gas raises the shoulders gradually rather than
+# switching the sky from open to shut.
+def line_tau(species, column_kg_m2, pressure_pa, band, nu_cm, T=288.0):
+    """Optical depth AT a wavenumber. DERIVED from the line shape."""
+    bl = BANDS[species]
+    if not bl or column_kg_m2 <= 0:
+        return 0.0
+    b = bl[band]
+    u = molecules_per_cm2(column_kg_m2, MU[species])
+    gamma = b["gamma"] * (pressure_pa / P_REF)
+    if u <= 0 or gamma <= 0:
+        return 0.0
+    d = abs(nu_cm - b["nu0"])
+    half = b["width"] / 2.0
+    # inside the nominal band the lines are dense: the Goody band
+    # model already averages over them, so use it there.
+    if d <= half:
+        return goody_tau(species, column_kg_m2, pressure_pa, band)
+    # outside it, one Lorentz wing, cut off where a collision's
+    # finite duration ends the impact approximation
+    dd = d - half
+    k = (b["S"] * u / math.pi) * gamma / (dd * dd + gamma * gamma)
+    dc = collision_cutoff(species, T)
+    if dd > dc:
+        k *= math.exp(-(dd - dc) / dc)
+    return k
+
+
 def grey_equivalent_full(mix_pa, T, gravity, p_total_pa, nbins=400):
     """-> tau. Bands and continuum on a SPECTRAL GRID.
 
@@ -422,12 +467,9 @@ def grey_equivalent_full(mix_pa, T, gravity, p_total_pa, nbins=400):
         if sp in BANDS:
             col = pp / gravity
             for i, b in enumerate(BANDS[sp]):
-                w = opaque_width(sp, col, p_total_pa, i, T)
-                lo, hi = b["nu0"] - w / 2, b["nu0"] + w / 2
-                tau = goody_tau(sp, col, p_total_pa, i)
                 for k, (blo, bhi) in enumerate(bins):
-                    if bhi > lo and blo < hi:
-                        tau_bin[k] += tau
+                    tau_bin[k] += line_tau(sp, col, p_total_pa, i,
+                                           0.5 * (blo + bhi), T)
         if sp in CIA:
             c = CIA[sp]
             tau = cia_tau(sp, pp, T, gravity)

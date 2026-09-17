@@ -365,28 +365,28 @@ def a_band_slides_off_the_planck_peak():
 
 @experiment(3, "what is the hottest a CO2-only world can be?")
 def co2_alone_has_a_ceiling():
-    """The one that finds the missing rule."""
-    from engine.radiative import grey_equivalent
-    tau = grey_equivalent({"CO2": 1e14}, 9.2e6, 737.0)
+    """Re-measured on the full spectral model, and it is a threshold."""
+    from engine.radiative import grey_equivalent_full
+    tau = grey_equivalent_full({"CO2": 8.9e6}, 737.0, 8.87, 9.2e6)
     ceiling = (1.0 + 0.75 * tau) ** 0.25
-    # Venus: a real body, 737 K observed against 227 K of bare rock.
-    # Not an example being fitted to -- an existence claim.
     needed = 737.0 / 226.7
     if ceiling >= needed:
-        return HOLDS, (f"a CO2 atmosphere can multiply bare-rock "
-                       f"temperature by {ceiling:.3f}, enough for the "
-                       f"hottest rocky body known")
+        return HOLDS, (f"CO2 can multiply bare-rock temperature by "
+                       f"{ceiling:.3f}; a real body needs {needed:.3f}")
     return MISSING_RULE, (
-        f"UNBOUNDED CO2 CAN ONLY WARM A SURFACE BY A FACTOR OF "
-        f"{ceiling:.3f}, and a real body needs {needed:.3f}. Both halves "
-        f"are solid: the ceiling is a consequence of the 15 micron band "
-        f"covering part of the spectrum and nothing else absorbing, and "
-        f"the requirement is that Venus exists. So a rule is ABSENT, not "
-        f"wrong. What is missing is absorption in the window itself -- "
-        f"collision-induced continuum, which two CO2 molecules produce "
-        f"during a collision and which no single-molecule band table "
-        f"contains -- and scattering by cloud. Neither is a number to "
-        f"tune; both are mechanisms to add at layer 2 and 3")
+        f"CO2 at Venus' own column and pressure warms a surface by "
+        f"{ceiling:.3f} and a real body needs {needed:.3f}. WHAT CHANGED "
+        f"IS THE SHAPE OF THE ANSWER. The bands do not fall a little "
+        f"short; they fall short until the wings bridge the gaps between "
+        f"them and then overshoot enormously. CO2's bands sit at 667, "
+        f"960, 2349 and 3716 cm^-1, so the gaps are about 1,370 wide, and "
+        f"a wing reaching half a gap shuts the sky at once -- Venus is "
+        f"471 K too cold at a 29 cm^-1 cutoff and 250 K too hot at 96, "
+        f"with nothing between. A PERCOLATION THRESHOLD, and its "
+        f"sharpness is real rather than numerical. The missing rule is "
+        f"therefore not more absorber. It is whatever sets where a wing "
+        f"stops, and this now depends entirely on the layer-2 clash. "
+        f"Continuum absorption is in and was not enough")
 
 
 @experiment(2, "do the wing rules agree with each other?")
@@ -707,7 +707,11 @@ def _found():
     if not m:
         raise ArithmeticError("the CO2 ceiling is no longer detected")
     L, n, d = m[0]
-    if "continuum" not in d:
+    # The named absence moved. 3.1.23 named continuum absorption and
+    # it was added; 3.1.38 names where a wing stops. A check that
+    # insisted on the old word would have failed the moment its own
+    # finding was acted on.
+    if not any(k in d.lower() for k in ("continuum", "wing", "threshold")):
         raise ArithmeticError("the missing rule is not named")
     return (f"layer {L} ({LAYERS[L]}) reports {n}: unbounded CO2 cannot "
             f"reach the warmth of a body that exists, so a mechanism is "

@@ -130,8 +130,8 @@ CLAIMS = [
      _table_size, 29, CURRENT),
     ("3.1.18", "folding survival rate 0.573",
      _fold_bar, 0.5729, CURRENT),
-    ("3.1.33", "unfitted climate: Earth +12.3 K, Venus -495.6 K",
-     _climate, (12.3, -495.6), CURRENT),
+    ("3.1.38", "unfitted climate: Earth +21.3 K, Venus -489.8 K",
+     _climate, (21.3, -489.8), CURRENT),
     ("3.1.37", "habitable band derived 0.999 - 1.898 AU",
      _band, (0.999, 1.898), CURRENT),
     ("3.1.31", "lab: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED",
@@ -141,6 +141,12 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.33", "unfitted climate: Earth +12.3 K",
+     "3.1.38 replaced the box-shaped wing with a real Lorentz profile "
+     "that falls off with distance from line centre. The correct shape "
+     "absorbs more, and Earth moved to +21.3 K -- worse agreement from "
+     "better physics, with the excess traced to hand-entered band "
+     "parameters being out by about a factor of two"),
     ("3.1.23", "unfitted climate: Earth -3.2 K",
      "3.1.33 fixed spectral overlap so overlapping bands add optical "
      "depth instead of averaging transmittance. Earth's water bands "

@@ -2904,3 +2904,60 @@ findable, and inventing an outer edge would have hidden it permanently.
 
     evolve 6/6   terraform 14/14   5,737 correct, 0 wrong
     published claims 12/12   audit 21/21
+
+### 3.1.38 — a wing falls off, and the clash becomes a threshold
+
+Both open items attacked. Neither closed, and both are now understood
+well enough to say what would close them.
+
+**A wing is not a wider box.** `opaque_width()` answers how far out a
+band is still opaque, and the code used that as the edge of a
+*rectangle*, giving the band-centre optical depth to every wavenumber
+inside it. A band with τ of ten billion and a wing reaching 100,000 cm⁻¹
+therefore had τ of ten billion everywhere across it. The whole content
+of a wing is that it weakens with distance:
+
+    tau(nu) = S u / pi * gamma / ((nu - nu0)^2 + gamma^2)
+
+**I suspected double-counting and was wrong.** A band is hundreds of
+lines, so treating its far wing as one Lorentz line carrying the whole
+band strength looked like an overestimate. Measured against the explicit
+sum over lines, the ratio is 0.82 at 300 cm⁻¹ and 1.00 by 3,000 — the
+one-line form is right. The hypothesis cost a measurement and was
+discarded.
+
+**The correct shape makes agreement worse, and that is the honest
+outcome.** Earth moves from +12.3 K to +21.3 K. Its τ comes out 1.596
+where 0.869 is needed — **over by 1.84×**, which is a factor of two in
+`S`, `d` or `gamma`. Those band parameters were entered by hand as
+laboratory values, and a factor of two is exactly what that
+uncertainty permits. Better physics, worse number, cause named.
+
+**The clash is a percolation threshold, and its sharpness is real.**
+CO₂'s bands sit at 667, 960, 2349 and 3716 cm⁻¹, so the gaps are about
+1,370 cm⁻¹ wide. A wing that reaches half a gap closes the sky **all at
+once**:
+
+    wing cutoff 29 cm-1    Venus 471 K too cold
+    wing cutoff 96 cm-1    Venus 250 K too hot
+
+Nothing in between. Venus does not need *more absorber* — it needs the
+wings to stop in exactly the right place, and **fitting the cutoff to
+land Venus between those two is precisely what is not allowed.**
+
+**So the layer-3 missing rule now depends entirely on the layer-2
+clash**, and the clash needs something this repository does not have.
+The collision-duration derivation — molecular diameter over mean thermal
+speed — gives 9.6 cm⁻¹ where the literature's sub-Lorentzian cutoffs are
+nearer 100. The relevant timescale is the duration of the *strong* part
+of the interaction, not of the whole encounter, and deriving that needs
+an intermolecular potential. That is the next rule, and it is named.
+
+**A check had to be allowed to move with its own finding.**
+`the_known_missing_rule_is_found` required the word "continuum" —
+written in 3.1.23, when continuum absorption *was* the named absence.
+It was added in 3.1.33, and the absence moved. A check that insists on
+yesterday's answer fails the moment its own finding is acted on.
+
+    lab 26 experiments: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED
+    radiative 10/10   5,737 correct, 0 wrong   published claims 12/12

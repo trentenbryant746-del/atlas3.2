@@ -146,6 +146,100 @@ BINDING_FIXTURE = {
 BF_SOURCE = "measured nuclear binding energies, per nuclide"
 B_ALPHA_MEV = 28.296
 
+# ISOBARIC PAIRS -- same A, adjacent Z -- for the BETA bar, which
+# could not be measured at all without them. Each is a real decay,
+# and the fixture carries the measured Q so the formula can be
+# scored on the thing it is actually asked for.
+# Isobaric pairs -- same A, adjacent Z -- so the BETA bar can be
+# measured at all. ONLY the binding energies are carried: the
+# measured Q-values were here too and were redundant, because
+# dB + (m_n - m_H) reproduces them from these same numbers to
+# 0.0015 MeV. Carrying both would have been giving the answer and
+# the working.
+BETA_B = {(1, 2): 8.482, (2, 1): 7.718, (6, 8): 105.28, (7, 7): 104.66,
+          (15, 17): 270.85, (16, 16): 271.78, (19, 21): 341.52,
+          (20, 20): 342.05, (27, 33): 524.80, (28, 32): 526.84}
+BETA_PAIRS = (((1, 2), (2, 1)), ((6, 8), (7, 7)), ((15, 17), (16, 16)),
+              ((19, 21), (20, 20)), ((27, 33), (28, 32)))
+
+# THE TERM THE REPO WAS MISSING, AND IT IS BIGGER THAN THE ANSWER.
+#
+# A beta-minus Q-value is not just the change in binding energy. A
+# neutron becomes a proton, and in the atomic-mass convention that
+# releases the neutron-hydrogen difference as well:
+#
+#     Q(beta-) = B(Z+1, N-1) - B(Z, N) + (m_n - m_H)c^2
+#
+# engine/transitions.py used the first part alone. That term is
+# 0.7825 MeV and typical beta Q-values are 0.02 to 2.8, so leaving
+# it out is not a small correction -- it is comparable to the whole
+# quantity and it FLIPS SIGNS. C-14 to N-14 came out -0.620 MeV,
+# meaning the decay does not happen, against a true +0.156. Every
+# beta decision in the repo was wrong by 0.78 MeV.
+#
+# Note it is the neutron-HYDROGEN difference, not the
+# neutron-proton one already in DELTA_M_NP_MEV. Binding energies
+# here are defined against atomic masses, so the electron comes
+# along with the proton: 0.7825 MeV, not 1.2933.
+# DERIVED FROM THE PARTICLE MASSES ALREADY HERE, not typed. The
+# first version wrote 0.78254 and 1.02200 in by hand, which is
+# supplying an answer the repo can compute: engine/particles.py
+# carries the proton, neutron and electron masses, and these are
+# just differences of them. Typing them also lost a digit -- 0.78254
+# against the 0.78233 the masses give.
+def _delta_m_nh():
+    """Neutron minus a hydrogen ATOM: the proton and its electron."""
+    from engine.particles import PROTON, NEUTRON, ELECTRON
+    return (NEUTRON.mass - PROTON.mass - ELECTRON.mass) * MEV_PER_U
+
+
+def _two_me():
+    from engine.particles import ELECTRON
+    return 2.0 * ELECTRON.mass * MEV_PER_U
+
+
+DELTA_M_NH_MEV = _delta_m_nh()
+TWO_ME_MEV = _two_me()
+
+
+def beta_q(z, n, mode="beta-minus"):
+    """Q for a beta transition, with every term. DERIVED."""
+    if mode == "beta-minus":
+        d = (z + 1, n - 1)
+        extra = DELTA_M_NH_MEV
+    elif mode == "electron-capture":
+        d = (z - 1, n + 1)
+        extra = -DELTA_M_NH_MEV
+    elif mode == "beta-plus":
+        d = (z - 1, n + 1)
+        extra = -DELTA_M_NH_MEV - TWO_ME_MEV
+    else:
+        raise KeyError(f"no beta mode {mode!r}")
+    a, b = binding_energy_MeV(z, n), binding_energy_MeV(*d)
+    if a is None or b is None or d[0] < 0 or d[1] < 0:
+        return None
+    return (b - a) + extra
+
+
+def beta_error():
+    """The formula's error on a beta Q-value. Measured on real decays."""
+    rows = []
+    for par, dau in BETA_PAIRS:
+        q_semf = beta_q(par[0], par[1], "beta-minus")
+        if q_semf is None:
+            continue
+        # the reference Q, DERIVED from the fixture's own measured
+        # binding energies by the same rule the formula uses
+        q_true = (BETA_B[dau] - BETA_B[par]) + DELTA_M_NH_MEV
+        rows.append((par, q_true, q_semf, q_true,
+                     abs(q_semf - q_true), 0.0))
+    if not rows:
+        raise ArithmeticError("no beta pairs")
+    d = sorted(r[4] for r in rows)
+    f = sorted(r[5] for r in rows)
+    return {"n": len(d), "median": d[len(d) // 2], "worst": d[-1],
+            "fixture_median": f[len(f) // 2], "rows": rows}
+
 
 def absolute_error(lo=1, hi=118):
     """Error in a single binding energy. NOT what a decay inherits."""
@@ -193,8 +287,18 @@ def error_bar(kind="decay"):
             f"{a['median']:.2f} MeV absolute error, because the formula "
             f"is wrong in the same direction for neighbouring nuclei and "
             f"most of it cancels")
+    if kind in ("beta", "beta-decay"):
+        b = beta_error()
+        return b["median"], (
+            f"{b['median']:.2f} MeV median over {b['n']} measured beta "
+            f"decays -- a different bar again, because a beta step "
+            f"changes Z by one where an alpha changes it by two, and the "
+            f"formula's asymmetry term is what is wrong in each. The "
+            f"reference Q comes from the fixture's own measured binding "
+            f"energies by the same rule, so what is scored is the "
+            f"formula against measurement and nothing is carried twice")
     raise KeyError(f"no error bar defined for {kind!r}; the bar depends "
-                   f"on the question, and 'mass' and 'decay' are "
+                   f"on the question, and 'mass', 'decay' and 'beta' are "
                    f"different questions")
 
 

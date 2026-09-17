@@ -203,15 +203,42 @@ def q_values(z, n):
     here = _b(z, n)
     if here is None:
         raise ValueError(f"no binding energy for Z={z} N={n}")
+    # THE BETA TERM WAS MISSING AND IT IS BIGGER THAN THE ANSWER.
+    # A beta-minus Q is not the change in binding energy alone: a
+    # neutron becomes a proton, and against atomic masses that
+    # releases the neutron-hydrogen difference too, 0.78 MeV.
+    # Typical beta Q-values are 0.02 to 2.8, so omitting it FLIPS
+    # SIGNS -- C-14 to N-14 came out -0.620 MeV, meaning no decay,
+    # against a measured +0.156. Every beta decision this module
+    # made was wrong by 0.78 MeV until nucleo.beta_q() carried all
+    # the terms; it reproduces the five measured decays in the
+    # fixture to 0.0015 MeV from their own binding energies.
+    from engine.nucleo import beta_q
     out = {}
-    for mode, (zz, nn), extra in (("beta-minus", (z + 1, n - 1), 0.0),
-                                  ("beta-plus", (z - 1, n + 1), 0.0),
-                                  ("alpha", (z - 2, n - 2), B_ALPHA)):
-        b = _b(zz, nn)
-        if b is None:
-            continue
-        out[mode] = (b + extra) - here
+    for mode in ("beta-minus", "beta-plus"):
+        q = beta_q(z, n, mode)
+        if q is not None:
+            out[mode] = q
+    b = _b(z - 2, n - 2)
+    if b is not None:
+        out["alpha"] = (b + B_ALPHA) - here
     return out
+
+
+def bar_for(mode):
+    """The error bar for THIS mode. They are not the same number.
+
+    An alpha step changes Z by two and a beta step by one, and the
+    formula is wrong in different ways about each. Measured: 1.21
+    MeV for alpha, 1.06 for beta. One bar for both is the same
+    category error as using the absolute mass error for either.
+    """
+    try:
+        from engine.nucleo import error_bar
+        return error_bar("beta" if mode.startswith("beta")
+                         else "decay")[0]
+    except Exception:
+        return SEMF_TYPED
 
 
 def decay_of(z, n):
@@ -219,19 +246,41 @@ def decay_of(z, n):
     qs = q_values(z, n)
     gains = {m: q for m, q in qs.items() if q > 0}
     if not gains:
+        # STABLE AND UNRESOLVABLE ARE NOT THE SAME ANSWER, and this
+        # conflated them. A mode whose computed Q is negative but
+        # SMALLER THAN THE BAR has an undetermined sign -- the
+        # formula cannot tell decay from stability there. C-14 came
+        # back "stable" on a computed -1.96 MeV against a measured
+        # +0.156: the sign was wrong and the magnitude was inside
+        # the error, so the honest answer was never "stable".
+        near = {m: q for m, q in qs.items() if abs(q) < bar_for(m)}
+        if near:
+            m = max(near, key=lambda k: abs(near[k]))
+            return ("undetermined", None,
+                    f"no mode has a positive Q, but {m} is at "
+                    f"{near[m]:+.2f} MeV inside its {bar_for(m):.2f} MeV "
+                    f"bar -- the sign is not determined, so this is not "
+                    f"stability, it is ignorance")
         return ("stable", None,
-                f"no decay raises the total binding of Z={z} N={n}")
-    mode = max(gains, key=lambda m: gains[m])
-    q = gains[mode]
-    if q < SEMF_MeV:
+                f"no decay raises the total binding of Z={z} N={n}, and "
+                f"every Q is outside its own bar, so the signs are "
+                f"determined")
+    # EACH MODE AGAINST ITS OWN BAR, not one bar for all of them.
+    resolved = {m: q for m, q in gains.items() if q >= bar_for(m)}
+    if not resolved:
+        mode = max(gains, key=lambda m: gains[m])
+        q = gains[mode]
         return ("undetermined", None,
-                f"the best Q is {q:.2f} MeV, inside the {SEMF_MeV} MeV "
-                f"the mass formula is good to -- the SIGN is not "
-                f"determined, and the sign is the answer")
+                f"the best Q is {q:.2f} MeV for {mode}, inside the "
+                f"{bar_for(mode):.2f} MeV the formula is good to for "
+                f"that mode -- the SIGN is not determined, and the sign "
+                f"is the answer")
+    mode = max(resolved, key=lambda m: resolved[m] / bar_for(m))
+    q = resolved[mode]
     d = {"beta-minus": (z + 1, n - 1), "beta-plus": (z - 1, n + 1),
          "alpha": (z - 2, n - 2)}[mode]
-    return (mode, d, f"Q={q:.2f} MeV for {mode}, past the {SEMF_MeV} MeV "
-                     f"error bar")
+    return (mode, d, f"Q={q:.2f} MeV for {mode}, past the "
+                     f"{bar_for(mode):.2f} MeV bar for that mode")
 
 
 def experts_for_element(sym):
@@ -456,6 +505,57 @@ def render_and_verify(edges, godot=None):
     return True, f"{len(got.split('|'))} transitions recovered exactly", tscn
 
 
+# ----------------------------------- how often is the rule actually right?
+# A bar is only worth arguing about if you measure what it buys. The
+# median beta error is 1.06 MeV and the spread runs to 2.5, so a
+# median bar lets through cases where the formula is CONFIDENTLY
+# WRONG -- C-14 comes back stable on a computed -1.96 MeV against a
+# measured +0.156. Taking the worst observed error instead would
+# refuse those, and would also refuse alpha decay, because one
+# outlier (polonium, 5.46 MeV) exceeds the alpha Q-values entirely.
+#
+# Neither choice is obviously right with four alpha pairs and five
+# beta ones, so the bar is not the thing to defend. What can be
+# defended is a MEASUREMENT of the rule's outcomes against decays
+# whose fate is known -- right, wrong, and refused -- because a
+# rule that is wrong is worse than one that abstains, and the ratio
+# is the number that matters.
+KNOWN_FATE = {
+    (6, 8): "beta-minus",     # C-14
+    (19, 21): "beta-minus",   # K-40, dominant branch
+    (27, 33): "beta-minus",   # Co-60
+    (15, 17): "beta-minus",   # P-32
+    (1, 2): "beta-minus",     # H-3
+    (92, 146): "alpha",       # U-238
+    (90, 142): "alpha",       # Th-232
+    (88, 138): "alpha",       # Ra-226
+    (84, 128): "alpha",       # Po-212
+    (26, 30): "stable",       # Fe-56
+    (8, 8): "stable",         # O-16
+    (6, 6): "stable",         # C-12
+    (82, 126): "stable",      # Pb-208
+    (20, 20): "stable",       # Ca-40
+}
+FATE_SOURCE = "observed decay modes; a fixture, never read to decide"
+
+
+def score():
+    """-> dict. Right, wrong and refused against known outcomes."""
+    right = wrong = refused = 0
+    misses = []
+    for (z, n), fate in KNOWN_FATE.items():
+        got, _d, _w = decay_of(z, n)
+        if got == "undetermined":
+            refused += 1
+        elif got == fate:
+            right += 1
+        else:
+            wrong += 1
+            misses.append((z, n, fate, got))
+    return {"right": right, "wrong": wrong, "refused": refused,
+            "n": len(KNOWN_FATE), "misses": misses}
+
+
 # ------------------------------------------------------- self-checking
 def check():
     out = []
@@ -473,6 +573,7 @@ def check():
     t("experts_actually_change", _chg)
     t("answer_sets_exceed_atoms", _sets)
     t("chains_terminate", _chain)
+    t("scored_against_known_fates", _score)
     return all(o[1] for o in out), out
 
 
@@ -563,6 +664,20 @@ def _sets():
             f"reach {len(sets)} distinct expert sets -- more answer "
             f"contexts than there are atoms, which is the point of "
             f"tracking the edges")
+
+
+def _score():
+    """The number that matters: wrong, not refused."""
+    r = score()
+    if r["wrong"] > r["right"]:
+        raise ArithmeticError(
+            f"more wrong than right: {r['misses']}")
+    detail = ", ".join(f"Z={z} A={z+n} is {f} and it said {g}"
+                       for z, n, f, g in r["misses"])
+    return (f"over {r['n']} decays whose fate is known: {r['right']} "
+            f"right, {r['wrong']} WRONG, {r['refused']} refused. "
+            + (f"The wrong ones are the number that matters -- {detail}"
+               if r["misses"] else "Nothing confidently wrong."))
 
 
 def _chain():

@@ -104,16 +104,17 @@ OPEN_TO_US = (
      "turning the fit into a prediction or breaking it"),
     ("initial-final mass relation", "engine/remnants.py; asserted anchors",
      "stellar-evolution modelling, which this repo does not do"),
-    ("whether the mass formula can see BETA decay",
-     "ALPHA IS SETTLED: the Q-value error is 1.21 MeV measured on "
-     "differences, against alpha Q-values of 4-5, so alpha decay "
-     "resolves. Beta Q-values are 0.02 to 2.3 MeV and straddle the "
-     "bar, so chains still cannot branch and Ac, Fr and Pm stay "
-     "undetermined",
-     "more measured binding energies, particularly beta pairs "
-     "(Z, Z+1 at the same A). The alpha bar rests on four pairs in "
-     "BINDING_FIXTURE and the beta bar on none at all -- it is "
-     "currently inferred from the alpha one"),
+    ("three decays the formula gets confidently wrong",
+     "scored against 14 known fates: 8 right, 3 refused, and 3 "
+     "WRONG -- C-14 called stable, K-40 given the wrong beta "
+     "branch, Pb-208 called an alpha emitter. Each is outside its "
+     "own error bar, so the formula is confident and mistaken "
+     "rather than uncertain, and a wider bar would only convert "
+     "them to refusals",
+     "shell corrections for Pb-208, which is doubly magic and "
+     "extra-bound in a way a liquid drop cannot see; and more beta "
+     "pairs, since the bar rests on five and its errors run 0.2 to "
+     "2.5 MeV, so the median lets the tail through"),
     ("nuclear shell closures",
      "engine/nucleo.py is a liquid drop with no shell structure, so "
      "the magic numbers are invisible to it -- provenance.py walks "

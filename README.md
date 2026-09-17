@@ -1562,3 +1562,76 @@ to 2.3 MeV and straddle the 1.21 bar, so Ac, Fr and Pm stay
 undetermined. The unsolved entry narrows from "can it see decay at all"
 to **"can it see beta decay"** — and names what is missing: the alpha
 bar rests on four pairs in the fixture, and the beta bar on none.
+
+
+## 3.1.17 — Beta decay: a missing term bigger than the answer
+
+Making it see beta decay turned up something worse than a missing
+capability.
+
+### The term that flips signs
+
+A beta-minus Q-value is not the change in binding energy alone. A
+neutron becomes a proton, and against atomic masses that releases the
+neutron–hydrogen difference too:
+
+```
+Q(beta-) = B(Z+1, N-1) - B(Z, N) + (m_n - m_H)c^2
+```
+
+**That term was missing.** It is 0.78 MeV and typical beta Q-values run
+0.02 to 2.8, so leaving it out is not a small correction — **it flips
+signs**. C-14 → N-14 came out at −0.620 MeV, meaning no decay, against
+a measured +0.156. Every beta decision the module had ever made was
+wrong by 0.78 MeV.
+
+And the term is **derived, not typed**. `engine/particles.py` already
+carries the proton, neutron and electron masses; the neutron–hydrogen
+difference is just `n − (p + e)`. My first version wrote `0.78254` in by
+hand and even that was wrong in the fifth digit — the masses give
+0.78233.
+
+### A third bar, because a beta step is not an alpha step
+
+```
+mass    4.763 MeV      error in ONE binding energy
+alpha   1.208 MeV      error in a difference two protons apart
+beta    1.061 MeV      error in a difference one proton apart
+```
+
+Measured on five real decays, with the reference Q **derived from the
+fixture's own binding energies** by the same rule — the measured
+Q-values were carried too at first, which was giving the answer and the
+working.
+
+### And then: stable is not the same as unresolvable
+
+The rule reported anything with no positive Q as *stable*. But a mode
+whose computed Q is negative and **smaller than the bar** has an
+undetermined sign — the formula cannot tell decay from stability there.
+That is now separated.
+
+### What it actually gets right, measured
+
+Arguing about the bar is cheap. Scoring it is not:
+
+```
+14 decays with known fates:   8 right   3 refused   3 WRONG
+  C-14    is beta-minus,  said stable
+  K-40    is beta-minus,  said beta-plus
+  Pb-208  is stable,      said alpha
+```
+
+**The three wrong ones are the number that matters**, and all three are
+*outside* their own error bars — the formula is confident and mistaken,
+not uncertain. A wider bar would convert them to refusals rather than
+fix them.
+
+Pb-208 is the informative one: doubly magic, 82 protons and 126
+neutrons, extra-bound in a way a liquid drop cannot see. The same
+blindness that makes the uranium chain overrun past lead makes lead
+itself look unstable.
+
+So the unsolved entry changes from *"can it see beta decay"* — it can —
+to **"three decays it gets confidently wrong"**, with shell corrections
+named as what would fix two of them.

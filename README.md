@@ -5034,3 +5034,81 @@ answer is *about*, and both have to be sayable at once or the honest
 description is unavailable.
 
     inputs 6/6    83 numbers classified    7 results enacted
+
+### 3.1.79 — play god once, then look at the bill
+
+Everything else here was derived or refused. This does the opposite on
+purpose: it **hands** the animals language and a rule for pooling what
+they bring in, takes credit for neither, and then asks what the
+arithmetic says about the gift.
+
+Two things are **GIVEN** and marked so everywhere:
+
+    a channel between brains      speech, at a measured 39 bit/s
+    adults pool what they bring in
+
+**Language is almost nothing as a pipe.** Vision delivers 1e7 bit/s and
+speech 39 — **256,410× narrower**. Everything anyone says to you across
+seventy years comes to 5.74e10 bits, **0.0122% of what a brain holds**.
+If language carried civilisation by volume it would be the worst tool
+ever adopted.
+
+**What it carries is the filter output.** `engine/learning.py` found
+the expensive thing a brain owns is not its contents but its
+*selection*. Speech is the only channel that moves a selection from one
+head to another without the second head paying to derive it. 0.0122% is
+enough because it is the 0.0122% somebody already chose.
+
+**And connection did not have to be given.** It was already implied by
+a module written four versions earlier and nobody had looked:
+
+    a child costs   16.4 W provisioning + 34 W body = 51 W
+    a forager nets  97 W
+    1 adult          46 W spare  against 48 W of slack for a bad season
+    2 adults        143 W spare
+
+One adult falls **4% short** of the margin. Two clear it. Nobody picked
+a band size — it is where the surplus crosses. The pull toward company
+is not a preference laid on top of the physics; **it is the physics**.
+
+Of five appetites, **three derive** (connection, food, shelter), one is
+partly derived — sex, where the *need* follows from an error threshold
+six orders below a human genome but the mechanism does not single out
+recombination — and one does not: **status**. Nothing here prices rank.
+No rule makes one adult's share depend on another's regard, so if
+status is real it is **missing**, which is a different sentence from
+"people want status".
+
+### watching it recognise something
+
+    acuity                      1.01 arcmin
+    whole field, 120 deg        5.07e7 resolvable cells
+    the sharp patch, 2 deg      1.41e4 cells -- 0.028% of it
+
+**The sharp part is three hundredths of one percent of what you can
+see.** Covering the field with it takes 3,600 fixations — at four
+saccades a second, **fifteen minutes**. Nobody spends fifteen minutes
+recognising a tree.
+
+So recognition is not a search. The low-resolution periphery has to
+choose where the fovea goes **before anything has been identified** —
+the answer is partly committed before the evidence is in. That is not a
+theory of brains; it is what remains once exhaustive search is priced.
+
+    a person      1.700 m    nameable to 289.0 m
+    a footprint   0.250 m                 42.5 m
+    a fruit       0.100 m                 17.0 m
+    an insect     0.005 m                  0.8 m
+
+One acuity number sets all four — the foraging range and the social
+range are the same measurement in different clothes.
+
+**Two routes reach the same filter.** `learning.py` says a brain must
+be a filter because its store fills in 1.49 years. This says so because
+the sharp patch would take 900 s to sweep. **The arguments share
+nothing** — one is capacity over a lifetime, the other geometry within
+a second, and neither module reads the other's numbers. Two independent
+routes to one answer is the strongest thing available short of a
+measurement.
+
+    civ 6/6    recognize 5/5    9 results enacted

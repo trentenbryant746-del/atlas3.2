@@ -143,6 +143,24 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _speech():
+    from engine.civ import channel_ratio, speech_as_fraction_of_a_brain
+    return (round(channel_ratio()),
+            round(100 * speech_as_fraction_of_a_brain(), 4))
+
+
+def _group():
+    from engine.civ import smallest_group, alone_is_viable
+    return smallest_group(), alone_is_viable()[0]
+
+
+def _fovea():
+    from engine.recognize import (sharp_fraction, seconds_to_cover,
+                                  recognition_range)
+    return (round(100 * sharp_fraction(), 3), round(seconds_to_cover()),
+            round(recognition_range(1.7)))
+
+
 def _binds():
     from engine.multiverse import sweep, why_not
     res, _ = sweep(n=600)
@@ -272,6 +290,12 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.79", "speech is 256410x narrower than sight, 0.0122% of a brain",
+     _speech, (256410, 0.0122), CURRENT),
+    ("3.1.79", "two adults are the smallest viable group",
+     _group, (2, False), CURRENT),
+    ("3.1.79", "the fovea is 0.028% of the field; 900 s to sweep",
+     _fovea, (0.028, 900, 289), CURRENT),
     ("3.1.78", "heat rejection binds; toolmakers fall under 20%",
      _binds, (True, True), CURRENT),
     ("3.1.77", "Earth is fragile in spread, one-sided in mass, free in Z",

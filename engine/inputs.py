@@ -158,6 +158,16 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "civ.SPEECH_BITS_S": (
+        MEASURED, "39 bit/s across 17 languages, Coupe et al."),
+    "civ.FORAGER_W": (MEASURED, "2000 kcal/day net, about 97 W"),
+    "civ.GIVEN": (
+        CHOSEN, "language and pooling were HANDED over, not derived"),
+    "recognize.FIELD_DEG": (MEASURED, "120 deg binocular"),
+    "recognize.FOVEA_DEG": (MEASURED, "2 deg of sharp vision"),
+    "recognize.SACCADES_S": (MEASURED, "about 4 a second"),
+    "recognize.CELLS_TO_IDENTIFY": (
+        CHOSEN, "20 cells across a thing to name it; a dial"),
     "shelter.INSULATION": (
         MEASURED, "effective conductance W/m2K for each shell"),
     "shelter.BODY_AREA_M2": (MEASURED, "1.8 m2 for a 70 kg adult"),
@@ -215,6 +225,10 @@ ENACTED_RESULTS = {
         "an accounting over modelled nights",
     "a brain fills in 1.49 years":
         "a rate against a capacity, not an observed child",
+    "two adults are the smallest viable group":
+        "an energy balance over modelled foragers",
+    "a person is nameable to 289 m":
+        "geometry against an acuity, not a field trial",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -235,6 +249,10 @@ CLAIMS_ON = {
     "a flaked edge opens a bone and a fist cannot": [],
     "the eye sits at its own diffraction limit": [],
     "worn insulation runs out at 19 C": [],
+    "speech is 0.0122% of a brain over a lifetime": [],
+    "two adults are the smallest viable group": ["civ.FORAGER_W"],
+    "the fovea is 0.028% of the field": [],
+    "a person is nameable to 289 m": ["recognize.CELLS_TO_IDENTIFY"],
     "a shelter pays back in 4.6 nights": ["shelter.BUILD_DAYS"],
     "26.7% of universes carry a toolmaker": [],
     "stereo gives out past 1320 m": [],

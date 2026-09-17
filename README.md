@@ -4271,3 +4271,53 @@ are consistent with the earliest organism we have evidence for. They
 did not make it.
 
     luca 4/4   5 agree, 0 contradict, 1 cannot say
+
+### 3.1.65 — LUCA to us, and the gaps made legible by contrast
+
+The argument for running the chain even where it is weak: **a complete
+chain makes its own gaps legible.** A step resting on nothing chosen
+sits next to one resting on three picked numbers, and the contrast
+says where the work is.
+
+    ALLOWED  [CHOSEN  ] LUCA -> eukaryote
+    ALLOWED  [MEASURED] eukaryote -> multicellular
+    ALLOWED  [MEASURED] multicellular -> large-bodied
+    ALLOWED  [MEASURED] large-bodied -> skeletal
+    ALLOWED  [MEASURED] skeletal -> land
+    ALLOWED  [MEASURED] land -> endotherm
+    ALLOWED  [MEASURED] endotherm -> large brain
+    SILENT   [CHOSEN  ] large brain -> us
+
+**Nothing in the chain is forbidden. Two steps rest on chosen numbers
+and one the rules cannot speak to at all.**
+
+**Two things turned out more derivable than expected.**
+
+**Insulation is a precondition, not a refinement.** A warm body makes
+heat through its volume and loses it through its surface. A 70 kg body
+makes 82 W and loses **99 W** through bare skin — and the ratio never
+reaches one at *any* size, climbing from 0.33 at a gram to 0.83 at 70
+kg and stopping. Warm-bloodedness is not something a body can simply
+do. Fur comes first or the heat leaves faster than it arrives, and
+every endotherm has it.
+
+**A brain has a hard ceiling five times away.** Neural tissue runs
+about ten times the metabolic cost of average tissue, so a brain at 10%
+of body mass would consume **100% of the entire energy budget**. A human
+brain is 2% and takes 20%. That is why a brain is expensive rather than
+merely large.
+
+**Every row says ALLOWED or SILENT, never HAPPENED.** Each transition
+needs a mechanism producing the variation being selected, and
+`engine/descent.py` established there is none here — seeded life stays
+microbial, and predation does not move it. The last step is silent
+outright: **nothing distinguishes one large-brained land endotherm from
+another**, because at that point the rules stop being physics and start
+being history, and this repository has no history.
+
+**So the two missing parts are now sharply framed.** One is a mechanism
+that generates architecture. The other is contingency — the reason it
+was us and not some other large-brained endotherm. The first might be
+derivable. The second is not the same kind of question.
+
+    ancestry 4/4   8 transitions, 0 forbidden, 1 silent

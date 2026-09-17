@@ -4086,3 +4086,48 @@ compounds every generation. Whatever selects for size has to beat a
 compounding return, and a fixed chance of death does not.
 
     descent 8/8
+
+### 3.1.62 — one planet, half a second, and the root was already there
+
+**Checking everything takes minutes and almost none of it is about
+making a planet.** `engine/planetlab.py` runs only the planet chain —
+seed to land creature — and it takes **0.53 seconds**, which makes the
+loop worth using.
+
+    star                  1.00 Msun, ice line 2.68 AU
+    planet                0.99 AU, 3.45 Earth masses, Fe 32% O 27%
+    elements              C,H,N,O,P,S after 2961 oceans delivered
+    climate               288 K, 82% above freezing, CO2 43 Pa
+    cells                 viable between 1.58 and 47.5 microns
+    oxygen                reaches 100% of present
+    body/aerobic          open      land/uv shield        open
+    body/thin body        open      land/water retention  open
+    body/thick body       open      land/support          open
+    body/large on land    open      land/gas exchange     open
+
+**Provisional rules were offered and none were needed.** The lab allows
+undevised rules marked PROVISIONAL, listed rather than hidden, with
+what would promote each — nothing marked PROVISIONAL may be cited as a
+result and `eval/claims.py` is never told about it. The count is
+**zero**. Every step from a four-number nebula seed to a land animal is
+already derived.
+
+**And you were right that the root already exists.**
+`engine/provenance.py` has been recording atoms from a universe seed
+hash through the epoch that made them and every decay since,
+hash-linked so the chain can be *checked* rather than believed. It
+stopped at atoms. Carrying it up costs nothing new:
+
+    seed          universe hash d59bc58bc3456775c6831abc...
+    stellar_c     formed: alpha-chain, Z=6 is even and below the peak
+    stellar_c     decay: C -> N by beta-minus, Q=0.16 MeV
+    abundance     C is 2.36e-03 of baryonic mass
+    valence       C bonds 4 ways, from shell filling
+    residue       G is C2H5NO2 -- 2 atoms of C in it
+    fold          G scores 0.667 on carbon-to-polar
+
+Seven linked stages from a hash to a folding residue, and **nothing in
+it is computed for the occasion** — it is the existing records read in
+order, which is what makes it a root rather than a story.
+
+    planetlab 4/4   0.53s for the whole planet chain

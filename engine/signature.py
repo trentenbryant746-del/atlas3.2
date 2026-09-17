@@ -90,6 +90,62 @@ def disequilibrium(mix_fractions, T=288.0):
 # carbon monoxide needs almost nothing.
 SECONDS_PER_YEAR = 3.155693e7
 
+# THE FLUX RULE WAS THE WRONG SECOND TEST, AND MARS SHOWED IT TWICE.
+#
+# Asking how far downhill a pair sits called Mars driven. Adding a
+# flux -- how much must be remade -- narrowed the gap to a factor of
+# 23 and still called Mars driven. Deriving the lifetime properly
+# from hydroxyl chemistry made it WORSE, because Mars' dry air gives
+# CO a 21-year life and therefore a larger bill, not a smaller one.
+#
+# Three attempts at a magnitude, and magnitude was never the
+# question. What separates the two worlds is not how big the
+# disequilibrium is but whether ONE PROCESS CAN ACCOUNT FOR IT.
+#
+#   Mars    CO2 + photon -> CO + O.  A single reaction makes both
+#           members of the pair, in a ratio it fixes. The
+#           disequilibrium is exactly that reaction's output.
+#   Earth   methane comes from methanogens, oxygen from
+#           photosynthesis. NO abiotic reaction has methane and
+#           oxygen among its products, at any ratio.
+#
+# So the test is whether a known process can write the whole
+# invoice. Mars' observed CO/O2 is 0.50 against the 2.0 that
+# photolysis predicts -- a factor of four, and atmospheric escape
+# removes light species preferentially, which moves it that way.
+# Earth's CH4/O2 is 8.6e-6 and matches nothing.
+ABIOTIC_SOURCES = [
+    ("CO2 photolysis", ("CO", "O2"), 2.0,
+     "CO2 + photon -> CO + O, so one reaction makes both"),
+    ("water photolysis", ("H2", "O2"), 2.0,
+     "2 H2O + photon -> 2 H2 + O2, so one reaction makes both"),
+    ("serpentinisation", ("H2", "CH4"), 4.0,
+     "olivine + water -> H2, and some reduces CO2 to CH4"),
+]
+
+
+def explained_abiotically(pair, mix_fractions, tolerance=10.0):
+    """-> (bool, why). Can one known reaction produce this pair?"""
+    a, b = pair
+    for name, prod, ratio, how in ABIOTIC_SOURCES:
+        if set(prod) != set(pair):
+            continue
+        fa, fb = mix_fractions.get(prod[0], 0.0), mix_fractions.get(
+            prod[1], 0.0)
+        if fb <= 0:
+            continue
+        obs = fa / fb
+        off = max(obs / ratio, ratio / obs)
+        if off <= tolerance:
+            return True, (f"{name} accounts for both: {how}, predicting "
+                          f"{prod[0]}/{prod[1]} = {ratio:.1f} against an "
+                          f"observed {obs:.2f}, within {off:.1f}x. One "
+                          f"process writes the whole invoice, so nothing "
+                          f"further is required")
+    return False, (f"no single abiotic reaction has both {a} and {b} "
+                   f"among its products at any ratio, so no one process "
+                   f"accounts for them")
+
 
 def required_flux(mix_fractions, T=288.0, surface_pa=1.01325e5,
                   gravity=9.82, lifetime_s=None):
@@ -128,13 +184,16 @@ def driven(mix_fractions, T=288.0, threshold=10.0, min_flux_kg_yr=1e9,
     if orders < threshold:
         return False, (f"{a} and {b} coexist, but only {orders:.1f} "
                        f"orders from equilibrium -- geology suffices")
+    known, kwhy = explained_abiotically((a, b), mix_fractions)
+    if known:
+        return False, (f"{a} and {b} are {orders:.0f} orders apart and "
+                       f"it does not matter: {kwhy}")
     flux, _pair, fwhy = required_flux(mix_fractions, T, surface_pa,
                                       gravity)
     if flux < min_flux_kg_yr:
         return False, (f"{a} and {b} are {orders:.0f} orders apart, but "
                        f"holding them there costs only {flux:.2e} kg/yr "
-                       f"-- {fwhy}. Photochemistry pays that easily, "
-                       f"which is exactly how Mars fakes a signature")
+                       f"-- {fwhy}")
     return True, (f"{a} at {fa:.2e} and {b} at {fb:.2e} together: {why} "
                   f"by {orders:.0f} ORDERS, and holding them apart "
                   f"costs {flux:.2e} kg/yr. Not the impossibility alone "
@@ -160,6 +219,7 @@ def check():
     t("earth_reads_as_driven", _earth)
     t("a_dead_world_does_not", _dead)
     t("one_gas_alone_is_not_a_signature", _single)
+    t("the_rule_is_not_fitted_to_mars", _not_fitted_to_mars)
     t("it_says_driven_not_alive", _humble)
     return all(o[1] for o in out), out
 
@@ -172,32 +232,43 @@ def _earth():
 
 
 def _dead():
-    """Mars is a FALSE POSITIVE and is left as one."""
-    ok, why = driven({"CO2": 0.965, "CO": 2e-5}, T=737.0)
+    """Mars was a false positive through three versions. It is fixed."""
+    ok, _w = driven({"CO2": 0.965, "CO": 2e-5}, T=737.0)
     if ok:
         raise ArithmeticError("a world with no oxidant reads as driven")
-    e_flux, _p, _w = required_flux({"CH4": 1.8e-6, "O2": 0.21})
-    m_flux, _p2, _w2 = required_flux(
-        {"CO2": 0.95, "CO": 7e-4, "O2": 1.4e-3}, T=210.0,
-        surface_pa=636.0, gravity=3.73)
-    ok2, _w3 = driven({"CO2": 0.95, "CO": 7e-4, "O2": 1.4e-3}, T=210.0,
-                      surface_pa=636.0, gravity=3.73)
-    if not ok2:
-        raise ArithmeticError("Mars now reads undriven; if that came "
-                              "from a better lifetime rule this "
-                              "admission is stale, and if it came from "
-                              "moving the threshold it is fitting")
-    return (f"Venus reads undriven -- no oxidant at all. MARS STILL "
-            f"READS DRIVEN AND IT IS NOT ALIVE. It holds CO beside "
-            f"photochemical O2, genuinely 128 orders from equilibrium, "
-            f"and ultraviolet pays the bill. Adding the flux rule "
-            f"narrowed the gap but did not close it: Earth needs "
-            f"{e_flux:.2e} kg/yr and Mars {m_flux:.2e}, a factor of "
-            f"{e_flux/m_flux:.0f}. Lowering the threshold until Mars "
-            f"drops out would be fitting to the answer, so the false "
-            f"positive stands. What is missing is a real lifetime rule "
-            f"-- CO on Mars survives centuries on slow hydroxyl "
-            f"chemistry, not the inverse-oxygen scaling used here")
+    ok2, w2 = driven({"CO2": 0.95, "CO": 7e-4, "O2": 1.4e-3}, T=210.0,
+                     surface_pa=636.0, gravity=3.73)
+    if ok2:
+        raise ArithmeticError("Mars reads driven again: " + w2[:120])
+    return (f"Venus reads undriven -- no oxidant. Mars reads undriven "
+            f"too, and it took three attempts. Orders from equilibrium "
+            f"called it driven. A flux rule narrowed the gap to 23x and "
+            f"still called it driven. Deriving the lifetime properly "
+            f"from hydroxyl chemistry made it WORSE, because dry air "
+            f"gives CO a 21-year life and a bigger bill. Magnitude was "
+            f"never the question: {w2[:110]}")
+
+
+def _not_fitted_to_mars():
+    """The rule must answer pairs it was not built for."""
+    h2o2, w1 = driven({"H2": 1e-3, "O2": 5e-4})
+    h2ch4, w2 = driven({"H2": 1e-2, "CH4": 2.5e-3})
+    if h2o2:
+        raise ArithmeticError("H2 and O2 read as a signature; water "
+                              "photolysis makes both")
+    if h2ch4:
+        raise ArithmeticError("H2 and CH4 read as a signature; "
+                              "serpentinisation makes both")
+    ok, _w = driven({"CH4": 1.8e-6, "O2": 0.21})
+    if not ok:
+        raise ArithmeticError("the rule now rejects Earth too")
+    return ("the co-production rule was motivated by Mars, so it has to "
+            "answer pairs it was not built for. Hydrogen beside oxygen "
+            "is quiet -- water photolysis makes both. Hydrogen beside "
+            "methane is quiet -- serpentinising rock makes both. Both "
+            "are real astrobiological false positives and neither was "
+            "tuned. Methane beside oxygen stays driven, because no "
+            "reaction has those two among its products at any ratio")
 
 
 def _single():
@@ -217,14 +288,13 @@ def _humble():
     _ok, why = driven({"CH4": 1.8e-6, "O2": 0.21})
     if "biology" not in why:
         raise ArithmeticError("the refusal to claim life is missing")
-    return ("the output is 'something must be doing this' and a bill, "
-            "not 'life'. Mars proves the false positive is real and it "
-            "is left standing rather than thresholded away. What the "
-            "measure buys is that it is observable across interstellar "
-            "distance from a spectrum -- which nothing else concluded "
-            "in this repository is, and which makes it the first "
-            "result here that could be checked against a world nobody "
-            "has visited")
+    return ("the output is 'no known process accounts for this' and a "
+            "bill, not 'life'. An unknown geology could still write the "
+            "invoice, and the rule can only check reactions it has been "
+            "given -- its blind spot is exactly the chemistry nobody "
+            "has thought of. What it buys is that it is observable "
+            "across interstellar distance from a spectrum, which "
+            "nothing else concluded here is")
 
 
 if __name__ == "__main__":

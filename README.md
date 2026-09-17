@@ -4000,3 +4000,43 @@ gas pair, Mars demonstrates it, and the false positive is reported
 rather than hidden.
 
     signature 4/4
+
+### 3.1.60 — Mars fixed, and magnitude was never the question
+
+The biosignature detector called Mars **driven**, and Mars is dead.
+That was the one wrong answer left in the repository, and it took
+three attempts because the first two asked the wrong thing.
+
+    orders from equilibrium     Mars driven at 128 orders
+    + a flux rule               gap narrowed to 23x, still driven
+    + a derived OH lifetime     WORSE -- dry air gives CO a 21-year
+                                life, so a bigger bill, not smaller
+
+**Deriving the lifetime properly made it worse**, which is the clue.
+Every attempt was measuring *how large* the disequilibrium is, and
+size was never what separates the two worlds.
+
+**What separates them is whether one process can write the whole
+invoice.**
+
+    Mars    CO2 + photon -> CO + O.  A single reaction makes BOTH
+            members of the pair, in a ratio it fixes. Observed
+            CO/O2 is 0.50 against a predicted 2.0 -- a factor of
+            four, and escape removes light species preferentially.
+    Earth   methane from methanogens, oxygen from photosynthesis.
+            No abiotic reaction has both among its products at ANY
+            ratio.
+
+**The rule was motivated by Mars, so it has to answer pairs it was not
+built for** — otherwise it is fitting with extra steps. It does:
+hydrogen beside oxygen reads quiet (water photolysis makes both),
+hydrogen beside methane reads quiet (serpentinisation makes both).
+Both are real astrobiological false positives, neither was tuned, and
+methane beside oxygen stays driven.
+
+**And the honest limit is sharper now.** The detector can only check
+reactions it has been given, so its blind spot is precisely the
+chemistry nobody has thought of. It returns *no known process accounts
+for this* — which is a weaker and more defensible claim than "life."
+
+    signature 5/5   0 wrong answers in the repository

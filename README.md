@@ -2005,3 +2005,86 @@ Venus. That was not visible from the top; it took an experiment with
 nothing else varying.
 
     engine/lab.py  5/5 checks, 12 experiments over 7 rungs
+
+### 3.1.23 — the lab as method: four missing rules and one clash
+
+**Labs are part of this research, not scaffolding for it.** `engine/lab.py`
+is meant to be picked apart. Every experiment declares its rung, states
+the question it asks in one line, varies one thing, and returns a verdict
+with its reasoning attached. `python3 -m engine.lab` prints all of them.
+Five meta-checks verify the lab itself: that every experiment is placed on
+a rung, that rungs run in order, that the four verdicts are distinguished,
+that the known missing rule is still detected, and that **no experiment
+takes an observed temperature as a target**.
+
+That last one is the discipline. Where a real body appears, it appears as
+an *existence claim* — Venus is this hot — which a derived ceiling can
+contradict. That contradiction is a discovery. Fitting to it would not be.
+
+**Being wrong is the most useful outcome available.** A wrong answer is
+fixable with a rule, and a rule is permanent. The more rules there are the
+more chances they have to contradict each other, and a contradiction
+between two derived rules is *information about which one isn't a law of
+nature*. That is why CLASH is a first-class verdict here and not a bug
+report. The aim is not to get the right number; it is to run out of
+contradictions.
+
+**What one evening of this produced.** The layer-3 ceiling refused to
+clear, and each fix exposed the next absence:
+
+    1  CONTINUUM ABSORPTION.  A lone CO2 molecule is symmetric and has
+       no dipole. Two colliding briefly do. It is a two-body process so
+       it goes as density SQUARED -- which is why it is nothing at one
+       bar and everything at ninety, with nobody deciding when it
+       switches on. Doubling density multiplies it by 4.000.
+
+    2  THE BAND TABLE WAS A WRONG MOLECULE.  One band per species. A
+       737 K body radiates 60% of its energy between 1500-4000 cm-1,
+       where CO2's nu3 stretch at 2349 -- its strongest, ten times the
+       bend -- was simply absent. Found by tracing a layer-3 symptom
+       down to layer 1.
+
+    3  BANDS WIDEN, THEY DO NOT ONLY SATURATE.  A Lorentz wing absorbs
+       as gamma/dnu^2, so with enough gas even a far wing goes black,
+       and the opaque width grows as sqrt(column x pressure). This is
+       how a window closes: no new substance, the same inverse-square
+       wing asked a different question.
+
+    4  AND THE WING HAS AN END.  Unbounded, rule 3 claimed Venus'
+       15 micron band blacks out 315,694 cm-1 -- 79x the whole thermal
+       infrared. The impact approximation behind the Lorentz profile
+       treats collisions as instantaneous; they are not, and past
+       dnu_c = 1/(2 pi c tau_collision) real wings fall faster.
+
+**And rules 3 and 4 clash, which is the honest finding.**
+
+    Lorentz wings, unbounded  ->  315,694 cm-1 opaque. Impossible.
+                                  Venus -278 K, Earth +9.8 K
+    Collision cutoff, 9.6 cm-1 -> no widening at all.
+                                  Venus -496 K, Earth  -3.2 K
+
+Both are derived. Neither is fitted. They disagree by four orders of
+magnitude, and the truth is between them — so *diameter over mean speed*
+is too crude a derivation for where a line profile ends. This is not a
+number to tune. It is a statement that a rule is not yet known, and until
+it is, no CO₂-rich world can be trusted. The conservative branch ships:
+Earth right, Venus openly wrong. A CLASH is allowed to stand, but the lab
+requires it to be named.
+
+**Where the unfitted model stands.** Nothing in `engine/radiative.py`
+reads a planet; the import list is parsed to enforce it.
+
+    Earth    -3.2 K       from lab molecular constants alone
+    Titan    -8.9 K       missing haze
+    Mars    +12.5 K
+    Venus  -495.6 K       blocked on the clash above
+
+Earth's 34 K greenhouse reproduced to 3 K with no planetary input is the
+result. Venus missing by 496 K is the *other* result, and it points at a
+specific unknown rather than asking for a coefficient.
+
+**Coming in Atlas 3.3:** the summary graph will show what each of Atlas 1,
+2, 3, 3.1 and 3.2 does, alongside the fixes deferred there.
+
+    engine/lab.py  5/5 meta-checks; 13 experiments, 11 HOLDS,
+                   1 CLASH, 1 MISSING_RULE, both named

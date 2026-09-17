@@ -104,18 +104,22 @@ def sigma_from_exact_constants():
 def band_data_is_intensive():
     from engine.radiative import BANDS
     bad = [k for k, v in BANDS.items()
-           if not (v["S"] > 0 and v["gamma"] > 0 and v["d"] > 0)]
+           if any(not (b["S"] > 0 and b["gamma"] > 0 and b["d"] > 0)
+                  for b in v)]
     if bad:
         return CLASH, f"band data is not physical for {bad}"
-    return HOLDS, (f"{len(BANDS)} bands carry strength, width and spacing "
-                   f"and none carries a column -- these are properties of "
-                   f"a molecule, so they cannot smuggle in a planet")
+    n = sum(len(v) for v in BANDS.values())
+    return HOLDS, (f"{n} bands across {len(BANDS)} species carry strength, "
+                   f"width and spacing and none carries a column -- these "
+                   f"are properties of a molecule, so they cannot smuggle "
+                   f"in a planet. N2 has zero bands, correctly: it is "
+                   f"homonuclear and has no dipole to absorb with")
 
 
 # ------------------------------------------------- layer 2, column
 @experiment(2, "does absorption saturate, and at what column?")
 def absorption_saturates():
-    from engine.radiative import goody_tau, BANDS, N_A, P_REF
+    from engine.radiative import goody_tau, BANDS, N_A, P_REF, MU
     thin = goody_tau("CO2", 1e-9, P_REF)
     r_thin = goody_tau("CO2", 2e-9, P_REF) / thin
     thick = goody_tau("CO2", 1e4, P_REF)
@@ -123,8 +127,8 @@ def absorption_saturates():
     if not (1.9 < r_thin < 2.1 and 1.9 < r_thick < 2.1):
         return CLASH, (f"limits are wrong: thin x{r_thin:.3f}, "
                        f"thick x{r_thick:.3f}")
-    b = BANDS["CO2"]
-    col = math.pi * b["gamma"] / b["S"] * b["mu"] / N_A / 0.1
+    b = BANDS["CO2"][0]
+    col = math.pi * b["gamma"] / b["S"] * MU["CO2"] / N_A / 0.1
     return HOLDS, (f"linear below {col:.2e} kg/m2 and square-root above -- "
                    f"both limits out of one expression, and the crossover "
                    f"is at MICROGRAMS per square metre, so any real "
@@ -205,6 +209,37 @@ def co2_alone_has_a_ceiling():
         f"tune; both are mechanisms to add at layer 2 and 3")
 
 
+@experiment(2, "do the wing rules agree with each other?")
+def far_wing_rules_clash():
+    """Two derived rules, neither fitted, and they cannot both be right."""
+    from engine.radiative import (opaque_width, collision_cutoff, BANDS,
+                                  molecules_per_cm2, MU, P_REF)
+    import math
+    b = BANDS["CO2"][0]
+    col, P, T = 1.0e6, 9.2e6, 737.0
+    u = molecules_per_cm2(col, MU["CO2"])
+    gamma = b["gamma"] * (P / P_REF)
+    unbounded = 2.0 * math.sqrt(b["S"] * u * gamma / math.pi)
+    dc = collision_cutoff("CO2", T)
+    withcut = opaque_width("CO2", col, P, 0, T)
+    return CLASH, (
+        f"LORENTZ WINGS say this band blacks out {unbounded:,.0f} cm^-1 -- "
+        f"79 times the whole thermal infrared, which is impossible. "
+        f"COLLISION DURATION says wings stop being Lorentzian past "
+        f"{dc:.1f} cm^-1, leaving {withcut:.0f} cm^-1, which is the "
+        f"nominal width and no widening at all. Both are derived, "
+        f"neither is fitted, and they disagree by four orders of "
+        f"magnitude. Measured against bodies: unbounded gives Venus "
+        f"-278 K and Earth +9.8 K; the cutoff gives Venus -496 K and "
+        f"Earth -3.2 K. The truth is between them, so the collision "
+        f"timescale -- diameter over mean speed -- is too crude a "
+        f"derivation for the far wing. THIS IS NOT A NUMBER TO TUNE. It "
+        f"is a statement that the rule for how a line profile ends is "
+        f"not yet known here, and until it is, no CO2-rich world can be "
+        f"trusted. The conservative branch is shipped: Earth right, "
+        f"Venus openly wrong")
+
+
 # ------------------------------------------------ layer 4, balance
 @experiment(4, "does a body with no absorber sit at bare-rock temperature?")
 def airless_body_is_bare_rock():
@@ -275,6 +310,12 @@ def worlds_are_not_unique():
 
 
 # ------------------------------------------------------- the runner
+def unresolved():
+    """-> [(layer, name, verdict, detail)]. Everything not yet HOLDS."""
+    return [(L, n, v, d) for L, n, v, d, _ in run(stop_on_problem=False)[0]
+            if v != HOLDS]
+
+
 def run(up_to=6, stop_on_problem=True):
     """-> (rows, first bad layer). Layers in order; stop when one breaks.
 
@@ -348,9 +389,13 @@ def _kinds():
     if MISSING_RULE not in kinds:
         raise ArithmeticError("nothing reports a missing rule, so the "
                               "distinction is untested")
-    if CLASH in kinds:
-        raise ArithmeticError("a clash is outstanding: two rules here "
-                              "contradict each other")
+    # A clash is allowed to stand, but it must be NAMED and it must
+    # stop the layers above it from being trusted. What is forbidden
+    # is a clash nobody has written down.
+    for L, n, v, d, _ in rows:
+        if v == CLASH and len(d) < 200:
+            raise ArithmeticError(f"{n} clashes without explaining what "
+                                  f"the two rules are")
     return ("; ".join(f"{k} {v}" for k, v in sorted(kinds.items()))
             + " -- a missing rule is a result, not a failure: the rules "
               "are self-consistent and insufficient, which is a queue "

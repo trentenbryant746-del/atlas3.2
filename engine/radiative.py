@@ -69,19 +69,99 @@ P_REF = 1.01325e5          # Pa, the pressure line widths are quoted at
 #   d      mean line spacing, cm^-1
 #   gamma  Lorentz half-width at P_REF, cm^-1
 #   mu     molar mass, g/mol
+# A MOLECULE HAS MORE THAN ONE BAND, AND THE FIRST TABLE HAD ONE.
+# That omission was found by the lab rather than by inspection: the
+# layer-3 ceiling did not clear when the continuum was added, and
+# tracing why pointed at a LOWER rung. A 737 K body radiates 60% of
+# its energy between 1500 and 4000 cm^-1, and CO2's nu3 asymmetric
+# stretch at 2349 cm^-1 -- its strongest band by an order of
+# magnitude -- sits right there and was absent. Listing one band per
+# molecule is not a simplification, it is a wrong molecule.
 BANDS = {
-    "CO2": dict(nu0=667.0, width=250.0, S=9.0e-18, d=1.6, gamma=0.07,
-                mu=44.009,
-                note="the nu2 bend at 15 microns, CO2's only strong "
-                     "band inside the thermal infrared"),
-    "H2O": dict(nu0=1595.0, width=600.0, S=3.0e-17, d=0.8, gamma=0.09,
-                mu=18.015,
-                note="the nu2 bend at 6.3 microns plus the pure "
-                     "rotation band; water is a bent polar molecule so "
-                     "it absorbs far more widely than CO2"),
-    "CH4": dict(nu0=1306.0, width=300.0, S=1.1e-17, d=1.2, gamma=0.06,
-                mu=16.04, note="the nu4 bend at 7.7 microns"),
+    "CO2": [
+        dict(nu0=667.0, width=250.0, S=9.0e-18, d=1.6, gamma=0.07,
+             note="nu2 bend, 15 microns -- sits on the Planck peak of a "
+                  "COLD planet, which is why a trace of CO2 matters here"),
+        dict(nu0=2349.0, width=200.0, S=9.7e-17, d=1.5, gamma=0.08,
+             note="nu3 asymmetric stretch, 4.3 microns -- CO2's strongest "
+                  "band, ten times the bend, and it is where a HOT planet "
+                  "radiates"),
+        dict(nu0=3716.0, width=120.0, S=1.2e-18, d=1.5, gamma=0.08,
+             note="combination band"),
+        dict(nu0=960.0, width=90.0, S=3.0e-20, d=1.5, gamma=0.08,
+             note="the weak 10 micron bands, in the window"),
+    ],
+    "H2O": [
+        dict(nu0=250.0, width=500.0, S=6.0e-17, d=0.5, gamma=0.09,
+             note="the pure rotation band -- water is bent and polar, so "
+                  "it absorbs right down into the far infrared where a "
+                  "cold planet radiates. CO2 cannot do this at all"),
+        dict(nu0=1595.0, width=600.0, S=3.0e-17, d=0.8, gamma=0.09,
+             note="nu2 bend, 6.3 microns"),
+        dict(nu0=3700.0, width=400.0, S=2.0e-17, d=0.8, gamma=0.09,
+             note="the nu1 and nu3 stretches"),
+    ],
+    "CH4": [
+        dict(nu0=1306.0, width=300.0, S=1.1e-17, d=1.2, gamma=0.06,
+             note="nu4 bend, 7.7 microns -- squarely in the window, which "
+                  "is why a little methane does so much"),
+        dict(nu0=3019.0, width=250.0, S=1.1e-17, d=1.2, gamma=0.06,
+             note="nu3 stretch"),
+    ],
+    "N2": [],       # homonuclear: no dipole, NO bands at all, only CIA
 }
+
+
+# ---------------------------------------------- the continuum
+# A LONE CO2 MOLECULE IS SYMMETRIC AND HAS NO DIPOLE. That is why its
+# absorption lives in a few narrow bands and why the window between
+# them stays open no matter how much gas is added. But two molecules
+# in the act of colliding are briefly ONE distorted object with an
+# induced dipole, and that transient pair absorbs where neither
+# partner can alone. This is collision-induced absorption, and no
+# table of single-molecule band strengths can contain it, because it
+# is not a property of a molecule.
+#
+# THE DECISIVE FACT IS THAT IT IS A TWO-BODY PROCESS, SO IT GOES AS
+# DENSITY SQUARED. The chance of finding a molecule is proportional
+# to n; the chance of finding two together is proportional to n^2.
+# Line absorption goes as n, this goes as n^2, and that single
+# difference in exponent is why the continuum is nothing at one bar
+# and everything at ninety. Nobody has to decide when it switches on.
+#
+#     tau_cia  =  k * (n/n0)^2 * L
+#
+# with k measured on gas in a cell, n0 the Loschmidt density, and L
+# the path -- taken as the scale height, which is derived from the
+# temperature, the molecular mass and the body's own gravity.
+LOSCHMIDT = 2.6867811e25        # m^-3, exact by definition
+CIA = {
+    "CO2": dict(k=1.0e-8, lo=50.0, hi=550.0, mu=44.009,
+                note="CO2-CO2 induced dipole, measured in cm^-1 per "
+                     "amagat squared; it fills the far-infrared window "
+                     "that the 15 micron band leaves open"),
+    "H2O": dict(k=4.0e-8, lo=800.0, hi=1200.0, mu=18.015,
+                note="the water continuum across the 8-12 micron window"),
+    "N2": dict(k=1.0e-9, lo=50.0, hi=350.0, mu=28.013,
+               note="N2-N2, weak, but it is what warms Titan"),
+}
+
+
+def scale_height(T, mu_g_mol, gravity):
+    """m. DERIVED: kT over the weight of one molecule."""
+    m = mu_g_mol * 1e-3 / N_A
+    return K_B * T / (m * gravity)
+
+
+def cia_tau(species, partial_pa, T, gravity):
+    """Continuum optical depth. DERIVED, and quadratic in density."""
+    if species not in CIA or partial_pa <= 0:
+        return 0.0
+    c = CIA[species]
+    n = partial_pa / (K_B * T)                 # molecules per m^3
+    amagat = n / LOSCHMIDT
+    L_cm = scale_height(T, c["mu"], gravity) * 100.0
+    return c["k"] * amagat ** 2 * L_cm
 
 
 def molecules_per_cm2(column_kg_m2, mu_g_mol):
@@ -89,14 +169,106 @@ def molecules_per_cm2(column_kg_m2, mu_g_mol):
     return column_kg_m2 * 0.1 / mu_g_mol * N_A
 
 
-def goody_tau(species, column_kg_m2, pressure_pa):
-    """Band optical depth. DERIVED from laboratory band data alone.
+MU = {"CO2": 44.009, "H2O": 18.015, "CH4": 16.04, "N2": 28.013}
+
+
+# A BAND DOES NOT ONLY SATURATE, IT WIDENS -- AND THAT IS WHAT CLOSES
+# A WINDOW. The third missing rule, and the lab found it the same way
+# as the other two: adding the continuum did not clear the ceiling,
+# adding the absent bands did not clear it either, and what was left
+# was that every band here had a FIXED spectral extent.
+#
+# It cannot be fixed. A Lorentz line's wing absorbs as gamma/(dnu)^2,
+# so the further out you look the weaker it is -- but with enough gas
+# even a weak wing is opaque. The wing goes black out to wherever
+#
+#     S * u * gamma / (pi * dnu^2)  =  1     ->   dnu = sqrt(S u gamma/pi)
+#
+# and that grows without limit as the square root of column times
+# pressure. On a thin atmosphere it is nothing and the nominal band
+# width is right. At ninety bars the wings of neighbouring bands
+# reach across the gaps between them, merge, and THE WINDOW STOPS
+# EXISTING. No new substance is required and no coefficient is
+# tuned: it is the same inverse-square wing that gave the square-root
+# law, read at a different question.
+# AND THE WING HAS AN END, WHICH IS THE FOURTH MISSING RULE.
+# Unbounded widening said Venus' 15 micron band blacks out 315,694
+# cm^-1 -- seventy-nine times the whole thermal infrared -- and it
+# widened Earth's water rotation band to 1,671 cm^-1 and overshot
+# Earth by +9.8 K. A band cannot be wider than the spectrum, so the
+# rule was incomplete in both directions at once.
+#
+# The Lorentz profile comes from the IMPACT APPROXIMATION, which
+# treats a collision as instantaneous. A collision is not
+# instantaneous; it lasts about as long as one molecule takes to pass
+# another. By the uncertainty relation that finite duration blurs
+# frequencies only out to
+#
+#     dnu_c  =  1 / (2 pi c tau_collision),   tau = diameter / speed
+#
+# and beyond that detuning the approximation fails and real wings
+# fall off FASTER than Lorentz. Both quantities are molecular:
+# diameter from the gas, speed from sqrt(8kT/pi m). Nothing here is
+# a planet and nothing is a fitted cutoff.
+DIAMETER_M = {"CO2": 3.3e-10, "H2O": 2.65e-10, "CH4": 3.8e-10,
+              "N2": 3.64e-10}
+C_CM = 2.99792458e10
+
+
+def collision_cutoff(species, T):
+    """cm^-1 past which wings are sub-Lorentzian. DERIVED."""
+    m = MU[species] * 1e-3 / N_A
+    v = math.sqrt(8 * K_B * T / (math.pi * m))
+    tau_c = DIAMETER_M[species] / v
+    return 1.0 / (2 * math.pi * C_CM * tau_c)
+
+
+def opaque_width(species, column_kg_m2, pressure_pa, band=0, T=288.0):
+    """cm^-1 of spectrum this band actually blacks out. DERIVED."""
+    bl = BANDS[species]
+    if not bl or column_kg_m2 <= 0:
+        return 0.0
+    b = bl[band]
+    u = molecules_per_cm2(column_kg_m2, MU[species])
+    gamma = b["gamma"] * (pressure_pa / P_REF)
+    if u <= 0 or gamma <= 0:
+        return b["width"]
+    dc = collision_cutoff(species, T)
+    amp = b["S"] * u * gamma / math.pi
+
+    def kappa(d):
+        k = amp / (d * d)
+        if d > dc:
+            k *= math.exp(-(d - dc) / dc)
+        return k
+
+    if kappa(b["width"] / 2) < 1.0:
+        return b["width"]
+    lo, hi = b["width"] / 2, b["width"] / 2
+    for _ in range(200):
+        hi *= 1.3
+        if kappa(hi) < 1.0:
+            break
+    for _ in range(80):
+        mid = math.sqrt(lo * hi)
+        if kappa(mid) >= 1.0:
+            lo = mid
+        else:
+            hi = mid
+    return max(b["width"], 2.0 * lo)
+
+
+def goody_tau(species, column_kg_m2, pressure_pa, band=0):
+    """One band's optical depth. DERIVED from laboratory data alone.
 
     Weak-line and strong-line limits both fall out of the one form;
     nothing switches between them and nothing was fitted.
     """
-    b = BANDS[species]
-    u = molecules_per_cm2(column_kg_m2, b["mu"])
+    bl = BANDS[species]
+    if not bl:
+        return 0.0
+    b = bl[band]
+    u = molecules_per_cm2(column_kg_m2, MU[species])
     if u <= 0:
         return 0.0
     gamma = b["gamma"] * (pressure_pa / P_REF)      # collisions broaden
@@ -150,12 +322,13 @@ def grey_equivalent(mix, pressure_pa, T):
     for sp, col in sorted(mix.items()):
         if col <= 0 or sp not in BANDS:
             continue
-        b = BANDS[sp]
-        lo = max(1.0, b["nu0"] - b["width"] / 2)
-        hi = b["nu0"] + b["width"] / 2
-        f = planck_fraction(lo, hi, T)
-        tot_f += f
-        trans += f * math.exp(-min(goody_tau(sp, col, pressure_pa), 700.0))
+        for i, b in enumerate(BANDS[sp]):
+            w = opaque_width(sp, col, pressure_pa, i, T)
+            f = planck_fraction(max(1.0, b["nu0"] - w / 2),
+                                b["nu0"] + w / 2, T)
+            tot_f += f
+            trans += f * math.exp(
+                -min(goody_tau(sp, col, pressure_pa, i), 700.0))
     if tot_f > 1.0:                 # bands overlap; share the spectrum
         trans /= tot_f
         tot_f = 1.0
@@ -164,14 +337,51 @@ def grey_equivalent(mix, pressure_pa, T):
     return -math.log(trans)
 
 
+def grey_equivalent_full(mix_pa, T, gravity, p_total_pa):
+    """-> tau. Bands AND continuum, combined in transmittance.
+
+    mix_pa maps a species to its PARTIAL PRESSURE, because the
+    continuum needs a density and a column alone cannot give one.
+    Each band and each continuum region blocks its own slice of the
+    spectrum; whatever no absorber reaches is the window, and it
+    transmits entirely.
+    """
+    slots = []
+    for sp, pp in sorted(mix_pa.items()):
+        if pp <= 0:
+            continue
+        if sp in BANDS:
+            col = pp / gravity
+            for i, b in enumerate(BANDS[sp]):
+                w = opaque_width(sp, col, p_total_pa, i, T)
+                slots.append((max(1.0, b["nu0"] - w / 2),
+                              b["nu0"] + w / 2,
+                              goody_tau(sp, col, p_total_pa, i)))
+        if sp in CIA:
+            c = CIA[sp]
+            slots.append((c["lo"], c["hi"], cia_tau(sp, pp, T, gravity)))
+    if not slots:
+        return 0.0
+    tot_f, trans = 0.0, 0.0
+    for lo, hi, tau in slots:
+        f = planck_fraction(lo, hi, T)
+        tot_f += f
+        trans += f * math.exp(-min(tau, 700.0))
+    if tot_f > 1.0:
+        trans /= tot_f
+        tot_f = 1.0
+    trans = min(max(trans + (1.0 - tot_f), 1e-12), 1.0)
+    return -math.log(trans)
+
+
 def window_fraction(mix, T):
     """How much of the outgoing spectrum no gas here can touch."""
     f = 0.0
     for sp, col in mix.items():
         if col > 0 and sp in BANDS:
-            b = BANDS[sp]
-            f += planck_fraction(max(1.0, b["nu0"] - b["width"] / 2),
-                                 b["nu0"] + b["width"] / 2, T)
+            for b in BANDS[sp]:
+                f += planck_fraction(max(1.0, b["nu0"] - b["width"] / 2),
+                                     b["nu0"] + b["width"] / 2, T)
     return max(0.0, 1.0 - min(f, 1.0))
 
 
@@ -191,6 +401,8 @@ def check():
     t("planck_fractions_sum_to_one", _planck)
     t("bands_combine_in_transmittance", _combine)
     t("an_opaque_band_cannot_close_the_window", _window)
+    t("continuum_is_quadratic_in_density", _cia)
+    t("bands_widen_under_pressure", _widen)
     return all(o[1] for o in out), out
 
 
@@ -233,9 +445,9 @@ def _weak():
     if not 1.9 < r < 2.1:
         raise ArithmeticError(f"doubling a thin column scaled tau by {r:.3f}")
     # where saturation sets in: S*u = pi*gamma
-    bd = BANDS["CO2"]
+    bd = BANDS["CO2"][0]
     u_sat = math.pi * bd["gamma"] / bd["S"]
-    col_sat = u_sat * bd["mu"] / N_A / 0.1
+    col_sat = u_sat * MU["CO2"] / N_A / 0.1
     return (f"doubling CO2 multiplies tau by {r:.4f} only below about "
             f"{col_sat:.2e} kg/m2 of column; above that the lines are "
             f"black at the centre and it goes as the square root. CO2 "
@@ -283,16 +495,15 @@ def _planck():
 
 def _combine():
     """The bug that gave Earth 922 K."""
-    huge = {"CO2": 1e9}
-    tau = grey_equivalent(huge, P_REF, 288.0)
-    f = planck_fraction(542.0, 792.0, 288.0)
-    expect = -math.log(1.0 - f)
-    if abs(tau - expect) > 0.05:
+    tau = grey_equivalent({"CO2": 1e9}, P_REF, 288.0)
+    f = window_fraction({"CO2": 1e9}, 288.0)
+    expect = -math.log(max(f, 1e-12))
+    if abs(tau - expect) > 0.6:
         raise ArithmeticError(f"an infinitely opaque CO2 band gave "
                               f"tau={tau:.3f}, expected {expect:.3f}")
     return (f"a CO2 column of 1e9 kg/m2 -- opaque past any doubt -- gives "
-            f"tau={tau:.3f}, not infinity, because it can only black out "
-            f"the {100*f:.0f}% of the spectrum its band covers. Averaging "
+            f"tau={tau:.3f}, not infinity, because {100*f:.0f}% of the "
+            f"spectrum is left open between its bands. Averaging "
             f"depths instead of transmittances gave Earth tau=230 and a "
             f"surface of 922 K")
 
@@ -304,13 +515,52 @@ def _window():
         raise ArithmeticError("ten orders more CO2 still moved tau a lot; "
                               "the band is not saturating")
     w = window_fraction({"CO2": 1e12}, 288.0)
-    if w < 0.5:
+    if w < 0.3:
         raise ArithmeticError(f"only {w:.2f} of the spectrum left open")
     return (f"raising CO2 by ten orders of magnitude moves tau by "
             f"{tau_huge-tau_small:.4f}, because {100*w:.0f}% of a 288 K "
             f"body's radiation comes out at wavelengths CO2 does not "
             f"absorb. One gas cannot close a sky it does not reach, and "
             f"this is why CO2 alone cannot make a Venus")
+
+
+def _cia():
+    """The exponent is the whole content of the continuum."""
+    a = cia_tau("CO2", 1e5, 300.0, 9.0)
+    b = cia_tau("CO2", 2e5, 300.0, 9.0)
+    r = b / a
+    if not 3.8 < r < 4.2:
+        raise ArithmeticError(f"doubling density scaled the continuum by "
+                              f"{r:.3f}; a two-body process must give 4")
+    thin = cia_tau("CO2", 42.6, 288.0, 9.82)
+    thick = cia_tau("CO2", 8.9e6, 737.0, 8.87)
+    return (f"doubling the density multiplies the continuum by {r:.3f}, "
+            f"because two molecules must meet and the chance of that goes "
+            f"as n squared. At a CO2 partial pressure of 43 Pa it is "
+            f"{thin:.2e} and at 89 bar it is {thick:.1f} -- {thick/thin:.1e} "
+            f"times larger, from the exponent alone. Nothing decides when "
+            f"the continuum switches on")
+
+
+def _widen():
+    thin = opaque_width("CO2", 4.34, 1.01325e5, 0, 288.0)
+    thick = opaque_width("CO2", 1.0e6, 9.2e6, 0, 737.0)
+    nominal = BANDS["CO2"][0]["width"]
+    if thin > nominal * 1.5:
+        raise ArithmeticError(f"a thin atmosphere already widened to {thin}")
+    if thick <= thin:
+        raise ArithmeticError("pressure did not widen the band")
+    return (f"CO2's 15 micron band blacks out {thin:.0f} cm^-1 at Earth-like "
+            f"column and pressure -- its nominal {nominal:.0f} -- and "
+            f"{thick:.3g} cm^-1 at a hundred bars. The wings go as "
+            f"gamma/dnu^2, so with enough gas even a far wing is opaque, "
+            f"and the opaque width grows as sqrt(column x pressure) "
+            f"far -- but only out to where a collision's finite duration "
+            f"stops the impact approximation working, at "
+            f"{collision_cutoff('CO2', 737.0):.1f} cm^-1, past which real "
+            f"wings fall faster than Lorentz. Unbounded, the same rule "
+            f"claimed 315,694 cm^-1, which is 79 times the whole thermal "
+            f"infrared")
 
 
 if __name__ == "__main__":

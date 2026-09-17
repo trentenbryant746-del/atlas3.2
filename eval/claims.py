@@ -124,8 +124,8 @@ CLAIMS = [
      _table_size, 29, CURRENT),
     ("3.1.18", "folding survival rate 0.573",
      _fold_bar, 0.5729, CURRENT),
-    ("3.1.23", "unfitted climate: Earth -3.2 K, Venus -495.6 K",
-     _climate, (-3.2, -495.6), CURRENT),
+    ("3.1.33", "unfitted climate: Earth +12.3 K, Venus -495.6 K",
+     _climate, (12.3, -495.6), CURRENT),
     ("3.1.31", "lab: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED",
      _lab_counts, (23, 1, 1, 1), CURRENT),
 ]
@@ -133,6 +133,11 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.23", "unfitted climate: Earth -3.2 K",
+     "3.1.33 fixed spectral overlap so overlapping bands add optical "
+     "depth instead of averaging transmittance. Earth's water bands "
+     "overlap heavily, so the old averaging under-counted them and the "
+     "-3.2 K agreement was partly the bug. It now reads +12.3 K"),
     ("3.1.30", "ablation read 1 right, 1 wrong, 12 refused",
      "3.1.31 changed the rule being measured; it now reads 8, 0, 6. "
      "The table was correct when written and describes a system that "

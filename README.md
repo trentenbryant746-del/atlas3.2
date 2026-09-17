@@ -2640,3 +2640,63 @@ as a live result.
 The two open items are unchanged and both are named: the far-wing
 **CLASH** at layer 2, and the CO₂ ceiling **MISSING_RULE** at layer 3.
 Neither is hidden and neither is patched.
+
+### 3.1.33 — the clash and the missing rule, examined
+
+Three hypotheses tested against the two open items before building any
+of them. The ablation discipline from 3.1.30 paid for itself.
+
+**1. Convection does not fix Venus.** The grey radiative profile is
+never super-adiabatic at these optical depths — Venus at τ=21 has a
+radiative lapse of 7.3 K/km against a 10.4 K/km adiabat, so convection
+never triggers and the tropopause comes out at zero height. At the
+shipped τ of 0.38 convection gives **227 K**, which is worse than doing
+nothing. It only helps at τ≈21, which requires the wing branch of the
+clash, so the two were never independent. Rejected before building.
+
+**2. A `log(0)` guard had become a ceiling on physics.** Transmittance
+was clamped at 1e-12 before taking a logarithm, which caps optical depth
+at −ln(1e-12) = **27.6**. Venus needs **147.6**. No atmosphere this
+module could describe was allowed to be as opaque as Venus actually is.
+The floor is now the smallest positive float, putting the ceiling near
+700, and a check keeps it clear of what any body needs. It was not
+binding at the shipped cutoff — but it silently capped the
+unbounded-wing branch, which is why scanning that branch saturated at
+−278 K and looked like a physical result.
+
+**3. Overlapping absorbers add optical depth; they do not average
+transmittance.** This was a real modelling error. The old code summed
+each band's Planck-weighted transmittance and renormalised when
+coverage exceeded the spectrum — treating two absorbers in the same
+place as alternatives rather than as both being in the way. A weak band
+could dilute a strong one, and CO₂'s tiny 10 µm feature kept leaking
+photons its enormous 15 µm and 4.3 µm bands had already stopped. Venus
+saturating at τ=21.08 under ten-million-fold wing widening was not
+physics; it was a weighted average unable to exceed its largest term.
+
+Beer-Lambert is per wavenumber, so the model is now per wavenumber: bin
+the spectrum, add every absorber's τ in each bin, transmit there, and
+Planck-weight. Overlap is automatic and nothing is renormalised.
+
+**And fixing it made Earth worse, which is the honest outcome.**
+
+    before overlap fix   Earth -3.2 K   Venus -495.6 K
+    after                Earth +12.3 K  Venus -495.6 K
+
+Earth's water bands overlap heavily, so the old averaging under-counted
+them — the −3.2 K agreement was partly the bug. Venus is unchanged
+because at the shipped wing cutoff its bands are too narrow to overlap
+at all. **Removing an error exposed another**, for the fourth time this
+session.
+
+**The claims checker earned itself one commit after being written.** It
+flagged `3.1.23 unfitted climate: Earth -3.2 K` as no longer
+reproducing, within minutes of the change. The old figure is now
+recorded as superseded with the reason.
+
+**Both open items stand, better understood.** The layer-2 CLASH and the
+layer-3 MISSING_RULE are unresolved, and two of the three plausible
+routes to them are now closed by measurement rather than opinion.
+
+    radiative 10/10   lab 26 experiments   5,737 correct, 0 wrong
+    published claims 11/11   audit 21/21   heldout 165/165

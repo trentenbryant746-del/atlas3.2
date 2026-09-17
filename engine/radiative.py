@@ -317,6 +317,32 @@ def planck_fraction(nu_lo, nu_hi, T):
     return 0.0 if tot <= 0 else max(0.0, min(1.0, part / tot))
 
 
+# A GUARD AGAINST log(0) BECAME A CEILING ON PHYSICS.
+#
+# Transmittance was clamped at 1e-12 before taking its logarithm, to
+# avoid log(0). That is an ordinary numerical precaution and it
+# quietly capped optical depth at -ln(1e-12) = 27.6. Venus needs
+# 147.6. So no atmosphere this module could describe was ever
+# allowed to be as opaque as Venus actually is, whatever the band
+# data said -- and the layer-3 MISSING_RULE was measuring the clamp
+# as much as the chemistry.
+#
+# The floor is now set by the smallest positive number a float can
+# hold, which is a property of the arithmetic rather than a choice,
+# and it puts the ceiling near 700 -- far above anything a planet
+# does. A check asserts the ceiling stays well clear of what the
+# bodies in the table require, so this cannot silently come back.
+import sys as _sys
+
+TAU_MAX = -math.log(_sys.float_info.min)
+
+
+def _to_tau(transmittance):
+    """-> optical depth. Floored by float precision, not by a choice."""
+    t = min(max(transmittance, _sys.float_info.min), 1.0)
+    return -math.log(t)
+
+
 def grey_equivalent(mix, pressure_pa, T):
     """-> tau. Bands combined in TRANSMITTANCE, which is the only way.
 
@@ -356,20 +382,40 @@ def grey_equivalent(mix, pressure_pa, T):
         trans /= tot_f
         tot_f = 1.0
     trans += (1.0 - tot_f)
-    trans = min(max(trans, 1e-12), 1.0)
-    return -math.log(trans)
+    return _to_tau(trans)
 
 
-def grey_equivalent_full(mix_pa, T, gravity, p_total_pa):
-    """-> tau. Bands AND continuum, combined in transmittance.
+def _spectral_bins(n=400, lo=1.0, hi=4000.0):
+    step = (hi - lo) / n
+    return [(lo + i * step, lo + (i + 1) * step) for i in range(n)], step
 
-    mix_pa maps a species to its PARTIAL PRESSURE, because the
-    continuum needs a density and a column alone cannot give one.
-    Each band and each continuum region blocks its own slice of the
-    spectrum; whatever no absorber reaches is the window, and it
-    transmits entirely.
+
+def grey_equivalent_full(mix_pa, T, gravity, p_total_pa, nbins=400):
+    """-> tau. Bands and continuum on a SPECTRAL GRID.
+
+    OVERLAPPING ABSORBERS ADD THEIR OPTICAL DEPTHS; THEY DO NOT
+    AVERAGE THEIR TRANSMITTANCES. The previous version summed each
+    band's Planck-weighted transmittance and, when the coverage
+    exceeded the whole spectrum, divided by the total to renormalise.
+    That treats two absorbers in the same place as alternatives
+    rather than as both being in the way, and it let a WEAK band
+    dilute a strong one: CO2's tiny 10 micron feature kept leaking
+    photons that its enormous 15 micron and 4.3 micron bands had
+    already stopped.
+    
+    The symptom was that Venus's optical depth saturated at 21.08 no
+    matter how far the wings were allowed to spread -- ten million
+    times the derived cutoff changed nothing. That looked like
+    physics saying CO2 cannot make a Venus. It was arithmetic saying
+    a weighted average cannot exceed its largest term.
+    
+    Beer-Lambert is per wavenumber, so the fix is to be per
+    wavenumber: bin the spectrum, add every absorber's tau in each
+    bin, transmit exp(-tau) there, and Planck-weight the result.
+    Overlap is then automatic and nothing needs renormalising.
     """
-    slots = []
+    bins, step = _spectral_bins(nbins)
+    tau_bin = [0.0] * len(bins)
     for sp, pp in sorted(mix_pa.items()):
         if pp <= 0:
             continue
@@ -377,24 +423,25 @@ def grey_equivalent_full(mix_pa, T, gravity, p_total_pa):
             col = pp / gravity
             for i, b in enumerate(BANDS[sp]):
                 w = opaque_width(sp, col, p_total_pa, i, T)
-                slots.append((max(1.0, b["nu0"] - w / 2),
-                              b["nu0"] + w / 2,
-                              goody_tau(sp, col, p_total_pa, i)))
+                lo, hi = b["nu0"] - w / 2, b["nu0"] + w / 2
+                tau = goody_tau(sp, col, p_total_pa, i)
+                for k, (blo, bhi) in enumerate(bins):
+                    if bhi > lo and blo < hi:
+                        tau_bin[k] += tau
         if sp in CIA:
             c = CIA[sp]
-            slots.append((c["lo"], c["hi"], cia_tau(sp, pp, T, gravity)))
-    if not slots:
+            tau = cia_tau(sp, pp, T, gravity)
+            for k, (blo, bhi) in enumerate(bins):
+                if bhi > c["lo"] and blo < c["hi"]:
+                    tau_bin[k] += tau
+    num = den = 0.0
+    for k, (blo, bhi) in enumerate(bins):
+        f = planck_fraction(blo, bhi, T)
+        den += f
+        num += f * math.exp(-min(tau_bin[k], 700.0))
+    if den <= 0:
         return 0.0
-    tot_f, trans = 0.0, 0.0
-    for lo, hi, tau in slots:
-        f = planck_fraction(lo, hi, T)
-        tot_f += f
-        trans += f * math.exp(-min(tau, 700.0))
-    if tot_f > 1.0:
-        trans /= tot_f
-        tot_f = 1.0
-    trans = min(max(trans + (1.0 - tot_f), 1e-12), 1.0)
-    return -math.log(trans)
+    return _to_tau(num / den)
 
 
 def window_fraction(mix, T):
@@ -426,6 +473,7 @@ def check():
     t("an_opaque_band_cannot_close_the_window", _window)
     t("continuum_is_quadratic_in_density", _cia)
     t("bands_widen_under_pressure", _widen)
+    t("no_numerical_ceiling_on_opacity", _ceiling)
     return all(o[1] for o in out), out
 
 
@@ -584,6 +632,23 @@ def _widen():
             f"wings fall faster than Lorentz. Unbounded, the same rule "
             f"claimed 315,694 cm^-1, which is 79 times the whole thermal "
             f"infrared")
+
+
+def _ceiling():
+    need_venus = (4.0 / 3.0) * ((737.0 / 226.7) ** 4 - 1.0)
+    if TAU_MAX < 2 * need_venus:
+        raise ArithmeticError(
+            f"optical depth is capped at {TAU_MAX:.1f} and the most "
+            f"opaque body known needs {need_venus:.1f}; a guard against "
+            f"log(0) is acting as a physical limit")
+    return (f"optical depth can reach {TAU_MAX:.0f}, set by the smallest "
+            f"positive float rather than by a chosen constant. The most "
+            f"opaque atmosphere in the table needs {need_venus:.1f}. A "
+            f"1e-12 clamp used to cap it at 27.6, below what Venus is. "
+            f"It was not binding at the shipped wing cutoff, where tau is "
+            f"0.382 -- but it silently capped the unbounded-wing branch, "
+            f"which is why a scan of that branch saturated at -278 K and "
+            f"looked like physics")
 
 
 if __name__ == "__main__":

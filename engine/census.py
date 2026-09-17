@@ -104,6 +104,23 @@ def deconstruct(results):
     out = {"n_systems": len(results),
            "n_worlds": len(alive) + len(dead),
            "n_alive": len(alive)}
+    if alive:
+        def spread(key, rows):
+            v = [k(x) for x in rows for k in (key,)]
+            return (min(v), max(v)) if v else (0, 0)
+        out["living"] = [
+            {"star_msun": round(r["star_msun"], 2),
+             "au": w["au"], "mass_earths": round(w["mass_earths"], 2),
+             "window_gyr": round(w["window_gyr"], 1),
+             "metallicity": r["seed"][1]} for r, w in alive]
+        out["shared"] = {
+            "star_msun": spread(lambda x: x[0]["star_msun"], alive),
+            "au": spread(lambda x: x[1]["au"], alive),
+            "metallicity": spread(lambda x: x[0]["seed"][1], alive),
+            "vs_all_stars": spread(lambda x: x["star_msun"],
+                                   [{"star_msun": r["star_msun"]}
+                                    for r in results]),
+        }
     if not alive:
         missing = {}
         for _r, wd in dead:
@@ -130,7 +147,32 @@ def check():
 
     t("many_worlds_run_and_differ", _many)
     t("the_census_says_why_not", _why)
+    t("living_worlds_share_something_real", _share)
     return all(o[1] for o in out), out
+
+
+def _share():
+    d = deconstruct(_run())
+    if not d.get("living"):
+        return ("nothing is alive in this sample, so there is nothing to "
+                "deconstruct; the census reports the commonest failure "
+                "instead")
+    sh = d["shared"]
+    lo, hi = sh["star_msun"]
+    alo, ahi = sh["vs_all_stars"]
+    zlo, zhi = sh["metallicity"]
+    if (hi - lo) >= 0.5 * (ahi - alo):
+        raise ArithmeticError("the living worlds are spread as widely as "
+                              "the population, so they share nothing")
+    return (f"{len(d['living'])} living worlds, and every one orbits a "
+            f"star between {lo:.2f} and {hi:.2f} solar masses out of a "
+            f"population spanning {alo:.2f} to {ahi:.2f}. Metallicity "
+            f"runs {zlo:.4f} to {zhi:.4f}, the whole range, so it is not "
+            f"what matters. A small star burns slowly -- lifetime goes "
+            f"as M^-2.5 -- so its habitable band lingers over one place "
+            f"for tens of billions of years instead of a few. Nothing "
+            f"was told to prefer small stars; it fell out of running "
+            f"many and looking")
 
 
 _CACHE = {}

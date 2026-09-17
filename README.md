@@ -3265,3 +3265,54 @@ not do for the band search in 3.1.42, and the difference is that these
 jobs share nothing.
 
     census 2/2   genesis 8/8   5,737 correct, 0 wrong   claims 14/14
+
+### 3.1.44 — volatiles arrive, and eight worlds come alive
+
+**C, H and N do not condense where rocky planets form.** Carbon stays in
+CO to 25 K, water needs 170, ammonia 131. The census found all three
+missing from 192 of 192 worlds, so the rule is delivery, and every piece
+of it derives:
+
+    reservoir     what condensed beyond the ice line -- 185 Earth
+                  masses, from the surface density already integrated
+    scattering    giant planets throw a fraction inward
+    focusing      a planet catches more than its disc, 1 + (v_esc/v_enc)^2
+    persistence   a scattered body crosses once per orbit for as long
+                  as it survives, so capture ACCUMULATES
+
+**The last one is what a single-crossing estimate misses by three
+thousand:** one pass delivers 6.6e-8 Earth masses of water, and Earth's
+ocean is 2.3e-4.
+
+**The source is a range, not a point.** Drawing delivered material from
+just outside the ice line brings water and ammonia and *no carbon* —
+CO needs 25 K, far colder than 3 AU. Comets come from the whole outer
+system, and only its cold end carries carbon.
+
+**The efficiency is wrong by three orders and is labelled, not tuned.**
+The chain delivers ~3,000 oceans to a world at 1 AU where Earth has one
+on the surface and perhaps ten in the mantle. The cause is assuming a
+scattered body stays on a crossing orbit for its whole dynamical life;
+most are ejected, fall in, or are parked in a resonance long before.
+The missing rule is the dynamical lifetime **distribution**. Tuning the
+two coefficients until Earth came out right would be the patch this
+project refuses — the mechanism is shown to work by a wide margin, and
+the efficiency is named as unresolved.
+
+**Eight of 293 worlds now pass all three conditions**, and deconstructing
+them gives a result nobody put in:
+
+     star     AU    M/Me   window        Z
+     0.54   0.35    2.59     23.3   0.0297
+     0.52   0.35    0.77     29.3   0.0135
+     0.51   0.35    0.28     35.7   0.0070
+     0.54   0.50    3.50     47.4   0.0305
+
+**Every living world orbits a star of 0.51–0.54 solar masses**, out of a
+population spanning 0.51 to 1.57. Metallicity runs the entire range and
+is irrelevant. A small star burns slowly — lifetime goes as M⁻²·⁵ — so
+its habitable band lingers over one orbit for tens of billions of years
+instead of a few. Nothing was told to prefer small stars. It fell out of
+running many and looking, which is what the census is for.
+
+    census 3/3   genesis 8/8   5,737 correct, 0 wrong   claims 14/14

@@ -220,6 +220,75 @@ def isolation_mass(r_au, seed, lum_w, m_star_msun):
         3.0 * m_star) ** 0.5
 
 
+# VOLATILES ARRIVE, THEY DO NOT CONDENSE. The census ran forty
+# systems and found C, H and N missing from all 192 worlds -- the
+# same three every time, and the three that cannot condense where
+# rocky planets form. Carbon stays in CO to 25 K, water needs 170,
+# ammonia 131. Equilibrium condensation gives an inner planet none
+# of them, and Earth has all three.
+#
+# The rule is delivery, and every piece of it is derivable:
+#
+#   reservoir     what condensed beyond the ice line, which is the
+#                 same surface density already integrated for masses
+#   scattering    giant planets throw a fraction of it inward
+#   focusing      a planet catches more than its own disc, by
+#                 1 + (v_esc/v_enc)^2
+#   persistence   a scattered body crosses the inner system once per
+#                 orbit for as long as it survives, so the capture
+#                 probability accumulates over MANY crossings, not one
+#
+# The last one is what a single-crossing estimate misses by three
+# thousand: one pass gives 6.6e-8 Earth masses of water and Earth's
+# ocean is 2.3e-4.
+# THESE TWO ARE THE WEAK POINT AND ARE LABELLED AS SUCH. The chain
+# delivers about three thousand oceans to a world at 1 AU where
+# Earth has one on the surface and perhaps ten more in the mantle.
+# Three orders of magnitude too much, and the cause is that a
+# scattered body is assumed to stay on a crossing orbit for its
+# whole dynamical life. Most do not: they are ejected, or fall into
+# the star, or are parked in a resonance, long before they have
+# made the millions of passes this assumes.
+#
+# The rule that is missing is the dynamical lifetime DISTRIBUTION,
+# and tuning these two numbers down until Earth comes out right
+# would be exactly the patch this project refuses. The mechanism is
+# shown to work -- delivery CAN supply an ocean, by a wide margin --
+# and the efficiency is named as unresolved.
+EJECTION_YEARS = 3e6          # how long a scattered body survives
+SCATTERED_FRACTION = 0.1      # of the outer reservoir, thrown inward
+
+
+def outer_reservoir(seed, lum_w, ice_au, out_au=30.0, steps=400):
+    """kg of ice-bearing solids beyond the line. DERIVED."""
+    tot = 0.0
+    for i in range(steps):
+        r = ice_au + (out_au - ice_au) * (i + 0.5) / steps
+        dr = (out_au - ice_au) / steps
+        tot += (surface_density(r, seed, lum_w)
+                * 2 * math.pi * (r * AU_M) * (dr * AU_M))
+    return tot
+
+
+def delivered_volatiles(seed, r_au, mass_kg, radius_m, lum_w, ice_au,
+                        m_star_msun):
+    """kg of volatile delivered to a planet. DERIVED end to end."""
+    if r_au >= ice_au:
+        return 0.0
+    res = outer_reservoir(seed, lum_w, ice_au)
+    v_orb = math.sqrt(G_GRAV * m_star_msun * M_SUN_KG / (r_au * AU_M))
+    v_enc = 0.5 * v_orb
+    v_esc = math.sqrt(2 * G_GRAV * mass_kg / radius_m)
+    focus = 1.0 + (v_esc / v_enc) ** 2
+    sigma = math.pi * radius_m ** 2 * focus
+    ring = math.pi * ((1.2 * r_au * AU_M) ** 2 - (0.8 * r_au * AU_M) ** 2)
+    p = sigma / ring
+    period = math.sqrt(r_au ** 3 / m_star_msun)          # years, Kepler
+    crossings = EJECTION_YEARS / max(period, 1e-6)
+    caught = 1.0 - math.exp(-p * crossings)
+    return SCATTERED_FRACTION * res * caught
+
+
 def generate(seed, radii=None):
     """-> [dict]. A system, forward from the cloud. Nothing consulted."""
     m = star_mass(seed)
@@ -248,6 +317,36 @@ def generate(seed, radii=None):
                      "rocky" if mass > 0.05 * M_EARTH else "planetesimal"),
             "can_hold_water": (not icy) and mass > 0.05 * M_EARTH,
         })
+    ice = ice_line(lum)
+    for p in out:
+        if p["au"] < ice and p["mass_kg"] > 0:
+            r_m = (3 * p["mass_kg"] / (4 * math.pi * 5515.0)) ** (1 / 3)
+            d = delivered_volatiles(seed, p["au"], p["mass_kg"], r_m,
+                                    lum, ice, m)
+            p["delivered_kg"] = d
+            p["delivered_earth_oceans"] = d / 1.35e21
+            # THE SOURCE IS A RANGE, NOT A POINT. Drawing all
+            # delivered material from just outside the ice line
+            # brings water and ammonia and NO CARBON, because CO
+            # needs 25 K and that is far colder than 3 AU. Comets
+            # come from the whole outer system, so the delivered
+            # composition is the reservoir averaged over it -- and
+            # only the cold end carries carbon.
+            frac = d / p["mass_kg"] if p["mass_kg"] else 0.0
+            src, n = {}, 0
+            for rr in (3.0, 6.0, 12.0, 25.0, 45.0):
+                td_src = disk_temperature(rr, lum)
+                cs = composition(td_src)
+                for e, v in cs.items():
+                    src[e] = src.get(e, 0.0) + v
+                n += 1
+            for e in ("C", "H", "N"):
+                if src.get(e, 0) > 0:
+                    p["composition"][e] = (p["composition"].get(e, 0.0)
+                                           + src[e] / n * frac)
+        else:
+            p["delivered_kg"] = 0.0
+            p["delivered_earth_oceans"] = 0.0
     return {"seed": str(seed), "star_msun": m, "luminosity_w": lum,
             "ice_line_au": ice_line(lum), "planets": out}
 

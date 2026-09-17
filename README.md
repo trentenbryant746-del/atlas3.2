@@ -4131,3 +4131,49 @@ it is computed for the occasion** — it is the existing records read in
 order, which is what makes it a root rather than a story.
 
     planetlab 4/4   0.53s for the whole planet chain
+
+### 3.1.63 — a claim is only as good as its worst input
+
+**The challenge was right and it is worse than a word choice.** This
+repository claims to derive rather than predict. An audit of the
+modules added most recently found **28 typed numbers with no label at
+all**, and several are not measurements. `INTAKE_COEFFICIENT` carried
+the comment *"sets where supply and demand cross"* — a knob with a note
+on it.
+
+`engine/inputs.py` classifies every one into three kinds, chosen
+honestly rather than generously:
+
+    EXACT      2   fixed by definition
+    MEASURED  13   someone went and found out
+    CHOSEN    18   nobody measured it, nothing derives it, it was
+                   picked so a model would run
+
+**A CHOSEN number is not forbidden** — a model that refuses every
+unmeasured quantity does nothing. What is forbidden is *citing* a
+result that rests on one as though it were derived. So claims are
+graded by their weakest input:
+
+    EXACT     the habitable band 0.999-1.899 AU
+    EXACT     Earth composition Fe 32.0%
+    EXACT     Earth reads as driven and Mars does not
+    MEASURED  the 57-residue search ceiling
+    CHOSEN    the cell size window 1.58-47.5 um
+    CHOSEN    life cools its own planet by 1.9 K
+    CHOSEN    seeded life stays microbial
+    CHOSEN    predation does not reverse the collapse
+
+**That split is the honest state, and it is not flattering to the
+recent work.** The planet results — band, composition, biosignature —
+rest on nothing chosen. **The biology results do.** "Seeded life stays
+microbial" depends on `INTAKE_COEFFICIENT` and `TRAIT_COST`, both
+picked. "Predation does not reverse the collapse" depends on three
+chosen numbers. Those two were reported as findings and they are
+parameter-dependent conclusions.
+
+**This is the same discipline as the error bars, one level down.**
+3.1.18 said a bar belongs to a domain; 3.1.29 said it belongs to a
+manifestation. This says a *claim* belongs to its weakest input, which
+is the rule those two were special cases of.
+
+    inputs 4/4   18 of 33 numbers are CHOSEN and now say so

@@ -64,6 +64,25 @@ EXACT, MEASURED, CHOSEN = "EXACT", "MEASURED", "CHOSEN"
 # admitting that history is one of the topics.
 RECORDED = "RECORDED"
 
+# A FIFTH KIND, because the human side answers a different question
+# and had been answering it in the wrong voice.
+#
+# ENACTED is a thing that happened in a RUN. Not EXACT, nobody
+# defined it. Not MEASURED, nobody observed it. Not CHOSEN, nobody
+# picked it -- it is what the rules did. And not RECORDED, because
+# RECORDED means it happened in the world and this did not.
+#
+# It is history, of a world that was never anywhere. Reporting
+# "13.9% of universes carry a toolmaker" as though it were a
+# measurement claims a survey of universes; reporting it as CHOSEN
+# says somebody picked 13.9, which is worse. The number is real and
+# reproducible and its subject is a simulation, and until now there
+# was no way to say all three of those at once.
+#
+# The practical rule: an ENACTED result may be cited for what THESE
+# RULES DO, never for what the world contains.
+ENACTED = "ENACTED"
+
 # The audit. Every typed number in the modules added recently,
 # classified honestly rather than generously.
 INPUTS = {
@@ -176,6 +195,28 @@ INPUTS = {
         MEASURED, "neural tissue costs about 10x average tissue"),
 }
 
+# Results that happened in a RUN. Their subject is a simulation, so
+# they may be cited for what these rules do and never for what the
+# world contains. Every one of them is on the human side, which is
+# the whole reason the kind was needed: physics answers what CAN
+# happen and this answers what DID, in a world that was not anywhere.
+ENACTED_RESULTS = {
+    "13.9% of universes carry a toolmaker":
+        "a sweep of generated seeds, not a survey of the sky",
+    "heat rejection refuses about an eighth of worlds":
+        "what these gates do, not a census of climates",
+    "Earth survives -1.15% to +2% of disc spread":
+        "fragility of this generator around this seed",
+    "the light race stops at 11.4 m":
+        "a stand of modelled plants, not a forest anyone walked",
+    "one lineage collapses to 0.10 microns":
+        "what descent.py does when run, not a fossil record",
+    "a brush shelter pays back in 4.6 nights":
+        "an accounting over modelled nights",
+    "a brain fills in 1.49 years":
+        "a rate against a capacity, not an observed child",
+}
+
 # Which results lean on which inputs. A claim is only as good as
 # its worst one.
 CLAIMS_ON = {
@@ -274,6 +315,7 @@ def check():
     t("results_are_graded_by_worst_input", _graded)
     t("the_planet_chain_rests_on_nothing_chosen", _planet)
     t("history_is_a_kind_not_a_gap", _recorded)
+    t("a_run_is_not_a_measurement", _enacted)
     return all(o[1] for o in out), out
 
 
@@ -343,6 +385,40 @@ def _recorded():
             f"should CHANGE KIND rather than stop -- the same way the "
             f"cascade changes layer when a question stops being "
             f"arithmetic and starts being a date")
+
+
+
+def _enacted():
+    """The fifth kind, and what it forbids.
+
+    First written to require that nothing be both ENACTED and
+    input-graded, and it failed on its own registry in one run --
+    correctly. The two are ORTHOGONAL axes, not rival labels. An
+    input grade says how good the numbers going in were. ENACTED
+    says what the answer is ABOUT. "13.9% of universes carry a
+    toolmaker" rests on chosen inputs AND is a fact about a
+    simulation, and both have to be sayable at once or the honest
+    description is unavailable.
+    """
+    if not ENACTED_RESULTS:
+        raise ArithmeticError("nothing is registered as enacted")
+    graded = set(ENACTED_RESULTS) & set(CLAIMS_ON)
+    for k, why in ENACTED_RESULTS.items():
+        if "measur" in why.lower() and "not" not in why.lower():
+            raise ArithmeticError(f"{k!r} describes itself as measured")
+    return (f"{len(ENACTED_RESULTS)} results are ENACTED -- they "
+            f"happened in a run. Not EXACT, nobody defined them; not "
+            f"MEASURED, nobody observed them; not CHOSEN, nobody "
+            f"picked them; and not RECORDED, which means it happened "
+            f"in the world. They are history of a world that was "
+            f"never anywhere. {len(graded)} of them ALSO carry an "
+            f"input grade, and that is not a contradiction -- the "
+            f"grade says how good the numbers going in were and this "
+            f"says what the answer is about. Every one is on the "
+            f"human side, which is why the kind was needed: physics "
+            f"answers what CAN happen and this answers what DID. An "
+            f"ENACTED result may be cited for what these rules do "
+            f"and never for what the world contains")
 
 
 if __name__ == "__main__":

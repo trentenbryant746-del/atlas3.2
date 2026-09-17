@@ -143,6 +143,14 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _binds():
+    from engine.multiverse import sweep, why_not
+    res, _ = sweep(n=600)
+    h = dict(why_not(res))
+    return ("heat can leave the body" in h,
+            round(100 * sum(1 for r in res if r["human"]) / len(res)) < 20)
+
+
 def _fragile():
     from engine.multiverse import near_earth
     out = {}
@@ -264,6 +272,8 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.78", "heat rejection binds; toolmakers fall under 20%",
+     _binds, (True, True), CURRENT),
     ("3.1.77", "Earth is fragile in spread, one-sided in mass, free in Z",
      _fragile, (True, True, True), CURRENT),
     ("3.1.76", "worn insulation runs out at 19 C, a lodge reaches -64",

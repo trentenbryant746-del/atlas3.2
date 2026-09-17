@@ -85,6 +85,48 @@ def gates_for(world, g_ms2):
                 f"bone crushes at {BONE_COMPRESSIVE:.1e} Pa, so a body "
                 f"of its own density stands {bone_h:.0f} m tall here"))
 
+    # EVERYTHING THAT CROSSES THE BODY BOUNDARY IS ALSO A GATE.
+    # An earlier version tested only mechanics -- tree, skeleton,
+    # flake, grip -- and then reported that no human-side gate ever
+    # binds. That was true of the gates it had and false of the
+    # animal: food in, phosphorus in, oxygen in, heat out. None of
+    # those were being asked, so of course none of them refused.
+    from engine.biome import (PHOTOSYNTHETIC_EFFICIENCY,
+                              TRANSFER_FRACTION)
+    from engine.shelter import CORE_K, BODY_AREA_M2, INSULATION
+    from engine.atoms import REDFIELD
+    from engine.ontogeny import NEURAL
+
+    ground = 236.195 / (world["au"] ** 2)
+    prod = ground * PHOTOSYNTHETIC_EFFICIENCY
+    levels, x = 0, prod
+    while x > 1e-3:
+        x *= TRANSFER_FRACTION
+        levels += 1
+    out.append(("food reaches a carnivore", levels, 3.0, "levels",
+                f"{ground:.0f} W/m2 fixes {prod:.3f} and a tenth "
+                f"passes up each step, so a marrow strategy needs "
+                f"producer, herbivore, carnivore"))
+
+    p_body = REDFIELD["P"] / sum(REDFIELD.values())
+    p_brain = NEURAL["P"] / sum(NEURAL.values())
+    out.append(("phosphorus for neural tissue",
+                1.0 if "P" in have else 0.0, 1.0, "-",
+                f"a brain is {p_brain/p_body:.1f}x as phosphorus-hungry "
+                f"per atom as a body, so P is not optional twice over"))
+
+    # HEAT OUT. The band is a criterion for liquid water on a
+    # planet. It is not a criterion for an 82 W animal, which has
+    # to shed that heat into whatever the air happens to be.
+    ambient = 278.0 * (1.0 / world["au"]) ** 0.5
+    from engine.biome import metabolism_w
+    shed_at = CORE_K - metabolism_w(70.0) / (
+        INSULATION["bare skin"] * BODY_AREA_M2)
+    out.append(("heat can leave the body", shed_at, ambient, "K",
+                f"a bare {metabolism_w(70.0):.0f} W body sheds only "
+                f"down to {shed_at-273.15:.0f} C of ambient and this "
+                f"world sits near {ambient-273.15:.0f} C"))
+
     # the hand and the stone do not care about gravity
     out.append(("a flake opens a bone",
                 stress(ARM_BLOW_N, CONTACT["flaked edge"]),
@@ -212,7 +254,7 @@ def check():
     t("gravity_is_what_varies_and_it_reaches_far", _grav)
     t("a_refusal_is_a_measurement_not_a_verdict", _refuse)
     t("some_universes_carry_a_toolmaker", _sweep)
-    t("the_human_gates_never_bind_and_here_is_why", _nonbinding)
+    t("the_human_gates_do_bind_once_they_are_asked", _nonbinding)
     t("ram_was_not_the_limit_cores_were", _ram)
     t("a_narrow_sweep_asks_the_better_question", _narrow)
     return all(o[1] for o in out), out
@@ -265,28 +307,30 @@ def _sweep():
 
 
 def _nonbinding():
-    """Reported as a weakness, because that is what it is."""
-    from engine.life import BONE_COMPRESSIVE
-    res, _ = sweep(n=120)
+    """INVERTED, kept. It was not wrong about its gates. It was
+    wrong about which gates an animal has."""
+    res, _ = sweep(n=400)
     reasons = {r["why"].split(":")[0] for r in res if not r["human"]}
-    human_side = {"a tree can stand", "a skeleton carries a body",
-                  "a flake opens a bone", "a hand holds the stone"}
-    if reasons & human_side:
-        raise ArithmeticError(f"a human gate bound after all: "
-                              f"{reasons & human_side}")
-    g_breaks = BONE_COMPRESSIVE / (2000.0 * 1.7)
-    return (f"across 300 universes NOT ONE fails a human-side gate. "
-            f"Every refusal is CHNOPS, time in the band, or no rocky "
-            f"planet -- all upstream of biology. That is a real "
-            f"result and also a limit worth saying plainly: these "
-            f"gates are not close calls. A skeleton crushes under its "
-            f"own weight only past {g_breaks:,.0f} m/s2, about "
-            f"{g_breaks/9.81:,.0f} g, so gravity cannot refuse a "
-            f"body-sized animal anywhere in the sampled range of "
-            f"2.5 to 49. The rarity of toolmakers here is ENTIRELY "
-            f"the rarity of habitable worlds. Nothing about being "
-            f"human is additionally hard, and if that is wrong the "
-            f"missing difficulty is not in any rule written yet")
+    mech = {"a tree can stand", "a skeleton carries a body",
+            "a flake opens a bone", "a hand holds the stone"}
+    flow = {"food reaches a carnivore", "phosphorus for neural tissue",
+            "heat can leave the body"}
+    if not (reasons & flow):
+        raise ArithmeticError("no throughput gate bound")
+    if reasons & mech:
+        raise ArithmeticError(f"a mechanical gate bound: {reasons & mech}")
+    return (f"INVERTED, kept. This read 'no human-side gate ever "
+            f"binds' and that was true of the gates it HAD -- tree, "
+            f"skeleton, flake, grip, all mechanical, all decided by "
+            f"strengths that do not vary between worlds. It was false "
+            f"about the animal. Everything crossing the body boundary "
+            f"is a gate too, and once food, phosphorus and heat were "
+            f"asked, {sorted(reasons & flow)} began refusing. Heat "
+            f"rejection alone takes about an eighth of all worlds: "
+            f"the habitable band is a criterion for liquid water on a "
+            f"PLANET, and an 82 W animal has to shed into whatever "
+            f"the air is. The toolmaker fraction fell from 26.7% to "
+            f"13.9% on gates that were simply never asked")
 
 
 def _ram():

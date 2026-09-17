@@ -4981,3 +4981,56 @@ scarce. The largest worker holds **18 MB**; 20,000 universes run in
 `engine/spine.py`, where 43 MB holds the whole dependency graph.
 
     multiverse 6/6   shelter 4/4   12 modules newly exercised
+
+### 3.1.78 — the human gates do bind, and a fifth kind for what they answer
+
+3.1.77 reported that **no human-side gate ever binds**. That was true
+of the gates it *had* — tree, skeleton, flake, grip, all mechanical,
+all decided by material strengths that do not vary between worlds. It
+was false about the animal.
+
+**Everything crossing the body boundary is a gate too**, and none of
+them were being asked. Food in, phosphorus in, heat out:
+
+    CHNOPS present              1942
+    time in the band             982
+    heat can leave the body      508   <- a human-side gate
+    no rocky planet               11
+
+**Heat rejection alone refuses about an eighth of worlds.** A bare 82 W
+body sheds only down to 32 °C of ambient, and the habitable band is a
+criterion for **liquid water on a planet** — not for a mammal standing
+on it. The toolmaker fraction fell from 26.7% to **13.9%** on gates
+that had simply never been asked.
+
+Food and phosphorus did *not* bind: three trophic levels survive out to
+2.5 AU, so a marrow strategy holds wherever a rocky planet does.
+
+### ENACTED — a run is not a measurement
+
+The human side answers a different question and had been answering it
+in the wrong voice. The four kinds had no slot for it:
+
+    EXACT      fixed by definition
+    MEASURED   someone went and found out
+    CHOSEN     nobody measured it; it was picked
+    RECORDED   it happened once, in the world
+    ENACTED    it happened in a RUN
+
+**It is history of a world that was never anywhere.** Reporting "13.9%
+of universes carry a toolmaker" as MEASURED claims a survey of
+universes; as CHOSEN it says somebody picked 13.9, which is worse. The
+number is real, reproducible, and about a simulation — and until now
+there was no way to say all three at once.
+
+Seven results are registered ENACTED. **An ENACTED result may be cited
+for what these rules do, never for what the world contains.**
+
+**The check failed on its own registry in one run, correctly.** It was
+first written to require that nothing be both ENACTED and
+input-graded. They are **orthogonal axes**, not rival labels — the
+grade says how good the numbers going in were, ENACTED says what the
+answer is *about*, and both have to be sayable at once or the honest
+description is unavailable.
+
+    inputs 6/6    83 numbers classified    7 results enacted

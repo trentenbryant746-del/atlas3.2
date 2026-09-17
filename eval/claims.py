@@ -143,6 +143,22 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _acuity():
+    from engine.senses import diffraction_limit, sampling_limit, arcmin
+    return (round(arcmin(diffraction_limit()), 2),
+            round(arcmin(sampling_limit()), 2))
+
+
+def _stereo():
+    from engine.senses import stereo_range, depth_resolution
+    return round(stereo_range()), round(1000 * depth_resolution(0.5), 2)
+
+
+def _fills():
+    from engine.learning import fill_time_years, lived_multiples
+    return round(fill_time_years(), 2), round(lived_multiples(70.0))
+
+
 def _toolstress():
     from engine.tools import stress, CONTACT, body_alone
     from engine.life import BONE_COMPRESSIVE
@@ -214,6 +230,12 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.74", "the eye: diffraction 0.77 arcmin, sampling 1.01",
+     _acuity, (0.77, 1.01), CURRENT),
+    ("3.1.74", "stereo reaches 1320 m and 0.19 mm at arm's length",
+     _stereo, (1320, 0.19), CURRENT),
+    ("3.1.74", "a brain fills in 1.49 years; a life pours 47x through",
+     _fills, (1.49, 47), CURRENT),
     ("3.1.73", "a body is 8x short of bone; a flaked edge goes through",
      _toolstress, (False, 8, True), CURRENT),
     ("3.1.73", "marrow pays for a brain 5.2x over",

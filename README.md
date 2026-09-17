@@ -4780,3 +4780,79 @@ hole in `engine/descent.py` stays open for everything that must be
 built rather than picked up.
 
     tools 7/7    27/27 published numbers reproduce
+
+### 3.1.74 — a body that can look around, and what it would take to fail
+
+Everything so far was budgets: watts in, atoms conserved. None of it
+said whether the animal can **see** the stone it is about to pick up,
+**hold** it once picked, or **stand** while doing so. `engine/tools.py`
+quietly assumed all three.
+
+**What the eye turns out to be** — three routes, none told about the
+others:
+
+    diffraction, 1.22 lam/D at a 3 mm pupil    0.77 arcmin
+    cone spacing 2.5 um at f = 17 mm, Nyquist  1.01 arcmin
+    measured human acuity                      1.00 arcmin
+
+They agree to **1.31×**. The eye is as sharp as its aperture physically
+permits and the retina is as fine as the optics justify. A retina finer
+than that samples blur; optics sharper paint detail nothing reads.
+Nothing here arranged that.
+
+**Space is two eyes and a subtraction.** Depth error goes as z², so
+6.4 cm of baseline resolves 0.19 mm at arm's length, 7.6 cm at ten
+metres, and nothing past **1,320 m**, where the error equals the
+distance. Where a body stops seeing space is b over the disparity
+threshold — not a fact about brains.
+
+**A hook grip cannot strike.** Striking needs 25 N held; a thumb-opposed
+grip holds 40 and passes at 1.6×, a hook grip holds 12.5 and **fails at
+0.5×**. The hand is why a flake is not a tool for most animals that
+could reach one.
+
+**Every failure names its mechanism**, not its verdict. Not "the grip
+failed" but *12.5 N against 25 needed, 0.5×, friction μ=0.5 on a 25 N
+grip against a 1 kg stone reaching 5 m/s over 0.5 m*. The quantity that
+fell short, the one it lost to, and the factor between them — which is
+what says whether it nearly worked or is not that kind of thing.
+
+**One rule inverted.** The stance gate counted *total* limbs and
+concluded a biped has none free — reading "two-legged" as "owns two
+limbs". A human and a horse both own four. Count what touches the
+ground and bipedalism frees exactly two. The earlier reading had it
+backwards.
+
+### switch death off and nothing improves
+
+The proposal was to stop humans dying, so they have all the time there
+is to learn. It is the rule-cancelling move — switch one off, see what
+the world does, work out why. **It fails, and the reason is worth more
+than the proposal would have been.**
+
+    store      1e14 synapses x 4.7 bits    4.7e14 bits, 59 TB
+    intake     1e6 fibres x 10 bit/s       1e7 bit/s
+    fills in                               1.49 YEARS
+
+Before the child can walk, through the eye alone.
+
+    lived            multiples of the store    binds
+        1 y                               1    time
+       70 y                              47    capacity
+    1e6 y                         671,438    capacity
+
+**Time was never the constraint**, so removing its limit changes
+nothing. Neither is energy: Landauer puts erasing the *entire* store at
+1.4 µJ — clearing and refilling all of memory a thousand times a second
+costs 0.0017% of an 82 W body. Nothing is kept because dropping it was
+expensive.
+
+**So a brain cannot be a store.** One that saturates at 1.49 years would
+be finished before it was any use. What is left is **selection** —
+the work is deciding what *not* to keep, and an immortal learner is the
+same learner discarding 671,437× more.
+
+That also answers what mapping a brain while it learns would show. Not
+a store filling up. **A filter changing what it lets through.**
+
+    senses 5/5    learning 4/4    30/30 published numbers reproduce

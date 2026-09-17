@@ -139,6 +139,20 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "senses.WAVELENGTH_M": (MEASURED, "550 nm, photopic peak"),
+    "senses.PUPIL_M": (MEASURED, "3 mm in daylight"),
+    "senses.CONE_PITCH_M": (MEASURED, "2.5 um foveal cone spacing"),
+    "senses.EYE_BASELINE_M": (MEASURED, "64 mm interpupillary"),
+    "senses.DISPARITY_RAD": (MEASURED, "10 arcsec stereoacuity"),
+    "senses.PRECISION_GRIP_N": (MEASURED, "thumb opposed, about 80 N"),
+    "senses.HOOK_GRIP_N": (MEASURED, "no opposition, about 25 N"),
+    "senses.GRIP_FRICTION": (MEASURED, "skin on stone, mu about 0.5"),
+    "learning.SYNAPSES": (MEASURED, "about 1e14 in a human cortex"),
+    "learning.BITS_PER_SYNAPSE": (
+        MEASURED, "4.7, Bartol et al. from spine-head size classes"),
+    "learning.OPTIC_FIBRES": (MEASURED, "about 1e6 per optic nerve"),
+    "learning.BITS_PER_FIBRE_S": (
+        CHOSEN, "10 bit/s after retinal coding; order only"),
     "tools.MATERIALS": (MEASURED, "compressive strengths, Pa"),
     "tools.CONTACT": (MEASURED, "striking surface areas, m2"),
     "tools.ARM_BLOW_N": (MEASURED, "a hammering blow, about 400 N"),
@@ -172,6 +186,9 @@ CLAIMS_ON = {
     "height is worthless without a rival": [],
     "the food chain runs 4 levels": ["biome.PHOTOSYNTHETIC_EFFICIENCY"],
     "a flaked edge opens a bone and a fist cannot": [],
+    "the eye sits at its own diffraction limit": [],
+    "stereo gives out past 1320 m": [],
+    "a brain fills in 1.49 years": ["learning.BITS_PER_FIBRE_S"],
     "marrow pays for a brain 5.2x over": [],
     "a newborn's brain is 109% of its own budget": [],
     "growth bottoms at age 5 where the brain is 71%": [],

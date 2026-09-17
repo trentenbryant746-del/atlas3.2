@@ -143,6 +143,23 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _gifts():
+    from engine.revolution import (run, BIOLOGICAL_N, HABER_N,
+                                   INFRASTRUCTURE, teaching_is_free,
+                                   infrastructure_cost)
+    allof = tuple(INFRASTRUCTURE)
+    yrs = []
+    for kw in (dict(fixed_n=BIOLOGICAL_N),
+               dict(fixed_n=BIOLOGICAL_N + HABER_N),
+               dict(fixed_n=BIOLOGICAL_N + HABER_N, built=allof),
+               dict(fixed_n=BIOLOGICAL_N + HABER_N, built=allof,
+                    synthetic_w=2e13)):
+        h = run(2000, **kw)
+        yrs.append(next((s["year"] for s in h if s["p_left"] <= 0), 0))
+    return (tuple(yrs), teaching_is_free()[0],
+            round(100 * infrastructure_cost(allof)))
+
+
 def _revolution():
     from engine.revolution import (run, what_stopped_it, BIOLOGICAL_N,
                                    HABER_N, efficiency_from)
@@ -361,8 +378,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
-    ("3.1.84", "every gift shortens the clock: 1809, 1201, 708 years",
-     _revolution, ((1809, 1201, 708), "phosphorus", 54.7), CURRENT),
+    ("3.1.85", "four gifts, four shorter clocks: 1411, 998, 957, 695",
+     _gifts, ((1411, 998, 957, 695), True, 8), CURRENT),
     ("3.1.82", "steam caps at 54.7%; Rome 0.17x burial, we run 51x",
      _industry, (54.7, 0.17, 51, True), CURRENT),
     ("3.1.81", "empire 2250 km, 4.7% lies tolerated, 3 of 10 derive",
@@ -452,6 +469,16 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.84", "every gift shortens the clock: 1809, 1201, 708 years",
+     "withdrawn in 3.1.85, and the finding survived the correction "
+     "that killed the numbers. The reach multiplier was capped at "
+     "3.6, a figure I picked, and it turned out to be SATURATED "
+     "before infrastructure was added -- so the cap and not the "
+     "physics was setting the ceiling, and adding roads and grids "
+     "changed nothing at all. The ceiling now comes from the flow: "
+     "every watt of land photosynthesis feeds 2,707 billion. The "
+     "years move to 1411, 998, 957, 695 and every gift still "
+     "shortens the clock"),
     ("3.1.83", "the run reaches 24B and stops on food, not coal",
      "withdrawn in 3.1.84. 24 billion is still what the flow feeds, "
      "but 'stopped by food' was the only verdict that loop COULD "

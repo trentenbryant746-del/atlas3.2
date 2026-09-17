@@ -162,6 +162,11 @@ INPUTS = {
     "revolution.BIRTH_AT_SURPLUS": (CHOSEN, "1.5%/yr at full surplus"),
     "revolution.FOOD_W_PER_PERSON": (
         MEASURED, "upkeep plus a child's share, about 130 W"),
+    "revolution.APPRENTICE_HOURS": (
+        MEASURED, "10,000 hours to a trade; the upper bound on what "
+                  "one person can be told"),
+    "revolution.INFRASTRUCTURE": (
+        CHOSEN, "lifetimes, upkeep shares and reach gains; GIVEN"),
     "revolution.BOILERS": (
         MEASURED, "working pressure and saturation temperature; this "
                   "REPLACED a chosen 1.2%/yr learning rate"),
@@ -299,6 +304,9 @@ CLAIMS_ON = {
     "an empire reaches 2250 km at courier speed": ["empire.CRISIS_DAYS"],
     "steam caps at 54.7% whatever it is made of": [],
     "we burn 51 years of burial every year": ["industry.BURIAL_FRACTION"],
+    "instructions cost 0.0003% of a brain": [],
+    "infrastructure taxes 8% and shortens the clock": [
+        "revolution.INFRASTRUCTURE"],
     "every gift shortens the phosphorus clock": [
         "revolution.BIRTH_AT_SURPLUS", "revolution.START_W"],
     "engine efficiency is a material, not a learning rate": [],

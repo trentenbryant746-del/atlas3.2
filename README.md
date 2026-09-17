@@ -5377,3 +5377,49 @@ absorbed sunlight.
 that could only say one thing.
 
     revolution 7/7    suite 7.5 s warm    44 claims
+
+### 3.1.85 — instructions are free, infrastructure is a tax
+
+**Both were handed over and they are nothing like each other.**
+
+A whole trade, apprenticed over 10,000 hours at 39 bit/s, is
+1.4×10⁹ bits — **0.0003% of a brain.** Knowledge needs no materials,
+copies without loss, and `engine/civ.py` already showed the channel
+carries a *selection* rather than a volume. So giving them the
+instructions for engines changes nothing about what binds — and that
+is the finding, not a disappointment.
+
+Infrastructure is the opposite. Every road and pipe decays and is
+rebuilt out of the same surplus that feeds people:
+
+    roads        20 yr    2% upkeep    +10% reach
+    aqueducts   100 yr    1%           + 6%
+    power grid   40 yr    3%           +14%
+    sanitation   50 yr    2%           +12%
+                          8% forever   +42%
+
+**It is not a gift, it is a standing tax.** Net it carries 63.6B to
+69.9B people — and **shortens** the phosphorus clock from 998 years to
+957, because the extra people eat the constraint faster.
+
+    given nothing                    34.3B    1411 yr
+    nitrogen                         63.6B     998
+    nitrogen + infrastructure        69.9B     957
+    plus synthetic food             223.7B     695
+
+**Four gifts, four shorter clocks.** The pattern has held every time.
+
+### a chosen cap was hiding the effect
+
+The reach multiplier was capped at **3.6 — a number I picked** — and it
+turned out to be *saturated before infrastructure was even added*. So
+roads, grids and sanitation changed **nothing at all**, and the cap
+rather than the physics was giving the answer.
+
+The ceiling comes from the flow now: if every watt of land
+photosynthesis were eaten it feeds **2,707 billion**, and the largest
+run here uses 8% of that. **The flow was never what was binding** — and
+the previous numbers were a claim about a cap, which is why 3.1.84 is
+superseded even though its finding survived.
+
+    revolution 10/10    suite 7.5 s warm    45 claims

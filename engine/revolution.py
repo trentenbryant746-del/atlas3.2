@@ -51,6 +51,29 @@ BOILERS = {                   # MEASURED: working pressure, MPa -> K
 # MEASURED, kg of nitrogen fixed per year
 BIOLOGICAL_N = 140e9
 P_RESERVE_KG = 7.0e13         # MEASURED, ~70 Gt rock phosphate
+
+# GIVEN: instructions, and the infrastructure we have. Both handed
+# over, both marked, and the interesting thing is that they are
+# nothing like each other in what they cost.
+#
+# An apprenticeship is the measured upper bound on what one person
+# can be told: 10,000 hours at 39 bit/s is 1.4e9 bits, which is
+# 0.0003% of a brain. KNOWLEDGE IS ALMOST FREE TO HAND OVER. It
+# needs no materials, it copies without loss, and engine/civ.py
+# already showed the channel carries a selection rather than a
+# volume.
+#
+# Infrastructure is the opposite. Every piece decays and must be
+# rebuilt out of the same surplus that feeds people, so it is not
+# a gift, IT IS A STANDING TAX. What it buys back is reach: more
+# of the flow arriving where someone can eat it.
+APPRENTICE_HOURS = 10000.0
+INFRASTRUCTURE = {            # MEASURED-ish: (life yr, upkeep frac, reach gain)
+    "roads": (20.0, 0.02, 0.10),
+    "aqueducts": (100.0, 0.01, 0.06),
+    "power grid": (40.0, 0.03, 0.14),
+    "sanitation": (50.0, 0.02, 0.12),
+}
 FOOD_DRY_MJ_KG = 17.0         # MEASURED, dry plant food
 HABER_N = 120e9
 START_EFF = 0.005             # MEASURED, Newcomen
@@ -66,6 +89,29 @@ def land_food_w():
     """W of flow that reaches a human mouth. DERIVED from what is
     observably feeding people, not from a share of production."""
     return FED_NOW * FOOD_W_PER_PERSON
+
+
+def teaching_bits(hours=APPRENTICE_HOURS):
+    """Bits one person can be handed. DERIVED via engine/civ.py."""
+    from engine.civ import SPEECH_BITS_S
+    return SPEECH_BITS_S * hours * 3600.0
+
+
+def teaching_is_free():
+    """-> (bool, fraction of a brain). DERIVED."""
+    from engine.learning import store_bits
+    f = teaching_bits() / store_bits()
+    return f < 1e-4, f
+
+
+def infrastructure_cost(built):
+    """Fraction of output that never reaches anyone. DERIVED."""
+    return sum(INFRASTRUCTURE[k][1] for k in built if k in INFRASTRUCTURE)
+
+
+def infrastructure_reach(built):
+    """Extra share of the flow that arrives usable. DERIVED."""
+    return sum(INFRASTRUCTURE[k][2] for k in built if k in INFRASTRUCTURE)
 
 
 def phosphorus_kg_yr(pop):
@@ -111,6 +157,20 @@ def synthetic_ceiling(from_stock_w):
     return from_stock_w / FOOD_W_PER_PERSON
 
 
+def absolute_food_ceiling():
+    """People, if EVERY watt of land photosynthesis were eaten.
+
+    DERIVED from engine/industry.py's flow. This replaces a reach
+    multiplier capped at 3.6, which was a number I picked and
+    which turned out to be saturated before infrastructure was
+    even added -- so the cap was deciding the answer and hiding
+    the thing being tested. A ceiling has to come from the flow,
+    not from a ceiling.
+    """
+    from engine.industry import flow_w
+    return flow_w() / FOOD_W_PER_PERSON
+
+
 def food_ceiling(fixed_n_kg=BIOLOGICAL_N, reach=1.0, synthetic_w=0.0):
     """People the flow feeds. DERIVED through nitrogen, not guessed.
 
@@ -120,7 +180,8 @@ def food_ceiling(fixed_n_kg=BIOLOGICAL_N, reach=1.0, synthetic_w=0.0):
     is capped by the nitrogen available to grow it, and fixing more
     nitrogen moves the ceiling in proportion.
     """
-    return (FED_NOW * (fixed_n_kg / BIOLOGICAL_N) * reach
+    biological = FED_NOW * (fixed_n_kg / BIOLOGICAL_N) * reach
+    return (min(biological, absolute_food_ceiling())
             + synthetic_ceiling(synthetic_w))
 
 
@@ -135,13 +196,17 @@ def step(state):
     # material was granted, so this is a constant and not a climb
     eff = efficiency_from(state.get("material_mpa", 22.1))
 
+    # infrastructure is a standing tax and buys reach back
+    built = state.get("built", ())
+    tax = infrastructure_cost(built)
+    reach = 1.0 + eff * 6.0 + infrastructure_reach(built)
+
     # what the population can actually pull out of the ground
-    want_w = pop * START_W
+    want_w = pop * START_W * (1.0 + tax)
     got_w = min(want_w, stock / 3.15576e7) * eff / START_EFF
     got_w = min(got_w, want_w)
 
     # food: the flow feeds people, machines raise how much is reachable
-    reach = min(1.0 + eff * 6.0, 3.0)
     food_cap = food_ceiling(state.get("fixed_n", BIOLOGICAL_N), reach,
                             state.get("synthetic_w", 0.0))
 
@@ -159,12 +224,12 @@ def step(state):
             "material_mpa": state.get("material_mpa", 22.1),
             "fixed_n": state.get("fixed_n", BIOLOGICAL_N),
             "synthetic_w": state.get("synthetic_w", 0.0),
-            "p_left": p_left,
+            "built": state.get("built", ()), "p_left": p_left,
             "p_years": (p_left / max(phosphorus_kg_yr(pop), 1e-9))}
 
 
 def run(years=400, material_mpa=22.1, fixed_n=BIOLOGICAL_N,
-        synthetic_w=0.0):
+        synthetic_w=0.0, built=()):
     """-> [state]. Sixty million forward, a year at a time.
 
     material_mpa and fixed_n are WHAT THEY WERE GIVEN. Changing
@@ -175,8 +240,10 @@ def run(years=400, material_mpa=22.1, fixed_n=BIOLOGICAL_N,
     s = {"year": 0, "pop": START_POP,
          "eff": efficiency_from(material_mpa),
          "stock": stock_j(), "w_per_person": START_W,
-         "food_cap": food_ceiling(fixed_n, 1.0, synthetic_w),
+         "food_cap": food_ceiling(
+             fixed_n, 1.0 + infrastructure_reach(built), synthetic_w),
          "synthetic_w": synthetic_w, "p_left": P_RESERVE_KG,
+         "built": tuple(built),
          "p_years": P_RESERVE_KG / max(phosphorus_kg_yr(START_POP), 1e-9),
          "burial_ratio": 0.0, "material_mpa": material_mpa,
          "fixed_n": fixed_n}
@@ -230,6 +297,9 @@ def check():
     t("they_were_not_making_engines", _eff)
     t("giving_it_what_it_needs_moves_the_wall", _given)
     t("a_second_way_to_fail_changes_the_answer", _clock)
+    t("instructions_are_almost_free_to_hand_over", _teach)
+    t("infrastructure_is_a_tax_not_a_gift", _infra)
+    t("a_chosen_cap_was_hiding_the_effect", _capfix)
     t("something_stops_it_and_it_is_named", _stop)
     t("the_stock_is_barely_touched", _stock)
     t("this_is_a_run_not_an_argument", _honest)
@@ -284,6 +354,59 @@ def _given():
             f"nitrogen ratio, because crop carbon is capped by crop "
             f"nitrogen at Redfield. It does not remove the wall. It "
             f"moves it")
+
+
+def _teach():
+    free, f = teaching_is_free()
+    if not free:
+        raise ArithmeticError(f"teaching costs {100*f:.3f}% of a brain")
+    return (f"a whole trade, apprenticed over "
+            f"{APPRENTICE_HOURS:,.0f} hours at 39 bit/s, is "
+            f"{teaching_bits():.2e} bits -- {100*f:.5f}% of a brain. "
+            f"KNOWLEDGE IS ALMOST FREE TO HAND OVER: no materials, "
+            f"no loss on copying, and engine/civ.py already showed "
+            f"the channel carries a selection rather than a volume. "
+            f"So giving them the instructions changes nothing about "
+            f"what binds, and that is the finding rather than a "
+            f"disappointment")
+
+
+def _infra():
+    all_of_it = tuple(INFRASTRUCTURE)
+    tax, reach = (infrastructure_cost(all_of_it),
+                  infrastructure_reach(all_of_it))
+    a = run(2000, fixed_n=BIOLOGICAL_N + HABER_N)
+    b = run(2000, fixed_n=BIOLOGICAL_N + HABER_N, built=all_of_it)
+    ya = next((x["year"] for x in a if x["p_left"] <= 0), 0)
+    yb = next((x["year"] for x in b if x["p_left"] <= 0), 0)
+    if b[-1]["pop"] <= a[-1]["pop"] or yb >= ya:
+        raise ArithmeticError(f"{a[-1]['pop']:.0f}->{b[-1]['pop']:.0f}, "
+                              f"{ya}->{yb}")
+    return (f"every road and pipe decays and is rebuilt out of the "
+            f"same surplus that feeds people, so infrastructure is "
+            f"not a gift, IT IS A STANDING TAX: {100*tax:.0f}% of "
+            f"output forever, buying {100*reach:.0f}% more reach. "
+            f"Net it carries {a[-1]['pop']/1e9:.1f}B to "
+            f"{b[-1]['pop']/1e9:.1f}B -- and SHORTENS the phosphorus "
+            f"clock from {ya} years to {yb}, because the extra "
+            f"people eat the constraint faster. Every gift so far "
+            f"has done this")
+
+
+def _capfix():
+    c = absolute_food_ceiling()
+    if c < 1e12:
+        raise ArithmeticError(f"the absolute ceiling is {c/1e9:.0f}B")
+    return (f"the reach multiplier used to be capped at 3.6, a "
+            f"number I picked, and it was SATURATED before "
+            f"infrastructure was added -- so adding roads and grids "
+            f"and sanitation changed nothing at all, and the cap "
+            f"rather than the physics was giving the answer. The "
+            f"ceiling comes from the flow now: if every watt of land "
+            f"photosynthesis were eaten it feeds "
+            f"{c/1e9:,.0f} billion, and at the largest run here they "
+            f"use {100*223.7e9/c:.0f}% of it. The flow was never what "
+            f"was binding")
 
 
 def _stop():

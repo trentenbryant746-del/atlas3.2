@@ -143,6 +143,40 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _fragile():
+    from engine.multiverse import near_earth
+    out = {}
+    for span, dial in ((0.02, "spread"), (0.30, "metallicity"),
+                       (0.20, "nebula_mass")):
+        v = sorted(near_earth(steps=41, span=span, which=[dial])[dial])
+        live = [d for d, h, _ in v if h]
+        out[dial] = (round(min(live), 3), round(max(live), 3))
+    return (out["spread"][0] > -0.02, out["metallicity"] == (-0.3, 0.3),
+            out["nebula_mass"][1] < 0.10)
+
+
+def _shelterladder():
+    from engine.shelter import worn_floor, coldest_survivable
+    return (round(worn_floor() - 273.15),
+            round(coldest_survivable("earth lodge") - 273.15))
+
+
+def _homenights():
+    from engine.shelter import payback_nights
+    return round(payback_nights("brush shelter"), 1)
+
+
+def _lineage():
+    """The exact counts drift as modules are added, so the claim is
+    the ORDERING, which is the finding: most of what this tree
+    references nowhere is history, not dead code."""
+    from engine.spine import classify_unreferenced
+    k = classify_unreferenced()
+    lin, dis, st = (len(k["lineage"]), len(k["dispatched"]),
+                    len(k["stranded"]))
+    return lin > dis > st, lin > 2 * st
+
+
 def _acuity():
     from engine.senses import diffraction_limit, sampling_limit, arcmin
     return (round(arcmin(diffraction_limit()), 2),
@@ -230,6 +264,14 @@ def _conserve():
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.77", "Earth is fragile in spread, one-sided in mass, free in Z",
+     _fragile, (True, True, True), CURRENT),
+    ("3.1.76", "worn insulation runs out at 19 C, a lodge reaches -64",
+     _shelterladder, (19, -64), CURRENT),
+    ("3.1.76", "a brush shelter pays back in 4.6 nights",
+     _homenights, 4.6, CURRENT),
+    ("3.1.76", "unreferenced rules are mostly lineage, not dead code",
+     _lineage, (True, True), CURRENT),
     ("3.1.74", "the eye: diffraction 0.77 arcmin, sampling 1.01",
      _acuity, (0.77, 1.01), CURRENT),
     ("3.1.74", "stereo reaches 1320 m and 0.19 mm at arm's length",

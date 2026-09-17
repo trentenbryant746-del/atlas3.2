@@ -144,6 +144,7 @@ def check():
     t("no_access_means_no_calories", _gated)
     t("a_spear_is_geometry", _spear)
     t("this_produces_a_tool_it_does_not_price_one", _produced)
+    t("the_breaks_predicate_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -255,6 +256,17 @@ def _produced():
             f"engine/descent.py is still open for everything that has "
             f"to be built")
 
+
+
+def _stranded():
+    """Wires breaks, which was written and never called."""
+    fist = breaks(area_m2=CONTACT["fist"])
+    flake = breaks(area_m2=CONTACT["flaked edge"])
+    if fist or not flake:
+        raise ArithmeticError(f"fist {fist}, flake {flake}")
+    return ("breaks() says False for a fist and True for a flaked "
+            "edge, which is the whole of this module in one "
+            "predicate -- and nothing called it until now")
 
 if __name__ == "__main__":
     print(f"  bone yields at {BONE_COMPRESSIVE:.1e} Pa\n")

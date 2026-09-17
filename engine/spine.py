@@ -33,6 +33,7 @@ import ast
 import hashlib
 import sys
 from functools import lru_cache
+import pathlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -218,6 +219,12 @@ def grounding(targets):
 
 WARM = ROOT / "data" / "spine_warm.json"
 
+# Earlier Atlas trees. A rule this one references nowhere may still
+# be load-bearing history, and saying otherwise was wrong.
+ANCESTORS = [
+    pathlib.Path("/Users/trentenbryant/Downloads/atlas2-main"),
+]
+
 
 def all_rules():
     """-> [(module, name)]. Every top-level rule in the engine."""
@@ -291,6 +298,49 @@ def unused(where=None):
             and (where is None or m == where)]
     return cand, ("dynamically dispatched rules appear here wrongly; "
                   "engine/lab.py alone contributes 32")
+
+
+@lru_cache(maxsize=None)
+def _ancestor_text():
+    """Every line of every earlier Atlas, concatenated once."""
+    blob = []
+    for root in ANCESTORS:
+        if not root.exists():
+            continue
+        for f in root.rglob("*.py"):
+            try:
+                blob.append(f.read_text())
+            except Exception:
+                pass
+    return "\n".join(blob)
+
+
+def classify_unreferenced():
+    """-> {kind: [node]}. What 'nothing references this' actually means.
+
+    Three very different things wear the same absence and calling
+    them all dead code was wrong:
+
+      LINEAGE      Atlas 1 and 2 reference it. This tree grew past
+                   the call site, not past the rule.
+      DISPATCHED   engine/lab.py looks it up by name at runtime,
+                   which no syntax tree can see.
+      STRANDED     nothing references it anywhere, in any Atlas.
+                   Mostly written by whoever wrote it and never
+                   wired, which is the only group worth acting on.
+    """
+    import re
+    cand, _ = unused()
+    text = _ancestor_text()
+    out = {"lineage": [], "dispatched": [], "stranded": []}
+    for m, n in cand:
+        if m == "lab":
+            out["dispatched"].append((m, n))
+        elif re.search(rf"\b{re.escape(n)}\b", text):
+            out["lineage"].append((m, n))
+        else:
+            out["stranded"].append((m, n))
+    return out
 
 
 def check():
@@ -435,21 +485,26 @@ def _whole():
 
 
 def _dead():
-    cand, caveat = unused()
-    lab = [x for x in cand if x[0] == "lab"]
-    if not lab:
-        raise ArithmeticError("the lab's dispatched experiments resolved")
-    mine = [x for x in cand if x == ("atoms", "standing_crop")]
-    return (f"{len(cand)} rules are referenced by nothing, and that is "
-            f"NOT a list of dead code. {len(lab)} of them are "
-            f"engine/lab.py experiments it looks up by name at "
-            f"runtime, which a syntax tree cannot see. A static graph "
-            f"says what nothing REFERENCES; it cannot say what "
-            f"nothing RUNS, and reporting the first as the second "
-            f"would be the most confident kind of wrong. What it does "
-            f"catch honestly is code its own author left stranded -- "
-            f"atoms.standing_crop was written in 3.1.69 and wired to "
-            f"nothing: {'found' if mine else 'MISSING'}")
+    """CORRECTED. The first version called all of these dead code
+    with a caveat, and the caveat did not cover the real case."""
+    k = classify_unreferenced()
+    tot = sum(len(v) for v in k.values())
+    if not k["lineage"]:
+        raise ArithmeticError("no unreferenced rule appears in an ancestor")
+    if ("atoms", "standing_crop") not in k["stranded"]:
+        raise ArithmeticError("a known stranded rule did not sort as one")
+    return (f"{tot} rules are referenced nowhere in this tree, and "
+            f"they are THREE different things. {len(k['lineage'])} are "
+            f"LINEAGE -- Atlas 2 references them, so this tree grew "
+            f"past the call site and not past the rule. "
+            f"{len(k['dispatched'])} are DISPATCHED, looked up by name "
+            f"at runtime in engine/lab.py where no syntax tree can "
+            f"follow. Only {len(k['stranded'])} are STRANDED anywhere, "
+            f"and those are mostly ones I wrote this session and never "
+            f"wired -- atoms.standing_crop, biome.must_outgrow, "
+            f"human.is_a_ramp. The earlier version reported all "
+            f"{tot} as one number with a caveat, and the caveat named "
+            f"the dispatched case while missing the larger one")
 
 
 if __name__ == "__main__":

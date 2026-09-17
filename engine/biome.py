@@ -269,6 +269,7 @@ def check():
     t("a_predator_needs_ground_not_a_square_metre", _range)
     t("a_brain_must_pay_for_itself", _brain)
     t("intelligence_is_not_claimed", _humble)
+    t("the_shading_and_prey_rules_are_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -390,6 +391,18 @@ def _humble():
             "reach -- it needs the mechanism that generates variation, "
             "which engine/descent.py showed is absent")
 
+
+
+def _stranded():
+    """Wires must_outgrow and predator_prey_ratio."""
+    grow, why_g = must_outgrow(5.0)
+    n = predator_prey_ratio(40.0, 20.0)
+    if not grow or n <= 0:
+        raise ArithmeticError(f"outgrow {grow}, ratio {n}")
+    return (f"under a 5 m canopy, clearing it beats staying short "
+            f"({why_g[:64]}), and a 40 kg predator stands on {n:.0f} "
+            f"prey of 20 kg. Both rules were written and neither had "
+            f"a caller")
 
 if __name__ == "__main__":
     print(f"  ground light {surface_light():.0f} W/m2, plants fix "

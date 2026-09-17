@@ -260,6 +260,7 @@ def check():
     t("binding_improves_where_the_gap_was", _improve)
     t("the_liquid_drop_knows_where_it_ends", _domain)
     t("curvature_was_tested_and_rejected", _curv)
+    t("the_one_measured_number_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -369,6 +370,20 @@ def _curv():
             f"nuclei are under-bound and heavy ones over-bound and one "
             f"term cannot do both. Hypothesis discarded, not fitted")
 
+
+
+def _stranded():
+    """Wires fit_scale and domain_note."""
+    sc, why = fit_scale()
+    v = float(getattr(sc, "value", sc))
+    note = domain_note(2, 2)
+    if not -100.0 < v < 0.0 or "below" not in note:
+        raise ArithmeticError(f"scale {v}, note {note[:40]}")
+    return (f"the single fitted number here is {v:.4f} and it is "
+            f"NEGATIVE -- a deficit, not a scale, whatever its name "
+            f"says. Wiring it was how that surfaced: nothing had "
+            f"called it, so nothing had ever had to know its sign. "
+            f"He-4 also gets told why it is out of domain")
 
 if __name__ == "__main__":
     print(f"  magic numbers derived: {MAGIC}")

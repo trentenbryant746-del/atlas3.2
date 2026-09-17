@@ -234,6 +234,7 @@ def check():
     t("a_tree_is_made_of_air", _air)
     t("every_life_rule_accounts_for_matter", _accounting)
     t("eating_moves_atoms_and_makes_none", _eating)
+    t("standing_crop_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -344,6 +345,19 @@ def _eating():
             f"is returned free, which is what feeds the decomposers "
             f"that no module has yet")
 
+
+
+def _stranded():
+    """Wires standing_crop, written in 3.1.69 and never called."""
+    e, cap, turn = standing_crop(
+        {"C": 1e3, "H": 1e5, "O": 1e5, "N": 1e2, "P": 1.0, "S": 1e2},
+        turnover_yr=10.0)
+    if e != "P" or cap <= 0:
+        raise ArithmeticError(f"{e} limits at {cap}")
+    return (f"a world recycling every {turn:.0f} years holds {cap:.0f} "
+            f"kg of biomass at once, capped by {e}. This was written "
+            f"the day the atom ledger went in and nothing ever called "
+            f"it")
 
 if __name__ == "__main__":
     p = Pool(atoms_in(1000.0))

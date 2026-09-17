@@ -139,6 +139,12 @@ INPUTS = {
     "human.COOKING_GAIN": (
         MEASURED, "cooked food yields about 35% more; NOT raised to "
                   "close the gap it fails to close"),
+    "shelter.INSULATION": (
+        MEASURED, "effective conductance W/m2K for each shell"),
+    "shelter.BODY_AREA_M2": (MEASURED, "1.8 m2 for a 70 kg adult"),
+    "shelter.BUILD_DAYS": (
+        CHOSEN, "3 days of output to build a shelter; a dial"),
+    "multiverse.RAM_BUDGET_MB": (CHOSEN, "given, and it was not needed"),
     "senses.WAVELENGTH_M": (MEASURED, "550 nm, photopic peak"),
     "senses.PUPIL_M": (MEASURED, "3 mm in daylight"),
     "senses.CONE_PITCH_M": (MEASURED, "2.5 um foveal cone spacing"),
@@ -187,6 +193,9 @@ CLAIMS_ON = {
     "the food chain runs 4 levels": ["biome.PHOTOSYNTHETIC_EFFICIENCY"],
     "a flaked edge opens a bone and a fist cannot": [],
     "the eye sits at its own diffraction limit": [],
+    "worn insulation runs out at 19 C": [],
+    "a shelter pays back in 4.6 nights": ["shelter.BUILD_DAYS"],
+    "26.7% of universes carry a toolmaker": [],
     "stereo gives out past 1320 m": [],
     "a brain fills in 1.49 years": ["learning.BITS_PER_FIBRE_S"],
     "marrow pays for a brain 5.2x over": [],

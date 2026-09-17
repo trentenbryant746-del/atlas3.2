@@ -189,6 +189,7 @@ def check():
     t("custody_chain_is_tamper_evident", _tamp)
     t("histories_outnumber_atoms", _more)
     t("uranium_series_then_overruns", _u238)
+    t("the_context_set_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -356,6 +357,16 @@ def _more():
             f"expert sets between them, from histories reconstructed on "
             f"demand and stored nowhere")
 
+
+
+def _stranded():
+    """Wires contexts, written and never called."""
+    c = contexts("universe-0", 0, "C", 1)
+    if not c:
+        raise ArithmeticError("one atom passes through no contexts")
+    return (f"a single carbon atom passes through {len(c)} distinct "
+            f"expert sets on its way from a universe seed, and that "
+            f"count is now checked instead of merely available")
 
 if __name__ == "__main__":
     for el in ("U", "C", "Au"):

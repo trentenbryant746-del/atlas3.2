@@ -437,6 +437,7 @@ def check():
     t("protein_mass_two_ways", _pm)
     t("translation_loses_information", _bt)
     t("protein_refuses", _pref)
+    t("codon_and_epoch_are_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -551,6 +552,20 @@ def _pref():
     return (f"{len(cases)} malformed inputs refused, each with the reason "
             f"that makes it malformed")
 
+
+
+def _stranded():
+    """Wires codon_space and protein_epoch."""
+    n = codon_space()
+    pair = getattr(n, "value", n)
+    bases, nv = pair
+    ep = protein_epoch("MC")
+    if (bases, nv) != (3, 64):
+        raise ArithmeticError(f"the codon space is {pair}")
+    return (f"codon_space returns the PAIR ({bases}, {nv}), not the "
+            f"64 its name suggests -- the triplet is derived "
+            f"from 4**2 < 21 <= 4**3, and a chain holding M or C waits "
+            f"for supernovae: {str(ep)[:70]}. Neither had a caller")
 
 if __name__ == "__main__":
     for f in (nucleotide_epoch(), dna_epoch(), code_shape(), codon_space(),

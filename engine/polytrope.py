@@ -296,6 +296,7 @@ def check():
     t("step_independent", _conv)
     t("reproduces_the_assertion", _repro)
     t("chandrasekhar_still_right", _mass)
+    t("omega_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -356,6 +357,16 @@ def _mass():
     return (f"the Chandrasekhar mass built on the DERIVED constant is "
             f"{m:.4f} solar masses, against an accepted 1.4")
 
+
+
+def _stranded():
+    """Wires omega, written and never called."""
+    w = omega(3.0)
+    v = float(getattr(w, "value", w))
+    if not 0 < v < 10:
+        raise ArithmeticError(f"omega came out {v}")
+    return (f"the Lane-Emden n=3 mass integral is {v:.5f}, a number "
+            f"this module could produce and nothing asked for")
 
 if __name__ == "__main__":
     for n in (0.0, 1.0, 1.5, 3.0):

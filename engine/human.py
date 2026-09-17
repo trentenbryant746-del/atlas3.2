@@ -165,6 +165,7 @@ def check():
     t("a_tool_must_feed_the_head_that_made_it", _tool)
     t("a_human_is_made_of_atoms_and_returns_them", _matter)
     t("nothing_here_says_it_happened", _humble)
+    t("the_ramp_test_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -276,6 +277,16 @@ def _humble():
             "that step RECORDED and it stays RECORDED. The path is "
             "shown to be open. It is not shown to have been taken")
 
+
+
+def _stranded():
+    """Wires is_a_ramp, written and never called."""
+    ok, where = is_a_ramp()
+    if ok:
+        raise ArithmeticError("the climb became a ramp")
+    return (f"is_a_ramp() returns False, losing ground at step "
+            f"{where} of twenty. It is the predicate behind the "
+            f"cooking MISSING_RULE and it had no caller of its own")
 
 if __name__ == "__main__":
     print(f"  a {BODY_KG:.0f} kg body runs at {budget_w():.0f} W\n")

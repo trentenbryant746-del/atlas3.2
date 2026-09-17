@@ -4901,3 +4901,83 @@ shallowest. The measure was right; what it measured got fixed. That is
 the only outcome a depth claim can want.
 
     spine 8/8    30/30 published numbers reproduce
+
+### 3.1.76 — shelters, homes, and 22 rules given call sites
+
+**A shelter is insulation that does not have to be worn.**
+`engine/ancestry.py` found bare skin never balances and stopped at fur
+and fat. Insulation can be *built*, and then the same arithmetic runs
+again with a different answer.
+
+    bare skin        h=10.0    balances at   32 C
+    hides, clothing   2.5                    19 C
+    brush shelter     0.9                   -14 C
+    earth lodge       0.45                  -64 C
+
+Naked, a human is stranded above **32 °C** — a tropical animal by
+arithmetic. Worn insulation runs out at 19 °C. **Everything colder is
+not hardiness, it is construction**, and the line between them is a
+subtraction.
+
+**A home is tenure, not architecture.** A shelter costs ~3 days of
+output and saves 106 W a night — **4.6 nights to break even**. One
+night is a loss; thirty is the best return available, and *the
+structure is identical*. So a home cannot appear in a lineage that does
+not stay put, whatever it is able to build.
+
+This **extends** `ancestry.py` rather than overturning it — and the
+check *calls* `can_stay_warm(70 kg, bare)` rather than quoting it, so a
+disagreement would surface.
+
+**And the dead-code claim was wrong.** 3.1.75 reported 119 unreferenced
+rules with a caveat about dynamic dispatch. Checking against **Atlas 2**
+showed the caveat named the smaller case:
+
+    66  LINEAGE      Atlas 2 references them. This tree grew past
+                     the call site, not past the rule.
+    32  DISPATCHED   engine/lab.py looks them up by name at runtime.
+    22  STRANDED     referenced nowhere, in any Atlas.
+
+**All 22 now have call sites** — real checks that exercise them, not
+stubs. Wiring never-called code found three things immediately:
+`shells.fit_scale` returns **−4.70**, negative — a deficit, not a
+scale, whatever its name says. `biomatter.codon_space` returns the
+**pair (3, 64)**, not the 64 its name suggests. And
+`abundance.trace_by_decay` opens its docstring with **REFUSED** and
+returns *findings* — the refusal is real but partial, and nothing had
+called it, so nobody had noticed the docstring describes half of what
+it does.
+
+### 3.1.77 — a narrow multiverse asks the better question
+
+A wide sweep said 26.7% of universes carry a toolmaker. That number
+depends entirely on how the sampling ranges were picked, so it is
+mostly a fact about whoever picked them. Stepping small distances from
+**the seed this world actually came from** asks something the choice of
+range cannot contaminate: **how fragile is Earth?**
+
+    spread        +/- 2%     survives -1.15% to +2.00%
+    nebula_mass   +/-20%     survives -20.0% to +7.00%
+    metallicity   +/-30%     survives the whole range
+
+**One dial is tight, one is one-sided, one does not matter.** Earth
+sits **1.15%** above a cliff in disc spread. Nebula mass tolerates
+being a fifth smaller but fails 7% larger — a heavier star leaves the
+band before life has time. Metallicity does nothing across ±30%.
+
+Both refusals name their mechanism: *time in the band: 0 Gyr against 1*.
+
+**Also, the human gates never bind.** Across every sweep, not one world
+fails on tree, skeleton, flake or grip — every refusal is CHNOPS, band
+time, or no rocky planet, all upstream of biology. Said plainly because
+it is also a limit: these gates are not close calls. A skeleton crushes
+only past **5,000 g**. The rarity of toolmakers here is *entirely* the
+rarity of habitable worlds, and if that is wrong, the missing
+difficulty is not in any rule written yet.
+
+**On the RAM:** the budget went to 8 GB and it still is not what is
+scarce. The largest worker holds **18 MB**; 20,000 universes run in
+22 s at 918/s across 10 cores. Where the memory *did* pay is
+`engine/spine.py`, where 43 MB holds the whole dependency graph.
+
+    multiverse 6/6   shelter 4/4   12 modules newly exercised

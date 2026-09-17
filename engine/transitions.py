@@ -693,6 +693,7 @@ def check():
     t("answer_sets_exceed_atoms", _sets)
     t("chains_terminate", _chain)
     t("scored_against_known_fates", _score)
+    t("the_resolution_floor_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -810,6 +811,18 @@ def _chain():
             + " -> ".join(f"Z{z}" for _m, (z, _n) in c[:6])
             + (" ..." if len(c) > 6 else ""))
 
+
+
+def _stranded():
+    """Wires resolvable, written and never called."""
+    big, why_b = resolvable(5.0)
+    small, why_s = resolvable(1e-4)
+    if not big or small:
+        raise ArithmeticError(f"5 MeV {big}, 0.1 keV {small}")
+    return (f"a 5 MeV Q is resolvable and a 0.1 keV one is not: "
+            f"{why_s[:80]}. The formula's own bar decides what it is "
+            f"allowed to have an opinion about, and this rule says so "
+            f"-- it had no caller until now")
 
 if __name__ == "__main__":
     g = graph()

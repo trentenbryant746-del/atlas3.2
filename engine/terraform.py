@@ -951,6 +951,7 @@ def check():
     t("runaway_inside_the_inner_edge", _inner)
     t("nothing_acts_on_the_planet", _noagent)
     t("AU_is_a_distance_not_gold", _augold)
+    t("escape_and_ceiling_are_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -1168,6 +1169,31 @@ def _teq():
         rows.append(f"{n} {equilibrium_T(b):.0f}K vs {b.observed_T:.0f}K")
     return "bare rock, no atmosphere: " + ", ".join(rows)
 
+
+
+def _stranded():
+    """Wires jeans_lambda, co2_ceiling and airborne_co2, which were
+    written and never called by any check."""
+    e = BODIES["Earth"]
+    n2 = jeans_lambda(e, "N2")
+    h2 = jeans_lambda(e, "H2")
+    n2v = float(getattr(n2, "value", n2))
+    h2v = float(getattr(h2, "value", h2))
+    if not n2v > h2v:
+        raise ArithmeticError(f"N2 {n2v:.1f} does not outbind H2 {h2v:.1f}")
+    cap = co2_ceiling(288.0)
+    capv = float(getattr(cap, "value", cap))
+    air = airborne_co2(e, 1.0e5)
+    airv = float(getattr(air, "value", air))
+    if capv <= 0 or airv < 0:
+        raise ArithmeticError(f"ceiling {capv}, airborne {airv}")
+    return (f"Earth binds N2 at lambda={n2v:.1f} and H2 at {h2v:.1f}, "
+            f"a factor of {n2v/h2v:.0f} -- which is why there is "
+            f"nitrogen up there and no hydrogen. The CO2 ceiling at "
+            f"288 K is {capv:.3g} Pa and 1 bar offered leaves "
+            f"{airv:.3g} airborne. All three of these were written "
+            f"and never called; they work, and now something fails "
+            f"if they stop")
 
 if __name__ == "__main__":
     print(f"  sigma  {SIGMA:.7e}   R  {R_GAS:.6f}\n")

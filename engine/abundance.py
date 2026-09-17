@@ -331,6 +331,7 @@ def check():
     t("natural_boundary_derived", _nat)
     t("channels_are_derived", _chan)
     t("fusion_stops_at_the_peak", _stop)
+    t("the_trace_refusal_is_exercised", _stranded)
     return all(o[1] for o in out), out
 
 
@@ -457,6 +458,21 @@ def _met():
             f"dex table and the repo's atomic weights; accepted solar is "
             f"about X=0.7381 Y=0.2485 Z=0.0134")
 
+
+
+def _stranded():
+    """Wires trace_by_decay, which is a REFUSAL nobody called."""
+    r = trace_by_decay()
+    if not isinstance(r, dict) or not r:
+        raise ArithmeticError(f"expected findings, got {type(r).__name__}")
+    k = sorted(r)[0]
+    return (f"its docstring opens with REFUSED and it returns "
+            f"FINDINGS -- {len(r)} of them, e.g. {k}: {r[k][:76]}. "
+            f"The refusal is real but partial: position alone cannot "
+            f"split trace from absent, and yet the decay chains "
+            f"settle some cases outright. Nothing called this, so "
+            f"nobody had noticed the docstring describes only half "
+            f"of what the function does")
 
 if __name__ == "__main__":
     mf = mass_fractions()

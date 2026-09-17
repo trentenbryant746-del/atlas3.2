@@ -1954,3 +1954,54 @@ rule to add next.
 
     engine/radiative.py  7/7     engine/terraform.py  14/14
     eval/audit.py       21/21    eval/heldout.py     165/165 byte-exact
+
+### 3.1.22 — a lab: small controlled experiments, one rung at a time
+
+A benchmark says PASS or FAIL. That is not enough to build physics with,
+because there are three ways to be wrong and they need different work.
+`engine/lab.py` separates them:
+
+    HOLDS         the rule does what it claims, in isolation
+    MISSING_RULE  self-consistent but INSUFFICIENT -- something real
+                  happens that these rules forbid
+    CLASH         two rules, each fine alone, contradict each other
+    REFUSED       cannot be run with what is here, and says what it needs
+
+Only the first is a pass. Lumping the other three together as "fail"
+throws away the only information that says what to do next.
+
+**Why layers.** A wrong surface temperature could be bad radiative
+transfer, bad thermodynamics, or a bad constant, and from the top there
+is no way to tell. So each experiment declares its rung, the rungs run in
+order, and a layer whose foundation is unsound is not run at all:
+
+    0 constants   1 molecule   2 column   3 atmosphere
+    4 balance     5 feedback   6 world
+
+12 experiments, 11 HOLD, **1 MISSING_RULE**, 0 CLASH.
+
+**How a missing rule is found — not by comparing to an example.** It
+shows up when a *derived limit* and a *real thing* cannot both be true.
+The rules say unbounded CO₂ can multiply a bare-rock temperature by at
+most **1.012**. Venus requires **3.251**. Neither statement is an example
+being fitted to: one is a consequence of the rules, the other is that
+Venus exists. The contradiction is the discovery, and it names what is
+absent — collision-induced continuum absorption, which two CO₂ molecules
+produce during a collision and which no single-molecule band table can
+contain, plus cloud scattering.
+
+**And isolating it found a second mechanism.** A controlled experiment at
+layer 3 asked only whether a gas stays as useful as its planet heats up:
+
+    CO2's 15 micron band covers  26.1% of a 288 K body's emission
+                                  6.5% of a 737 K body's emission
+
+A hotter body emits at shorter wavelengths, so the band **slides off the
+Planck peak**. CO₂ gets weaker exactly where it would need to be
+stronger — a brake built into Planck's law, and most of why the ceiling
+is so low. It also means CO₂ sits almost exactly on the peak of a *cold*
+planet, which is why a trace of it matters so much here and so little on
+Venus. That was not visible from the top; it took an experiment with
+nothing else varying.
+
+    engine/lab.py  5/5 checks, 12 experiments over 7 rungs

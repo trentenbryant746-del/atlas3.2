@@ -49,10 +49,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from engine.constants import K_B, E_CHARGE, N_A  # noqa: E402
+from engine.constants import (K_B, E_CHARGE, N_A,  # noqa: E402
+                              YEAR_S)
 
 AGE_UNIVERSE_YR = 1.38e10
-YEAR_S = 3.155693e7
 ALPHABET = 20            # amino acids; engine/biomatter.py's RESIDUES
 
 

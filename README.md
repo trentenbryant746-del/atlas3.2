@@ -3458,5 +3458,13 @@ folding is not a search, and neither is this.
 produced is a *constraint* — a number where there was a hand-wave, and
 one whole explanation eliminated. The origin itself is still absent.
 
+**And the constants rule caught its own author again.** `engine/origin.py`
+redefined `YEAR_S` ten minutes after being written, and
+`constants_are_not_duplicated` flagged it — the second time a rule here
+has caught the person who wrote it, after `MEASURED_Q_BAR` in 3.1.31.
+Both were typed by hand shortly after the rule forbidding exactly that
+went in. A rule that only catches other people's mistakes is not being
+tested.
+
     origin 5/5   lab 28 experiments   5,737 correct, 0 wrong
-    claims 14/14   audit 21/21
+    claims 16/16   audit 21/21

@@ -1635,3 +1635,81 @@ itself look unstable.
 So the unsolved entry changes from *"can it see beta decay"* — it can —
 to **"three decays it gets confidently wrong"**, with shell corrections
 named as what would fix two of them.
+
+### 3.1.18 — a bar is a property of a domain, and not always an energy
+
+`engine/nucleo.py` measures three error bars because a mass, an alpha step
+and a beta step are three questions about one formula. This version takes
+that further, because the three are all still nuclear. A protein is not a
+nucleus:
+
+    nuclear binding        ~8 MeV per nucleon
+    chemical bond          ~4 eV
+    hydrogen bond          ~0.2 eV
+    thermal noise at 310 K  0.0267 eV
+
+Eight and a half orders of magnitude. The 1.208 MeV alpha bar is forty
+million thermal quanta, so applying it to a fold would refuse every fold
+there is; a folding bar applied to nuclei would accept every decay
+including the ones that do not happen. Neither error is subtle, and both
+come from treating "the error bar" as one thing.
+
+`engine/scales.py` holds one bar per domain with the unit it is in, and
+refuses for a domain that has not established one — which is the honest
+state of chemical bonds here, since `engine/valence.py` counts bonds and
+never weighs them. Thermal noise is DERIVED: kT from Boltzmann's constant
+and the elementary charge, both exact by definition since the 2019 SI
+revision. Nothing in it is fitted.
+
+**The finding is that folding's bar is not an energy at all.** The nuclear
+bars are residuals against MEASUREMENT — the formula says a binding energy,
+a real nuclide has one, the spread over many nuclides is the bar. There is
+no measured energy for a fold of `CGCG` on a square lattice, because no
+such object exists. So the bar is measured MODEL AGAINST MODEL: how often
+an exact minimum survives a change the chemistry does not settle. Sulfur is
+that change — Pauling puts S at 2.58 and C at 2.55, no difference at all —
+so the baseline counts S as polar and the variant counts it as greasy, and
+only cysteine and methionine move.
+
+    55 of 96 sequences keep the same minimising fold.
+    43% of exact minima are the model's choice, not the sequence's.
+
+    nuclear    bar in MeV     residual against a measurement
+    folding    bar as a RATE  disagreement with another model
+
+Different classes of thing do not merely get different numbers. They get
+different KINDS of bar, because what there is to be wrong about differs.
+`units_never_mix` enforces it: a rate and an energy are different claims
+and the unit is what keeps them from being compared.
+
+**Two wrong measurements on the way, both kept.** The first ran over
+alternating sequences and got 14 of 14 surviving. A square lattice is
+bipartite, so every contact joins an odd index to an even one; in `ABABAB`
+every contact is A·B and the energy is one constant times a contact count,
+which no reweighting can reorder. Those sequences were unflippable BY
+CONSTRUCTION and a perfect score over them measured nothing. It is now a
+check, `alternating_cannot_be_flipped`.
+
+The second looked for a threshold. Ten flipped sequences all had small gap
+fractions, suggesting a fold separated by enough of the spectrum would be
+safe — the same shape as the nuclear bar, where a Q-value outside 1.208 MeV
+resolves. Over 375 sequences it did not hold: survival runs 53% in the
+lowest band to 81% in the highest, with a flip as high as 0.224. The
+correlation is real, weak, and not a threshold. The hypothesis is recorded
+as overturned.
+
+**And a bug the bar found.** Reporting degeneracy made every short sequence
+a two-way tie. Those were never two folds — `walks()` fixes the first step,
+which removes the fourfold rotation but not reflection across it, so every
+fold was being counted with its mirror image. Mirrors have identical energy
+by construction and can never be told apart by any energy at all, so
+counting them as a tie makes the model look undecided about something it
+was never asked. `canonical()` quotients by reflection; `FGFGFGFG` goes
+from 38 tying folds to 19, and `fold()` and `ground_set()` now give one
+answer instead of two.
+
+    engine/scales.py    6/6      registry, kT derived, units never mix
+    engine/folding.py  11/11     was 7; +mirror, +scale-free, +parity, +bar
+    eval/audit.py      21/21
+    eval/heldout.py   165/165    byte-exact
+    eval/benchmark.py  ALL PASS  5,737 correct, 0 wrong

@@ -56,10 +56,9 @@ INHERITED = "DERIVED_FROM_ASSERTED"
 
 # measured constants
 HBAR = 1.054571817e-34      # J s
-C_LIGHT = 2.99792458e8      # m/s
-G_NEWTON = 6.67430e-11      # m^3 / (kg s^2)
+from engine.constants import (C_LIGHT, G_GRAV as G_NEWTON,  # noqa: E402
+                              M_SUN_KG as M_SUN)
 M_H = 1.67262192369e-27     # kg, hydrogen (proton) mass
-M_SUN = 1.98847e30          # kg
 MU_E = 2.0                  # electrons per nucleon in a C/O dwarf
 
 # ASSERTED: the Lane-Emden n=3 polytrope constant. This is the

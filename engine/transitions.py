@@ -141,7 +141,7 @@ def resolvable(q):
             + ("resolvable" if q >= SEMF_MeV else
                "smaller than the formula's own error, so the sign is "
                "not determined and the sign is the answer"))
-B_ALPHA = 28.296        # measured binding of He-4
+from engine.constants import B_ALPHA_MEV as B_ALPHA  # noqa: E402
 
 # Valences, for the binding half. ASSERTED: which bonds an element
 # forms is chemistry, not something derived here.

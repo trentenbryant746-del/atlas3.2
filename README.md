@@ -2088,3 +2088,54 @@ specific unknown rather than asking for a coefficient.
 
     engine/lab.py  5/5 meta-checks; 13 experiments, 11 HOLDS,
                    1 CLASH, 1 MISSING_RULE, both named
+
+### 3.1.24 — never patch: one home per constant, enforced
+
+**The rule.** A failure is the most useful thing this project produces,
+because a failure converts into a rule and a rule is permanent. A patch
+converts a failure into silence. So nothing here is fixed by adjusting a
+value; it is fixed by changing a rule, or it is left standing and named.
+
+The first sweep of *all* rules — not just the climate ones — went looking
+for physical constants defined in more than one module. It found four
+quantities carrying two or three independent definitions:
+
+    atomic mass unit   AMU (terraform)       U_KG (cosmoschunks, halflife)
+    Newton's constant  G_GRAV (terraform)    G_NEWTON (remnants)
+    solar mass         M_SUN (remnants)      M_SUN_KG (cosmoschunks, halflife)
+    alpha binding      B_ALPHA (transitions) B_ALPHA_MEV (nucleo)
+
+**Every one of them agreed, which is what made it worth fixing.** Nothing
+enforced the agreement — it held because whoever typed the second copy was
+careful. One later edit and two modules would have quietly disagreed about
+the mass of the Sun, and every answer would still have looked reasonable.
+This is precisely a rule that looks right and isn't.
+
+Setting the copies equal would be a patch: it fixes today's values and
+leaves the mechanism intact. The fix is `engine/constants.py` — one home,
+every module imports, and a lab experiment at layer 0 fails if a second
+definition appears anywhere, under its own name or any historical alias.
+**A duplicate cannot drift if a duplicate cannot exist.**
+
+**And the sweep forced a second distinction.** Constants are now marked
+EXACT or MEASURED, and a layer-0 experiment fails if a measured one is
+presented as exact. Six are exact by definition — they *define* the
+kilogram, metre, kelvin, mole, ampere and the astronomical unit, so they
+have no uncertainty and never will. Six are measured. G is the worst-known
+constant in physics at ~22 parts per million, five orders of magnitude
+worse than anything defining an SI unit, and every escape velocity and
+scale height in the repo inherits that. Nothing may hide it.
+
+Derived quantities are deliberately **not** stored. Stefan-Boltzmann is
+absent from the constants file because it is `2π⁵k⁴/15h³c²` — a number that
+can be computed has no business having a second home to go stale in.
+
+    engine/constants.py  3/3     lab: 15 experiments, 13 HOLDS,
+    5,737 correct, 0 wrong       1 CLASH, 1 MISSING_RULE, both named
+    audit 21/21                  heldout 165/165 byte-exact
+
+**Toward 3.3: lab every rule.** This sweep covered constants. The same
+treatment is owed to unit consistency, to dimensional agreement across
+module boundaries, and to every place two modules compute a quantity that
+ought to match. The expectation is that it uproots things that currently
+look right.

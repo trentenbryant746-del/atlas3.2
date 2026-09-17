@@ -56,10 +56,7 @@ sys.path.insert(0, str(ROOT))
 
 DERIVED, ASSERTED = "DERIVED", "ASSERTED"
 
-N_A = 6.02214076e23
-K_B = 1.380649e-23
-H_PLANCK = 6.62607015e-34
-C_LIGHT = 299792458.0
+from engine.constants import N_A, K_B, H_PLANCK, C_LIGHT  # noqa: E402
 P_REF = 1.01325e5          # Pa, the pressure line widths are quoted at
 
 # Laboratory band data. Measured on gas in a cell, never on a sky.

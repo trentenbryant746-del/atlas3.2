@@ -50,16 +50,14 @@ DERIVED, ASSERTED = "DERIVED", "ASSERTED"
 INHERITED = "DERIVED_FROM_ASSERTED"
 
 # Exact by definition since the 2019 SI revision. Not measurements.
-H_PLANCK = 6.62607015e-34     # J s
-C_LIGHT = 299792458.0         # m/s
-K_B = 1.380649e-23            # J/K
-N_A = 6.02214076e23           # 1/mol
+from engine.constants import (H_PLANCK, C_LIGHT, K_B, N_A,  # noqa: E402
+                              G_GRAV, U_KG as AMU, AU_M as AU,
+                              L_SUN_W as L_SUN)
 
 # Measured, and labelled as such. G is the worst-known constant in
 # physics -- about 22 parts per million -- and that uncertainty is
 # carried, not hidden.
-G_GRAV = 6.67430e-11          # m^3 kg^-1 s^-2, measured
-AMU = 1.66053906660e-27       # kg, measured
+
 
 
 def sigma_sb():
@@ -75,8 +73,6 @@ R_GAS = K_B * N_A             # DERIVED: the gas constant is k times N_A
 # Mass, radius, distance and the star's output are OBSERVATIONS. They
 # are the question, not the answer: nothing below is allowed to read a
 # planet's actual temperature or actual atmosphere while deriving one.
-L_SUN = 3.828e26              # W, measured
-AU = 1.495978707e11           # m, defined exactly
 
 class Body:
     def __init__(self, name, mass_kg, radius_m, au, albedo,

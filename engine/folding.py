@@ -56,7 +56,7 @@ from engine.biomatter import RESIDUES, _elements                # noqa: E402
 
 DERIVED, ASSERTED = "DERIVED", "ASSERTED"
 PICOSECOND = 1e-12
-YEAR_S = 3.155693e7
+from engine.constants import YEAR_S  # noqa: E402
 AGE_UNIVERSE_YR = 1.38e10
 HEAT_DEATH_YR = 1e100        # from engine/epochs.py's far-future era
 

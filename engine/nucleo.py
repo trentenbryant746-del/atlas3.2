@@ -144,7 +144,7 @@ BINDING_FIXTURE = {
     (92, 146): 1801.70,
 }
 BF_SOURCE = "measured nuclear binding energies, per nuclide"
-B_ALPHA_MEV = 28.296
+from engine.constants import B_ALPHA_MEV  # noqa: E402
 
 # ISOBARIC PAIRS -- same A, adjacent Z -- for the BETA bar, which
 # could not be measured at all without them. Each is a real decay,

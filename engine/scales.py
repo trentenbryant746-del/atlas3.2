@@ -49,8 +49,7 @@ DERIVED, ASSERTED, REFUSED = "DERIVED", "ASSERTED", "REFUSED"
 # Exact by definition since the 2019 SI redefinition: the kelvin is
 # defined by fixing Boltzmann's constant and the coulomb by fixing
 # the elementary charge. These are not measurements with an error.
-K_B = 1.380649e-23          # J/K, exact
-E_CHARGE = 1.602176634e-19  # C, exact
+from engine.constants import K_B, E_CHARGE  # noqa: E402
 T_BODY = 310.0              # K, a choice of where to evaluate, stated
 T_ROOM = 298.0
 

@@ -55,10 +55,9 @@ from engine.experts import BY_SYM, BY_Z                      # noqa: E402
 
 DERIVED, ASSERTED = "DERIVED", "ASSERTED"
 
-YEAR_S = 3.155693e7
+from engine.constants import YEAR_S, U_KG, M_SUN_KG  # noqa: E402
 SOLAR_SYSTEM_YR = 4.567e9        # measured, meteoritic
-U_KG = 1.66053906660e-27
-M_SUN_KG = 1.98847e30
+
 
 # ASSERTED: measured half-lives in YEARS, keyed by (Z, A). Nothing
 # here derives one. Chosen to cover what the derivations need --

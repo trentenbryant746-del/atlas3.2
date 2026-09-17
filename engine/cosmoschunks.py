@@ -57,8 +57,7 @@ from engine import chain, cosmos                             # noqa: E402
 from engine.experts import BY_SYM                            # noqa: E402
 
 DERIVED = "DERIVED"
-U_KG = 1.66053906660e-27        # atomic mass unit
-M_SUN_KG = 1.98847e30
+from engine.constants import U_KG, M_SUN_KG  # noqa: E402
 
 # The partition rule. Fixed so chunk k means the same everywhere.
 GENERATIONS = 4

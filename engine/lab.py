@@ -99,6 +99,32 @@ def sigma_from_exact_constants():
                    f"on it at all")
 
 
+@experiment(0, "does any constant have two homes?")
+def constants_are_not_duplicated():
+    from engine.constants import check as ccheck
+    ok, res = ccheck()
+    bad = [d for n, o, d in res if not o]
+    if bad:
+        return CLASH, bad[0]
+    return HOLDS, [d for n, _, d in res
+                   if n == "no_constant_is_defined_twice"][0]
+
+
+@experiment(0, "is a measured constant ever passed off as exact?")
+def measured_is_not_called_exact():
+    from engine.constants import PROVENANCE, EXACT, MEASURED, G_GRAV
+    ex = [n for n, (k, _) in PROVENANCE.items() if k == EXACT]
+    me = [n for n, (k, _) in PROVENANCE.items() if k == MEASURED]
+    if "G_GRAV" in ex:
+        return CLASH, "G is marked exact; it is the worst-known constant"
+    return HOLDS, (
+        f"{len(ex)} exact and {len(me)} measured, kept apart. G is "
+        f"{G_GRAV:.5e} to about 22 parts per million -- five orders of "
+        f"magnitude worse than anything defining an SI unit -- so every "
+        f"escape velocity and every scale height here inherits that, and "
+        f"nothing may quietly present it as exact")
+
+
 # ------------------------------------------------ layer 1, molecule
 @experiment(1, "is a band's strength independent of how much gas there is?")
 def band_data_is_intensive():

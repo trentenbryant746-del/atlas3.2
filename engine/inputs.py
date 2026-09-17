@@ -125,6 +125,20 @@ INPUTS = {
     "biome.XYLEM_TENSION": (
         MEASURED, "sap sustains about -2 MPa before cavitating"),
     "biome.CROWN_M2": (CHOSEN, "leaf area a plant holds up; a dial"),
+    "atoms.REDFIELD": (
+        MEASURED, "C106 H263 O110 N16 P1, plankton stoichiometry"),
+    "atoms.CELLULOSE": (EXACT, "(C6H10O5)n, the formula of wood"),
+    "atoms.WEIGHT": (MEASURED, "standard atomic weights"),
+    "atoms.AVOGADRO": (EXACT, "SI definition since 2019"),
+    "human.BODY_KG": (CHOSEN, "70 kg, a round adult"),
+    "human.APE_BRAIN_KG": (MEASURED, "chimpanzee, about 400 g"),
+    "human.HUMAN_BRAIN_KG": (MEASURED, "about 1350 g"),
+    "human.APE_GUT_FRACTION": (MEASURED, "great ape, about 3% of mass"),
+    "human.HUMAN_GUT_FRACTION": (MEASURED, "about 1.7% of mass"),
+    "human.GUT_COST_RATIO": (MEASURED, "gut runs about 12x average tissue"),
+    "human.COOKING_GAIN": (
+        MEASURED, "cooked food yields about 35% more; NOT raised to "
+                  "close the gap it fails to close"),
     "ancestry.NEURAL_COST_RATIO": (
         MEASURED, "neural tissue costs about 10x average tissue"),
 }
@@ -144,6 +158,9 @@ CLAIMS_ON = {
                                     "biome.PHOTOSYNTHETIC_EFFICIENCY"],
     "height is worthless without a rival": [],
     "the food chain runs 4 levels": ["biome.PHOTOSYNTHETIC_EFFICIENCY"],
+    "the gut pays for the brain with 1.7 W to spare": [],
+    "cooking is short by a factor of 2.18": ["human.COOKING_GAIN"],
+    "death returns every atom": [],
     "a brain must raise intake by a fifth": [],
     "seeded life stays microbial": ["descent.INTAKE_COEFFICIENT",
                                     "descent.TRAIT_COST"],

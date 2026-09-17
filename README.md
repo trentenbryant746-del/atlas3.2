@@ -4404,3 +4404,132 @@ width, both picked. Registered in `engine/inputs.py` and not cited as
 derived.
 
     ecology 4/4   7 causes of death, 6 of them pre-existing rules
+
+### 3.1.68 — light is the first pressure that rewards being larger
+
+Every previous run failed to produce size because nothing paid for it.
+**Predation is bounded** — you die once. **Competition for food
+compounds but shares** — a rival takes a fraction of your intake.
+
+**Light is neither.** A rival growing above you does not take a share
+of your light. It takes all of it, and keeps taking it every day it
+stands there.
+
+    leaf area index 0    100.0% reaches below
+    leaf area index 2     36.8%
+    leaf area index 4     13.5%
+    leaf area index 8      1.8%
+
+**Two rules were wrong and were fixed rather than tuned.**
+
+The trunk was priced with **Kleiber, which is an animal rule**. A trunk
+is 4% alive at 100 m — the rest is heartwood, dead and load-bearing.
+Pricing it as though it breathed made a 155-tonne tree cost 1.3 MW and
+drove the optimum to the floor. Cost now comes from **Greenhill
+buckling** for the radius and respiration of **living tissue only**.
+
+The crown was set to a tenth of the height, so **tallness paid for
+itself with nobody to outgrow** — the conclusion was assumed. Cut that
+tie and a plant alone stays at the floor, because sunlight does not get
+brighter further up. The rule is **INVERTED and kept**:
+
+> **height is worthless without a rival**
+
+    alone                 0.05 m
+    against a rival       0.05 -> 11.4 m
+    crown    0.1 m2         6 m
+    crown      1 m2        11 m
+    crown     10 m2        26 m
+    crown    100 m2        64 m
+    crown   1000 m2       161 m
+    cavitation ceiling    204 m
+
+Height scales as **crown^0.4**, fitted to nothing. Real tall trees run
+60–100 m on crowns of a few hundred m², and the tallest measured is
+116 m against a derived ceiling of 204.
+
+**Trophic levels fall out of the same arithmetic** — a tenth passes up
+each step, so the chain runs 4 levels and predators are rare because
+the arithmetic makes them rare. **Predator territory is a named
+MISSING_RULE, not a patched number**: a trophic level is a guild, not a
+species, and nothing here splits a level among its occupants.
+
+**A unit error was caught by its own Fact.** `kleiber` returns watts;
+its `b0_kcal_day` argument names the input unit. Converting anyway
+shrank every animal's bill twentyfold. The Fact said "53.9 W" in its
+own `why` string and it was not read.
+
+    biome 8/8    atoms 8/8
+
+### 3.1.69 — nothing is destroyed, including when it dies
+
+Every biological module before this traded in watts, metres and
+kilograms. A plant grew, a predator ate, a lineage died — and in every
+case **the matter was bookkeeping nobody kept**. A world could grow a
+forest out of nothing and no rule would object.
+
+**Every body is now a count of atoms.** Growing draws from a pool.
+Dying returns all of them, which is what death means physically.
+
+    built 400 kg from a 1000 kg pool, killed it
+    pool is 1000 kg again to nine decimals
+
+**Two books, and they are allowed to disagree.** Bury one percent and
+total matter is still exactly conserved — nothing was destroyed — while
+*circulating* matter is not. A leak is not a cycle. Coal, oil and chalk
+are that one percent, and so is the oxygen it left behind.
+
+**Wood is not flesh.** Cellulose (C₆H₁₀O₅)ₙ holds 1.26× the carbon of
+Redfield tissue and **no nitrogen at all**, which is why a trunk is
+cheap to build and a leaf is not. The formula is an argument, never a
+default buried in a function body.
+
+**The rule fired on its own authors.** `every_life_rule_accounts_for_matter`
+failed the moment it was written: `biosphere`, `descent` and `ecology`
+all moved bodies without counting atoms. They now account. A new life
+module that grows or kills anything **fails until it says what its
+bodies are made of**, and the exemptions each carry a written reason
+rather than a silence. `O2_PER_C` stopped being `32/12` typed in by
+hand and became stoichiometry over atomic weights.
+
+**The limiting element is derived, not asserted.** Life is not capped
+by sunlight. It is capped by whichever atom runs out first, and the
+refusal names it — *phosphorus*, not "growth failed".
+
+### the last step: what pays for a brain
+
+`engine/ancestry.py` walks LUCA to us in eight transitions and the last
+one **CROSSES**. This asks the only version of that question with a
+number in it.
+
+    a 70 kg body runs at                82 W
+    brain 400 g -> 1350 g costs         11.1 W
+    shrinking the gut to ours frees     12.8 W
+    net                                  1.7 W
+
+**The gut pays for the brain with change.** Nothing had to be invented
+— one expensive tissue was traded for another.
+
+**But it only works if the food got easier, and making food easier is
+what a brain is for.** The circle is stated, not hidden. Walk brain and
+diet up together in twenty steps and the climb **loses ground the whole
+way**.
+
+    breaks even at a diet gain of      61%
+    the recorded human gut implies     76%
+    cooking is measured at             35%
+    short by                      1.73x / 2.18x
+
+**`COOKING_GAIN` was not raised to close this.** What is absent is
+whatever else made food cheaper — meat is denser per gram, pounding and
+cutting digest food outside the body, sharing spreads a bad day. None
+has a rule here, and the gap says how big they must be together.
+
+Two routes to the same number **CLASH and both are kept**: the recorded
+gut fractions say the trade works, the modelled gut says it cannot.
+Neither was moved to make them agree.
+
+**Every row says CAN, never DID.** The path to a human is shown to be
+open. It is not shown to have been taken — that step stays **RECORDED**.
+
+    human 6/6    21/21 published numbers reproduce

@@ -143,8 +143,36 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _brainpay():
+    from engine.human import brain_cost, gut_saving, APE_BRAIN_KG, \
+        HUMAN_BRAIN_KG
+    cost = brain_cost(HUMAN_BRAIN_KG)[1] - brain_cost(APE_BRAIN_KG)[1]
+    return round(cost, 1), round(gut_saving()[1], 1)
+
+
+def _cookinggap():
+    from engine.human import break_even_gain, diet_implied_by_gut, \
+        COOKING_GAIN
+    implied = diet_implied_by_gut() / 0.50 - 1.0
+    return (round(break_even_gain() / COOKING_GAIN, 2),
+            round(implied / COOKING_GAIN, 2), round(100 * implied))
+
+
+def _conserve():
+    from engine.atoms import Pool, atoms_in
+    p = Pool(atoms_in(1000.0))
+    p.build(400.0); p.die(400.0)
+    return p.conserved()[0], p.cycles()[0]
+
+
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.69", "the brain costs 11.1 W and the gut frees 12.8 W",
+     _brainpay, (11.1, 12.8), CURRENT),
+    ("3.1.69", "cooking short 1.73x on break-even, 2.18x on the gut",
+     _cookinggap, (1.73, 2.18, 76), CURRENT),
+    ("3.1.69", "death conserves total matter and burial breaks the cycle",
+     _conserve, (True, True), CURRENT),
     ("3.1.68", "the light race stops at 11.4 m, and at 0.05 m alone",
      _race, (11.4, 0.05), CURRENT),
     ("3.1.68", "height scales as crown^0.4: 6, 11, 26, 64, 161 m",

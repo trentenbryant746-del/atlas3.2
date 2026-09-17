@@ -3205,3 +3205,63 @@ the claims checker caught that too.
 
     lab 27: 25 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED
     5,737 correct, 0 wrong   claims 14/14   audit 21/21
+
+### 3.1.43 — forty worlds, none alive, and the census says why
+
+`engine/census.py` runs the whole chain over many seeds and looks for
+life. Three conditions, each already computed by some other module for
+its own reasons: liquid water from the thermostat, CHNOPS from
+condensation over solar abundances, and a long enough window from the
+moving habitable band. None was built for this, so agreement between
+them would mean something.
+
+**40 systems, 192 worlds, 0 alive** — and the point is that it says why
+instead of shrugging.
+
+**First pass: C, H, N, P and S missing from every world.** The mineral
+table had iron, silicates and ice and no carrier for any biogenic
+element. The rules were not wrong; there were not enough of them. Added
+apatite for phosphorus, and fixed sulfur — troilite condenses at 704 K
+but metallic iron had taken all the iron at 1334, so sulfur starved. In
+a real nebula FeS *sulfurises metal that already condensed* rather than
+competing for it.
+
+**Second pass caught an overcorrection.** Graphite at 626 K gave a
+planet at 1 AU **36.9% carbon**, where Earth is 0.03%. The absent rule
+is CO stability: oxygen outnumbers carbon in a solar nebula, CO is the
+most tightly bound molecule available, and essentially every carbon
+atom ends up in one — staying gaseous until about 25 K. An inner planet
+gets no carbon at all, and that is correct.
+
+The composition is much better for it:
+
+              derived   Earth
+      Fe         32.0    32.1
+      Ni          1.8     1.8
+      Al          1.4     1.4
+      P           0.1     0.1
+      O          26.6    30.1
+      Mg         17.5    13.9
+      Si         11.6    15.1
+      S           7.7     2.9
+
+**And the remaining failure is one rule, named exactly.** What is
+missing on all 192 worlds is **C, H and N** — the same three, and they
+are the three volatiles that cannot condense where rocky planets form.
+Carbon is locked in CO until 25 K, water needs 170 K, ammonia 131. A
+rocky world builds itself from iron, silicates and phosphate and gets
+none of them. Earth has all three.
+
+So the missing rule is **volatile delivery**: bodies that formed beyond
+the ice line, scattered inward. Equilibrium condensation cannot make a
+wet, carbon-bearing Earth and was never going to — and running forty
+systems at once is what made that unmistakable. One world would have
+looked like a bug.
+
+**On parallelism.** Seeds are independent, so the census runs in
+separate *processes* — separate interpreters, separate locks, ten cores
+actually working. 40 systems in 20 seconds. This is what threads could
+not do for the band search in 3.1.42, and the difference is that these
+jobs share nothing.
+
+    census 2/2   genesis 8/8   5,737 correct, 0 wrong   claims 14/14

@@ -127,19 +127,53 @@ def surface_density(r_au, seed, lum_w):
 # 280 K planet -- while Earth is 30% oxygen. Oxygen does not arrive
 # as ice at 1 AU; it arrives BOUND IN SILICATES. The stoichiometry
 # has to be in the table or the answer is wrong by a third.
+# THE TABLE HAD NO CARRIER FOR ANY BIOGENIC ELEMENT AND THE CENSUS
+# FOUND IT. Running 40 systems and looking for life returned 192
+# worlds and 0 alive, with C, N, P and S missing from every single
+# one. The rules were not wrong; there were not enough of them.
+# Iron, silicates and ice cannot make a biosphere because carbon,
+# nitrogen and phosphorus have nothing to ride in on.
+#
+# Sulfur was there and starved: troilite condenses at 704 K but
+# metallic iron takes all the iron at 1334, leaving none. In a real
+# nebula FeS forms by sulfurising metal that has ALREADY condensed,
+# so it converts iron rather than competing for it, and the table
+# now says so.
 MINERALS = [
     ("CaAl2Si2O8", 1600, {"Ca": 1, "Al": 2, "Si": 2, "O": 8}),
+    ("Ca5P3O12", 1300, {"Ca": 5, "P": 3, "O": 12}),   # apatite, carries P
     ("Ni", 1353, {"Ni": 1}),
     ("Mg2SiO4", 1354, {"Mg": 2, "Si": 1, "O": 4}),
     ("Fe", 1334, {"Fe": 1}),
     ("MgSiO3", 1316, {"Mg": 1, "Si": 1, "O": 3}),
-    ("FeS", 704, {"Fe": 1, "S": 1}),
+    ("CO", 25, {"C": 1, "O": 1}),      # carbon monoxide ice, very cold
     ("H2O", 170, {"H": 2, "O": 1}),
+    ("NH3", 131, {"N": 1, "H": 3}),                    # ammonia ice
 ]
+
+# Sulfur does not compete for iron, it attacks iron already there.
+SULFURISATION_K = 704
 
 
 def composition(T_disk):
-    """-> {element: mass fraction}. DERIVED from abundance + condensation."""
+    """-> {element: mass fraction}. DERIVED from abundance + condensation.
+
+    CARBON IS LOCKED IN GAS AND THE FIRST ATTEMPT MISSED IT. Adding
+    graphite at 626 K gave a planet at 1 AU 36.9% carbon, where
+    Earth is about 0.03%. The rule that was absent is the stability
+    of carbon monoxide: in a solar-composition nebula oxygen
+    outnumbers carbon, CO is the most tightly bound molecule
+    available, and essentially every carbon atom ends up in one. CO
+    then stays gaseous until about 25 K, far outside any rocky
+    planet.
+
+    So equilibrium condensation gives an inner planet NO carbon at
+    all -- and that is correct. The few per cent in meteorites is
+    interstellar organic matter inherited from before the nebula,
+    which is a different origin and a rule this repository does not
+    have. Naming it is better than producing a planet a third made
+    of graphite.
+    """
     from engine.abundance import mass_fractions
     from engine.experts import PT
     w = {sym: m for sym, _n, m in PT}
@@ -155,6 +189,16 @@ def composition(T_disk):
         for e, n in st.items():
             avail[e] -= lim * n
             got[e] = got.get(e, 0.0) + lim * n * w[e]
+    # FeS by sulfurising metal already condensed, below 704 K
+    if T_disk < SULFURISATION_K:
+        from engine.experts import PT as _pt
+        ws = {sym: m for sym, _n, m in _pt}
+        s_moles = avail.get("S", 0.0)
+        fe_mass = got.get("Fe", 0.0)
+        if s_moles > 0 and fe_mass > 0:
+            take = min(s_moles, fe_mass / ws["Fe"])
+            got["S"] = got.get("S", 0.0) + take * ws["S"]
+            avail["S"] -= take
     tot = sum(got.values())
     if tot <= 0:
         return {}

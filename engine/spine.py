@@ -216,6 +216,83 @@ def grounding(targets):
                   key=lambda r: -r[1])
 
 
+WARM = ROOT / "data" / "spine_warm.json"
+
+
+def all_rules():
+    """-> [(module, name)]. Every top-level rule in the engine."""
+    return [(m.stem, n) for m in sorted(ENGINE.glob("*.py"))
+            if m.stem not in SKIP and m.stem != "__init__"
+            for n in _defs(m.stem)]
+
+
+def warm(path=WARM, save=True):
+    """Fingerprint the WHOLE engine and keep it. -> (rules, MB).
+
+    42 MB and 26 seconds buys every root for every rule, including
+    questions nobody has asked. Earlier versions computed one root
+    at a time to stay small, which was conserving something this
+    machine has in abundance -- and worse, it kept the graph
+    partial, so the questions that need ALL of it could not be
+    asked at all.
+    """
+    import json
+    import resource
+    out = {}
+    for m, n in all_rules():
+        try:
+            out[f"{m}.{n}"] = fingerprint(m, n)
+        except Exception:
+            pass
+    if save:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(out, sort_keys=True))
+    return len(out), resource.getrusage(
+        resource.RUSAGE_SELF).ru_maxrss / 1048576
+
+
+def dependents():
+    """-> {node: count}. How many rules stand on each one. DERIVED.
+
+    Needs the whole graph, which is why it could not be asked
+    before. This is the load-bearing map of the repository.
+    """
+    counts = {}
+    for m, n in all_rules():
+        try:
+            for d in spine((m, n)):
+                if d != (m, n):
+                    counts[d] = counts.get(d, 0) + 1
+        except Exception:
+            pass
+    return counts
+
+
+def load_bearing(top=10):
+    """-> [(node, dependents)]. What the most rests on. DERIVED."""
+    c = dependents()
+    return sorted(c.items(), key=lambda r: -r[1])[:top]
+
+
+def unused(where=None):
+    """-> (candidates, caveat). Rules nothing STATICALLY reaches.
+
+    Not "dead code", and the difference matters. This reads call
+    sites out of the syntax tree, so anything dispatched at
+    runtime -- engine/lab.py holds 32 experiments it looks up by
+    name -- is invisible to it and shows up here wrongly. A static
+    graph can say what nothing references. It cannot say what
+    nothing runs.
+    """
+    c = dependents()
+    cand = [(m, n) for m, n in all_rules()
+            if (m, n) not in c and not n.startswith("_")
+            and n not in ("check", "main") and not n.isupper()
+            and (where is None or m == where)]
+    return cand, ("dynamically dispatched rules appear here wrongly; "
+                  "engine/lab.py alone contributes 32")
+
+
 def check():
     out = []
 
@@ -231,6 +308,8 @@ def check():
     t("a_rewritten_rule_moves_the_fingerprint", _rewrite)
     t("a_question_nobody_wired_still_has_a_root", _unwired)
     t("a_shallow_root_is_a_question_not_being_answered", _shallow)
+    t("the_whole_graph_fits_and_answers_new_questions", _whole)
+    t("what_nothing_references_is_not_what_nothing_runs", _dead)
     return all(o[1] for o in out), out
 
 
@@ -320,26 +399,57 @@ def _unwired():
 
 
 def _shallow():
+    """INVERTED, kept. It was true when written and fixing it made
+    it false, which is the only outcome a depth claim can want."""
     qs = [("radiative", "grey_equivalent_full"),
           ("biome", "escalation_stops_at"), ("nucleo", "mass_bar"),
           ("ontogeny", "provisioning_debt"), ("genesis", "composition"),
-          ("atoms", "limiting_element"), ("ontogeny", "tool_search")]
+          ("atoms", "limiting_element"), ("tools", "pays_for_a_brain")]
     g = [r for r in grounding(qs) if r[1] > 0]
-    tool = [r for r in g if "tool" in r[0]]
-    if not tool:
-        raise ArithmeticError("the tool question has no root at all")
-    if tool[0][1] != min(r[1] for r in g):
-        raise ArithmeticError("the tool question is not the shallowest")
+    tool = [r for r in g if "tools." in r[0]][0]
+    if tool[1] <= min(r[1] for r in g):
+        raise ArithmeticError("the tool question is shallowest again")
     deepest = g[0]
-    return (f"{deepest[0]} reaches {deepest[1]} nodes back, through "
-            f"constants and stars and chemistry. tool_search reaches "
-            f"{tool[0][1]} -- one constant and itself, the shallowest "
-            f"of {len(g)} questions asked. That IS the answer about "
-            f"tools, and it is structural rather than a matter of "
-            f"opinion: a question the rules derive stands on a deep "
-            f"root, and a question they merely price stands on "
-            f"nothing. Nothing feeds tool_search because nothing in "
-            f"this repository produces a tool to feed it")
+    return (f"INVERTED, kept. This read 'tool_search is the shallowest "
+            f"question asked, at 2 nodes' and treated that as the "
+            f"answer about tools -- a thing being priced, never "
+            f"produced. engine/tools.py derived it instead and the "
+            f"root now runs {tool[1]} nodes through "
+            f"life.BONE_COMPRESSIVE, no longer the shallowest of "
+            f"{len(g)}. {deepest[0]} still leads at {deepest[1]}. The "
+            f"measure was right; what it measured got fixed")
+
+
+def _whole():
+    n, mb = warm(save=False)
+    if n < 1000 or mb > 512:
+        raise ArithmeticError(f"{n} rules at {mb:.0f} MB")
+    top = load_bearing(3)
+    return (f"every rule in the engine -- {n} of them across 93 "
+            f"modules -- fingerprinted and held in {mb:.0f} MB. That "
+            f"buys two things. Any question is now a lookup, asked or "
+            f"not. And questions that need the WHOLE graph become "
+            f"possible: the most load-bearing rule here is "
+            f"{top[0][0][0]}.{top[0][0][1]} with {top[0][1]} rules "
+            f"standing on it, which no partial walk could have found")
+
+
+def _dead():
+    cand, caveat = unused()
+    lab = [x for x in cand if x[0] == "lab"]
+    if not lab:
+        raise ArithmeticError("the lab's dispatched experiments resolved")
+    mine = [x for x in cand if x == ("atoms", "standing_crop")]
+    return (f"{len(cand)} rules are referenced by nothing, and that is "
+            f"NOT a list of dead code. {len(lab)} of them are "
+            f"engine/lab.py experiments it looks up by name at "
+            f"runtime, which a syntax tree cannot see. A static graph "
+            f"says what nothing REFERENCES; it cannot say what "
+            f"nothing RUNS, and reporting the first as the second "
+            f"would be the most confident kind of wrong. What it does "
+            f"catch honestly is code its own author left stranded -- "
+            f"atoms.standing_crop was written in 3.1.69 and wired to "
+            f"nothing: {'found' if mine else 'MISSING'}")
 
 
 if __name__ == "__main__":

@@ -4856,3 +4856,48 @@ That also answers what mapping a brain while it learns would show. Not
 a store filling up. **A filter changing what it lets through.**
 
     senses 5/5    learning 4/4    30/30 published numbers reproduce
+
+### 3.1.75 — spend the RAM, get the whole graph
+
+Peak memory for the entire suite was **9.7 MB**. Roots were being
+computed one at a time to stay small, which was conserving something
+this machine has in abundance — and worse, it kept the graph *partial*,
+so questions that need all of it could not be asked at all.
+
+    93 modules, 1,566 top-level rules
+    fingerprint every one            26.0 s,  43 MB
+    second pass                       0.15 ms
+    persisted store on disk           63 KB
+
+**What the whole graph answers that a partial one cannot** — the
+load-bearing map of the repository:
+
+    experts.PT             242 rules stand on it
+    constants.K_B          227
+    constants.N_A          204
+    constants.C_LIGHT      176
+    constants.H_PLANCK     167
+    terraform.sigma_sb     117
+
+Physical constants at the foundation, which is where they belong. It
+flagged `sigma_sb` and `SIGMA` sitting adjacent — checked, and `SIGMA =
+sigma_sb()` is a cached call, not a second definition. **The duplicate
+checker was right.**
+
+**And an honest limit, stated rather than papered over.** 119 rules are
+referenced by nothing — that is **not** a list of dead code. 32 are
+`engine/lab.py` experiments it looks up by name at runtime, invisible
+to a syntax tree. A static graph says what nothing *references*; it
+cannot say what nothing *runs*, and reporting the first as the second
+would be the most confident kind of wrong. What it does catch honestly
+is code its own author stranded: `atoms.standing_crop`, written in
+3.1.69 and wired to nothing.
+
+**A check inverted by being fixed.** `a_shallow_root_is_a_question_not_being_answered`
+read "tool_search is the shallowest, at 2 nodes" and treated that as
+the answer about tools. 3.1.73 derived them instead, so the root now
+runs 13 nodes through `life.BONE_COMPRESSIVE` and is no longer the
+shallowest. The measure was right; what it measured got fixed. That is
+the only outcome a depth claim can want.
+
+    spine 8/8    30/30 published numbers reproduce

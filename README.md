@@ -2519,3 +2519,64 @@ and each cost work that an ablation would have saved.
 
     engine/ablate.py 4/4   lab 26 experiments, 23 HOLDS, 1 CLASH,
                            1 MISSING_RULE, 1 REFUSED
+
+### 3.1.31 — one source per Q-value, and measurement is a source
+
+The ablation named a single owner for the whole decay loss:
+`liquid-drop-domain`, and behind it helium-4. This is the narrower rule
+it asked for.
+
+**3.1.27's rule was right and its implementation was one case of it.**
+"Every term in a Q-value from the same source" got built as "always use
+the formula". That is *a* way to satisfy it, not the only one — and it
+cost everything, because helium-4 is below the formula's domain, so
+alpha became underivable and twelve of fourteen fates went to refused.
+
+Measured binding energies are a source too. Where every term is
+measured, the difference is consistent and the cancellation the small
+bar depends on never has to happen. Only a **mixture** was ever the
+problem.
+
+    MEASURED  arithmetic on measured binding energies. Correct, and
+              not a derivation -- it asserts nothing the data did not
+              already contain.
+    FORMULA   the liquid drop inside its domain. A derivation, and it
+              carries the formula's bar.
+
+**The result is the baseline, reached honestly:**
+
+    3.1.26  mixed sources        8 right, 3 WRONG,  3 refused
+    3.1.28  formula only         1 right, 1 WRONG, 12 refused
+    3.1.31  one source, either   8 right, 0 WRONG,  6 refused
+
+Eight right is the old headline number. **Zero wrong is new** — the
+number this project says must reach zero, and it has. The old eight
+included three wrong answers and rested on a +5.455 MeV bias cancelling
+a 5–11 MeV deficit; these eight rest on consistent arithmetic, and each
+of the six refusals has a named cause.
+
+**The bar follows the source, which is another manifestation.** A
+Q-value read off measured binding carries the table's precision; one
+from the liquid drop carries 1.21 MeV. Applying the formula's bar to a
+measured difference would refuse decays known to a tenth of an MeV.
+
+**Tritium is refused, and that is correct.** Its beta Q is 18.6 keV,
+below the table's own precision. The model declining to call it is the
+right answer, not a gap.
+
+**A third duplicated table.** `BINDING_FIXTURE` held 17 measured binding
+energies and `BETA_B` held 10 more of the same quantity, overlapping in
+one entry that agreed — the same defect as the four duplicated constants
+in 3.1.24 and ħ in 3.1.29. One table now, 29 nuclides, with the three
+alpha daughters the chains needed. They reproduce measured alpha
+Q-values to within 0.08 MeV, and the check is real rather than circular:
+two of the five pairs use only entries that were already there.
+
+**And the typed-bar rule caught its own author.** `MEASURED_Q_BAR = 0.10`
+was typed by hand an hour after `no_bar_is_typed` was written to forbid
+exactly that. It is now derived from how precisely the table is
+quoted — each entry's rounding half-width, three of them in quadrature —
+which gives **0.0866 MeV**, and nothing is chosen.
+
+    5,737 correct, 0 wrong   audit 21/21   heldout 165/165 byte-exact
+    lab 26 experiments: 23 HOLDS, 1 CLASH, 1 MISSING_RULE, 1 REFUSED

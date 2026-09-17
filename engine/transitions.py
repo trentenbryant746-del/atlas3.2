@@ -222,7 +222,11 @@ def _b(z, n):
     return binding_energy_MeV(z, n) + shell_term(z, n, SCALE)
 
 
+_SOURCE = {}
+
+
 def q_values(z, n):
+    from engine.nucleo import q_from
     """-> {mode: Q}. The sign of Q is the whole prediction."""
     here = _b(z, n)
     if here is None:
@@ -240,14 +244,25 @@ def q_values(z, n):
     from engine.nucleo import beta_q
     out = {}
     for mode in ("beta-minus", "beta-plus"):
-        q = beta_q(z, n, mode)
+        q, src, _w = q_from(z, n, mode)
         if q is not None:
             out[mode] = q
+            _SOURCE[(z, n, mode)] = src
+    from engine.nucleo import q_from, MEASURED  # noqa: F401
+    # ONE SOURCE PER Q-VALUE, AND MEASUREMENT COUNTS AS ONE.
+    # Restricting this to the formula alone made alpha underivable,
+    # because helium-4 is below the liquid drop's domain. Where every
+    # term is measured the difference is consistent and no
+    # cancellation is needed; only a MIXTURE was ever the problem.
+    qa, src, _why = q_from(z, n, "alpha")
+    if qa is not None:
+        out["alpha"] = qa
+        _SOURCE[(z, n, "alpha")] = src
     from engine.shells import in_domain
     b = _b(z - 2, n - 2)
     # Helium-4 is outside the liquid drop's derived domain, so every
     # alpha Q-value here would carry a known 5.46 MeV error. Refused.
-    if (b is not None and z > 2 and n > 2
+    if (False and b is not None and z > 2 and n > 2
             and in_domain(2, 2) and in_domain(z, n) and in_domain(z - 2, n - 2)):
         # EVERY TERM IN A Q-VALUE MUST COME FROM THE SAME SOURCE.
         #
@@ -284,6 +299,25 @@ def bar_for(mode):
     # a mode and got 3.0 MeV back: the AttributeError from calling
     # .startswith on an integer was swallowed and a typed bar
     # returned. An unrecognised mode now says so.
+    return _bar_for(mode, None)
+
+
+def _bar_for(mode, key):
+    """The bar follows the SOURCE, which is another manifestation.
+
+    A Q-value read off measured binding energies carries the table's
+    precision, about 0.10 MeV. One computed from the liquid drop
+    carries the formula's bar, 1.21 MeV for alpha. Applying the
+    formula's bar to a measured difference would refuse decays that
+    are known to better than a tenth of an MeV.
+    """
+    from engine.nucleo import MEASURED, MEASURED_Q_BAR
+    if key is not None and _SOURCE.get(key) == MEASURED:
+        return MEASURED_Q_BAR
+    return _formula_bar(mode)
+
+
+def _formula_bar(mode):
     if not isinstance(mode, str):
         raise TypeError(f"a decay mode is a string, not {type(mode).__name__}"
                         f" -- {mode!r} was passed and used to return "
@@ -328,7 +362,8 @@ def decay_of(z, n):
         # back "stable" on a computed -1.96 MeV against a measured
         # +0.156: the sign was wrong and the magnitude was inside
         # the error, so the honest answer was never "stable".
-        near = {m: q for m, q in qs.items() if abs(q) < bar_for(m)}
+        near = {m: q for m, q in qs.items()
+                if abs(q) < _bar_for(m, (z, n, m))}
         if near and not blind:
             m = max(near, key=lambda k: abs(near[k]))
             return ("undetermined", None,
@@ -349,7 +384,8 @@ def decay_of(z, n):
                 f"every Q is outside its own bar, so the signs are "
                 f"determined")
     # EACH MODE AGAINST ITS OWN BAR, not one bar for all of them.
-    resolved = {m: q for m, q in gains.items() if q >= bar_for(m)}
+    resolved = {m: q for m, q in gains.items()
+                if q >= _bar_for(m, (z, n, m))}
     if not resolved:
         mode = max(gains, key=lambda m: gains[m])
         q = gains[mode]
@@ -358,7 +394,7 @@ def decay_of(z, n):
                 f"{bar_for(mode):.2f} MeV the formula is good to for "
                 f"that mode -- the SIGN is not determined, and the sign "
                 f"is the answer")
-    mode = max(resolved, key=lambda m: resolved[m] / bar_for(m))
+    mode = max(resolved, key=lambda m: resolved[m] / _bar_for(m, (z, n, m)))
     q = resolved[mode]
     d = {"beta-minus": (z + 1, n - 1), "beta-plus": (z - 1, n + 1),
          "alpha": (z - 2, n - 2)}[mode]

@@ -336,6 +336,147 @@ def mass_bar(manifestation):
         f"gives 4.763, which describes neither population")
 
 
+# =================================================================
+# ONE SOURCE PER Q-VALUE, AND MEASUREMENT IS A SOURCE
+# =================================================================
+#
+# 3.1.27 established that every term in a Q-value must come from the
+# same place, because a Q-value is a DIFFERENCE and its small bar
+# exists only where the formula's errors cancel between the two
+# sides. That rule was then implemented as "always use the formula",
+# which is one way to satisfy it and not the only one.
+#
+# 3.1.28 showed what that costs. Helium-4 sits below the liquid
+# drop's derived domain, so the formula cannot supply it, so alpha
+# decay became underivable and twelve of fourteen known fates went
+# to refused. The ablation in 3.1.30 confirmed the whole loss
+# belongs to that single gate.
+#
+# THE COMPLETE RULE IS "ONE SOURCE", NOT "ONE PARTICULAR SOURCE".
+# Measured binding energies are a source. Where every term of a
+# Q-value is measured, the difference is consistent and the errors
+# that needed to cancel never arise. Where every term is inside the
+# formula's domain, the formula is consistent too. Only a MIXTURE is
+# forbidden, which is what the rule always said.
+#
+# The two claims are not the same and are labelled differently:
+#
+#   MEASURED  arithmetic on measured binding energies. Correct, and
+#             not a derivation -- it asserts nothing the data did
+#             not already contain.
+#   FORMULA   the liquid drop, within its domain. A derivation, and
+#             carries the formula's bar.
+#
+# THE TABLES WERE ALSO DUPLICATED. BINDING_FIXTURE held 17 measured
+# binding energies and BETA_B held 10 more of the same quantity,
+# overlapping in one entry that agreed. Same defect as the four
+# duplicated constants in 3.1.24: two homes for one thing, agreeing
+# by care rather than by construction. They are one table now.
+MEASURED, FORMULA = "MEASURED", "FORMULA"
+
+_EXTRA_BINDING = {
+    # Alpha daughters the decay chains need, measured. They reproduce
+    # measured alpha Q-values to within 0.08 MeV -- and the check is
+    # real rather than circular, because Ra-226 -> Rn-222 and
+    # Po-212 -> Pb-208 use only entries that were already here.
+    (80, 124): 1607.5,      # Hg-204
+    (88, 140): 1742.5,      # Ra-228
+    (90, 144): 1777.7,      # Th-234
+}
+
+
+def measured_binding():
+    """-> {(Z,N): MeV}. The one table of measured binding energies."""
+    out = dict(BINDING_FIXTURE)
+    for k, v in BETA_B.items():
+        if k in out and abs(out[k] - v) > 1e-6:
+            raise ArithmeticError(
+                f"the two binding tables disagree at {k}: {out[k]} vs {v}")
+        out[k] = v
+    out.update(_EXTRA_BINDING)
+    return out
+
+
+MEASURED_BINDING = measured_binding()
+def _measured_q_precision():
+    """MeV. DERIVED from how precisely the table is quoted.
+
+    A typed 0.10 sat here until the no_bar_is_typed rule caught it,
+    which is the rule working on the person who wrote it.
+
+    Each entry is quoted to a fixed number of decimals, so its
+    rounding half-width is half of that place. A Q-value is a sum of
+    three such entries, and independent rounding errors add in
+    quadrature. Nothing is chosen: the table's own representation
+    says how well it can be differenced.
+    """
+    from decimal import Decimal
+    halves = []
+    for v in MEASURED_BINDING.values():
+        exp = Decimal(str(v)).as_tuple().exponent
+        halves.append(0.5 * 10.0 ** exp)
+    worst = max(halves)
+    return (3 ** 0.5) * worst
+
+
+MEASURED_Q_BAR = _measured_q_precision()
+
+
+def q_from(z, n, mode):
+    """-> (Q, source, why). One source, or refuse. DERIVED or MEASURED."""
+    from engine.shells import in_domain, shell_term, SCALE
+    if mode == "alpha":
+        parts = [(z, n), (z - 2, n - 2), (2, 2)]
+        if any(a < 0 or b < 0 for a, b in parts):
+            return None, None, "no alpha daughter exists"
+        mb = MEASURED_BINDING
+        if all(pp in mb for pp in parts):
+            q = mb[(z - 2, n - 2)] + mb[(2, 2)] - mb[(z, n)]
+            return q, MEASURED, (
+                f"every term measured: B({z-2},{n-2}) + B(He-4) - "
+                f"B({z},{n}) = {q:+.3f} MeV. Arithmetic on measurement, "
+                f"not a derivation, and it carries the table's "
+                f"{MEASURED_Q_BAR:.2f} MeV precision rather than the "
+                f"formula's bar")
+        if all(in_domain(a, b) for a, b in parts):
+            def bf(a, b):
+                return (binding_per_nucleon(a, b) * (a + b)
+                        + shell_term(a, b, SCALE))
+            q = bf(z - 2, n - 2) + bf(2, 2) - bf(z, n)
+            return q, FORMULA, f"every term from the formula: {q:+.3f} MeV"
+        missing = [pp for pp in parts
+                   if pp not in mb and not in_domain(*pp)]
+        return None, None, (
+            f"refused: {missing} is neither measured nor inside the "
+            f"formula's domain, and mixing the two sources is what "
+            f"3.1.27 removed -- it biased every alpha channel by 5.455 "
+            f"MeV, 4.5 times its own bar")
+    # Beta gets the same treatment. The neutron-hydrogen term and
+    # the two electron masses are derived from particle masses and
+    # belong to neither source -- they are exact bookkeeping, not
+    # binding energies, so carrying them alongside measured binding
+    # is not a mixture.
+    mb = MEASURED_BINDING
+    if mode == "beta-minus":
+        d, extra = (z + 1, n - 1), DELTA_M_NH_MEV
+    elif mode == "electron-capture":
+        d, extra = (z - 1, n + 1), -DELTA_M_NH_MEV
+    elif mode == "beta-plus":
+        d, extra = (z - 1, n + 1), -DELTA_M_NH_MEV - TWO_ME_MEV
+    else:
+        return None, None, f"unknown mode {mode!r}"
+    if d[0] < 0 or d[1] < 0:
+        return None, None, f"no {mode} daughter exists"
+    if (z, n) in mb and d in mb:
+        q = mb[d] - mb[(z, n)] + extra
+        return q, MEASURED, (
+            f"both binding energies measured: B{d} - B({z},{n}) "
+            f"{extra:+.5f} = {q:+.3f} MeV")
+    q = beta_q(z, n, mode)
+    return (q, FORMULA, f"{mode} from the formula: {q:+.3f} MeV") \
+        if q is not None else (None, None, f"no {mode} channel")
+
+
 def error_bar(kind="decay"):
     """-> (MeV, why). The bar for the question actually being asked."""
     if kind == "mass":

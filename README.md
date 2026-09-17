@@ -3562,3 +3562,45 @@ it. What the walk is worth is that four popular explanations are now
 ruled out by derivation rather than opinion.
 
     earthlab 5/5   lab 29 experiments   5,737 correct, 0 wrong
+
+### 3.1.50 — cancelling a rule to size what it was holding up
+
+**A shut gate says no. It does not say by how much**, and the difference
+matters enormously: a gate missing by a factor of two is a different
+problem from one missing by 10¹¹. So each closed gate is relaxed — the
+one quantity it depends on is moved until it opens — and **the size of
+the move is the specification for the missing mechanism.**
+
+    elements        inf x    carbon must arrive; CO freezes only at 25 K,
+                             so the fix is a colder source, not more
+    crowding        40 x     or a vesicle 3.4x wider (341 nm)
+    search      5.1e+11 x    more trials to reach 66 residues by chance
+    fidelity       2.0 x     one error in 200 instead of one in 100
+
+**Two of the four are modest.** Crowding needs 40× — evaporating pools,
+eutectic freezing and pore thermophoresis all reach far more than that,
+so it is not a deep problem, only a mechanism not yet written. And
+**fidelity needs a factor of two.** One error in 200 instead of one in
+100 is the entire distance between chemistry and a replicator.
+
+**One is astronomical, and that is the informative one.** Search is short
+by 5.1 × 10¹¹, which is not a gap anything closes by trying harder. So
+chance is not how it was crossed — something must assemble from parts
+already found. That is Levinthal's answer for the third time in this
+repository: folding is not a search, sequence-finding is not a search,
+and neither is this.
+
+**The loop audit, now standing.** Profiling a spectral pass found
+`c6()` — the London dispersion coefficient, a pure function of two
+constants — called **10,749,440 times**, with `well_depth` and
+`potential` behind it. None of that is physics; it is one answer
+recomputed. Memoised:
+
+    spectral pass   ~1.3s -> 0.039s
+
+That is the third time here that the fix was not running a loop rather
+than running it faster, after `gravity()` at 1.3 million calls and
+`fixed_points` at 3,400 steps that 200 would do. **Before making a loop
+faster, check whether it needs to run.**
+
+    earthlab 6/6   5,737 correct, 0 wrong   claims 16/16   audit 21/21

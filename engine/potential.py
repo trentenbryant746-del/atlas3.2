@@ -40,6 +40,7 @@ band model contains at all.
 """
 from __future__ import annotations
 
+import functools
 import math
 import sys
 from pathlib import Path
@@ -64,6 +65,7 @@ MOLECULES = {
 }
 
 
+@functools.lru_cache(maxsize=32)
 def c6(species):
     """London dispersion coefficient. DERIVED from two lab properties."""
     m = MOLECULES[species]
@@ -72,6 +74,7 @@ def c6(species):
     return 0.75 * alpha * alpha * ion / (4 * math.pi * EPS0) ** 2
 
 
+@functools.lru_cache(maxsize=32)
 def well_depth(species):
     """J. DERIVED: dispersion evaluated at the collision diameter."""
     return c6(species) / (4 * MOLECULES[species]["sigma"] ** 6)
@@ -98,6 +101,7 @@ def turning_point(species, T):
     return 0.5 * (lo + hi)
 
 
+@functools.lru_cache(maxsize=4096)
 def collision_duration(species, T, floor=0.1, steps=4000):
     """s. Integrated along the trajectory. DERIVED, not estimated.
 
@@ -130,8 +134,18 @@ def collision_duration(species, T, floor=0.1, steps=4000):
     return 2 * t
 
 
+@functools.lru_cache(maxsize=4096)
 def wing_cutoff(species, T):
-    """cm^-1 past which wings stop being Lorentzian. DERIVED."""
+    """cm^-1 past which wings stop being Lorentzian. DERIVED.
+
+    MEMOISED, AND THE PROFILE SAYS WHY. A spectral pass evaluates
+    line_tau once per bin per band, each of which asks for this,
+    which integrates a 4,000-step trajectory. c6() alone was called
+    10,749,440 times for a pure function of two constants. None of
+    that is physics, it is the same answer recomputed -- and it is
+    the standing rule here: before making a loop faster, check
+    whether it needs to run.
+    """
     return 1.0 / (2 * math.pi * C_CM * collision_duration(species, T))
 
 

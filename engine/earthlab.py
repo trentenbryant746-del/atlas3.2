@@ -167,6 +167,69 @@ def first_shut():
     return None, "every gate opened, which would be a result"
 
 
+# CANCELLING A RULE TO SEE WHAT IT WAS HOLDING UP.
+#
+# A shut gate says no. It does not say by how much, and the
+# difference matters enormously: a gate missing by a factor of two
+# is a different problem from one missing by 10^11. So each closed
+# gate is relaxed -- the one quantity it depends on is moved until
+# it opens -- and the size of the move IS the specification for the
+# missing mechanism.
+#
+# This is the ablation idea from engine/ablate.py pointed at a
+# question instead of at a test suite. There it asked which rule
+# owns a failure. Here it asks what a rule would have to be worth.
+
+
+def what_would_open(gate):
+    """-> (factor, what must change). DERIVED per gate."""
+    from engine.origin import length_ceiling, search_years, ALPHABET
+    if gate == "crowding":
+        have = molecules_in_vesicle(OCEAN_AMPHIPHILE_M)
+        need = 100.0
+        return need / have, (
+            f"{need/have:.0f}x more concentrated, or a vesicle "
+            f"{(need/have)**(1/3):.1f}x wider "
+            f"({VESICLE_RADIUS_M*1e9*(need/have)**(1/3):.0f} nm). "
+            f"Evaporating pools, eutectic freezing and pore "
+            f"thermophoresis all reach far more than 40x, so this gate "
+            f"is not a deep problem -- it is a mechanism this "
+            f"repository has not written")
+    if gate == "fidelity":
+        best = min(ERROR_RATES.values())
+        need_mu = 1.0 / MIN_REPLICASE_BASES
+        return best / need_mu, (
+            f"copying {best/need_mu:.1f}x more accurately -- one error "
+            f"in {MIN_REPLICASE_BASES} instead of one in {1/best:.0f}. "
+            f"A factor of two, not a factor of a thousand, and that is "
+            f"the whole distance between chemistry and a replicator")
+    if gate == "search":
+        ceil = length_ceiling()
+        need = MIN_REPLICASE_BASES // 3
+        return ALPHABET ** (need - ceil), (
+            f"{ALPHABET ** (need - ceil):.1e}x more trials to reach "
+            f"{need} residues by chance. That is the one gate where "
+            f"the shortfall is astronomical, so chance is not how it "
+            f"was crossed -- something must assemble from parts "
+            f"already found, which is Levinthal's answer again")
+    if gate == "elements":
+        return float("inf"), (
+            "carbon must arrive, and the delivery average over 3 to 45 "
+            "AU does not carry it because CO freezes only at 25 K. The "
+            "fix is a colder source, not more of the same")
+    return 1.0, "already open"
+
+
+def specification():
+    """-> the missing mechanism, in numbers rather than adjectives."""
+    out = []
+    for nm, st, _why in gates():
+        if st == SHUT and nm != "bootstrap":
+            f, why = what_would_open(nm)
+            out.append((nm, f, why))
+    return out
+
+
 def check():
     out = []
 
@@ -181,6 +244,7 @@ def check():
     t("the_barrier_is_fidelity_not_supply", _barrier)
     t("the_two_bounds_close_on_each_other", _circle)
     t("this_is_a_constraint_not_an_origin", _humble)
+    t("cancelling_a_rule_sizes_the_gap", _size)
     return all(o[1] for o in out), out
 
 
@@ -250,13 +314,35 @@ def _humble():
             "than opinion")
 
 
+def _size():
+    spec = specification()
+    if not spec:
+        raise ArithmeticError("every gate opens, so there is nothing to "
+                              "size and this reasoning is stale")
+    finite = [(n, f) for n, f, _w in spec if f != float("inf")]
+    small = [(n, f) for n, f in finite if f < 100]
+    big = [(n, f) for n, f in finite if f >= 100]
+    return (f"relaxing each shut gate sizes it: "
+            + "; ".join(f"{n} needs {f:.0f}x" for n, f in finite)
+            + f". {len(small)} of them are modest -- "
+            + ", ".join(n for n, _f in small)
+            + f" -- and a factor of two in copying accuracy is the "
+              f"whole distance between chemistry and a replicator. "
+            + (f"Only {big[0][0]} is astronomical, which is why chance "
+               f"is not how it was crossed" if big else ""))
+
+
 if __name__ == "__main__":
     for nm, st, why in gates():
         mark = "open " if st == OPEN else "SHUT "
         print(f"  {mark}{nm:13}{why[:88]}")
     print()
     nm, why = first_shut()
-    print(f"  first shut: {nm}")
+    print(f"  first shut: {nm}\n")
+    print("  WHAT WOULD OPEN EACH:")
+    for n, f, w in specification():
+        fs = "inf" if f == float("inf") else f"{f:.1e}"
+        print(f"    {n:12}{fs:>10}x   {w[:74]}")
     ok, res = check()
     print()
     for n, o, d in res:

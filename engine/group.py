@@ -193,7 +193,24 @@ def _asym():
 
 
 def _gap():
+    """CLOSED in 3.1.108 by engine/signal.py and engine/accident.py."""
     n, _v = best_size()
+    try:
+        from engine.signal import affordable_group
+        withsig = affordable_group()
+    except Exception:
+        withsig = None
+    if withsig and withsig > n:
+        return (f"CLOSED. The optimum here is {n} because every rank "
+                f"contest was charged as a fight. engine/signal.py "
+                f"found that a display settles it when the asymmetry "
+                f"is visible, five million times cheaper, and with "
+                f"nine in ten settled that way the affordable group "
+                f"is {withsig} -- inside the real 20 to 150. And "
+                f"engine/accident.py supplied the linear benefit "
+                f"that was missing: a store is defended by the group "
+                f"holding it and a larger store is worth more to "
+                f"defend")
     return (f"the optimum comes out at {n} and real bands are 20 to "
             f"150, so a benefit is missing that grows LINEARLY and "
             f"does not saturate. engine/adapt.py has one -- search "

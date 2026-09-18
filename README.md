@@ -6542,3 +6542,66 @@ the group, the worse that trade is for strength. That is why a
 bigger brain beats a bigger arm in a band and not in a pair.
 
     group 5/5    66 claims reproduce
+
+### 3.1.108 — a signal is a contest not held, and a store is why you stop
+
+**Communication is not a refinement on group living. It is what makes
+a group bigger than a family possible.**
+
+`group.py` got an optimum of 3 because it charged every rank contest
+as a fight — log n of them per head, seven at a band of 144, at
+5.2 GJ each. But the outcome is **predictable when the asymmetry is
+visible**: 80 cm² of muscle against 40, or 1.75 m of haft against a
+bare arm. Then there is nothing to find out.
+
+    a fight     5.2e9 J
+    a display   9.7e2 J        a factor of 5.3 million
+
+> **A signal is a contest not held**, exactly as `regard.py` found
+> regard to be a contest not repeated.
+
+Not a courtesy and not a precursor of language — the cheapest way to
+settle something that must be settled, appearing wherever rank does,
+which is wherever a group is. An even match still has to be fought:
+the signal carries information only where information exists.
+
+**And its capacity scales with what must be distinguished.** A signal
+separates the situations its sender needs separated, and
+`comprehension.py` counts those as 2^constraints — so the bits needed
+are one per constraint: 6 for a microbe, 13 for us. **Communication
+grows with understanding** because what must be said is what must be
+told apart.
+
+    group optimum: 3 charging fights -> 28 with displays
+
+**That closes the gap `group.py` left open** — the derived band is now
+inside the real 20–150.
+
+### the store, and which accident
+
+**All discovery here was already accidental and it had not been said.**
+`innovation.py` makes 4.48 variants per division and nothing in it
+seeks anything. A pressure decides which accidents are *kept*, not
+which are *made*.
+
+Alcohol, grain and dried meat are the same object: **calories held
+against later.** A store cannot be carried, so leaving one costs what
+it holds while moving gains what following the food is worth.
+
+    dried meat        14 days    does not settle
+    fermented fruit   60         does not settle
+    a grain harvest  365         SETTLES
+                      73         the threshold
+
+**Stationary is not a choice, it is the store.** And I expected the
+stores to be interchangeable — they are not. **The arithmetic picks
+farming over alcohol**, by 13 days, on a store duration that is a
+chosen number. The discrimination is real and it is **not robust**:
+fermented fruit keeping three months instead of two reverses it. That
+is worth more than a confident answer.
+
+A store is also the **linear benefit** `group.py` was missing — it is
+defended by the group that holds it, and a larger store is worth more
+to defend. Settling and grouping are the same arithmetic seen twice.
+
+    signal 5/5   accident 5/5   68 claims reproduce

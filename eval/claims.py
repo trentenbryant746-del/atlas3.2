@@ -154,6 +154,20 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _signal():
+    from engine.signal import saving, affordable_group, signal_bits
+    from engine.group import best_size
+    return (round(math.log10(saving())), best_size()[0],
+            affordable_group(), round(signal_bits("human")[0]))
+
+
+def _accident():
+    from engine.accident import (settling_threshold, which_stores_settle)
+    rows = which_stores_settle()
+    return (round(settling_threshold()),
+            sum(1 for r in rows if r[2]), rows[-1][0])
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -582,6 +596,10 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.108", "a display is 1e6x cheaper and takes the band 3 -> 28",
+     _signal, (7, 3, 28, 13), CURRENT),
+    ("3.1.108", "settling needs 73 days of store; only a harvest clears it",
+     _accident, (73, 1, "a grain harvest"), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",

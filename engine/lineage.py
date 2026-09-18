@@ -556,7 +556,27 @@ def inside_the_head():
          "head to 0.80 while novel designs in total rise 32x. Each "
          "person invents 20% less and the world gets 32x more, "
          "both at once. It falls because knowing enough to add to "
-         "it costs more, not because there is less left")
+         "it costs more, not because there is less left"),
+        ("designs counted", "things that can be named", DERIVED,
+         "artifact.bootstrap",
+         "a count is not a technology. Giving the 2^s designs "
+         "actual objects -- 16 physical capabilities, each "
+         "grounded in a rule that already existed for another "
+         "reason, heat in the cooking bill and optics in the "
+         "diffraction limit that bounded an eye -- immediately "
+         "showed that composition depth is NOT the constraint. "
+         "The prerequisite tree is 5 deep against a budget of "
+         "23.5, so on composition alone a literate village reaches "
+         "a governed engine. It does not. The gate is "
+         "TEMPERATURE: every step past cordage is a material you "
+         "cannot have until you reach the heat that makes it, and "
+         "what you can reach depends on what you have built. An "
+         "open fire is 1100 K; a hearth and charcoal buy 1400 and "
+         "copper; bellows need a metal tuyere, which needs the "
+         "smelting the bellows were for, and that loop is why "
+         "copper comes at round 3 and steel at round 5. Six "
+         "rounds from a hafted axe to a governed engine, and "
+         "nobody put the engine last -- combustion did")
     ]
 
 

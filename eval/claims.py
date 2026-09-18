@@ -286,6 +286,25 @@ def _novelty():
             round(100 * novel_fraction(1e-9), 3))
 
 
+def _artifact():
+    from engine.artifact import bootstrap, catalogue, PRIMITIVES, depth
+    b = bootstrap()
+    copper = next(i for i, _t, g in b if "smelting" in g)
+    iron = next(i for i, _t, g in b if "spring" in g)
+    return (len(PRIMITIVES), len(b), b[-1][1], copper, iron,
+            max(depth(n) for n in PRIMITIVES) + 1,
+            catalogue()[-1][0])
+
+
+def _levers():
+    from engine.intricacy import levers
+    rows = {nm: (dp, e) for nm, dp, e in levers()}
+    return (round(rows["a printing press"][0], 1),
+            round(rows["power that is not land"][1], 3),
+            round(rows["proofread twice more"][0], 1),
+            round(rows["ten times the people"][0], 1))
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -744,6 +763,10 @@ CLAIMS = [
      _capital, (1177, 368, 24, 1.33, 14.0), CURRENT),
     ("3.1.115", "novelty per head falls to 0.80 while the total rises 32x",
      _novelty, (0.8, 32, 21.5, 26.8, 99.7, 0.032), CURRENT),
+    ("3.1.116", "temperature gates the tech tree: copper at round 3, steel at 5",
+     _artifact, (16, 6, 1750, 3, 5, 5, 6), CURRENT),
+    ("3.1.116", "a press is worth 6.6 parts; proofreading is worth nothing",
+     _levers, (6.6, 0.322, 0.0, 3.3), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -770,8 +793,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.115", "Big Bang to a head in 55 links: 47 derived, 7 forced, 0 gaps",
-     _wholechain, (55, 47, 7, 0, 1), CURRENT),
+    ("3.1.116", "Big Bang to a head in 56 links: 48 derived, 7 forced, 0 gaps",
+     _wholechain, (56, 48, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

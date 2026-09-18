@@ -192,6 +192,39 @@ def critical_land_share():
     return supply_exponent()
 
 
+# FOSTERING IT. The fixed point converges because the corpus
+# enters as a logarithm, so "try harder" buys nothing -- every
+# further part costs twice the last. The only way up is to change
+# a TERM, and there are four of them. Each is priced here rather
+# than asserted, and two of the four are worth almost nothing,
+# which is the useful part.
+
+def levers(n=VILLAGE, villages=40):
+    """-> [(lever, parts gained, per-capita exponent)]. DERIVED."""
+    mkt = villages * n
+    base_parts = settle_network(villages)
+    base_e = per_capita_exponent()
+    out = [("as it stands", 0.0, base_e)]
+
+    # a press: copying stops being one hand at a time.
+    # COPIES_PER_YEAR 250 -> 25,000 impressions is a hundredfold
+    # corpus, and the corpus is a logarithm.
+    out.append(("a printing press", math.log2(100.0), base_e))
+
+    # power that is not land: the rival input stops binding
+    out.append(("power that is not land", 0.0,
+                per_capita_exponent(0.05)))
+
+    # proofread harder: the channel was not the binding constraint
+    corpus_cap = parts_afforded(written_corpus(mkt))
+    got = 0.0 if base_parts < corpus_cap else 1.0
+    out.append(("proofread twice more", got, base_e))
+
+    # more people: the corpus is linear in them, so log again
+    out.append(("ten times the people", math.log2(10.0), base_e))
+    return out
+
+
 def check():
     res = []
 
@@ -208,6 +241,7 @@ def check():
     t("a_region_in_touch_beats_a_village_that_is_not", _region)
     t("a_design_is_not_divided_among_its_users", _nonrival)
     t("the_escape_is_land_share_against_non_rivalry", _escape)
+    t("only_two_of_the_four_levers_are_worth_pulling", _levers)
     return all(x for _, x, _ in res), res
 
 
@@ -343,6 +377,35 @@ def _escape():
             f"{100*crit:.0f}% of output, technology rises and "
             f"living standards do not; below it they move together. "
             f"The escape is not an invention, it is a share")
+
+
+def _levers():
+    rows = levers()
+    base = rows[0]
+    gains = [(nm, dp, e) for nm, dp, e in rows[1:]]
+    big = [nm for nm, dp, e in gains if dp >= 3 or e > base[2] * 2]
+    small = [nm for nm, dp, e in gains if nm not in big]
+    if not big or not small:
+        raise ArithmeticError(f"{rows}")
+    return (f"the fixed point converges because the corpus enters "
+            f"as a logarithm, so trying harder buys nothing -- "
+            f"every further part costs twice the last. Only a "
+            f"changed TERM moves it, and of four: "
+            + "; ".join(f"{nm} +{dp:.1f} parts, exponent {e:.3f}"
+                        for nm, dp, e in gains)
+            + f". A press is worth {math.log2(100):.1f} parts "
+              f"because a hundred impressions where there was one "
+              f"is a hundredfold corpus and the corpus is a "
+              f"logarithm -- the same reason ten times the people "
+              f"is worth only {math.log2(10):.1f}. Power that is "
+              f"not land buys no parts at all and instead takes "
+              f"the per-capita exponent from {base[2]:.3f} to "
+              f"{[e for nm,_d,e in gains if 'power' in nm][0]:.3f}, "
+              f"which is the only one of the four that makes "
+              f"anybody better off. Proofreading buys nothing: the "
+              f"channel stopped binding at 3.1.112 and pushing on "
+              f"a constraint that is not binding is the commonest "
+              f"way to waste an effort")
 
 
 if __name__ == "__main__":

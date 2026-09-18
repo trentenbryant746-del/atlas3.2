@@ -364,3 +364,43 @@ STILL OPEN
   1.0 all CHOSEN. The 0.80 multiple depends only on the corpus
   logarithms; the 99.7% novel fraction depends heavily on trials.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.116 — artifacts, temperature, levers
+
+PROGRESS
+- artifact.py: 16 primitives, each grounded in an existing rule.
+  Artifacts are sets of them. Names are VOCABULARY and derive
+  nothing; each is checked against the derivation.
+- the gate is TEMPERATURE, not composition. Bootstrap: 1100 K open
+  fire -> hearth+charcoal 1400 (copper) -> bellows on a metal
+  tuyere 1600 -> regenerative flue 1750 (iron, glass, steel).
+  Six rounds, axe to governed engine.
+- the bronze/iron gap is a LOOP and not a stipulation: bellows need
+  a tuyere, the tuyere needs the smelting the bellows were for.
+- levers() prices the four ways to move the fixed point. Press
+  +6.6 parts, ten times the people +3.3, power-not-land +0 parts
+  but exponent 0.072 -> 0.322, proofreading +0.
+- transcript now carries the technology. 5,578 lines.
+- chain 55 -> 56 links.
+
+REGRESSION FOUND — by building the objects
+- composition depth was assumed to gate the tech tree and does
+  not: tree 5 deep against a 23.5-part budget, so a literate
+  village would reach a governed engine. The count of designs had
+  never been asked what a design WAS, and asking falsified the
+  gate. Replaced with the temperature bootstrap.
+- first staging of GAINS had all four land at once (1100 -> 1900 in
+  one round), collapsing bronze and iron together. Restaged on
+  their real prerequisites.
+- "a bow" was defined as cordage + spring, and spring is steel. A
+  bow's spring is wood. Corrected to cordage + lever.
+
+STILL OPEN
+- KNOWN_AS is 16 names. It is vocabulary, it derives nothing, and
+  it is the only hand-authored table in the engine. It is checked
+  against the derivation but it does not PRODUCE anything.
+- primitive temperatures are MEASURED-ish; GAINS are CHOSEN. The
+  ORDER survives any plausible values because it comes from the
+  prerequisite loop, not the magnitudes.
+- levers() prices a press at a hundredfold corpus, CHOSEN.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

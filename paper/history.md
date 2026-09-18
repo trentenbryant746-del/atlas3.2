@@ -6,7 +6,7 @@ describes, so it cannot drift from what the system actually does.
 
 ## The chain
 
-55 links from a nebula to a head. Each one names the rule that drives
+56 links from a nebula to a head. Each one names the rule that drives
 it and the module the rule lives in. A link is DERIVED when something
 here forces it, FORCED when it is both permitted and driven, CROSSES
 when it is permitted and nothing drives it, and MISSING when it is a
@@ -565,9 +565,117 @@ designs in total rise 32x. Each person invents 20% less and the world
 gets 32x more, both at once. It falls because knowing enough to add to
 it costs more, not because there is less left
 
+### 56. designs counted -> things that can be named
+
+*DERIVED* &nbsp; `artifact.bootstrap`
+
+a count is not a technology. Giving the 2^s designs actual objects --
+16 physical capabilities, each grounded in a rule that already existed
+for another reason, heat in the cooking bill and optics in the
+diffraction limit that bounded an eye -- immediately showed that
+composition depth is NOT the constraint. The prerequisite tree is 5
+deep against a budget of 23.5, so on composition alone a literate
+village reaches a governed engine. It does not. The gate is
+TEMPERATURE: every step past cordage is a material you cannot have
+until you reach the heat that makes it, and what you can reach depends
+on what you have built. An open fire is 1100 K; a hearth and charcoal
+buy 1400 and copper; bellows need a metal tuyere, which needs the
+smelting the bellows were for, and that loop is why copper comes at
+round 3 and steel at round 5. Six rounds from a hafted axe to a
+governed engine, and nobody put the engine last -- combustion did
+
+## The technology
+
+16 physical capabilities, each grounded in a rule that already existed
+for another reason. An artifact is a set of them used together. What
+gates the sequence is not how many parts anyone can compose -- the tree
+is only 5 deep against a budget of 29.4 -- but TEMPERATURE: every step
+past cordage is a material you cannot have until you can reach the heat
+that makes it.
+
+### What can be reached, and how hot
+
+An open wood fire is 1100 K. Each thing built raises it, and the things
+that raise it need the things it makes:
+
+- **a hearth that keeps it in** +150 K — needs containment
+- **charcoal instead of wood** +150 K — needs containment, heat
+- **bellows on a metal tuyere** +200 K — needs cordage, smelting
+- **a regenerative flue** +150 K — needs smelting, gearing
+
+### The bootstrap
+
+**Round 1** — 1100 K
+
+- **cordage** (300 K, needs nothing) — fibre twisted until it holds &nbsp; `tools.grip_gate`
+- **edge** (300 K, needs nothing) — a worked face that cuts &nbsp; `tools.grip_gate`
+- **heat** (600 K, needs nothing) — fire held at a temperature &nbsp; `disease.cook_cost_mj`
+- **lever** (300 K, needs nothing) — a length trading force for distance &nbsp; `tools.torque`
+
+**Round 2** — 1100 K
+
+- **containment** (1000 K, needs heat) — fired clay that holds against a gradient &nbsp; `atoms.Pool`
+- **mark** (300 K, needs edge) — a durable trace standing for a sound &nbsp; `literacy.copy_error`
+- **rotation** (300 K, needs edge, lever) — a bearing and a round thing on it &nbsp; `biome.escalation_stops_at`
+
+**Round 3** — 1400 K
+
+- **breeding** (300 K, needs mark) — kept records of who bred with whom &nbsp; `heredity.copies_per_type`
+- **smelting** (1350 K, needs heat, containment) — ore reduced past its melting point &nbsp; `arrhenius.rate`
+
+**Round 4** — 1600 K
+
+- **gearing** (1350 K, needs rotation, smelting) — teeth that carry a ratio &nbsp; `tools.torque`
+
+**Round 5** — 1750 K
+
+- **electricity** (1700 K, needs smelting, rotation) — charge moved on purpose &nbsp; `landauer.kT`
+- **optics** (1700 K, needs heat, containment) — glass shaped to bend light &nbsp; `senses.diffraction_limit`
+- **pressure** (1700 K, needs smelting, containment) — a vessel that holds against itself &nbsp; `eos.pressure`
+- **spring** (1700 K, needs smelting) — steel: stored strain released on demand &nbsp; `eos.strain`
+
+**Round 6** — 1750 K
+
+- **regulation** (1700 K, needs gearing, spring) — a machine that corrects itself &nbsp; `control.feedback`
+- **steam** (1700 K, needs pressure, heat) — heat turned into a stroke &nbsp; `carnot.efficiency`
+
+### The things themselves
+
+Names are vocabulary and derive nothing. Each is checked against the
+derivation: a name whose parts never become reachable is an error, not
+a prediction. The order is not a list anybody wrote.
+
+- **round 1, 1100 K** — a bow (cordage + lever)
+- **round 1, 1100 K** — a hafted axe (cordage + edge + lever)
+- **round 2, 1100 K** — a cooking pot (containment + heat)
+- **round 2, 1100 K** — a potter's wheel (lever + rotation)
+- **round 2, 1100 K** — a sealed tablet, an account (containment + mark)
+- **round 2, 1100 K** — a spindle (cordage + rotation)
+- **round 3, 1400 K** — a bred crop line (breeding + mark)
+- **round 3, 1400 K** — a metal blade (edge + smelting)
+- **round 5, 1750 K** — spectacles, and then a lens ground to a number (mark + optics)
+- **round 5, 1750 K** — a telescope on a mount (gearing + optics + rotation)
+- **round 6, 1750 K** — a clock (gearing + regulation + spring)
+- **round 6, 1750 K** — a dynamo under load (electricity + regulation + rotation)
+- **round 6, 1750 K** — a machine that computes (electricity + mark + regulation)
+- **round 6, 1750 K** — a signal read by machine (electricity + optics + regulation)
+- **round 6, 1750 K** — a steam engine turning a shaft (gearing + rotation + steam)
+- **round 6, 1750 K** — a governed engine (regulation + rotation + smelting + steam)
+
+### What would move it further
+
+The fixed point converges because the corpus enters as a logarithm, so
+trying harder buys nothing. Only a changed term moves it:
+
+- **as it stands** — +0.0 parts, per-capita exponent +0.072
+- **a printing press** — +6.6 parts, per-capita exponent +0.072
+- **power that is not land** — +0.0 parts, per-capita exponent +0.322
+- **proofread twice more** — +0.0 parts, per-capita exponent +0.072
+- **ten times the people** — +3.3 parts, per-capita exponent +0.072
+
 ## The rules, and what each one says
 
-550 of 550 rules hold across 90 modules.
+555 of 555 rules hold across 91 modules.
 
 Every check below is a rule that produced its own sentence. An INVERTED
 check is one that fails when the result looks too good -- it is there
@@ -806,6 +914,50 @@ does not move it. The last step CROSSES rather than stopping: which
 large-brained endotherm carried on is recorded, not derived, and a
 chain reaching history changes kind the same way the cascade changes
 layer when arithmetic becomes a date
+
+### engine/artifact.py
+
+The things themselves, so that the technology can be read.
+
+**a_primitive_cannot_precede_what_it_is_made_of** — holds
+
+16 primitives, each grounded in a rule that already existed for another
+reason -- heat in the cooking bill, optics in the diffraction limit
+that bounded an eye, steam in Carnot. A primitive that needs others
+cannot come first, so the order is forced: depth 0 is ['cordage',
+'edge', 'heat', 'lever'], and the deepest is regulation at 4. Nobody
+sequenced this; the prerequisites did
+
+**the_count_of_designs_now_has_objects_under_it** — holds
+
+engine/intricacy.py counted 2**s designs and never said what one WAS.
+Giving them objects found that composition depth is NOT the constraint:
+the prerequisite tree is 5 deep and a village affords 23.5 parts, so on
+composition alone a literate village reaches a governed engine. It does
+not, and the thing stopping it is TEMPERATURE. Every step past cordage
+is a material you cannot have until you can reach the heat that makes
+it, and the bootstrap takes 6 rounds from 1100 K to 1750 K. The count
+now has objects under it and the objects have a metallurgy
+
+**every_name_is_checked_against_the_derivation** — holds
+
+16 names, and they derive NOTHING -- they are vocabulary so the output
+can be read. Every one is checked against the derivation and a name
+whose parts never become reachable is an error, not a prediction. They
+arrive where the bootstrap puts them: r1 a bow; r1 a hafted axe; r2 a
+cooking pot; r2 a potter's wheel; r2 a sealed tablet, an account ...
+and a governed engine at r6
+
+**our_own_age_arrives_last_and_not_by_being_listed** — holds
+
+the recognisable modern things are not late because anyone listed them
+last. Copper arrives at round 3 and steel at 5, and the gap is a LOOP:
+bellows need a metal tuyere at the hot end, and the tuyere needs the
+smelting the bellows were for. So the cheap gains -- a hearth, charcoal
+-- buy copper at 1400 K, and copper buys the gains that reach 1750 K
+and iron. 6 things are in hand by round 2 (a bow); 8 wait for round 5
+or later, including a governed engine. Nobody put a steam engine after
+a cooking pot -- combustion did
 
 ### engine/atoms.py
 
@@ -2783,6 +2935,22 @@ FALSIFIABLE line: while farming is more than 37% of output, technology
 rises and living standards do not; below it they move together. The
 escape is not an invention, it is a share
 
+**only_two_of_the_four_levers_are_worth_pulling** — holds
+
+the fixed point converges because the corpus enters as a logarithm, so
+trying harder buys nothing -- every further part costs twice the last.
+Only a changed TERM moves it, and of four: a printing press +6.6 parts,
+exponent 0.072; power that is not land +0.0 parts, exponent 0.322;
+proofread twice more +0.0 parts, exponent 0.072; ten times the people
++3.3 parts, exponent 0.072. A press is worth 6.6 parts because a
+hundred impressions where there was one is a hundredfold corpus and the
+corpus is a logarithm -- the same reason ten times the people is worth
+only 3.3. Power that is not land buys no parts at all and instead takes
+the per-capita exponent from 0.072 to 0.322, which is the only one of
+the four that makes anybody better off. Proofreading buys nothing: the
+channel stopped binding at 3.1.112 and pushing on a constraint that is
+not binding is the commonest way to waste an effort
+
 ### engine/lab.py
 
 Small controlled experiments, one layer at a time.
@@ -2893,8 +3061,8 @@ Nebula to human, one chain, every link named.
 
 **the_chain_runs_end_to_end** — holds
 
-55 links from a nebula to what a head does, in order and in one list:
-CROSSES 1, DERIVED 47, FORCED 7. engine/planetlab.py,
+56 links from a nebula to what a head does, in order and in one list:
+CROSSES 1, DERIVED 48, FORCED 7. engine/planetlab.py,
 engine/earthlab.py and engine/ancestry.py each walked part of this and
 none handed off, so the chain the repository is for was the one thing
 nobody could read
@@ -2912,13 +3080,13 @@ per gene falls as 1/r until membranes go inside, which buys 200x
 
 **every_link_names_its_rule** — holds
 
-55 of 55 links name the rule and module that produce them; the 0 that
+56 of 56 links name the rule and module that produce them; the 0 that
 do not are exactly the 0 marked MISSING, whose whole content is that no
 rule produces them
 
 **the_gaps_are_named_and_counted** — holds
 
-55 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
+56 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
 is permitted and undriven -- the gates open and nothing makes it
 happen, so permission is not occurrence and the distance between them
 is not measured anywhere here
@@ -4084,8 +4252,8 @@ photosynthesis
 
 **following_beats_running_everything** — holds
 
-10 questions, 6.74 ms warm against 17.3 s for the full suite on a warm
-cache -- 2,566x. The suite re-establishes the past on every question.
+10 questions, 6.57 ms warm against 17.3 s for the full suite on a warm
+cache -- 2,632x. The suite re-establishes the past on every question.
 This establishes it once, because the past does not move. Roots get
 longer and deeper as modules are added and the cost stays at the tip
 
@@ -5023,7 +5191,7 @@ written past it
 
 **every_rule_is_reachable_by_its_own_words** — holds
 
-651 rules across 126 modules, indexed under 3,342 distinct terms,
+656 rules across 127 modules, indexed under 3,380 distinct terms,
 against the 350 facts the Atlas 2 shim carried. The gap was never
 machinery -- it was that 3.1's rules had never been given their words
 
@@ -5037,14 +5205,14 @@ the answer
 
 **nothing_in_the_index_was_written_by_hand** — holds
 
-651 of 651 entries carry terms taken from the rule's own name and
+656 of 656 entries carry terms taken from the rule's own name and
 docstring, and the answer is the sentence its check() already emitted.
 No lexicon was written by hand, so a rule added tomorrow is reachable
 tomorrow
 
 **only_what_moved_is_recomputed** — holds
 
-126 modules untouched, 0 rechecked, in 55 ms. An earlier version of
+127 modules untouched, 0 rechecked, in 56 ms. An earlier version of
 this SWEPT -- ran every check and compared 512 sentences, 180 seconds
 to re-derive answers nothing could have changed. That is the mistake
 eval/claims.py had already fixed with fingerprints, committed again
@@ -5086,7 +5254,7 @@ did
 
 ## The published numbers
 
-81 of 81 reproduce. A claim is tied to a fingerprint over the rule that
+83 of 83 reproduce. A claim is tied to a fingerprint over the rule that
 produced it and everything that rule depends on, so an unchanged
 fingerprint is a proof that recomputing would return the same thing.
 
@@ -5106,6 +5274,8 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.114` ideas are non-rival: escape turns on a 0.372 land share — reproduces (`(0.372, 0.072, -0.128, 0.372, 23.5, 29.4)`)
 - `3.1.114` 24% of possible specialists are priced out by their tools — reproduces (`(1177, 368, 24, 1.33, 14.0)`)
 - `3.1.115` novelty per head falls to 0.80 while the total rises 32x — reproduces (`(0.8, 32, 21.5, 26.8, 99.7, 0.032)`)
+- `3.1.116` temperature gates the tech tree: copper at round 3, steel at 5 — reproduces (`(16, 6, 1750, 3, 5, 5, 6)`)
+- `3.1.116` a press is worth 6.6 parts; proofreading is worth nothing — reproduces (`(6.6, 0.322, 0.0, 3.3)`)
 - `3.1.107` the derived group is 3; transitivity saves 10x on contests — reproduces (`(3, 10, 0.0, 0.02)`)
 - `3.1.106` a microbe needs 6 to adapt yearly, a human 40,792 — reproduces (`(6, 40792, 0.5)`)
 - `3.1.105` 3 grades worn, 3 need a tool; the edge opens 97% of land — reproduces (`(3, 3, 97, True, 109)`)
@@ -5119,7 +5289,7 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.99` every ligation is templated; the template is the catalyst — reproduces (`(True, 25488, True, True, 200)`)
 - `3.1.98` divides at 2x volume, 28 copies, 1.39 types lost — reproduces (`(2.0, 28, 1.39, 10.0)`)
 - `3.1.96` one compartment closes at 14 bases; an ocean is 1e35 — reproduces (`(True, 14, 13, 35)`)
-- `3.1.115` Big Bang to a head in 55 links: 47 derived, 7 forced, 0 gaps — reproduces (`(55, 47, 7, 0, 1)`)
+- `3.1.116` Big Bang to a head in 56 links: 48 derived, 7 forced, 0 gaps — reproduces (`(56, 48, 7, 0, 1)`)
 - `3.1.95` abundance falls as mass^-3/4 exactly — reproduces (`1.0`)
 - `3.1.94` the lineage holds at the 1.58 um closure floor — reproduces (`(1.58, True, True)`)
 - `3.1.91` closure is 0.48 catalysts per reaction, above 2000 molecules — reproduces (`(0.48, True, 13, True)`)

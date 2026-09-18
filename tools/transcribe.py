@@ -55,6 +55,59 @@ def _wrap(text, width=72, indent=""):
     return "\n".join(out)
 
 
+def technology_section():
+    """The things, in the order combustion allows them."""
+    from engine.artifact import (PRIMITIVES, bootstrap, catalogue,
+                                 depth, GAINS, BASE_K)
+    from engine.intricacy import levers, settle_network
+    b = bootstrap()
+    lines = ["## The technology", "",
+             _wrap(f"{len(PRIMITIVES)} physical capabilities, each "
+                   f"grounded in a rule that already existed for "
+                   f"another reason. An artifact is a set of them used "
+                   f"together. What gates the sequence is not how many "
+                   f"parts anyone can compose -- the tree is only "
+                   f"{max(depth(n) for n in PRIMITIVES)+1} deep against "
+                   f"a budget of {settle_network():.1f} -- but "
+                   f"TEMPERATURE: every step past cordage is a "
+                   f"material you cannot have until you can reach the "
+                   f"heat that makes it."), "",
+             "### What can be reached, and how hot", "",
+             _wrap(f"An open wood fire is {BASE_K} K. Each thing built "
+                   f"raises it, and the things that raise it need the "
+                   f"things it makes:"), ""]
+    for label, (needs, gain) in GAINS.items():
+        lines.append(f"- **{label}** +{gain} K — needs {', '.join(needs)}")
+    lines += ["", "### The bootstrap", ""]
+    for i, t, got in b:
+        lines.append(f"**Round {i}** — {t} K")
+        lines.append("")
+        for g in got:
+            needs, k, rule, words = PRIMITIVES[g]
+            req = f"needs {', '.join(needs)}" if needs else "needs nothing"
+            lines.append(f"- **{g}** ({k} K, {req}) — {words} "
+                         f"&nbsp; `{rule}`")
+        lines.append("")
+    lines += ["### The things themselves", "",
+              _wrap("Names are vocabulary and derive nothing. Each is "
+                    "checked against the derivation: a name whose "
+                    "parts never become reachable is an error, not a "
+                    "prediction. The order is not a list anybody "
+                    "wrote."), ""]
+    for r, t, name, parts in catalogue():
+        lines.append(f"- **round {r}, {t} K** — {name} "
+                     f"({' + '.join(parts)})")
+    lines += ["", "### What would move it further", "",
+              _wrap("The fixed point converges because the corpus "
+                    "enters as a logarithm, so trying harder buys "
+                    "nothing. Only a changed term moves it:"), ""]
+    for nm, dp, e in levers():
+        lines.append(f"- **{nm}** — {dp:+.1f} parts, "
+                     f"per-capita exponent {e:+.3f}")
+    lines.append("")
+    return lines
+
+
 def chain_section():
     from engine.lineage import chain
     c = chain()
@@ -130,7 +183,8 @@ def build():
                    f"typed by hand: every sentence was produced by the "
                    f"rule it describes, so it cannot drift from what "
                    f"the system actually does."), ""]
-    lines += chain_section() + rules_section() + claims_section()
+    lines += (chain_section() + technology_section()
+              + rules_section() + claims_section())
     text = "\n".join(lines).rstrip() + "\n"
     OUT.write_text(text)
     return text

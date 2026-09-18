@@ -6391,3 +6391,53 @@ names the module that produced it, across ten modules. It is a census
 of what the repository already refuses to let an organism ignore.
 
     comprehension 6/6    63 claims reproduce
+
+### 3.1.105 — three ladders that gate each other
+
+Understanding, tools and habitat are not three stories. They are
+one, and the interlock is **not asserted** — the same numbers appear
+in all three because the same rules produced them.
+
+**One threshold decides two ladders.** Bone yields at 1.7×10⁸ Pa. A
+fist reaches 4×10⁵, an unworked cobble 4×10⁶, a flaked edge 4×10⁸.
+That same threshold is what lets hide be cut and wood be shaped — so
+**every shelter colder than worn insulation requires a flaked edge.**
+
+    grade                       coldest   lat   land   worked
+    bare skin                      32 C    0d     0%
+    body hair                      29 C    0d     0%
+    hides and clothing             19 C   27d    45%
+    clothing and a windbreak        6 C   42d    67%      yes
+    brush shelter                 -14 C   57d    84%      yes
+    earth lodge                   -64 C   77d    97%      yes
+
+**Habitat opens latitude, and latitude is land.** Insolation falls as
+cos(lat) and Stefan-Boltzmann makes temperature fall as its fourth
+root, so a flaked edge is the difference between **45% and 97% of the
+land surface.**
+
+**And the loop closes.** Obliquity moves the sub-solar point, so the
+summer-winter swing is 6 K at the equator and **109 K at 60°**. The
+land a tool opens is seasonal — food is not available year round —
+which is a constraint nothing at the equator faces. So the count in
+`comprehension.py` rises, and a higher count is what a larger brain
+is for.
+
+> **Understanding buys tools, tools buy habitat, habitat imposes
+> understanding.**
+
+Three modules written for three other reasons, meeting at one stress
+threshold and one cosine.
+
+**What it does not do is produce the flake.** `innovation.py` holds
+that: a step is an existing process with a part omitted, duplicated
+or combined; non-lethal variants arrive at 4.48 per division; and the
+share of them that are **useful** is 10⁻⁴ and unmeasured. Everything
+here is conditional on the first edge, and the first edge is still
+the thing nothing derives.
+
+One omission marked rather than corrected: no meridional heat
+transport, which understates real high-latitude temperatures.
+Correcting it would need a circulation this repository does not have.
+
+    trajectory 6/6    64 claims reproduce

@@ -154,6 +154,15 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _trajectory():
+    from engine.trajectory import ladder, tool_available, seasonality
+    rows = ladder()
+    worn = [r for r in rows if not r["worked"]]
+    return (len(worn), len(rows) - len(worn),
+            round(100 * rows[-1]["land"]), tool_available(),
+            round(seasonality(60.0)))
+
+
 def _comprehension():
     from engine.comprehension import binding, situations, unique_to
     return (len(binding("bacterium")), len(binding("human")),
@@ -556,6 +565,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.105", "3 grades worn, 3 need a tool; the edge opens 97% of land",
+     _trajectory, (3, 3, 97, True, 109), CURRENT),
     ("3.1.104", "comprehension is a count: 6 binds on a microbe, 13 on us",
      _comprehension, (6, 13, 8192, 3), CURRENT),
     ("3.1.103", "regard is worth 1e19 times what it costs to hold",

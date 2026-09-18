@@ -63,7 +63,7 @@ def modules():
               "polytrope", "abundance", "transitions",
               "cosmoschunks", "folding", "provenance",
               "halflife", "variantlife", "valence", "scales", "terraform", "radiative", "lab", "constants", "ablate",
-              "shells", "thermo", "genesis", "evolve", "potential", "clouds", "census", "watch", "origin", "earthlab", "biosphere", "descent", "signature", "planetlab", "inputs", "luca", "ancestry", "ecology", "biome", "atoms", "human", "ontogeny", "roots", "spine", "tools", "senses", "learning", "multiverse", "shelter", "civ", "recognize", "inherit", "empire", "pov", "industry", "revolution", "school", "cold", "closure", "generate", "lineage", "occurrence", "heredity", "template", "code", "reach", "innovation", "frozen", "rank", "regard", "comprehension"):
+              "shells", "thermo", "genesis", "evolve", "potential", "clouds", "census", "watch", "origin", "earthlab", "biosphere", "descent", "signature", "planetlab", "inputs", "luca", "ancestry", "ecology", "biome", "atoms", "human", "ontogeny", "roots", "spine", "tools", "senses", "learning", "multiverse", "shelter", "civ", "recognize", "inherit", "empire", "pov", "industry", "revolution", "school", "cold", "closure", "generate", "lineage", "occurrence", "heredity", "template", "code", "reach", "innovation", "frozen", "rank", "regard", "comprehension", "trajectory"):
         try:
             mod = __import__(f"engine.{m}", fromlist=["check"])
             t0 = time.time()

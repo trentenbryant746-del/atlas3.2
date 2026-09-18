@@ -165,6 +165,7 @@ INPUTS = {
     "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
     "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
     "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "trajectory.T_EQUATOR": (MEASURED, "300 K mean equatorial surface"),
     "comprehension.BINDS": (
         MEASURED, "a census of constraints derived in other modules; "
                   "adds none of its own"),
@@ -350,6 +351,7 @@ CLAIMS_ON = {
     "the fidelity gate opens in a 7 K window": [],
     "cold slows breaking 11x more than building": [],
     "closure is 0.48 catalysts per reaction": [],
+    "the habitat ladder is gated on the tool ladder": [],
     "nebula to a head in 19 links": [],
     "abundance falls as mass^-3/4": [],
     "10,584 universes generated blind, queried in 45 ms": [

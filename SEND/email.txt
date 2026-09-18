@@ -35,23 +35,15 @@ For texture, one entry: a rule forbidding duplicate constant
 definitions caught its own author twice, within minutes of being
 written.
 
-The reason any of it is checkable from outside is that the model is
-built downward to elements, and their properties are derived rather
-than looked up. Valence comes from shell filling — carbon has four
-outer electrons, so it bonds four ways — which reproduced all ten
-hand-typed valences and produced fifty. Sixty-eight d-block elements
-are REFUSED rather than assigned, with the reason stated: iron is +2
-and +3 and deciding needs orbital energies the system doesn't compute.
-Tissue is carried as stoichiometry, so growth withdraws specific atoms
-from a finite pool and death returns them. 35% of rules bottom out on
-that floor, and the periodic table is the most depended-on object in
-the codebase — 254 rules, ahead of Boltzmann and Avogadro.
-
-That is what lets a chemist check a claim without reading the code.
-"A brain holds six times the phosphorus of ordinary tissue per atom"
-is verifiable from atomic weights and two formulae. The same sentence
-backed by a constant named BRAIN_PHOSPHORUS_FACTOR = 6.0 is verifiable
-by nobody — and seven of the 25 faults were exactly that.
+What makes the faults visible at all is that the model is built
+downward to elements, with their properties derived rather than looked
+up — valence from shell filling, tissue as stoichiometry, 68 d-block
+elements refused outright because iron is +2 and +3 and the system
+can't compute orbital energies. 35% of rules bottom out there. So a
+claim like "a brain holds 6x the phosphorus of ordinary tissue per
+atom" is checkable by a chemist who never reads the code, and the
+same claim backed by a constant named BRAIN_PHOSPHORUS_FACTOR = 6.0
+is checkable by nobody. Seven of the 25 faults were exactly that.
 
 The data exists because of a convention rather than a tool. When a
 check's premise turns out false, the check is flipped and kept with

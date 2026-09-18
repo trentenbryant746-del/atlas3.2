@@ -26,7 +26,7 @@ why("why is a quarter of the universe helium") # the whole derivation
 
 ---
 
-## Two rules that govern everything below
+## Three rules that govern everything below
 
 **1. A claim is only as good as its worst input.**
 
@@ -74,6 +74,50 @@ folding residue:
 
 Nothing in it is computed for the occasion. That is what makes it a
 root rather than a story.
+
+**3. If a check runs a search, the rule underneath it has not been
+found yet.**
+
+A sweep is an admission that the invariant is unknown. Atlas 2
+answered in milliseconds and never simulated anything; this one
+reached **181 seconds** because nineteen modules had started sampling
+a space instead of deriving an answer.
+
+    ProcessPoolExecutor      atlas2  0     atlas3.1  2
+    sweep / census / Monte   atlas2  1     atlas3.1 19
+
+It was not the language and it was not a missing simulator. **There
+is no Godot simulator in any version of Atlas** — gdscript appears
+only in `engine/ir.py` as a third codegen target, so emitted code can
+be run in three languages and made to agree. Nothing physical has
+ever been simulated in it.
+
+Finding the invariant is not an optimisation. It changes the answer:
+
+- Closure was bisected at seven network sizes over two alphabets,
+  580 s for one point, then extrapolated five orders. The invariant —
+  **a set closes when about half its reactions have a catalyst**,
+  p·M = 0.48 — turned the whole thing into one division, and moved
+  the published answer by eleven orders of magnitude on the way.
+- `multiverse` spawned ten processes to learn *which gates bind*. A
+  gate is an inequality in orbit, mass and temperature; only
+  composition needs a seed. The grid answer is **complete** where the
+  sweep was partial. 63.0 s → 0.02 s.
+- `evolve` bisected a habitable-band edge 24 times per run to
+  re-derive an edge that moves only when the thermostat does.
+  9.2 s → 0.16 s.
+
+    eight modules      160.6s  ->  4.84s     every check still passing
+
+**And the rule is worth following even when it fails.** `descent`'s
+4,000-generation search was going to be replaced by its closed form:
+intake m^(2/3) against cost m^(3/4) cross at m = (a/b)¹² = **0.17 m**.
+The run settles at **0.1 µm** — six orders apart. Above the crossing
+an organism starves, so it is a *ceiling*, not a floor, and **nothing
+here says why the lineage falls rather than rising to it.** The
+collapse is not the energy balance. Trying to remove the search found
+a missing rule, which is worth more than the 5.5 seconds would have
+been.
 
 ## Summary
 

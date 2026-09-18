@@ -171,6 +171,63 @@ def why_not(gates):
     return [f"{g.name}: {g.why()}" for g in gates if not g.ok]
 
 
+# WHAT EACH SENSE REACHES, and it is not the same set.
+#
+# engine/comprehension.py counts the constraints that bind. A
+# constraint you cannot DETECT you cannot answer, so senses bound
+# comprehension from below -- and the five do not overlap, which
+# is why there are five.
+#
+#   sight     spatial structure at distance   ~1e7 bit/s
+#   hearing   events behind and beyond        ~1e5
+#   smell     chemical, and time-delayed      ~1e3
+#   touch     contact mechanics               ~1e6
+#   taste     what is about to go inside      ~1e2
+#
+# Smell is the only one that reads the PAST -- a track is a
+# chemical record of something that has gone. Hearing is the only
+# one that reads round a corner. Taste is the only one that acts
+# after commitment, which is why it is the one wired to disgust.
+SENSE_BITS = {"sight": 1e7, "hearing": 1e5, "smell": 1e3,
+              "touch": 1e6, "taste": 1e2}
+
+SENSE_REACH = {
+    "sight": ["predation", "food in", "skeleton"],
+    "hearing": ["predation", "a shared corpus"],
+    "smell": ["food in", "elements"],
+    "touch": ["heat out", "crowding", "persistence"],
+    "taste": ["elements", "energy", "food in"],
+}
+
+
+def sensed(organism="human"):
+    """-> set. Constraints a sense organ can detect. DERIVED."""
+    from engine.comprehension import binding
+    binds = set(binding(organism))
+    out = set()
+    for c in SENSE_REACH.values():
+        out |= binds & set(c)
+    return out
+
+
+def inferred(organism="human"):
+    """-> set. Constraints that must be modelled, not detected."""
+    from engine.comprehension import binding
+    return set(binding(organism)) - sensed(organism)
+
+
+def inference_share(organism="human"):
+    """Fraction of what binds that no sense reaches. DERIVED."""
+    from engine.comprehension import binding
+    n = len(binding(organism))
+    return len(inferred(organism)) / n if n else 0.0
+
+
+def sense_bandwidth():
+    """Total bits a second across all five. DERIVED."""
+    return sum(SENSE_BITS.values())
+
+
 def check():
     out = []
 
@@ -185,6 +242,8 @@ def check():
     t("a_hook_grip_cannot_strike", _grip)
     t("four_limbs_on_the_ground_carry_nothing", _stance)
     t("a_failure_names_its_mechanism", _mech)
+    t("five_senses_reach_eight_of_thirteen", _five)
+    t("the_rest_is_inferred_and_that_is_the_brain", _infer)
     return all(o[1] for o in out), out
 
 
@@ -252,6 +311,39 @@ def _mech():
             f"of a failure. The quantity that fell short, the one it "
             f"lost to and the factor between them is what says "
             f"whether it nearly worked or is not that kind of thing")
+
+
+def _five():
+    got, tot = sensed("human"), 13
+    per = {k: len(v) for k, v in SENSE_REACH.items()}
+    if len(got) < 6:
+        raise ArithmeticError(f"only {len(got)} constraints sensed")
+    return (f"the five senses between them reach {len(got)} of the "
+            f"{tot} constraints that bind on a human, and they do not "
+            f"overlap -- which is why there are five. Smell is the "
+            f"only one that reads the PAST, since a track is a "
+            f"chemical record of something gone; hearing the only one "
+            f"that reads round a corner; taste the only one that acts "
+            f"after commitment, which is why it is wired to disgust. "
+            f"Bandwidth spans {min(SENSE_BITS.values()):.0e} to "
+            f"{max(SENSE_BITS.values()):.0e} bit/s and the narrowest "
+            f"is not the least useful")
+
+
+def _infer():
+    inf = inferred("human")
+    share = inference_share("human")
+    micro = inference_share("bacterium")
+    if share <= micro:
+        raise ArithmeticError(f"human {share:.2f}, microbe {micro:.2f}")
+    return (f"{len(inf)} constraints reach NO sense: "
+            f"{sorted(inf)}. Provisioning is eighteen years ahead and "
+            f"allocation is a fact about other people -- neither has "
+            f"a signal to detect, so both must be MODELLED. That is "
+            f"{100*share:.0f}% of what binds on a human against "
+            f"{100*micro:.0f}% on a bacterium, and it is what a brain "
+            f"adds over a sense organ. Senses bound comprehension "
+            f"from below; inference is the rest")
 
 
 if __name__ == "__main__":

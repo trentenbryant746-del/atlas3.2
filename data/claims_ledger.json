@@ -1,4 +1,64 @@
 {
+"3.1.100|selection on a trait is 7-9 orders too fast": {
+"fp": "b67b8dddc042909f",
+"ok": true
+},
+"3.1.100|the modern code needs 1520 bases and 200 are held": {
+"fp": "0758a89496b434fd",
+"ok": true
+},
+"3.1.101|innovation is omit/duplicate/combine at 4.48 per division": {
+"fp": "c74bd915efc49b99",
+"ok": true
+},
+"3.1.102|rank is worth zero then 82 W at the carrying number": {
+"fp": "1019da188bbdedbd",
+"ok": true
+},
+"3.1.102|the code freezes at 100% cost; rank steps at 3.8 children": {
+"fp": "0c666e8d295cfd99",
+"ok": true
+},
+"3.1.103|regard is worth 1e19 times what it costs to hold": {
+"fp": "2dafefd295f0359c",
+"ok": true
+},
+"3.1.104|comprehension is a count: 6 binds on a microbe, 13 on us": {
+"fp": "0eb48ee0cdeaa71a",
+"ok": true
+},
+"3.1.105|3 grades worn, 3 need a tool; the edge opens 97% of land": {
+"fp": "9866f54b8e63cff7",
+"ok": true
+},
+"3.1.106|a microbe needs 6 to adapt yearly, a human 40,792": {
+"fp": "4b540af322e010e8",
+"ok": true
+},
+"3.1.107|the derived group is 3; transitivity saves 10x on contests": {
+"fp": "850c5d7effae9bb1",
+"ok": true
+},
+"3.1.108|a display is 1e6x cheaper and takes the band 3 -> 28": {
+"fp": "69f346ea8fd56d2b",
+"ok": true
+},
+"3.1.108|settling needs 73 days of store; only a harvest clears it": {
+"fp": "f904b7ba2915e675",
+"ok": true
+},
+"3.1.109|Big Bang to a head in 41 links: 33 derived, 7 forced, 0 gaps": {
+"fp": "dac9211163d60aef",
+"ok": true
+},
+"3.1.109|five senses reach 8 of 13 constraints; 38% must be inferred": {
+"fp": "77c78c7a39aa9c91",
+"ok": true
+},
+"3.1.109|oral tradition compounds (8692a), epigenetics cannot (3.4a)": {
+"fp": "6e4d8bb52487e196",
+"ok": true
+},
 "3.1.18|folding survival rate 0.573": {
 "fp": "21579abf6579714b",
 "ok": true
@@ -48,7 +108,7 @@
 "ok": true
 },
 "3.1.42|habitable band derived 0.999 - 1.899 AU": {
-"fp": "2cbf1e7df0fbd9ad",
+"fp": "2f9e7545248b366a",
 "ok": true
 },
 "3.1.47|chance reaches 57 residues and stops": {
@@ -136,11 +196,11 @@
 "ok": true
 },
 "3.1.77|Earth is fragile in spread, one-sided in mass, free in Z": {
-"fp": "76574278f2f971e0",
+"fp": "37a317249b1b5603",
 "ok": true
 },
 "3.1.78|heat rejection binds; toolmakers fall under 20%": {
-"fp": "171c9fff1639b0fa",
+"fp": "d230d37f31623267",
 "ok": true
 },
 "3.1.79|speech is 256410x narrower than sight, 0.0122% of a brain": {
@@ -212,7 +272,27 @@
 "ok": true
 },
 "3.1.92|10,584 universes generated blind; 864 pass three filters": {
-"fp": "5431672378997ae9",
+"fp": "b732da504aa76c88",
+"ok": true
+},
+"3.1.94|the lineage holds at the 1.58 um closure floor": {
+"fp": "8bd7a2d37beee51d",
+"ok": true
+},
+"3.1.95|abundance falls as mass^-3/4 exactly": {
+"fp": "576c4cce00983a86",
+"ok": true
+},
+"3.1.96|one compartment closes at 14 bases; an ocean is 1e35": {
+"fp": "54673bd535549b79",
+"ok": true
+},
+"3.1.98|divides at 2x volume, 28 copies, 1.39 types lost": {
+"fp": "e5d4da51bdd72578",
+"ok": true
+},
+"3.1.99|every ligation is templated; the template is the catalyst": {
+"fp": "3bfed9d8a61def79",
 "ok": true
 }
 }

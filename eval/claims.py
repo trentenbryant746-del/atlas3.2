@@ -168,6 +168,22 @@ def _accident():
             sum(1 for r in rows if r[2]), rows[-1][0])
 
 
+def _senses():
+    from engine.senses import sensed, inferred, inference_share
+    return (len(sensed("human")), len(inferred("human")),
+            round(100 * inference_share("human")),
+            round(100 * inference_share("bacterium")))
+
+
+def _tradition():
+    from engine.tradition import (transitive_leverage, oral_capacity,
+                                  stock, best_band_count, settle_years)
+    p_ = 1.0 / 500
+    return (round(transitive_leverage(28), 1), round(oral_capacity()),
+            round(stock("epigenetic"), 1), round(best_band_count(p_)),
+            round(settle_years(best_band_count(p_), p_)))
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -600,6 +616,10 @@ CLAIMS = [
      _signal, (7, 3, 28, 13), CURRENT),
     ("3.1.108", "settling needs 73 days of store; only a harvest clears it",
      _accident, (73, 1, "a grain harvest"), CURRENT),
+    ("3.1.109", "five senses reach 8 of 13 constraints; 38% must be inferred",
+     _senses, (8, 5, 38, 33), CURRENT),
+    ("3.1.109", "oral tradition compounds (8692a), epigenetics cannot (3.4a)",
+     _tradition, (14.0, 8692, 3.4, 16, 53), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -626,8 +646,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.95", "Big Bang to a head in 37 links: 29 derived, 7 forced, 0 gaps",
-     _wholechain, (37, 29, 7, 0, 1), CURRENT),
+    ("3.1.109", "Big Bang to a head in 41 links: 33 derived, 7 forced, 0 gaps",
+     _wholechain, (41, 33, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -736,6 +756,13 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.95", "Big Bang to a head in 37 links: 29 derived, 7 forced",
+     "four links were added at 3.1.109 and one of them closed a jump "
+     "rather than extending the end: recognition -> one head was an "
+     "unstated step, and engine/senses.py now drives it (five senses "
+     "reach 8 of 13 constraints, so 5 must be modelled). The other "
+     "three extend regard into transitivity, oral tradition and "
+     "diffusion across bands. 37 was never wrong, it was short"),
     ("3.1.61", "seeded life collapses to 0.10 microns",
      "withdrawn in 3.1.94. IT WAS AN UNBOUNDED OBJECTIVE, not a "
      "biological result. fitness() returned surplus PER GRAM -- "

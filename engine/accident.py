@@ -93,6 +93,20 @@ def discovery_is_unsought():
     return innovations_per_division(), frac
 
 
+def survives_the_trip(days, meetings=2.0):
+    """Is the store still a store when the next band sees it?
+
+    A discovery you cannot carry to a rendezvous cannot diffuse.
+    DERIVED from engine/tradition.MEETINGS_PER_YEAR.
+    """
+    return days >= 365.0 / meetings
+
+
+def which_stores_spread():
+    """-> dict. Store -> does it reach another band. DERIVED."""
+    return {k: survives_the_trip(v) for k, v in STORES.items()}
+
+
 def check():
     out = []
 
@@ -107,6 +121,7 @@ def check():
     t("which_accident_does_not_matter", _same)
     t("the_threshold_is_about_a_month", _thresh)
     t("and_it_is_the_group_benefit_seen_twice", _group)
+    t("only_a_store_that_survives_the_trip_spreads", _spreads)
     return all(o[1] for o in out), out
 
 
@@ -177,6 +192,29 @@ def _group():
             "arithmetic seen twice -- which is why they appear "
             "together in the record rather than one causing the "
             "other")
+
+
+def _spreads():
+    from engine import tradition
+    gap = 365.0 / tradition.MEETINGS_PER_YEAR
+    spread = which_stores_spread()
+    settle = which_stores_settle()
+    yes = sorted(k for k, v in spread.items() if v)
+    if not yes or len(yes) == len(STORES):
+        raise ArithmeticError(f"spread {spread}")
+    thresh = settling_threshold()
+    margin = min(abs(v - thresh) for v in STORES.values())
+    ratio = min(STORES[k] for k in yes) / max(
+        [STORES[k] for k in STORES if not spread[k]] or [1.0])
+    return (f"settling alone discriminates by {margin:.0f} days "
+            f"against a {thresh:.0f}-day threshold, which is thin. "
+            f"Diffusion is the second cut and it is not thin: bands "
+            f"meet every {gap:.0f} days, so a store that rots first "
+            f"never leaves the valley. {yes} survive the trip, by a "
+            f"factor of {ratio:.1f}x over the rest. Fermented fruit "
+            f"settles a band and dies with it; grain settles a band "
+            f"AND travels. Two independent rules, same answer, and "
+            f"the weaker one is no longer carrying it alone")
 
 
 if __name__ == "__main__":

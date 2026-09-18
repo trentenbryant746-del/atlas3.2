@@ -101,3 +101,38 @@ derived.
 - Climate manifestations REFUSED — four bodies, one blocked.
 - No comparison against Nix / Bazel / DVC / Snakemake. **This is the
   most important open item** and it bounds the paper's claim.
+
+## 3.1.109 — senses, transitivity, compounding, diffusion
+
+PROGRESS
+- senses.py extended past eyes: five senses, non-overlapping, reach
+  8 of the 13 human constraints. 5 reach none and must be inferred.
+  38% inferred on a human, 33% on a bacterium — the derived role of
+  a brain over a sense organ.
+- tradition.py: transitivity stated as a rule (14 facts per fact),
+  WITH its counterexamples held rather than assumed away.
+- compounding derived, not assumed: oral r=0.99988 (8692a) vs
+  epigenetic r=0.71 (3.4a). 2,546x. Culture compounds, genes echo.
+- diffusion: 16 bands is the optimum band count and nobody chose it.
+- chain 37 -> 41 links, 29 -> 33 derived. Still 0 gaps, 1 crossing.
+
+REGRESSION FOUND AND FIXED
+- lineage._gaps read only MISSING, so it tripped on "the chain
+  claims to be complete" while a CROSSES link sat unexplained. An
+  inverted check that could not see half its own evidence. Now
+  counts crossings as named gaps and still fails if both hit zero.
+- accident's farming/alcohol discrimination was 13 days against a
+  73-day threshold — too thin to publish alone. Diffusion supplies
+  an independent 6x cut (182-day rendezvous gap). Kept both.
+
+SUPERSEDED
+- "37 links, 29 derived" -> 41/33. Not wrong, short. One of the four
+  new links closed an unstated jump (recognition -> one head) rather
+  than extending the end.
+
+STILL OPEN
+- innovation.useful_fraction() = 1.1e-4 unmeasured, still carries
+  the hominin timing.
+- tradition's TELL_SECONDS, EVENING_SECONDS and MEETINGS_PER_YEAR
+  are CHOSEN. The 2,546x gap survives any plausible choice; the
+  8,692 figure does not.

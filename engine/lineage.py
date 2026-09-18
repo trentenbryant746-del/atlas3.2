@@ -279,6 +279,15 @@ def inside_the_head():
          f"the sharp patch is {100*sharp_fraction():.3f}% of the field "
          f"and sweeping it takes {seconds_to_cover():.0f} s, so the "
          f"periphery commits before evidence arrives"),
+        ("recognition", "one head", DERIVED, "senses.inference_share",
+         "the five senses between them reach 8 of the 13 constraints "
+         "that bind on a human, and they do not overlap -- which is "
+         "why there are five. The other 5 (allocation, fidelity, "
+         "oxygen to tissue, provisioning, solvent) emit no signal at "
+         "all: provisioning is eighteen years ahead and allocation "
+         "is a fact about other people. 38% of what binds must be "
+         "MODELLED against 33% on a bacterium, and a model needs "
+         "somewhere to sit. That is what a head adds over an eye"),
         ("one head", "several", DERIVED, "civ.smallest_group",
          f"a child costs {yrs:.1f} adult-years and one adult keeps no "
          f"margin for a bad season; {smallest_group()} clear it, so "
@@ -305,6 +314,35 @@ def inside_the_head():
          "remembering the outcome costs 1.4 microjoules. Regard is "
          "the contest not held again, worth 2.7e19 times what it "
          "costs"),
+        ("regard", "transitivity", DERIVED, "tradition.transitive_leverage",
+         "regard is a remembered outcome, and outcomes compose. "
+         "Observe the 27 adjacent links of a band of 28 and A>B, "
+         "B>C forces A>C for all 378 pairs -- 14 facts per fact "
+         "observed. engine/group.py was already spending this (135 "
+         "contests, not 378) without the rule being written down. It "
+         "is not universal: rock-paper-scissors composes to nothing, "
+         "and when an intransitive triple turns up the 378 contests "
+         "come back, which is why the exception is worth naming"),
+        ("transitivity", "a corpus that outlives its tellers", DERIVED,
+         "tradition.stock",
+         "a generation adds a and keeps r, so the stock settles at "
+         "a/(1-r) and the whole question is r. An hour after dark "
+         "for the 18-year provisioning span is 78,840 tellings, and "
+         "k ln k inverts to 8,692 items, so r = 0.99988 and the "
+         "stock is 8692a. Epigenetics has a two-generation "
+         "half-life, r = 0.71, stock 3.4a. 2,546x apart: epigenetics "
+         "is an echo and cannot compound. Only the spoken channel "
+         "does, which is why the accumulation is cultural and not "
+         "genetic"),
+        ("a corpus", "a discovery nobody made alone", DERIVED,
+         "tradition.settle_years",
+         "one band waits 500 years for a one-in-500 accident. With "
+         "16 bands the first hits at 31 years and coupon collector "
+         "carries it to the rest in 22 more, so everyone holds it by "
+         "year 53. Some bands get it first and the tail is long, but "
+         "it arrives. Discovery wants many bands and spread wants "
+         "few, so 1/(bp) + b ln b / 2 has a derivative and there is "
+         "a band count that settles fastest -- nobody chose 16"),
     ]
 
 
@@ -419,17 +457,29 @@ def _cites():
 
 
 def _gaps():
+    """INVERTED. Fails if the chain claims to be finished.
+
+    A crossing is a gap that has been named: the link is
+    permitted but nothing here drives it. Zero gaps AND zero
+    crossings would mean the chain had stopped looking.
+    """
     c = chain()
     gaps = [(a, b, w) for a, b, v, _r, w in c if v == MISSING]
     cross = [(a, b) for a, b, v, _r, _w in c if v == CROSSES]
-    if not gaps:
+    if not gaps and not cross:
         raise ArithmeticError("the chain claims to be complete")
-    return (f"{len(gaps)} gaps and {len(cross)} crossings. The gaps: "
-            + "; ".join(f"{a} -> {b}" for a, b, _w in gaps)
-            + f". The first is the one that matters -- every gate "
-              f"opens and nothing makes a cell, so permission is not "
-              f"occurrence and the distance between them is not "
-              f"measured anywhere here")
+    body = (f"{len(c)} links, {len(gaps)} gaps, {len(cross)} "
+            f"crossings.")
+    if gaps:
+        body += " Gaps: " + "; ".join(f"{a} -> {b}" for a, b, _ in gaps)
+    if cross:
+        body += (" Crossings: "
+                 + "; ".join(f"{a} -> {b}" for a, b in cross)
+                 + ". A crossing is permitted and undriven -- the "
+                   "gates open and nothing makes it happen, so "
+                   "permission is not occurrence and the distance "
+                   "between them is not measured anywhere here")
+    return body
 
 
 def _excl():

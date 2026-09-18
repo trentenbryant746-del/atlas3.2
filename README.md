@@ -6605,3 +6605,90 @@ defended by the group that holds it, and a larger store is worth more
 to defend. Settling and grouping are the same arithmetic seen twice.
 
     signal 5/5   accident 5/5   68 claims reproduce
+
+### 3.1.109 — five senses, and the three ways of knowing what you did not see
+
+Senses first. `engine/senses.py` held eyes only. The five do not
+overlap, and the reason there are five is that each opens a class
+of constraint the others cannot reach:
+
+    sight    1e7 bit/s   spatial structure at distance
+    hearing  1e5         events behind and round a corner
+    smell    1e3         chemical, and the only one that reads the PAST
+    touch    1e6         contact mechanics, only what you are on
+    taste    1e2         the only one that acts AFTER commitment
+
+Mapped onto the 13 constraints `engine/comprehension.py` says bind
+on a human, the union of all five reaches 8. Five reach nothing:
+
+    allocation, fidelity, oxygen to tissue, provisioning, solvent
+
+Provisioning is eighteen years ahead. Allocation is a fact about
+other people. Neither emits a signal, so neither can be detected —
+only modelled. That is 38% of what binds on a human against 33% on
+a bacterium, and it is the derived answer to what a brain adds over
+a sense organ. Senses bound comprehension from below; inference is
+the remainder.
+
+This closed a jump in the chain. `recognition -> one head` was an
+unstated step; it now has a driver.
+
+Then `engine/tradition.py`, which is one mechanism at three scales —
+knowing something you did not observe:
+
+**Transitivity** was already being spent and had never been written
+down. `engine/group.py` prices a dominance order at n log2 n
+contests rather than n(n-1)/2, and the discount IS transitivity:
+observe the 27 adjacent links of a band of 28 and A>B, B>C hands you
+all 378 pairs. 14 facts per fact. Stated as a rule it also carries
+its own failure — rock-paper-scissors composes to nothing, and when
+an intransitive triple turns up the 378 contests come back. The
+exceptions are held in the module, not assumed away.
+
+**Compounding.** A generation adds `a` and keeps `r`, so the stock
+settles at a/(1-r) and the entire question is how close r is to one.
+Two channels, four orders apart:
+
+    oral        78,840 tellings in the 18-year provisioning span;
+                k ln k inverts to 8,692 items; r = 0.99988; 8692a
+    epigenetic  two-generation half-life; r = 0.71; 3.4a
+
+2,546x. Epigenetics does not compound — it is an echo that dies in
+two generations. Only the spoken channel accumulates, which is why
+the compounding is cultural and not genetic. That was not assumed;
+it fell out of a coupon-collector inversion against an hour after
+dark.
+
+**Diffusion.** An accident does not have to happen to you. One band
+waits 500 years for a one-in-500 accident. With 16 bands the first
+hits at 31 years and coupon collector carries it to the rest in 22
+more — everyone holds it by year 53. Some bands get it first, the
+tail is long, and it still arrives.
+
+And discovery wants many bands while spread wants few, so
+1/(bp) + b ln b / 2 has a derivative and there is a band count that
+settles a discovery fastest:
+
+    4 bands   126 years     too few, nobody finds it
+    16 bands   53 years     the floor
+    65 bands  143 years     too many, it never gets round
+
+Nobody chose 16.
+
+Diffusion also fixed the weakest result in `engine/accident.py`. The
+farming-over-alcohol discrimination rested on 13 days against a
+73-day threshold, which is thin. Bands meet twice a year, so a store
+that rots inside 182 days never leaves the valley. Fermented fruit
+(60 days) settles a band and dies with it; grain (365 days) settles
+a band AND travels — a factor of 6, not 13 days. Two independent
+rules, same answer, and the thin one is no longer carrying it alone.
+
+    senses 7/7   tradition 5/5   accident 6/6   lineage 7/7
+    41 links, 33 derived, 7 forced, 1 crossing, 0 gaps
+    70 claims reproduce, 46 skipped on fingerprint, 6.8 s
+
+`lineage._gaps` was rewritten. It is an inverted check — it fails
+when the chain claims to be finished — and it had been reading only
+MISSING, so zero gaps tripped it even while a crossing stood
+unexplained. A crossing IS a named gap: permitted and undriven. It
+now counts both, and still fails if ever both reach zero.

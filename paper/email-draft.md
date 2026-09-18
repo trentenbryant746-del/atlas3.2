@@ -13,10 +13,10 @@ Dear Professor ——,
 I'm an independent developer, not affiliated with a university, and I
 have data I can't evaluate on my own.
 
-Over eight months I built a 33,600-line scientific codebase under a
-rule that every result carries a check that would catch it being
-wrong. In the process I recorded **25 faults, each annotated in-source
-with its cause and with the mechanism that caught it.** The
+I built a scientific codebase under one rule: every result carries a
+check that would catch it being wrong. Working that way produced
+something I did not set out to make — **25 faults, each annotated
+in-source with its cause and with the mechanism that caught it.** The
 distribution is not what I expected:
 
     deriving something previously asserted        7
@@ -85,3 +85,44 @@ outcome, take it. (ii) "n=1, from your own codebase" — correct, and
 §8.1 concedes it; the reply is that n=1 with mechanism annotations may
 still be worth more than n=400 without. (iii) Silence, which is the
 base rate for cold email and means nothing.
+
+---
+
+## On eventually emailing physicists
+
+The instinct that a CS reader might forward it is right, and a warm
+internal referral is worth far more than a second cold email. But it
+only happens if the CS email lands on its own terms. **The CS email
+cannot be a Trojan horse for the physics** — if it reads as one, it
+fails twice.
+
+**What a physicist could be shown, and when.** Of 48 graded claims,
+**28 rest on no `CHOSEN` input** — they are derived from measured or
+exact quantities only. That subset is what could survive a domain
+reviewer:
+
+    the habitable band 0.999-1.899 AU
+    Earth composition Fe 32.0%
+    the 57-residue search ceiling
+    the eye sits at its own diffraction limit
+    steam caps at 54.7% whatever it is made of
+    muscle for a 400 N blow is 53 cm2
+
+The other 20 rest on values I picked. Showing those to a physicist
+invites a review of the inputs rather than the method, and they would
+be right to give it.
+
+**The physics angle that might actually interest a physicist is not a
+result — it is the grading.** A system that refuses to cite a
+`CHOSEN`-backed number as derived, applied to planetary science, is a
+methods proposition. The interesting sentence is not "the habitable
+band is 0.999–1.899 AU," which they can compute; it is "this number is
+machine-certified to rest on nothing anybody guessed, and here are the
+20 sibling results that are not."
+
+**Sequence.** Send CS first and wait. If a CS reader engages, ask
+*them* whether the grading idea is worth putting to a domain person —
+they will know who, and the introduction will carry weight the cold
+version cannot. If CS goes silent, that is information about the
+framing, and the physics email should not be sent on the same framing
+until it is fixed.

@@ -6490,3 +6490,55 @@ This file introduces two constants and both are generation lengths.
 No selection coefficient, no mutation rate, no fitness function.
 
     adapt 5/5    65 claims reproduce
+
+### 3.1.107 — why groups, how big, and why strength loses to knowing
+
+`civ.py` derived that a lone adult cannot carry a child and two can.
+That is a floor, not a size.
+
+**Energy does not set the size.** A child costs 51 W and an adult
+nets 97, so 1.9 adults carry one child *at every scale* — the spare
+per head is zero for a group of two and zero for sixty-four. Adding
+people neither gains nor loses per head, so whatever sets the size
+must not scale linearly.
+
+**Two things don't.** Defence **saturates** — a predator takes one,
+so individual risk is base/n, and going from 32 to 64 barely moves
+it. Contests **grow**.
+
+**And transitivity is what allows a group at all.** Every pair must
+be settled once — but a rank order is transitive, so if A beats B and
+B beats C, nobody fights A and C. That is *sorting*, not all-pairs:
+
+    n      all pairs   sorted
+    8             28       24
+    55         1,485      318
+    144       10,296    1,032
+
+A tenfold saving at 144, and it runs on the same memory `regard.py`
+priced at 1.4 µJ.
+
+**The derived optimum is still 3.** Defence saturating against
+contests growing gives **a family, not a band**. Real groups are
+20–150, so this is not the whole story — and the number is reported
+as it comes out rather than adjusted toward the record. A benefit is
+missing that grows **linearly and does not saturate**; `adapt.py` has
+one (search rate is linear in n) and `school.py` has another. Neither
+is priced here. Adding terms until the answer matched would have been
+easy and would have meant nothing.
+
+### strength and understanding are not symmetric
+
+Both get you fed. But `regard.py` showed that within a species the
+loser is not eaten and **nothing transfers** — so:
+
+    STRENGTH        moves a share between heads, total unchanged
+                    50% of the total at n=2, 2% at n=50
+    UNDERSTANDING   answers a constraint, which opens what was
+                    closed, and adds for everyone
+
+**Strength is zero-sum and understanding is not** — and the larger
+the group, the worse that trade is for strength. That is why a
+bigger brain beats a bigger arm in a band and not in a pair.
+
+    group 5/5    66 claims reproduce

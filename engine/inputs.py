@@ -165,6 +165,9 @@ INPUTS = {
     "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
     "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
     "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "group.BASE_PREDATION": (
+        MEASURED, "0.40 undefended, from engine/descent.py"),
+    "group.EXPOSED_YEARS": (CHOSEN, "20 years of a life at risk"),
     "adapt.GENERATIONS": (MEASURED, "days between generations by grade"),
     "trajectory.T_EQUATOR": (MEASURED, "300 K mean equatorial surface"),
     "comprehension.BINDS": (

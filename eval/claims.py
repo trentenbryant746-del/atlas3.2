@@ -154,6 +154,15 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _bandsize():
+    from engine.group import (best_size, contests_all_pairs,
+                              contests_transitive, spare_per_head,
+                              strength_share)
+    n, _v = best_size()
+    return (n, round(contests_all_pairs(144) / contests_transitive(144)),
+            round(spare_per_head(8), 6), round(strength_share(50), 2))
+
+
 def _adapt():
     from engine.adapt import (useful_per_individual, minimum_population,
                               GENERATIONS, selection_is_free)
@@ -573,6 +582,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
+     _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
      _adapt, (6, 40792, 0.5), CURRENT),
     ("3.1.105", "3 grades worn, 3 need a tool; the edge opens 97% of land",

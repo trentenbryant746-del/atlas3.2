@@ -1,10 +1,20 @@
-"""Write out every tool the world made, with what it is made of.
+"""Their encyclopedia, translated.
 
-engine/world.py runs and keeps a ledger. This turns the ledger
-into something a person reads: one entry per distinct thing
-built, in the order the gates allowed them, saying what it is
-made of, what fire and cold and precision it costs, what must
-already exist, and when it was first made and by whom.
+The first version of this file wrote the encyclopedia in
+English, and the English was mine -- every phrase came from a
+description I had typed into engine/artifact.py. That is us
+writing their record for them and then admiring it.
+
+So the entries are now THEIRS. A band coins a token when it
+first makes something, out of a phoneme inventory and nothing
+else, and its name for a thing of several crafts is those
+tokens run together. Nobody was handed English.
+
+We can still read it, for one reason: we watched them attach
+each word to an act of making, and the ledger has both. The
+gloss is an OBSERVATION, in the position a field linguist is in
+-- point at the thing, write down the noise. It is not a
+dictionary anybody was given.
 
 It does NOT say what anything is for. Purpose was tried and
 dropped: inferring it from what a band managed next is a
@@ -25,7 +35,8 @@ YEARS = 14000.0
 
 
 def build():
-    from engine.world import run, describe, spec
+    from engine.world import (run, describe, spec, their_entry,
+                              words_for)
     from engine.artifact import (PRIMITIVES, bootstrap, held_by_round,
                                  tolerance, coldness, bohr_radius)
     w = run(YEARS)
@@ -71,13 +82,36 @@ def build():
         L.append(f"{p:<16}{words}")
         L.append(f"{'':<16}needs {', '.join(needs) or 'nothing'}"
                  f"  |  {rule}")
-    L += ["```", "", f"## The things, in the order they were made",
-          ""]
+    L += ["```", "", "## Their words for the crafts", "",
+          "A band coins a token when it first makes something. A "
+          "band that is TAUGHT something learns the word with it, "
+          "so a craft everybody found separately has a word per "
+          "band and a craft that spread by teaching has one word "
+          "that travelled. The oldest words are the least agreed "
+          "on.", "", "```",
+          f"{'craft':<16}{'words':>7}{'bands':>7}   band 0 calls it"]
+    for p in sorted(PRIMITIVES, key=lambda x: w.first_seen().get(x, 0)):
+        d, h = words_for(p, w)
+        if not h:
+            continue
+        mine = w.bands[0].lex.word.get(p, "-")
+        L.append(f"{p:<16}{d:>7}{h:>7}   {mine}")
+    L += ["```", "", "## The things, in the order they were made",
+          "",
+          "Each entry is headed by what a band that made it calls "
+          "it, in its own words. The gloss under it is ours, and "
+          "it is a translation rather than the original.", ""]
     for c in arts:
         sheet = spec(c, w)
-        title = sheet["named in our world"] or " + ".join(sorted(c))
-        L.append(f"### {title}")
+        _y, who = sheet["first built"] or (0, 0)
+        theirs = their_entry(c, who, w)
+        named = sheet["named in our world"]
+        head = theirs or " + ".join(sorted(c))
+        L.append(f"### {head}")
         L.append("")
+        if named:
+            L.append(f"*Our world calls this {named}.*")
+            L.append("")
         L.append(describe(c, w))
         L.append("")
     return "\n".join(L).rstrip() + "\n"

@@ -415,6 +415,16 @@ def _drawing():
             sum(1 for p in PRIMITIVES if needs_a_drawing(p)))
 
 
+def _language():
+    from engine.world import run, words_for
+    from engine.language import CONSONANTS, VOWELS
+    w = run(14000.0)
+    old = words_for("heat", w)
+    new = words_for("gearing", w)
+    return (len(CONSONANTS) * len(VOWELS), old[0], old[1],
+            new[0], new[1])
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -886,6 +896,8 @@ CLAIMS = [
      _artifact, (24, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
+     _language, (27, 39, 40, 2, 40), CURRENT),
     ("3.2.9", "a nanometre spec is 90 bits: 130 fit in one telling",
      _drawing, (90, 130, 5, 11), CURRENT),
     ("3.2.7", "a world that runs: 21 crafts by year 11,380, 4,334 unnamed things",
@@ -937,7 +949,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (69, 60, 7, 1, 1), CURRENT),
+     _wholechain, (70, 61, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

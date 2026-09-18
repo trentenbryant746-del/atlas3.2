@@ -30,6 +30,7 @@ import random
 from engine.artifact import (PRIMITIVES, KNOWN_AS, TOL_NEEDED, GAINS,
                              TOL_GAINS, BASE_K, BASE_TOL)
 from engine.tradition import BAND, garbles
+from engine.language import Lexicon, gloss, agreement
 
 TRIALS_PER_BAND_YEAR = 0.28     # novelty.TRIALS_PER_HEAD_YEAR x BAND
 
@@ -75,12 +76,13 @@ MEETINGS_PER_STEP = 0.2         # CHOSEN, bands that meet per step
 class Band:
     """A group that holds crafts and the things it has built."""
 
-    __slots__ = ("ident", "prims", "made")
+    __slots__ = ("ident", "prims", "made", "lex")
 
     def __init__(self, ident, seed_prims):
         self.ident = ident
         self.prims = set(seed_prims)
         self.made = set()
+        self.lex = Lexicon(ident)
 
     def temperature(self):
         t = BASE_K
@@ -116,6 +118,7 @@ class World:
         self.ledger = []          # (year, band, kind, what)
         for b in self.bands:
             for p in seed_prims:
+                b.lex.name(p, self.rng)
                 self.ledger.append((0.0, b.ident, "craft", p))
 
     # --- one step ---------------------------------------------------
@@ -148,6 +151,7 @@ class World:
             return                      # the physics allows, and it
             # still has to be stumbled on: permission is not occurrence
         band.prims.add(pick)
+        band.lex.name(pick, self.rng)
         self.ledger.append((self.year, band.ident, "craft", pick))
 
     def _try_combination(self, band):
@@ -172,6 +176,8 @@ class World:
         what = self.rng.choice(sorted(share))
         if self.rng.random() < 1.0 - garbles(len(b.prims) + 1):
             b.prims.add(what)
+            # you learn the thing and the word for it together
+            b.lex.take(what, a.lex.word[what])
             self.ledger.append((self.year, b.ident, "learned", what))
 
     def step(self):
@@ -218,6 +224,19 @@ class World:
     def unnamed(self):
         """Built here, no name in our world. The interesting ones."""
         return {a for a in self.artifacts() if a not in KNOWN_AS}
+
+
+def words_for(referent, world=None):
+    """-> (distinct words, bands with one). DERIVED."""
+    w = world or run()
+    return agreement([b.lex for b in w.bands], referent)
+
+
+def their_entry(combo, band_id, world=None):
+    """The entry as THEY would write it, in their words. DERIVED."""
+    w = world or run()
+    band = w.bands[band_id]
+    return band.lex.compound(sorted(combo))
 
 
 def spec(combo, world=None):
@@ -318,6 +337,7 @@ def check():
     t("INVERTED_it_is_a_search_and_it_can_stall", _stall)
     t("INVERTED_exactly_one_number_here_is_fitted", _fitted)
     t("anything_in_the_ledger_has_a_spec_and_not_a_name", _spec)
+    t("the_oldest_words_are_the_least_agreed_on", _words)
     return all(x for _, x, _ in res), res
 
 
@@ -479,6 +499,34 @@ def _spec():
             f"and not a design. Naming it would be inventing, and "
             f"the {len(w.unnamed()):,} unnamed things in this "
             f"ledger are unnamed on purpose")
+
+
+def _words():
+    w = run()
+    seen = w.first_seen()
+    rows = []
+    for p, year in seen.items():
+        distinct, holders = words_for(p, w)
+        if holders >= len(w.bands) // 2:
+            rows.append((year, distinct, holders, p))
+    rows.sort()
+    old, new = rows[0], rows[-1]
+    if old[1] <= new[1]:
+        raise ArithmeticError(f"{old} {new}")
+    return (f"a band coins a word when it first makes something, "
+            f"and a band that is TAUGHT something learns the word "
+            f"with it. So a craft everybody invented separately "
+            f"has a word per band, and a craft that spread by "
+            f"teaching has one word that travelled with it. "
+            f"{old[3]!r} was held from year {old[0]:.0f} and has "
+            f"{old[1]} words across {old[2]} bands; {new[3]!r} "
+            f"arrived at year {new[0]:.0f} and has {new[1]} across "
+            f"{new[2]}. THE OLDEST WORDS ARE THE LEAST AGREED ON, "
+            f"which is the opposite of what a tidy account would "
+            f"say and is what actually happens: basic vocabulary "
+            f"diverges across related languages while technical "
+            f"vocabulary travels as a loanword and stays put. "
+            f"Nothing here was built to produce that")
 
 
 if __name__ == "__main__":

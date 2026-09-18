@@ -697,6 +697,28 @@ def inside_the_head():
          "search run by people who know no physics. The "
          "timescale is NOT a result: CRAFT_SUCCESS is fitted to "
          "the Holocene and is the only fitted number here"),
+        ("a record we wrote for them", "a record they wrote",
+         DERIVED, "world.words_for",
+         "the encyclopedia at 3.2.9 was in English and the "
+         "English was mine -- every phrase came from a "
+         "description I had typed into engine/artifact.py, which "
+         "is us writing their record and then admiring it. So "
+         "they get a language: nine consonants, three vowels, "
+         "open syllables, 20,412 possible words, and a band coins "
+         "a token when it first makes something. Nobody was "
+         "handed English, because handing them English is the "
+         "same mistake in a larger form. We can still read it "
+         "because we WATCHED THEM ATTACH each word to an act of "
+         "making and the ledger has both -- the gloss is an "
+         "observation in the position a field linguist is in, "
+         "not a dictionary anybody was given. And a result "
+         "nothing was built to produce: a craft every band found "
+         "separately keeps a word per band, while a craft that "
+         "spread by teaching carries one word with it, so heat "
+         "has 39 words across 40 bands and gearing has 2. THE "
+         "OLDEST WORDS ARE THE LEAST AGREED ON, which is what "
+         "happens to real basic vocabulary against real "
+         "technical vocabulary"),
         ("who it says mattered", "why anything gets a name at all",
          DERIVED, "naming.naming_is_worth",
          "a name is not imposed from outside, it is a mechanism "

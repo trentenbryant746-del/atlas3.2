@@ -172,7 +172,7 @@
 "ok": false
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "00bab603cca127d9",
+"fp": "e37b1b200e5af01c",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -441,6 +441,10 @@
 },
 "3.1.99|every ligation is templated; the template is the catalyst": {
 "fp": "3bfed9d8a61def79",
+"ok": true
+},
+"3.2.10|39 words for heat, 2 for gearing: the oldest diverge most": {
+"fp": "89a093c15757c4d7",
 "ok": true
 },
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {

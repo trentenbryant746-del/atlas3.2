@@ -372,6 +372,62 @@ def inside_the_head():
          "alone and every skill dies with its holder. How "
          "specialized a band can be is transmission fidelity and "
          "headcount, not how many useful skills exist"),
+        ("specialists", "a claim that carries its own check", DERIVED,
+         "literacy.equivalent_voices",
+         "a speaker cannot compare their telling to anything -- the "
+         "source is gone as it is spoken, so the only correction "
+         "available is other people, and it takes 13 of them. A "
+         "copyist has the original in front of them and can read "
+         "back: one pass takes a 0.1 slip to 0.01 (worth 5 "
+         "speakers), three passes to 1e-4 (worth 13), from ONE "
+         "person. Writing is the first channel here where a claim "
+         "carries the thing that would catch it being wrong, and "
+         "that buys 9 specialties instead of 2 with nobody added. "
+         "But it bootstraps orally -- you cannot learn to read from "
+         "a book you cannot read -- so it needs 5 holders or the "
+         "script is lost in a few generations, and its value goes "
+         "as f^2 because it takes a writer AND a reader, which is "
+         "why it crawls for a thousand years before it pays"),
+        ("a written claim", "a crowd big enough to stay sick", DERIVED,
+         "disease.critical_community",
+         "nothing so far gives anyone a reason to cook. A crowd "
+         "disease needs one fresh susceptible per 10-day infectious "
+         "period or the chain breaks, and births arrive at N/25 a "
+         "year, so it cannot live below 912 people -- a band of 28 "
+         "burns through every host in a month and the pathogen dies "
+         "with them. Foragers have parasites, not epidemics. What "
+         "makes 33 bands sit together permanently is the 365-day "
+         "grain harvest from engine/accident.py, and settled ground "
+         "carries 114x the shed load of a camp left at 73 days. The "
+         "pathogen is not an extra assumption, it is the grain "
+         "harvest seen from the other side"),
+        ("a crowd that is sick", "fire, washing and walls", DERIVED,
+         "disease.cooking_pays",
+         "1e6 organisms a gram over 200 g against an ID50 of 1e4 is "
+         "infection with p=1.00; seven decades of killing takes it "
+         "to 0.002. A bout is 7 days of fever at +26% BMR plus the "
+         "food nobody went and got, 132 MJ, against 2.3 MJ of wood "
+         "to heat a kilo 65 K. 58x, and nobody had to understand "
+         "why. A wall is worth 526 MJ a year on thermoregulation "
+         "alone -- 53 days of food -- and the separation from your "
+         "own ground comes free. Each is adopted for a reason that "
+         "is not hygiene and kept because the people doing it are "
+         "the ones still alive"),
+        ("a wall", "somebody who holds the store", DERIVED,
+         "power.concentration",
+         "engine/group.py got a flat answer and it was right to: "
+         "strength_share is 1/n and spare_per_head is zero to 1e-14 "
+         "J at every band size. A forager is not egalitarian by "
+         "disposition, there is simply no second helping to "
+         "withhold. What changes is geometry. A band of 28 eats 65 "
+         "km2 with a 28.6 km border; a granary's border is 31 m -- "
+         "909x. You cannot own a range and you can stand in the "
+         "door of a barn. Strength is headcount, so holding it "
+         "still needs 15 of the 28 in on it, worth only 1.9x an "
+         "equal share. The wall built for warmth takes that to 8 "
+         "and 3.5x, and a written claim outlives its witnesses, "
+         "which is what inheritance is. A stock crosses a death; a "
+         "flow cannot"),
     ]
 
 

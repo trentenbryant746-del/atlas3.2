@@ -6764,3 +6764,117 @@ inventing.
     craft 4/4   tradition 6/6   lineage 7/7
     43 links, 35 derived, 7 forced, 1 crossing, 0 gaps
     72 claims reproduce, 68 skipped on fingerprint, 2.9 s
+
+### 3.1.111 — writing as a skill, disease as a consequence, and who ends up holding the store
+
+Three modules. The middle one is the load-bearing wall: without a
+pathogen there is no reason to cook, and the pathogen is not
+assumed — it is derived from the grain harvest that was already
+there.
+
+**`engine/literacy.py`.** 3.1.110 ended by naming writing as the
+cheap lever on specialization depth. That was a promise, not a
+derivation.
+
+The advantage is not "people can write things down". A speaker has
+nothing to compare their telling against — the source is gone the
+moment it is spoken, so the only correction available is other
+people, and it takes thirteen of them. A copyist has the original
+sitting there and can read back:
+
+    1 proofread pass   error 0.010   worth  5 speakers
+    2 passes           error 0.0010  worth  9
+    3 passes           error 0.0001  worth 13
+
+**Writing is the first channel on this chain where a claim carries
+the thing that would catch it being wrong.** One person with an
+exemplar replaces the entire redundancy of a band. That buys 9
+specialties instead of 2, with nobody added.
+
+But it is a skill, and almost nobody has it. It bootstraps orally —
+you cannot learn to read from a book you cannot read — so literacy
+is held by however few hold it and is subject to the same consensus
+arithmetic as anything else. One scribe: half-life 6.6 generations.
+Three: 24. It takes **5 holders** to keep a script forty
+generations, and a band of 28 sparing 5 for writing has spent a
+fifth of itself on a skill that feeds nobody. A script is not lost
+to catastrophe. It is lost to being held by too few people.
+
+And the spread is not plain logistic. Nobody learns to read because
+reading exists — they learn because there is something written and
+someone to read it to, which is the f² in `usefulness()`. So growth
+is proportional to the *value*:
+
+    df/dt = r · f² · (1 - f)
+
+From one literate in 28: 4% → 34% at 500 years, saturating around
+2000. Value multiplies 92x over the first five centuries and 1.0x
+over the last three millennia. Writing looks like an expensive hobby
+for a very long time and then stops looking like one, and nothing
+about the technology changed — the exponent did the work.
+
+**`engine/disease.py`.** A crowd disease with a 10-day infectious
+period needs one fresh susceptible per period or the chain breaks.
+Births arrive at N/25 a year, so it cannot live below **912 people**
+— a band of 28 burns through every host in a month and the pathogen
+goes extinct with them. Foragers do not have epidemics; they have
+parasites and whatever the animals gave them.
+
+What puts 33 bands in permanent contact is the 365-day grain
+harvest `accident.py` already identified as the only store that
+beats the 73-day threshold for staying put. Settled ground carries
+**114x** the shed load of a camp abandoned at 73 days. The pathogen
+is the grain harvest seen from the other side.
+
+Then the three answers price out:
+
+    cooking  p=1.00 -> 0.002 infection, 132 MJ bout vs 2.3 MJ wood   58x
+    a wall   526 MJ/yr of thermoregulation alone                53 days of food
+    washing  load falls with residence time and distance
+
+Each is adopted for a reason that is not hygiene, and kept because
+the people doing it are the ones still alive. Nobody had to
+understand why.
+
+And all three are *skills*. `craft.py` says a band of 28 bottoms out
+at 2 specialties — it cannot hold the answers to the problem that
+settling created. Written, the same 28 hold 9. The disease does not
+just follow the grain, it puts load on the channel, and the channel
+was already at its ceiling. That is a pressure, not a gap.
+
+**`engine/power.py`.** `group.py` already ran the flat case and was
+right to get a flat answer: `strength_share(n) = 1/n`, and
+`spare_per_head()` is zero to 1.1e-14 J at every band size — float
+noise on a difference of gigajoule terms. A forager is not
+egalitarian by disposition. There is no second helping to withhold.
+
+What changes is geometry:
+
+    a band of 28 eats 65 km2     border 28.6 km
+    a granary                    border 31 m
+                                          909x
+
+You cannot own a range and you can stand in the door of a barn.
+
+But strength is headcount, so holding it still needs 15 of the 28 in
+on it — each insider commands 7% against an equal 4%, **1.9x and no
+more**. The first concentration is not a chief with everything, it
+is half the band with slightly more, because the arithmetic will not
+carry a chief yet. The wall built for warmth takes the backing from
+15 to 8 and the share to 3.5x. Then a written claim binds anyone who
+can read it, including people not yet born — reach 179 → 5,000 over
+a thousand years — and a claim that outlives its holder is what
+inheritance *is*. A stock crosses a death; a flow cannot. Hereditary
+power waits for the granary and then for the ledger, which is why
+the first writing anyone does is an inventory.
+
+**A coincidence, named so nobody reads meaning into it:** the
+defensibility ratio is 909 and the critical community size is 912.
+They agree to 0.3% and have nothing to do with each other — one is
+a perimeter ratio, one is a susceptible supply. Two numbers agreeing
+that closely by accident is exactly the kind of thing that gets
+mistaken for a result.
+
+    literacy 4/4   disease 5/5   power 5/5   lineage 7/7
+    47 links, 39 derived, 7 forced, 1 crossing, 0 gaps
+    75 claims reproduce, 70 skipped on fingerprint, 2.8 s

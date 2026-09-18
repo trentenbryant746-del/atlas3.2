@@ -75,6 +75,22 @@
 "fp": "55addd672b1bd2df",
 "ok": true
 },
+"3.1.111|Big Bang to a head in 47 links: 39 derived, 7 forced, 0 gaps": {
+"fp": "83d70b567823bc8c",
+"ok": true
+},
+"3.1.111|a crowd disease needs 912 people; cooking pays 58x": {
+"fp": "ea9aaa3d37887ddd",
+"ok": true
+},
+"3.1.111|a granary is 909x cheaper to hold than the range it replaced": {
+"fp": "1122eca13a2513e3",
+"ok": true
+},
+"3.1.111|one checked copy is worth 13 speakers; 5 scribes keep a script": {
+"fp": "030192bfc49ff526",
+"ok": true
+},
 "3.1.18|folding survival rate 0.573": {
 "fp": "21579abf6579714b",
 "ok": true
@@ -284,7 +300,7 @@
 "ok": true
 },
 "3.1.91|closure is 0.48 catalysts per reaction, above 2000 molecules": {
-"fp": "b36dda14b462e918",
+"fp": "13a2e7c662d6effc",
 "ok": true
 },
 "3.1.92|10,584 universes generated blind; 864 pass three filters": {

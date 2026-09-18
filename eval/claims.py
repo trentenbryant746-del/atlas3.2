@@ -200,6 +200,33 @@ def _craft():
             band_for_specialties(s_ + 4)[0])
 
 
+def _literacy():
+    from engine.literacy import (equivalent_voices, written_depth,
+                                 least_scribes, spread)
+    from engine.tradition import BAND
+    return (equivalent_voices(1), equivalent_voices(3),
+            written_depth(2)[1], least_scribes(),
+            round(100 * spread(1.0 / BAND, 500)))
+
+
+def _disease():
+    from engine.disease import (critical_community, bands_needed,
+                                cooking_pays, house_pays_mj_year,
+                                bout_cost_mj)
+    return (round(critical_community()), round(bands_needed()),
+            round(bout_cost_mj()), round(cooking_pays()[2]),
+            round(house_pays_mj_year()))
+
+
+def _power():
+    from engine.power import (defensibility, insiders, concentration,
+                              WALL_ADVANTAGE)
+    return (round(defensibility()), insiders(),
+            round(concentration(), 1),
+            insiders(wall=WALL_ADVANTAGE),
+            round(concentration(wall=WALL_ADVANTAGE), 1))
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -640,6 +667,12 @@ CLAIMS = [
      _telephone, (10.0, 8688, 5.6e-08), CURRENT),
     ("3.1.110", "a band walks at 0.707 adult pace and innovates 39x per km",
      _craft, (1.41, 39, 13, 2, 9332, 280, 90), CURRENT),
+    ("3.1.111", "one checked copy is worth 13 speakers; 5 scribes keep a script",
+     _literacy, (5, 13, 9, 5, 34), CURRENT),
+    ("3.1.111", "a crowd disease needs 912 people; cooking pays 58x",
+     _disease, (912, 33, 132, 58, 526), CURRENT),
+    ("3.1.111", "a granary is 909x cheaper to hold than the range it replaced",
+     _power, (909, 15, 1.9, 8, 3.5), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -666,8 +699,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.110", "Big Bang to a head in 43 links: 35 derived, 7 forced, 0 gaps",
-     _wholechain, (43, 35, 7, 0, 1), CURRENT),
+    ("3.1.111", "Big Bang to a head in 47 links: 39 derived, 7 forced, 0 gaps",
+     _wholechain, (47, 39, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -776,6 +809,12 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.110", "Big Bang to a head in 43 links: 35 derived",
+     "four added at 3.1.111 -- writing as a skill that bootstraps "
+     "orally and can be lost, crowd disease derived from the grain "
+     "harvest rather than assumed, the three hygienic answers, and "
+     "the concentration of a store. None of them extends the end; "
+     "they all hang off settling, which was already there"),
     ("3.1.109", "the oral stock is 8,692a (capacity and stock conflated)",
      "8,692 charged only for tellings nobody got round to and "
      "nothing for tellings that came out WRONG. Oral tradition is a "

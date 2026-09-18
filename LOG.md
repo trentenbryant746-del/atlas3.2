@@ -173,3 +173,40 @@ STILL OPEN
   value; the 13-deep figure does not.
 - LEG lengths are CHOSEN. The sqrt ratio is not.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.111 — literacy, disease, power
+
+PROGRESS
+- literacy.py: the exemplar IS the check. One copyist with three
+  proofreads = 13 speakers. Buys 9 specialties instead of 2.
+  Bootstraps orally, so 5 scribes or the script is lost. Spread is
+  df/dt = r f^2 (1-f), NOT logistic: 4% -> 34% in 500 years.
+- disease.py: crowd disease derived from settling, not assumed.
+  Critical community 912; a band of 28 kills the pathogen. Cooking
+  58x, wall 53 days of food a year.
+- power.py: a granary's border is 909x shorter than the range's.
+  Concentration still only 1.9x flat, 3.5x behind a wall. Writing
+  extends a claim past its witnesses, which is inheritance.
+- chain 43 -> 47 links, 35 -> 39 derived.
+
+REGRESSION FOUND AND FIXED
+- power._flat compared spare_per_head against bare zero and tripped
+  on 1.1e-14 J. A correct check with an unstated tolerance on a
+  difference of gigajoule terms. Now names the noise floor.
+- literacy.spread was plain logistic on first write, saturating in
+  200 years. Wrong mechanism: growth tracks the VALUE of the
+  channel, which is f^2, not the number of teachers. Corrected to
+  df/dt = r f^2 (1-f) and it now crawls for a millennium.
+
+COINCIDENCE, LOGGED SO IT IS NOT MISTAKEN FOR A RESULT
+- defensibility() = 909 and critical_community() = 912. Agree to
+  0.3%, unrelated quantities (a perimeter ratio and a susceptible
+  supply). Nothing connects them.
+
+STILL OPEN
+- PROOF_CATCH, WALL_ADVANTAGE, EDIBLE_FRACTION, SHELTER_GAIN_K,
+  FIRE_EFFICIENCY all CHOSEN. Cooking's 58x survives any plausible
+  value (it is two orders clear). The 3.5x walled concentration
+  does not -- it is linear in WALL_ADVANTAGE.
+- TELEPHONE = 0.10 still sets the specialization depth.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

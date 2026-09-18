@@ -154,6 +154,15 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _innovation():
+    from engine.innovation import (INNOVATIONS, innovations_per_division,
+                                   wait_years, coordination_for, OMIT)
+    return (len(INNOVATIONS),
+            sum(1 for v in INNOVATIONS.values() if v[0] == OMIT),
+            round(innovations_per_division(), 2),
+            coordination_for(2e9))
+
+
 def _code():
     from engine.code import affordable_code, modern_code_fits
     n, w, left = affordable_code()
@@ -518,6 +527,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.101", "innovation is omit/duplicate/combine at 4.48 per division",
+     _innovation, (6, 4, 4.48, 3), CURRENT),
     ("3.1.100", "the modern code needs 1520 bases and 200 are held",
      _code, (5, 2, False, 1520), CURRENT),
     ("3.1.100", "selection on a trait is 7-9 orders too fast",

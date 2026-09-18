@@ -6164,3 +6164,60 @@ They stay FORCED. The rule did not close the gap; it gave it a size.
 
     36 links, 26 derived, 7 forced, 2 gaps
     code 6/6   reach 5/5   57 claims reproduce
+
+### 3.1.101 — discrete innovation, and it was never creation
+
+The same absence sat in three places: `descent` could price a pump, a
+skin and a skeleton and produce none; `reach` found the seven middle
+links are not distances in a trait; `tools` was the one that closed.
+
+**How `tools` closed is the clue.** A tool is not built — it is a
+**hand and a stone**. Two things that already existed, combined.
+
+Read the others the same way and none is a new process either:
+
+    eukaryote      engulf, and fail to digest        omit a step
+    multicellular  divide, and fail to separate      omit a step
+    skeletal       precipitate, and fail to dissolve omit a step
+    endotherm      lose heat, and fail to lose it    omit a step
+    a tool         a hand and a stone                combine two
+    large brain    neural tissue, and more of it     duplicate
+
+> **An innovation is an existing process with a step omitted,
+> duplicated, or combined with another. Nothing is created.**
+
+That makes the space **countable**, which "a new thing appears" never
+was.
+
+**And the rate falls out of heredity, with nothing added.**
+`engine/heredity.py` has 1.39 types lost per division, each catalysing
+3.58 reactions, 10% of them sole-catalysed:
+
+    lethal losses per division      0.50
+    NON-LETHAL losses               4.48
+
+A non-lethal loss *is* a process running with a step omitted and still
+closing. **Innovations happen 4.5 times per division.**
+
+    coordinated   combinations   years to sample
+              1       1.00e+05          6.12e+01
+              2       5.00e+09          3.06e+06
+              3       1.67e+14          1.02e+11
+
+**So single omissions are not the barrier** — every one in a 10⁵-reaction
+cell is sampled in 61 years. The wait is not in finding one, it is in
+needing several at once.
+
+**One number here is fitted and says so.** Matching the ~2 Gyr between
+LUCA and eukaryotes needs k = 3 coordinated omissions. That is read
+off the record, not derived — the taxonomy is structural and the rate
+comes from `heredity`. A fitted parameter reported as fitted is a
+different object from one quietly used.
+
+**And the taxonomy is falsifiable.** If an innovation turns up that is
+not a step omitted, a thing duplicated, or two things combined, this
+is false. It predicts where to look: every innovation should have a
+**parent process**, and one with none would mean something here is
+creating rather than recombining.
+
+    innovation 5/5    59 claims reproduce

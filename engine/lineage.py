@@ -186,6 +186,20 @@ def before_luca():
 
 
 # What DRIVES each middle step, where a rule here supplies one.
+# WHAT THE STEP IS, not merely what drives it. engine/innovation.py
+# reads every one as an existing process with a step omitted,
+# duplicated, or combined with another -- nothing created.
+MECHANISM = {
+    "eukaryote": "omit a step of phagocytosis: engulf, fail to digest",
+    "multicellular": "omit a step of division: divide, fail to separate",
+    "large-bodied": "the same, continued",
+    "skeletal": "omit a step of mineral handling: precipitate, fail "
+                "to dissolve",
+    "land": "combine: the same body, a different medium",
+    "endotherm": "omit a step of thermal exchange: lose heat, fail to",
+    "large brain": "duplicate: neural tissue, and more of it",
+}
+
 PRESSURES = {
     "eukaryote": (
         "lineage.energy_per_gene_gain",
@@ -236,8 +250,10 @@ def after_luca():
         why = str(row[3] if len(row) > 3 else "")[:110]
         press = PRESSURES.get(b)
         if verdict == "ALLOWED" and press:
+            mech = MECHANISM.get(b, "")
             out.append((a, b, FORCED, f"ancestry.steps + {press[0]}",
-                        f"PERMITTED: {why} | DRIVEN: {press[1]}"))
+                        f"PERMITTED: {why} | DRIVEN: {press[1]}"
+                        + (f" | HOW: {mech}" if mech else "")))
         else:
             out.append((a, b, verdict if verdict != "ALLOWED" else ALLOWED,
                         "ancestry.steps", why))

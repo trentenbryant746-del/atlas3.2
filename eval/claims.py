@@ -164,12 +164,13 @@ def _occurs():
 
 
 def _wholechain():
-    from engine.lineage import chain, DERIVED, MISSING, CROSSES
+    from engine.lineage import chain, DERIVED, MISSING, CROSSES, FORCED
     c = chain()
     k = {}
     for _a, _b, v, _r, _w in c:
         k[v] = k.get(v, 0) + 1
-    return len(c), k.get(DERIVED, 0), k.get(MISSING, 0), k.get(CROSSES, 0)
+    return (len(c), k.get(DERIVED, 0), k.get(FORCED, 0),
+            k.get(MISSING, 0), k.get(CROSSES, 0))
 
 
 def _damuth():
@@ -486,8 +487,8 @@ CLAIMS = [
      _generated, (True, 10584, 864), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.95", "nebula to a head in 20 links: 10 derived, 2 gaps, 1 crossing",
-     _wholechain, (20, 10, 2, 1), CURRENT),
+    ("3.1.95", "Big Bang to a head in 31 links: 21 derived, 7 forced, 2 gaps",
+     _wholechain, (31, 21, 7, 2, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

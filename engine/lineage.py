@@ -34,6 +34,67 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 DERIVED, ALLOWED, CROSSES, MISSING = "DERIVED", "ALLOWED", "CROSSES", "MISSING"
+FORCED = "FORCED"
+
+# THE DISTINCTION THE MIDDLE OF THE CHAIN WAS MISSING.
+#
+# Seven links read ALLOWED -- no rule forbids them and none
+# produces them. That is a weaker statement than it looked, and
+# the weakness is specific: engine/ancestry.py supplies a
+# PERMISSION for each (a pump is affordable, bone carries the
+# weight, ozone shields) and nothing supplies a PRESSURE.
+#
+# A permission says the step is payable. A pressure says something
+# is worse off not taking it. Only the second produces anything,
+# and several are already derived elsewhere and were never
+# connected -- engine/biome.py found the only pressure in the
+# repository that rewards being LARGER, and no link cited it.
+#
+#   ALLOWED   permitted, nothing drives it
+#   FORCED    permitted AND something drives it, both cited
+
+
+def membrane_energy_per_volume(radius_m, internal_membranes=1):
+    """ATP capacity over genome capacity. DERIVED.
+
+    A prokaryote makes ATP across its OUTER membrane, area r^2,
+    and holds its genome in volume, r^3. So energy per gene falls
+    as 1/r and a large prokaryote starves its own genome.
+    Internalising membranes multiplies the area without touching
+    the volume, which is what a mitochondrion is.
+    """
+    area = 4.0 * math.pi * radius_m ** 2 * internal_membranes
+    vol = 4.0 / 3.0 * math.pi * radius_m ** 3
+    return area / vol
+
+
+def energy_per_gene_gain(small_r=0.5e-6, big_r=5e-6, n_mito=200):
+    """-> ratio. What internalising membranes buys. DERIVED."""
+    plain = membrane_energy_per_volume(big_r, 1)
+    with_m = membrane_energy_per_volume(big_r, n_mito)
+    return with_m / plain, membrane_energy_per_volume(small_r, 1) / plain
+
+
+def before_earth():
+    """-> [...]. Big Bang to a nebula, from epochs and accounts."""
+    from engine.epochs import EPOCHS, BBN_YIELD, BBN_BARRIER
+    from engine.abundance import heaviest_stable
+    rows = []
+    prev = None
+    for name, t, why in EPOCHS:
+        if prev is not None:
+            rows.append((prev, name, DERIVED, "epochs.EPOCHS",
+                         f"{why} (t = {t:.1e} s)"))
+        prev = name
+    rows.insert(4, ("bbn", "the mass-5 and mass-8 gap", DERIVED,
+                    "epochs.BBN_BARRIER",
+                    f"{BBN_YIELD['He4']:.0%} helium and almost nothing "
+                    f"heavier, because {BBN_BARRIER[:80]}"))
+    rows.append(("ns_merger", "a nebula with metals", DERIVED,
+                 "abundance.channels",
+                 "every naturally occurring element has a production "
+                 "channel and the heaviest stable one is named"))
+    return rows
 
 
 def before_luca():
@@ -92,15 +153,62 @@ def before_luca():
     ]
 
 
+# What DRIVES each middle step, where a rule here supplies one.
+PRESSURES = {
+    "eukaryote": (
+        "lineage.energy_per_gene_gain",
+        "a prokaryote makes ATP across its outer membrane (area, r^2) "
+        "and holds its genome in volume (r^3), so energy per gene "
+        "falls as 1/r -- a large prokaryote starves its own genome. "
+        "Internalising membranes multiplies area without touching "
+        "volume and buys 200x, which is what a mitochondrion is"),
+    "multicellular": (
+        "biome.escalation_stops_at",
+        "light is the only pressure in this repository that rewards "
+        "being LARGER: a rival eating your food takes a share, one "
+        "standing over you takes all of it, every day it stands there"),
+    "large-bodied": (
+        "biome.escalation_stops_at",
+        "the same ratchet, and it does not stop at the diffusion "
+        "limit -- it stops where the cost of the structure exceeds "
+        "the light being fought over"),
+    "skeletal": (
+        "life.BONE_COMPRESSIVE",
+        "past the size the ratchet drives you to, a body on land "
+        "cannot hold itself up without one; this is not an option "
+        "taken but a bill arriving"),
+    "land": (
+        "biome.surface_light",
+        "land carries the same 236 W/m2 and, before anything is "
+        "there, no competitor at all -- an unexploited flow is a "
+        "pressure and engine/biome.py already prices what a "
+        "competitor costs"),
+    "endotherm": (
+        "shelter.coldest_survivable",
+        "holding temperature buys the hours and latitudes an "
+        "ectotherm cannot work in, which is niche nobody is holding"),
+    "large brain": (
+        "tools.pays_for_a_brain",
+        "one femur of marrow is 70% of a forager's day against the "
+        "14% a human brain costs over an ape's -- it pays 5.2x, and "
+        "engine/tools.py derives the flaked edge that opens it"),
+}
+
+
 def after_luca():
-    """-> [...]. LUCA to a human, from engine/ancestry.py."""
+    """-> [...]. LUCA to a human, permission AND pressure."""
     from engine.ancestry import steps
     out = []
     for row in steps():
         a, b, verdict = row[0], row[1], row[2]
-        why = row[3] if len(row) > 3 else ""
-        out.append((a, b, verdict if verdict != "ALLOWED" else ALLOWED,
-                    "ancestry.steps", str(why)[:140]))
+        why = str(row[3] if len(row) > 3 else "")[:110]
+        press = PRESSURES.get(b)
+        if verdict == "ALLOWED" and press:
+            out.append((a, b, FORCED, f"ancestry.steps + {press[0]}",
+                        f"PERMITTED: {why} | DRIVEN: {press[1]}"))
+        else:
+            out.append((a, b, verdict if verdict != "ALLOWED" else ALLOWED,
+                        "ancestry.steps", why))
     return out
 
 
@@ -139,7 +247,8 @@ def inside_the_head():
 
 def chain():
     """-> [...]. The whole thing, nebula to a head, in order."""
-    return before_luca() + after_luca() + inside_the_head()
+    return (before_earth() + before_luca() + after_luca()
+            + inside_the_head())
 
 
 # --- what lives there: three theorems, no simulation ----------------
@@ -189,6 +298,7 @@ def check():
             out.append((nm, False, f"{type(e).__name__}: {e}"))
 
     t("the_chain_runs_end_to_end", _chain)
+    t("permission_is_not_pressure", _forced)
     t("every_link_names_its_rule", _cites)
     t("the_gaps_are_named_and_counted", _gaps)
     t("competition_is_a_theorem_not_a_run", _excl)
@@ -211,6 +321,26 @@ def _chain():
               "engine/ancestry.py each walked part of this and none "
               "handed off, so the chain the repository is for was the "
               "one thing nobody could read")
+
+
+def _forced():
+    c = chain()
+    forced = [r for r in c if r[2] == FORCED]
+    allowed = [r for r in c if r[2] == ALLOWED]
+    gain, _small = energy_per_gene_gain()
+    if len(forced) < 5:
+        raise ArithmeticError(f"only {len(forced)} links are forced")
+    return (f"{len(forced)} of the middle links are FORCED and "
+            f"{len(allowed)} remain merely ALLOWED. The difference is "
+            f"the one the chain was missing: a permission says a step "
+            f"is payable, a pressure says something is worse off not "
+            f"taking it, and only the second produces anything. Most "
+            f"of the pressures were already derived and never cited "
+            f"-- engine/biome.py holds the only one here that rewards "
+            f"being larger, and no link referred to it. The "
+            f"eukaryote's is new: ATP scales with membrane AREA and "
+            f"genome with VOLUME, so energy per gene falls as 1/r "
+            f"until membranes go inside, which buys {gain:.0f}x")
 
 
 def _cites():

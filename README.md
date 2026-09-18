@@ -5941,3 +5941,58 @@ absences in place of one unmeasured one, which is the whole of the
 progress.
 
     occurrence 5/5    lineage 20 links, 10 derived    54 claims
+
+### 3.1.97 — Big Bang to a large brain, and permission is not pressure
+
+**Thirty-one links**, Planck epoch to what a head does.
+
+    DERIVED  planck -> quark -> hadron -> lepton -> bbn        epochs.EPOCHS
+    DERIVED  bbn    -> the mass-5 and mass-8 gap               epochs.BBN_BARRIER
+    DERIVED  ... recombination -> first_stars -> stellar_c
+             -> supernova -> ns_merger -> a nebula with metals
+    DERIVED  a nebula -> a star and planets                    genesis.composition
+    DERIVED  planets -> one in the band -> a cold brine
+             -> an autocatalytic set -> a bounded cell
+             -> chemistry that sustains itself                 occurrence.closes_in_one
+    MISSING  self-sustaining chemistry -> a cell that is
+    FORCED   LUCA -> eukaryote -> multicellular -> large-bodied
+             -> skeletal -> land -> endotherm -> large brain
+    CROSSES  large brain -> us
+    DERIVED  a large brain -> a filter -> recognition
+             -> several heads -> a shared corpus
+    MISSING  a corpus -> what it is for
+
+**21 derived, 7 forced, 1 crossing, 2 gaps.** 29 of 31 name the rule
+and module that produce them.
+
+### the seven middle links were weaker than they looked
+
+They read ALLOWED, and the weakness was specific: `ancestry` supplies
+a **permission** for each — a pump is affordable, bone carries the
+weight, ozone shields — and **nothing supplied a pressure.** A
+permission says the step is payable. A pressure says something is
+worse off not taking it. Only the second produces anything.
+
+Most of the pressures were already derived and **never cited**:
+
+    eukaryote      ATP scales with membrane AREA and genome with
+                   VOLUME, so energy per gene falls as 1/r -- a large
+                   prokaryote starves its own genome. Internalising
+                   membranes buys 200x without touching volume, which
+                   is what a mitochondrion is.
+    multicellular  light is the only pressure here that rewards being
+                   LARGER: a rival eating your food takes a share, one
+                   standing over you takes all of it.
+    large-bodied   the same ratchet, stopping where structure costs
+                   more than the light being fought over.
+    skeletal       past that size a land body cannot hold itself up.
+                   Not an option taken, a bill arriving.
+    land           the same 236 W/m2 with no competitor on it.
+    endotherm      the hours and latitudes an ectotherm cannot work in.
+    large brain    one femur is 70% of a forager's day against the 14%
+                   a brain costs -- it pays 5.2x.
+
+`engine/biome.py` holds the only pressure in the repository that
+rewards being larger, and **not one link had referred to it.**
+
+    lineage 7/7    31 links    55 claims reproduce

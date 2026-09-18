@@ -33,10 +33,18 @@ VERSION = "4.7.2-stable"
 BASE = f"https://github.com/godotengine/godot/releases/download/{VERSION}"
 
 # SHA-512, taken from the release's own SHA512-SUMS.txt and pinned here.
+# A hash that has not been checked against the release is worse than
+# no hash, because it looks like verification. Only macOS is pinned
+# here -- it is the one that was downloaded and hashed. The others
+# name their file and carry None, and the installer REFUSES rather
+# than fetching something it cannot verify. ATLAS_GODOT still points
+# at an existing install on any platform, which is the escape hatch.
 BUILDS = {
     "macos": ("Godot_v4.7.2-stable_macos.universal.zip",
               "38aa16e5bba2083941fc5b3e54be0089bd4cc35e32415f5b9fd9a8a6a7b98182"
               "55d44532ea8ef94b5aef56c4b407c2d634fa4f657e4ebe681ebbf59b7bac69ca"),
+    "linux": ("Godot_v4.7.2-stable_linux.x86_64.zip", None),
+    "windows": ("Godot_v4.7.2-stable_win64.exe.zip", None),
 }
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -83,6 +91,13 @@ def fetch(verbose=True):
               f"and set ATLAS_GODOT to the binary.")
         return None
     name, want = BUILDS[p]
+    if want is None:
+        print(f"{p!r} names its build ({name}) but its SHA-512 has not "
+              f"been checked against the release, and downloading "
+              f"something unverifiable is worse than not downloading "
+              f"it. Install Godot {VERSION} yourself and set "
+              f"ATLAS_GODOT, or pin the hash in BUILDS.")
+        return None
     DEST.mkdir(parents=True, exist_ok=True)
     zpath = DEST / name
 

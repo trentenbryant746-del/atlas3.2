@@ -162,6 +162,12 @@ INPUTS = {
     "revolution.BIRTH_AT_SURPLUS": (CHOSEN, "1.5%/yr at full surplus"),
     "revolution.FOOD_W_PER_PERSON": (
         MEASURED, "upkeep plus a child's share, about 130 W"),
+    "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
+    "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
+    "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "closure.ALPHABET": (CHOSEN, "two monomers, the smallest case"),
+    "closure.MAX_LEN": (CHOSEN, "polymer length; tractability"),
+    "closure.FOOD_LEN": (CHOSEN, "what the world supplies unasked"),
     "cold.KF_WATER": (MEASURED, "cryoscopic constant, 1.86 K kg/mol"),
     "cold.SEAWATER_OSMOLAL": (MEASURED, "about 1.2 mol particles per kg"),
     "cold.NACL_EUTECTIC_K": (MEASURED, "251.9 K, below it no brine"),
@@ -295,6 +301,8 @@ ENACTED_RESULTS = {
         "three trajectories these rules produce, not ones anybody lived",
     "holding never binds; discovery rate does":
         "a corpus these rules grow, not one anybody catalogued",
+    "a set closes above p=1e-3, measured is 1e-8":
+        "a network these rules build and prune, not one in a flask",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -323,6 +331,9 @@ CLAIMS_ON = {
     "instructions cost 0.0003% of a brain": [],
     "one head holds about four trades": [],
     "the fidelity gate opens in a 7 K window": [],
+    "cold slows breaking 11x more than building": [],
+    "a set closes above p=1e-3, measured is 1e-8": [
+        "closure.ALPHABET", "closure.MAX_LEN"],
     "a ribozyme is at its thermodynamic limit": [],
     "holding never binds; discovery rate does": [
         "school.SPECIALIST_FRACTION", "school.LIFE_LEARN_HOURS"],

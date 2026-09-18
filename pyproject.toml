@@ -1,0 +1,31 @@
+# Atlas 3.1 has no dependencies. This file exists so a standard runner
+# can FIND the checks without being told where to look -- there are ten
+# scripts in eval/ and a check() in every engine module, over 200 of
+# them, and none of it was discoverable before.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas"
+version = "3.1.88"
+description = "Every answer carries a check that would catch it being wrong"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+speed = ["cython>=3.0"]
+
+[project.scripts]
+atlas-suite = "eval.benchmark:main"
+atlas-lab = "engine.lab:main"
+atlas-claims = "eval.claims:main"
+
+[tool.setuptools]
+packages = ["engine", "eval"]
+
+[tool.pytest.ini_options]
+# Every engine module exposes check() -> (ok, rows). conftest.py turns
+# each of those rows into a test, so `pytest` finds all of them.
+testpaths = ["tests"]
+python_files = ["test_*.py", "conftest.py"]

@@ -1801,7 +1801,7 @@ answer instead of two.
     eval/heldout.py   165/165    byte-exact
     eval/benchmark.py  ALL PASS  5,737 correct, 0 wrong
 
-### Known weak points, deferred to Atlas 3.3
+### Known weak points — FIXED in 3.1.88, kept for the record
 
 **Two tracks, and they are different releases.** Atlas **3.2** is where
 every rule is made consistent with every other rule -- the lab sweep,
@@ -5535,3 +5535,74 @@ corrected, because that stopped being true the moment fidelity became
 a function of temperature.
 
     cold 6/6    earthlab 9/9    suite green
+
+### 3.1.88 — the deferred defects, a new gate, and a set that is searched for
+
+**The four deferred items are fixed.** They had been recorded so nobody
+would have to rediscover them and then left alone; that was long
+enough.
+
+1. **The real bug.** `eval/audit.py` asserted `len(EXECUTABLE) == 3`, so
+   a clean Linux or Windows box reported 20/21 while the system worked.
+   The claim being audited is that the backends **agree**, not that
+   there are three — two agreeing is still cross-verification, one is
+   not. Now `len(EXECUTABLE) >= 2`.
+2. **Packaging.** `pyproject.toml`, plus `tests/conftest.py` that turns
+   every engine `check()` row into a pytest case — **106 modules, 62
+   with checks**, over 200 assertions, none of it discoverable before.
+3. **The server.** The traceback no longer goes in the response body,
+   it goes to stderr where the operator is. It binds loopback on
+   purpose and warns if `ATLAS_BIND` overrides that.
+4. **The download table.** Linux and Windows are named, and their
+   SHA-512 is `None` — so the installer **refuses** rather than
+   fetching something it cannot verify. A hash that has not been
+   checked is worse than no hash, because it looks like verification.
+
+### a new gate: persistence
+
+Nothing was asking whether the thing survives long enough to be copied.
+**A strand cut faster than it is rebuilt is not a replicase.**
+
+    T        bond half-life    build/break vs 298 K
+    298.0 K          22 yr                    1.00
+    273.1 K         864 yr                    4.34
+    259.0 K       9,573 yr                   11.37
+
+Breaking a phosphodiester bond has a ~100 kJ/mol barrier and catalysed
+building about 60, so **cooling slows breaking more than it slows
+building**. Had the two been equal this would read 1.00 at every
+temperature — and I wrote the sign backwards first, which said cold
+made things worse.
+
+So cold does a **third** thing, and the same seven-kelvin window buys
+fidelity, crowding *and* persistence. None of the three was aimed at
+the others. At 298 K three gates are shut; at 255 K one is.
+
+### the self-maintaining set, searched for rather than priced
+
+`earthlab`'s self-maintaining gate passes **by formula** — it computes
+whether closure is *likely*. That is a statement about a probability,
+not about a set. `engine/closure.py` builds the network and looks:
+254 molecules, 1,284 ligations, 6 supplied as food, catalysis assigned
+at probability p, then pruned to fixpoint.
+
+    p        closes    reactions    molecules
+    1e-4        no             0            6
+    1e-3        no             0            6
+    3e-3       yes           431          221
+    1e-2       yes         1,171          254
+
+**It is a sharp threshold, and the search can return nothing** — which
+is what makes returning something worth anything. Closure turns on
+between 1.3×10⁻³ and 2.6×10⁻³.
+
+**And the measured figure is 1×10⁻⁸.** `CATALYSIS_P` falls about five
+orders short at the sizes this can actually search.
+
+Bigger networks close at lower p, and running that scaling out to
+10⁻⁸ asks for ~10²⁰ reactions. **That number is not trustworthy and is
+reported with its distance attached**: the fit covers 1.2 orders of
+magnitude of network size and the answer sits 17 beyond the last point.
+The direction is right; the distance is unknown.
+
+    closure 6/6    cold 7/7    earthlab 10/10    suite 8.2 s

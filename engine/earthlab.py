@@ -304,6 +304,18 @@ def gates(temperature=298.0):
                 + (f", and the brine is {concentration_factor(T):.1f}x "
                    f"concentrated as a side effect" if liquid else "")))
 
+    # PERSISTENCE. Nothing here asked whether the thing survives
+    # long enough to be copied. A replicase that is cut faster than
+    # it is rebuilt is not a replicase, and no gate was checking.
+    from engine.cold import persists, half_life_years, build_over_break
+    pok, pwhy = persists(temperature, MIN_REPLICASE_BASES)
+    out.append(("persistence", OPEN if pok else SHUT,
+                f"{pwhy}. A bond lasts "
+                f"{half_life_years(temperature):,.0f} years here "
+                f"against {half_life_years(298.0):,.0f} at 298 K, "
+                f"because breaking has the higher activation barrier "
+                f"and cooling slows it more than it slows building"))
+
     fnd, mnt, npc, mwhy = modular_reach()
     out.append(("assembly", OPEN if (fnd and mnt) else SHUT,
                 f"built from parts instead of drawn whole: {mwhy}"))

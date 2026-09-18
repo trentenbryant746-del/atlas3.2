@@ -143,6 +143,21 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _closure():
+    from engine.closure import search, threshold
+    from engine.earthlab import CATALYSIS_P
+    c = threshold(seeds=6, steps=10)
+    on = min([p for p, f in c if f >= 0.5], default=0.0)
+    return (search(1e-6, 1)["closed"], search(1e-2, 1)["closed"],
+            on > CATALYSIS_P * 1e4)
+
+
+def _persist():
+    from engine.cold import build_over_break, half_life_years
+    return (round(build_over_break(259.0), 1),
+            round(half_life_years(259.0) / half_life_years(298.0)))
+
+
 def _cold():
     from engine.cold import (discrimination_kcal, temperature_for,
                              NACL_EUTECTIC_K, concentration_factor)
@@ -398,8 +413,13 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
-    ("3.1.87", "fidelity is a temperature: 2.73 kcal/mol, 259 K window",
-     _cold, (2.73, 259.0, ["fidelity", "search"], ["search"]), CURRENT),
+    ("3.1.88", "a set closes above 1e-3; the measured p is 1e-8",
+     _closure, (False, True, True), CURRENT),
+    ("3.1.88", "cold buys 11x on build/break and 436x on lifetime",
+     _persist, (11.4, 436), CURRENT),
+    ("3.1.88", "three gates shut at 298 K, one at 255",
+     _cold, (2.73, 259.0,
+             ["fidelity", "persistence", "search"], ["search"]), CURRENT),
     ("3.1.86", "a head holds 4 trades; today needs 750k; holding never binds",
      _school, (4.0, 750000, True), CURRENT),
     ("3.1.85", "four gifts, four shorter clocks: 1411, 998, 957, 695",
@@ -493,6 +513,14 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.87", "two gates shut at 298 K: fidelity and search",
+     "withdrawn in 3.1.88 by ADDING A GATE, not by any number "
+     "moving. Nothing was asking whether a replicase survives long "
+     "enough to be copied, and a strand cut faster than it is "
+     "rebuilt is not a replicase. Persistence is now a gate, it is "
+     "SHUT at 298 K, and it opens by 273 -- so the list at 298 is "
+     "three and the list at 255 is still one. A claim about which "
+     "gates are shut is only as complete as the set of gates"),
     ("3.1.84", "every gift shortens the clock: 1809, 1201, 708 years",
      "withdrawn in 3.1.85, and the finding survived the correction "
      "that killed the numbers. The reach multiplier was capped at "

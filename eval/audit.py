@@ -132,7 +132,13 @@ def main() -> int:
                                                  IRN("emit", "x")])]
     agree, srcs, traces, _ = cross_verify(prog)
     check("backends agree", agree, True)
-    check("executable backends", len(EXECUTABLE), 3)
+    # The claim being audited is that the executable backends AGREE,
+    # not that there are three of them. engine/ir.py drops gdscript
+    # when Godot is absent, which is correct; asserting the count made
+    # a clean Linux or Windows box report 20/21 while the system was
+    # working. Two agreeing is still cross-verification -- one is not,
+    # because there is nothing to disagree with it.
+    check("executable backends cross-verify", len(EXECUTABLE) >= 2, True)
 
     # --- report ----------------------------------------------------------
     w = max(len(r[0]) for r in RESULTS)

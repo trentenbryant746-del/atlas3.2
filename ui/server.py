@@ -15,6 +15,7 @@ No dependencies. Standard library only.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -110,11 +111,23 @@ class H(BaseHTTPRequestHandler):
                 return self._send(200, json.dumps(ROUTES[u.path](q)))
             self._send(404, json.dumps({"error": "no route"}))
         except Exception as e:
-            self._send(500, json.dumps({"error": f"{type(e).__name__}: {e}",
-                                        "trace": traceback.format_exc()[-800:]}))
+            # The traceback used to go into the response body. That is
+            # fine on a laptop and is a disclosure anywhere else, and
+            # "fine on a laptop" is not a property a server can check
+            # about itself. It goes to stderr, where the operator is.
+            traceback.print_exc()
+            self._send(500, json.dumps({"error": f"{type(e).__name__}: {e}"}))
 
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
-    print(f"atlas2 UI on http://localhost:{port}")
-    HTTPServer(("127.0.0.1", port), H).serve_forever()
+    # Bound to loopback ON PURPOSE. This is a demonstration: stdlib
+    # HTTPServer, no authentication, no persistence, no rate limit. It
+    # is not fit to face a network and now it cannot, unless somebody
+    # sets ATLAS_BIND and has therefore said so out loud.
+    host = os.environ.get("ATLAS_BIND", "127.0.0.1")
+    if host != "127.0.0.1":
+        print(f"  WARNING: binding {host}, which this server is not "
+              f"hardened for -- no auth, no persistence, no limits")
+    print(f"atlas UI on http://{host}:{port}")
+    HTTPServer((host, port), H).serve_forever()

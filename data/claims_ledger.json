@@ -184,7 +184,19 @@
 "ok": true
 },
 "3.1.87|fidelity is a temperature: 2.73 kcal/mol, 259 K window": {
-"fp": "99ead48b0673b2d9",
+"fp": "24ae882d253814ab",
+"ok": false
+},
+"3.1.88|a set closes above 1e-3; the measured p is 1e-8": {
+"fp": "8761ade585f46a1b",
+"ok": true
+},
+"3.1.88|cold buys 11x on build/break and 436x on lifetime": {
+"fp": "1f4049d88741c41b",
+"ok": true
+},
+"3.1.88|three gates shut at 298 K, one at 255": {
+"fp": "24ae882d253814ab",
 "ok": true
 }
 }

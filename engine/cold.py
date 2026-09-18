@@ -52,6 +52,13 @@ MGCL2_EUTECTIC_K = 239.0        # MEASURED
 REF_ERROR = 0.01                # MEASURED, best ribozyme at 298 K
 REF_T = 298.0                   # MEASURED, where that was measured
 
+# MEASURED, J/mol. Breaking a phosphodiester bond has the HIGHER
+# barrier, which is the whole of why cold does a third useful thing.
+EA_HYDROLYSIS = 100e3
+EA_POLYMERISE = 60e3
+K_HYD_298 = 1.0e-9              # MEASURED, /s at pH 7, 298 K
+R_GAS = 8.314462618             # EXACT
+
 
 def discrimination_kcal(mu=REF_ERROR, T=REF_T):
     """kcal/mol between a right pair and a wrong one. DERIVED.
@@ -106,6 +113,39 @@ def still_liquid(T):
         f"{NACL_EUTECTIC_K:.1f} K")
 
 
+def hydrolysis_k(T):
+    """Phosphodiester bonds cut per second. DERIVED: Arrhenius."""
+    import math as _m
+    return K_HYD_298 * _m.exp(-EA_HYDROLYSIS / R_GAS * (1.0/T - 1.0/REF_T))
+
+
+def half_life_years(T):
+    """How long a bond lasts. DERIVED."""
+    return math.log(2.0) / hydrolysis_k(T) / 3.15576e7
+
+
+def build_over_break(T):
+    """Building beats breaking by this much, against 298 K. DERIVED.
+
+    Cooling slows the reaction with the LARGER barrier more, and
+    breaking a bond is the larger barrier. If the two were equal
+    this would be 1.00 at every temperature and cold would buy
+    nothing here -- which is the version I wrote first, with the
+    sign inverted, and it said cold made things worse.
+    """
+    return math.exp((EA_HYDROLYSIS - EA_POLYMERISE) / R_GAS
+                    * (1.0/T - 1.0/REF_T))
+
+
+def persists(T, bases=200, generations=1.0):
+    """-> (bool, why). Can it be rebuilt faster than it is cut?"""
+    lost = bases * hydrolysis_k(T) * 3.15576e7 * generations
+    return lost < 1.0, (
+        f"a {bases}-base strand loses {lost:.3g} bonds a year at "
+        f"{T:.0f} K, and building beats breaking "
+        f"{build_over_break(T):.1f}x better than at {REF_T:.0f} K")
+
+
 def both_gates(target_mu=0.005):
     """-> dict. What one temperature does to fidelity and crowding."""
     T = temperature_for(target_mu)
@@ -128,7 +168,8 @@ def check():
     t("fidelity_is_a_temperature_not_a_catalyst", _temp)
     t("the_brine_is_still_liquid_there", _liquid)
     t("getting_cold_concentrates_what_is_left", _conc)
-    t("one_move_opens_two_gates", _both)
+    t("cold_slows_breaking_more_than_building", _persist)
+    t("one_move_opens_three_gates", _both)
     t("nothing_here_was_handed_over", _clean)
     return all(o[1] for o in out), out
 
@@ -186,19 +227,42 @@ def _conc():
             f"it")
 
 
+def _persist():
+    warm, cold = build_over_break(298.0), build_over_break(259.0)
+    ok_w, _ = persists(298.0)
+    ok_c, why_c = persists(259.0)
+    if cold <= warm:
+        raise ArithmeticError(f"cooling gave {cold:.2f} against {warm:.2f}")
+    if ok_w or not ok_c:
+        raise ArithmeticError(f"persistence sorts wrong: {ok_w}, {ok_c}")
+    return (f"breaking a phosphodiester bond has a {EA_HYDROLYSIS/1000:.0f} "
+            f"kJ/mol barrier and building one about "
+            f"{EA_POLYMERISE/1000:.0f}, so cooling slows BREAKING more. "
+            f"At 259 K building beats breaking {cold:.1f}x better than "
+            f"at 298 and a bond lasts {half_life_years(259.0):,.0f} "
+            f"years against {half_life_years(298.0):,.0f}. {why_c}. Had "
+            f"the two barriers been equal this would be 1.00 at every "
+            f"temperature -- I wrote the sign backwards first and it "
+            f"said cold made things worse")
+
+
 def _both():
     b = both_gates()
     if not b["liquid"] or b["concentration"] < 2.0:
         raise ArithmeticError(str(b))
     from engine.earthlab import error_threshold, ERROR_RATES
     was = error_threshold(min(ERROR_RATES.values()))
-    return (f"ONE MOVE OPENS TWO GATES. At {b['T']:.1f} K the error "
+    return (f"ONE MOVE OPENS THREE GATES. At {b['T']:.1f} K the error "
             f"rate is {b['mu']:.4f}, the maintainable genome goes "
             f"{was:.0f} -> {b['genome']:.0f} bases, and the same "
             f"freezing-point depression that gets there concentrates "
             f"the brine {b['concentration']:.1f}x, which is the "
             f"crowding gate's own requirement arriving as a side "
-            f"effect. Neither was aimed at the other")
+            f"effect -- and a bond lasts "
+            f"{half_life_years(b['T']):,.0f} years instead of "
+            f"{half_life_years(298.0):,.0f}, because breaking has the "
+            f"higher barrier. Fidelity, crowding and persistence, and "
+            f"none of the three was aimed at the others")
 
 
 def _clean():

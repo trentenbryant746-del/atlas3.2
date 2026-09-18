@@ -184,6 +184,22 @@ def _tradition():
             round(settle_years(best_band_count(p_), p_)))
 
 
+def _telephone():
+    from engine.tradition import stock, garbles, BAND
+    return (round(stock("oral", holders=1), 1),
+            round(stock("oral", holders=BAND)),
+            float(f"{garbles(BAND):.1e}"))
+
+
+def _craft():
+    from engine.craft import (slowdown, kept_innovations_ratio,
+                              best_depth, held_by_band, band_for_specialties)
+    k, s_, held = best_depth()
+    return (round(slowdown(), 2), round(kept_innovations_ratio()),
+            k, s_, round(held), round(held_by_band(1)),
+            band_for_specialties(s_ + 4)[0])
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -618,8 +634,12 @@ CLAIMS = [
      _accident, (73, 1, "a grain harvest"), CURRENT),
     ("3.1.109", "five senses reach 8 of 13 constraints; 38% must be inferred",
      _senses, (8, 5, 38, 33), CURRENT),
-    ("3.1.109", "oral tradition compounds (8692a), epigenetics cannot (3.4a)",
+    ("3.1.109", "oral capacity is 8,692 items; epigenetics holds 3.4a",
      _tradition, (14.0, 8692, 3.4, 16, 53), CURRENT),
+    ("3.1.110", "a lone teller keeps 10 items; 28 voters keep 8,688",
+     _telephone, (10.0, 8688, 5.6e-08), CURRENT),
+    ("3.1.110", "a band walks at 0.707 adult pace and innovates 39x per km",
+     _craft, (1.41, 39, 13, 2, 9332, 280, 90), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -646,8 +666,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.109", "Big Bang to a head in 41 links: 33 derived, 7 forced, 0 gaps",
-     _wholechain, (41, 33, 7, 0, 1), CURRENT),
+    ("3.1.110", "Big Bang to a head in 43 links: 35 derived, 7 forced, 0 gaps",
+     _wholechain, (43, 35, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -756,6 +776,20 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.109", "the oral stock is 8,692a (capacity and stock conflated)",
+     "8,692 charged only for tellings nobody got round to and "
+     "nothing for tellings that came out WRONG. Oral tradition is a "
+     "game of telephone and the module pretended it was not. "
+     "Charging p=0.1 per retelling, corrected by 28-voice consensus, "
+     "gives 8,688a -- a four-item correction, which is the point: "
+     "the band was already doing the error correction, the module "
+     "just had not said so. A LONE teller keeps 10"),
+    ("3.1.109", "Big Bang to a head in 41 links: 33 derived",
+     "two links added at 3.1.110. Pace was missing entirely -- the "
+     "band walks at its slowest member, which concentrates problems "
+     "per km rather than avoiding them, and that is where the "
+     "innovation pressure comes from. Specialists followed from the "
+     "telephone once it was charged for"),
     ("3.1.95", "Big Bang to a head in 37 links: 29 derived, 7 forced",
      "four links were added at 3.1.109 and one of them closed a jump "
      "rather than extending the end: recognition -> one head was an "

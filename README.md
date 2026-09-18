@@ -6692,3 +6692,75 @@ when the chain claims to be finished — and it had been reading only
 MISSING, so zero gaps tripped it even while a crossing stood
 unexplained. A crossing IS a named gap: permitted and undriven. It
 now counts both, and still fails if ever both reach zero.
+
+### 3.1.110 — the telephone, the slow walk, and how deep a band can specialize
+
+The previous version said oral tradition retains r = 0.99988 and
+charged only for tellings nobody got round to. It charged nothing
+for tellings that came out **wrong**, which is most of what goes
+wrong with oral tradition. `TELEPHONE = 0.10` is now the chance one
+retelling corrupts one item. It is CHOSEN.
+
+What is not chosen is what rescues it. Several people hold the same
+item; a corruption one holder makes, the others do not; the version
+that disagrees with the rest gets dropped. Consensus is error
+correction, exactly and computably:
+
+    1 holder    error 0.1        corpus tops out at     10 items
+    28 holders  error 5.6e-8     corpus tops out at  8,688 items
+
+870x. **The band is not an audience for the corpus — it is the
+error correction on the corpus.** Without it, oral tradition carries
+about ten things. That changes the published stock from 8,692a to
+8,688a, a four-item correction, and the smallness of the correction
+is the finding: the band was already doing the work, the module just
+had not said so.
+
+Then pace. `engine/craft.py`.
+
+Walking is an inverted pendulum, so speed goes as sqrt(g·L) and pace
+is leg length and nothing else:
+
+    adult          0.90 m leg    1.49 m/s    5.3 km/h
+    four-year-old  0.45 m leg    1.05 m/s    3.8 km/h
+
+The band moves at the child, and the ratio is sqrt(0.45/0.90) =
+0.707 — a square root, not a preference. The child is there because
+of the 18-year provisioning span already in `comprehension`.
+
+Now the part that matters. Hazards are charged by the **day** —
+hunger, weather, injury, predators. Forage is collected by the
+**kilometre**. So going slowly does not reduce the problems, it
+concentrates them: 1.41x the trouble per km of ground. And the band
+brings 28 heads to them instead of one, with a corpus to keep the
+answer in. Kept innovations per km run **39x a lone adult**, and the
+per-head solve rate cancels — (1-(1-q)^m)/q → m — so the ratio does
+not depend on the number nobody has measured.
+
+Slowness is not the price of company. It is the input.
+
+Last, specialization. Not everyone has to hold everything. Split the
+band into s specialties and breadth multiplies by s — but each
+specialty is now corrected by BAND/s voices instead of 28, and those
+voices were the only thing holding the telephone back. The trade has
+a bottom:
+
+    1 holder,  28 specialties      280a   every skill dies with its holder
+    13 holders, 2 specialties    9,332a   the floor
+    28 holders, 1 specialty      8,688a   everyone knows the same thing
+
+33x over going it alone. k is a count of people, so there are 28
+candidates and no more — evaluating a closed form at every point of
+a bounded integer domain is arithmetic, not a search.
+
+**How specialized a band can be is not set by how many useful skills
+exist.** It is transmission fidelity and headcount, in that order.
+To carry 6 skills instead of 2 the band must grow to 90 — or the
+telephone must drop from 0.1 to 0.01, and then the same 28 people
+carry 5 specialties at 5 deep. Writing is the second lever and it is
+by far the cheaper one, which is the whole reason it is worth
+inventing.
+
+    craft 4/4   tradition 6/6   lineage 7/7
+    43 links, 35 derived, 7 forced, 1 crossing, 0 gaps
+    72 claims reproduce, 68 skipped on fingerprint, 2.9 s

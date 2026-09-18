@@ -13,6 +13,8 @@ retellings, so each one has a ceiling. The ceiling is the rule.
 
 import math
 
+BAND = 28                   # engine/signal.affordable_group
+
 # --- TRANSITIVITY ---------------------------------------------------
 #
 # engine/group.py already USES transitivity to price a dominance
@@ -70,6 +72,41 @@ CHILDHOOD_YEARS = 18.0      # provisioning span, engine/comprehension
 EPIGENETIC_LOCI = 100.0     # marks that survive the germline, MEASURED-ish
 EPIGENETIC_HALFLIFE = 2.0   # generations to half, MEASURED-ish
 
+# Oral tradition is a game of telephone and the previous version of
+# this module pretended otherwise -- it charged only for tellings
+# nobody got round to, and none for tellings that came out wrong.
+#
+# TELEPHONE is the chance one retelling corrupts one item. It is
+# CHOSEN. What is NOT chosen is what saves it: several people hold
+# the same item, and a corruption that one holder makes the others
+# do not, so the version that disagrees with the rest is the one
+# that gets dropped. Consensus over m holders is error correction,
+# and it is the reason the band matters to the corpus.
+TELEPHONE = 0.10            # CHOSEN, corruption per retelling
+
+
+def _binom_tail(m, k, e):
+    """P(at least k of m go wrong). Exact, no sampling."""
+    tot = 0.0
+    for i in range(k, m + 1):
+        tot += math.comb(m, i) * e**i * (1 - e)**(m - i)
+    return tot
+
+
+def garbles(holders, e=TELEPHONE):
+    """P(the consensus itself is wrong) per generation. DERIVED.
+
+    Majority rules, and an even split is a coin. With one holder
+    there is no consensus and the error passes straight through.
+    """
+    m = int(holders)
+    if m <= 1:
+        return e
+    wrong = _binom_tail(m, m // 2 + 1, e)
+    if m % 2 == 0:                        # a tie is settled by chance
+        wrong += 0.5 * math.comb(m, m // 2) * e**(m // 2) * (1 - e)**(m // 2)
+    return wrong
+
 
 def tellings_per_childhood():
     """How many stories a child can sit through. DERIVED."""
@@ -85,19 +122,23 @@ def oral_capacity():
     return k
 
 
-def retention(channel):
-    """Fraction of the stock that survives one generation. DERIVED."""
+def retention(channel, holders=BAND):
+    """Fraction of the stock that survives one generation. DERIVED.
+
+    Two independent losses, so they multiply: what nobody got
+    round to retelling, and what got retold wrong and stuck.
+    """
     if channel == "epigenetic":
         return 0.5 ** (1.0 / EPIGENETIC_HALFLIFE)
     if channel == "oral":
-        # what is lost is what nobody got round to retelling
-        return 1.0 - 1.0 / oral_capacity()
+        untold = 1.0 - 1.0 / oral_capacity()
+        return untold * (1.0 - garbles(holders))
     raise KeyError(channel)
 
 
-def stock(channel, added_per_generation=1.0):
+def stock(channel, added_per_generation=1.0, holders=BAND):
     """Equilibrium understanding held. a/(1-r). DERIVED."""
-    r = retention(channel)
+    r = retention(channel, holders)
     return added_per_generation / (1.0 - r)
 
 
@@ -111,7 +152,6 @@ def stock(channel, added_per_generation=1.0):
 # finds and spreads a thing fastest. Fewer and nobody finds it;
 # more and it never gets round.
 
-BAND = 28                  # engine/signal.affordable_group
 MEETINGS_PER_YEAR = 2.0    # CHOSEN: two rendezvous a year
 
 
@@ -158,6 +198,7 @@ def check():
     t("oral_tradition_compounds_and_epigenetics_cannot", _compound)
     t("a_discovery_settles_across_bands_not_within_one", _diffuse)
     t("there_is_a_band_count_that_settles_fastest", _best)
+    t("the_telephone_is_what_the_band_corrects", _phone)
     return all(x for _, x, _ in res), res
 
 
@@ -188,6 +229,23 @@ def _intrans():
             f"turns up, because it is the rule breaking, not noise")
 
 
+def _phone():
+    alone, band = stock("oral", holders=1), stock("oral", holders=BAND)
+    g1, gb = garbles(1), garbles(BAND)
+    if alone > band / 100:
+        raise ArithmeticError(f"alone {alone}, band {band}")
+    return (f"one retelling corrupts an item with p={TELEPHONE}, so a "
+            f"single line of transmission loses {100*g1:.0f}% a "
+            f"generation and its corpus tops out at {alone:.1f}a -- a "
+            f"game of telephone, and nothing accumulates. {BAND} "
+            f"holders vote, a corruption one makes the others do "
+            f"not, and the consensus goes wrong with p={gb:.2e}. The "
+            f"stock is {band:.0f}a, {band/alone:.0f}x. The band is "
+            f"not an audience for the corpus, it is the error "
+            f"correction ON the corpus, and without it oral "
+            f"tradition carries about ten things")
+
+
 def _compound():
     cap, oral, epi = oral_capacity(), stock("oral"), stock("epigenetic")
     if epi > 10 or oral < 100:
@@ -200,7 +258,9 @@ def _compound():
             f"{retention('oral'):.5f} and the stock is {oral:.0f}a. "
             f"Epigenetic: {EPIGENETIC_HALFLIFE:.0f}-generation "
             f"half-life gives r = {retention('epigenetic'):.2f} and "
-            f"{epi:.1f}a. That is {oral/epi:.0f}x. Epigenetics does "
+            f"{epi:.1f}a, and the telephone costs "
+            f"{garbles(BAND):.1e} on top. That is {oral/epi:.0f}x. "
+            f"Epigenetics does "
             f"not compound -- it is a two-generation echo. Oral "
             f"tradition compounds, and that is the only channel that "
             f"does, which is why the accumulation is cultural")

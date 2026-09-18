@@ -136,3 +136,40 @@ STILL OPEN
 - tradition's TELL_SECONDS, EVENING_SECONDS and MEETINGS_PER_YEAR
   are CHOSEN. The 2,546x gap survives any plausible choice; the
   8,692 figure does not.
+
+## 3.1.110 — telephone error, band pace, specialization depth
+
+PROGRESS
+- TELEPHONE = 0.10 per retelling, corrected by majority consensus.
+  1 holder -> 10 items. 28 holders -> 8,688. The band IS the error
+  correction, not the audience.
+- craft.py: pace from the inverted pendulum. Band walks at the
+  child, 0.707 of adult. Hazards per day, forage per km, so slowness
+  concentrates problems 1.41x per km. 39x kept innovations per km
+  over a lone adult, with the unmeasured solve rate cancelling.
+- specialization depth derived: 2 specialties 13 deep, 9,332a. Set
+  by fidelity and headcount, NOT by how many skills exist.
+- chain 41 -> 43 links, 33 -> 35 derived.
+
+REGRESSION FOUND AND FIXED
+- retention("oral") charged for tellings not given and nothing for
+  tellings given wrong. An entire failure mode of the mechanism was
+  missing from the model of the mechanism. Cost: 4 items on the
+  stock, but the LONE-teller case was wrong by 870x and had never
+  been computed because holders was not a parameter.
+- claims.py conflated oral CAPACITY (8,692, a coupon-collector
+  inversion) with oral STOCK (8,688, capacity times fidelity). Same
+  number to three figures, different quantities. Caught on the
+  supersede, not by a check.
+
+SUPERSEDED
+- oral stock 8,692a -> 8,688a (telephone now charged).
+- chain 41/33 -> 43/35.
+
+STILL OPEN
+- TELEPHONE = 0.10 is CHOSEN and the specialization optimum moves
+  with it: at 0.01 the answer is 5 specialties, not 2. The
+  QUALITATIVE result (a bottom exists, set by fidelity) survives any
+  value; the 13-deep figure does not.
+- LEG lengths are CHOSEN. The sqrt ratio is not.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

@@ -334,7 +334,20 @@ def inside_the_head():
          "is an echo and cannot compound. Only the spoken channel "
          "does, which is why the accumulation is cultural and not "
          "genetic"),
-        ("a corpus", "a discovery nobody made alone", DERIVED,
+        ("a corpus", "a band that walks at its slowest", DERIVED,
+         "craft.kept_innovations_ratio",
+         "walking is an inverted pendulum, so speed goes as "
+         "sqrt(g*L) and pace is leg length and nothing else. A "
+         "four-year-old walks 3.8 km/h against an adult's 5.3, the "
+         "band moves at the child, and the ratio is sqrt(0.45/0.90) "
+         "= 0.707 -- a square root, not a preference. Hazards are "
+         "charged by the DAY and forage is collected by the "
+         "KILOMETRE, so going slowly does not avoid problems, it "
+         "concentrates them 1.41x per km. And it brings 28 heads to "
+         "them instead of one: 39x the kept innovations per km, "
+         "with the unmeasured per-head solve rate cancelling. "
+         "Slowness is not the price of company, it is the input"),
+        ("a slow band", "a discovery nobody made alone", DERIVED,
          "tradition.settle_years",
          "one band waits 500 years for a one-in-500 accident. With "
          "16 bands the first hits at 31 years and coupon collector "
@@ -343,6 +356,22 @@ def inside_the_head():
          "it arrives. Discovery wants many bands and spread wants "
          "few, so 1/(bp) + b ln b / 2 has a derivative and there is "
          "a band count that settles fastest -- nobody chose 16"),
+        ("a discovery nobody made alone", "specialists", DERIVED,
+         "craft.best_depth",
+         "oral tradition is a game of telephone: one retelling "
+         "corrupts an item with p=0.1, so a single line of "
+         "transmission tops out at 10 items and nothing "
+         "accumulates. What saves it is that several people hold "
+         "the same item and the version that disagrees gets "
+         "dropped -- 28 voters take the consensus error to 5.6e-8. "
+         "The band is not an audience for the corpus, it is the "
+         "error correction ON it. So splitting into specialties "
+         "multiplies breadth by s and divides the votes by s, and "
+         "the trade bottoms out at 2 specialties 13 deep carrying "
+         "9,332a -- against 280a if each of the 28 specializes "
+         "alone and every skill dies with its holder. How "
+         "specialized a band can be is transmission fidelity and "
+         "headcount, not how many useful skills exist"),
     ]
 
 

@@ -168,7 +168,7 @@
 "ok": true
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "cfcef171a5ec1c05",
+"fp": "fc493c856d449e64",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -465,6 +465,10 @@
 },
 "3.2.5|a name is worth 4,346 retrievals; tellability refuted at r=-0.20": {
 "fp": "f640f2d68eb90082",
+"ok": true
+},
+"3.2.7|a world that runs: 21 crafts by year 11,380, 4,334 unnamed things": {
+"fp": "a2d9359fe88c80da",
 "ok": true
 }
 }

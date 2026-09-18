@@ -395,6 +395,15 @@ def _naming():
             round(math.log10(naming_gap(v)), 1))
 
 
+def _world():
+    from engine.world import run, PRIMITIVES
+    w = run()
+    seen = w.first_seen()
+    return (len(w.bands), len(w.ledger), len(w.crafts_held()),
+            len(PRIMITIVES), round(max(seen.values())),
+            len(w.artifacts()), len(w.unnamed()))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -866,6 +875,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.7", "a world that runs: 21 crafts by year 11,380, 4,334 unnamed things",
+     _world, (40, 30319, 21, 21, 11380, 4352, 4334), CURRENT),
     ("3.2.5", "a name is worth 4,346 retrievals; audience explains what tellability did not",
      _naming, (4346, 5, 100, -0.2, 21, 50, 12.4), CURRENT),
     ("3.2.4", "regulation tops the leverage ranking; a tool beats a fact 1.2e8:1",
@@ -913,7 +924,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (66, 57, 7, 1, 1), CURRENT),
+     _wholechain, (67, 58, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

@@ -642,6 +642,26 @@ def inside_the_head():
          "THEIR error: a three-term derivation of G is +/-17% at "
          "round 2 and 0.2% at round 5, and Cavendish got 1% in "
          "1798, which lands between them"),
+        ("a constraint envelope", "a world that runs", DERIVED,
+         "world.run",
+         "everything before this computed what a human-like "
+         "organism COULD NOT do, which is a real kind of "
+         "statement and is not the same as saying what they did. "
+         "Nothing had state, nothing took a step, nobody tried "
+         "anything. This does: 40 bands hold crafts, try "
+         "combinations of what they have, and find out about the "
+         "gates by failing -- they cannot see a melting point. "
+         "Over 12,000 years the ledger takes 30,319 entries, "
+         "they reach all 21 crafts with the last at year 11,380, "
+         "and they build 4,352 distinct things of which 4,334 "
+         "have NO NAME in our world, because 21 things are named "
+         "and the reachable space is 2^21. The result is that "
+         "the ORDER comes back out at Kendall tau 1.00 against "
+         "the bootstrap derived from melting points -- an "
+         "ordering that was a theorem recovered by a stochastic "
+         "search run by people who know no physics. The "
+         "timescale is NOT a result: CRAFT_SUCCESS is fitted to "
+         "the Holocene and is the only fitted number here"),
         ("who it says mattered", "why anything gets a name at all",
          DERIVED, "naming.naming_is_worth",
          "a name is not imposed from outside, it is a mechanism "

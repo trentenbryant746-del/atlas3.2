@@ -6288,3 +6288,57 @@ question was about wanting. The answer is about **who does not eat.**
 The one remaining gap: **nothing prices regard.** What is derived is
 who eats, not who is admired, and whether those are the same thing is
 not a question these rules can reach.
+
+### 3.1.103 — who eats is who can take, and regard is the fight not held
+
+The last gap said: what is derived is who **eats**, not who is
+**admired**. The reading that closes it is the plain one — allocation
+is the trophic rule applied inside a level, and **who eats is who can
+take.**
+
+Taking was already derived. Reach and force settle a contest between
+two humans with exactly the arithmetic `tools.py` used for a
+predator: **450 N** from 60 cm² of muscle, **2.50 m** of reach with a
+haft against **0.75 m** bare.
+
+**But it is not the same rule, and the difference is the whole
+answer.**
+
+    between species   the loser is EATEN, 10% of the energy transfers
+    within a species  the loser is not eaten, NOTHING transfers
+
+A contest inside a level produces no energy at all and costs both
+sides:
+
+    a brief scuffle        0.2 MJ,  1% injury risk
+    a real fight           4.2 MJ, 10%
+    a fight to settle it  16.8 MJ, 25%
+
+And allocation needs settling about **7,300 times** over twenty
+years. Fighting each one costs **3.8×10¹³ J** — unaffordable by
+orders of magnitude.
+
+**Remembering the outcome is free.** `engine/learning.py` already
+priced it: erasing an *entire brain* costs **1.4 µJ**. So
+
+> **regard is the memory of a settled contest, and what it is worth
+> is every contest it prevents — a ratio of 2.7×10¹⁹.**
+
+That is why rank looks like a social fact and prices out as a
+physical one.
+
+    37 links, 29 derived, 7 forced, 1 crossing, 0 gaps
+
+**The chain has no gaps left.** What remains is one CROSSES — the
+step that depends on something that happened once — and seven FORCED,
+where a pressure is named but the step is a discrete innovation and
+`engine/innovation.py` leaves 10⁻⁴ of the timing unexplained.
+
+And one honest residue: this says a settled order is worth enormously
+more than fighting, and **not how the first order is set** — the same
+shape as `frozen.py`, which says a code is locked and is blind to
+which one. Something selects *having* a rank order and is indifferent
+to *who is where*. Rank is arbitrary in the way the genetic code is
+arbitrary.
+
+    regard 5/5    62 claims reproduce

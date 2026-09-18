@@ -154,6 +154,15 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _regard():
+    from engine.regard import (regard_is_worth, taking_capacity, wins,
+                               decisions)
+    ratio, _f, _r = regard_is_worth()
+    armed, bare = taking_capacity(60.0, 1.75), taking_capacity(60.0)
+    return (wins(armed, bare), round(decisions()),
+            round(math.log10(ratio)))
+
+
 def _frozen():
     from engine.frozen import cost_of_change, narrow_is_worse
     frac, codons, m = cost_of_change()
@@ -541,6 +550,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.103", "regard is worth 1e19 times what it costs to hold",
+     _regard, (True, 7300, 19), CURRENT),
     ("3.1.102", "the code freezes at 100% cost; rank steps at 3.8 children",
      _frozen, (100.0, 100, True), CURRENT),
     ("3.1.102", "rank is worth zero then 82 W at the carrying number",
@@ -557,8 +568,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.95", "Big Bang to a head in 37 links: 28 derived, 7 forced, 1 gap",
-     _wholechain, (37, 28, 7, 1, 1), CURRENT),
+    ("3.1.95", "Big Bang to a head in 37 links: 29 derived, 7 forced, 0 gaps",
+     _wholechain, (37, 29, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

@@ -295,12 +295,16 @@ def inside_the_head():
          "a preference, it is an allocation rule, and its price is "
          "discontinuous: zero below the carrying number and a whole "
          "82 W life above it"),
-        ("an allocation rule", "what it is for", MISSING,
-         "nothing prices regard",
-         "what is derived is who eats, not who is admired. Belief "
-         "and rest remain absences too, and whether regard and "
-         "allocation are the same thing is not a question these "
-         "rules can reach"),
+        ("an allocation rule", "regard", DERIVED, "regard.regard_is_worth",
+         "who eats is who can take, and taking is reach and force -- "
+         "the same arithmetic that settles a predator. But between "
+         "species the loser is EATEN and 10% transfers, while within "
+         "one species nothing transfers and the contest produces no "
+         "energy at all. A fight costs 4.2 MJ and a tenth of a life, "
+         "allocation needs settling 7,300 times in twenty years, and "
+         "remembering the outcome costs 1.4 microjoules. Regard is "
+         "the contest not held again, worth 2.7e19 times what it "
+         "costs"),
     ]
 
 

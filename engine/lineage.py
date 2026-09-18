@@ -142,14 +142,30 @@ def before_luca():
          "which is every polymer to 14 bases, and p*M = 3.58 against "
          "the 0.48 closure needs -- at the MEASURED catalysis of "
          "1e-8. An ocean is 8.1e34 such compartments"),
-        ("self-sustaining chemistry", "a cell that is", MISSING,
-         "nothing copies, divides or selects",
-         "a closed network sustains itself and that is one of four "
-         "things. It is not heredity, nothing copies a sequence "
-         "forward; not a boundary that divides, so no lineage; not "
-         "descent, so nothing selects. The gap moved rather than "
-         "closed, and it is now three named absences instead of one "
-         "unmeasured one"),
+        ("self-sustaining chemistry", "one that divides", DERIVED,
+         "heredity.divides_at",
+         "two spheres of half the volume need 2^(1/3) times one "
+         "sphere's area, 26% more; lipid is made in proportion to "
+         "contents so area accrues as V while a sphere needs "
+         "V^(2/3). A vesicle divides exactly when it doubles and "
+         "nothing decides to"),
+        ("one that divides", "one that inherits", DERIVED,
+         "heredity.copies_per_type",
+         "28 copies of each of 3.6e8 types, so a half-split misses "
+         "one with probability 2^-28. Heredity is what copy number "
+         "does under a coin flip, not a mechanism added"),
+        ("one that inherits", "one that is selected", DERIVED,
+         "heredity.lost_per_division",
+         "1.39 types lost per division, and 10% of reactions have "
+         "exactly one catalyst, so about half of daughters cannot "
+         "close. Variation and differential survival, neither added "
+         "and no mutation rate introduced"),
+        ("a selected lineage", "a cell that is", MISSING,
+         "nothing copies a sequence",
+         "compositional inheritance passes on WHICH molecules are "
+         "present, not what any of them says. There is no genome, so "
+         "nothing carries an instruction forward, and that is the "
+         "one of the four that was always hardest"),
     ]
 
 

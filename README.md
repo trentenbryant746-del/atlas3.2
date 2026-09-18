@@ -5996,3 +5996,51 @@ Most of the pressures were already derived and **never cited**:
 rewards being larger, and **not one link had referred to it.**
 
     lineage 7/7    31 links    55 claims reproduce
+
+### 3.1.98 — division, heredity and selection, none of them added
+
+`engine/occurrence.py` closed the first of four things a cell is and
+said plainly the other three were absent. All three fall out of
+numbers already derived. **No mutation rate is introduced, no
+division timer, no fitness function** — the file defines one
+constant, 2^(1/3), and it is exact geometry.
+
+**Division is geometry.** A sphere of volume V needs area
+(36π)^(1/3)·V^(2/3). Two spheres of V/2 need **2^(1/3) = 1.26×** that
+— 26% more. Lipid is made in proportion to *contents*, so membrane
+accrues as V while the sphere requires only V^(2/3), and the excess
+arrives on its own.
+
+    volume  1x   membrane 1.0   sphere needs 1.00   excess   0.0%
+    volume  2x            2.0                1.59           26.0%  DIVIDES
+
+**A vesicle divides exactly when it doubles**, and nothing decides
+to: no timer, no trigger, no rule beyond a sphere's area.
+
+**Heredity is copy number.** A compartment at the closure floor holds
+10¹⁰ molecules over 3.6×10⁸ types — **28 copies each**. A random
+half-split misses a type only when every copy lands on one side:
+2⁻²⁸ = 3.9×10⁻⁹.
+
+**And selection is the remainder.** 3.6×10⁸ types at that probability
+is **1.39 types lost per division.** Heredity is high-fidelity and not
+perfect, and the imperfection is *not a parameter* — it is what 28
+copies and a coin flip produce. Catalysts per reaction is Poisson
+with mean 3.58, so **10% of reactions have exactly one**, and losing
+that type stops them. About half of daughters cannot close.
+
+Variation and differential survival, neither of them added.
+
+### the fourth, and it is the one that was always hardest
+
+    DERIVED  self-sustaining chemistry -> one that divides
+    DERIVED  one that divides          -> one that inherits
+    DERIVED  one that inherits         -> one that is selected
+    MISSING  a selected lineage        -> a cell that is
+
+**Nothing here copies a sequence.** Compositional inheritance passes
+on *which* molecules are present, not what any of them says. There is
+no genome, so nothing carries an instruction forward.
+
+    34 links, 24 derived, 7 forced, 1 crossing, 2 gaps
+    heredity 5/5    56 claims reproduce

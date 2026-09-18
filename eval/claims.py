@@ -154,6 +154,16 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _heredity():
+    from engine.heredity import (divides_at, lost_per_division,
+                                 copies_per_type, sole_catalyst_fraction)
+    n, _h, _M = copies_per_type()
+    lost, _p = lost_per_division()
+    sole, _lam = sole_catalyst_fraction()
+    return (round(divides_at(), 2), round(n), round(lost, 2),
+            round(100 * sole, 1))
+
+
 def _occurs():
     from engine.occurrence import closes_in_one, compartments, types_up_to
     from engine.earthlab import CATALYSIS_P
@@ -485,10 +495,12 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.98", "divides at 2x volume, 28 copies, 1.39 types lost",
+     _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.95", "Big Bang to a head in 31 links: 21 derived, 7 forced, 2 gaps",
-     _wholechain, (31, 21, 7, 2, 1), CURRENT),
+    ("3.1.95", "Big Bang to a head in 34 links: 24 derived, 7 forced, 2 gaps",
+     _wholechain, (34, 24, 7, 2, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

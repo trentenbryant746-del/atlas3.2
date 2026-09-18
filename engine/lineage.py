@@ -642,6 +642,24 @@ def inside_the_head():
          "THEIR error: a three-term derivation of G is +/-17% at "
          "round 2 and 0.2% at round 5, and Cavendish got 1% in "
          "1798, which lands between them"),
+        ("a paper that can be marked", "who it says mattered",
+         DERIVED, "standing.ranking",
+         "who counts should fall out of the structure rather than "
+         "be imported, so it is ranked by what rests on it: how "
+         "many primitives, sciences, exam questions and namable "
+         "artifacts depend on each contribution. Nothing the "
+         "ranking reads has a name in it, so no name can come "
+         "out. REGULATION tops it at 16 -- a machine that "
+         "corrects itself -- then mark at 10, optics and rotation "
+         "at 9. And a tool is not the same kind of contribution "
+         "as a fact: a primitive enters an EXPONENT, since "
+         "designs are 2^s and one more doubles the space, while "
+         "an answer enters a SUM as one item in a corpus of "
+         "1.2e8. The ratio is 1.2e8 to one. Of eight names "
+         "commonly remembered here, six are remembered for "
+         "answering and two for building -- the reverse of what "
+         "the ranking says, and the check fails if memory ever "
+         "starts tracking leverage"),
         ("a literature", "a paper that can be marked", DERIVED,
          "exam.half_moon_sensitivity",
          "a question is not a topic, it is a METHOD, and every "

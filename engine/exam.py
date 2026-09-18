@@ -10,13 +10,20 @@ measurement is off by a fraction -- and that number, not
 cleverness and not effort, decides whether the answer comes out
 right.
 
-The finding this file exists for: Eratosthenes measured the
-Earth's circumference in about 240 BC with a stick and got within
-a few per cent. Aristarchus, at the same time and with the same
-equipment, measured the Sun's distance and was wrong by twenty
-times. He was not the lesser astronomer. His method had a
-sensitivity of 611 and Eratosthenes' had a sensitivity of 1, and
-neither of them had any way to know that.
+The finding this file exists for: two questions of the same era,
+asked with the same equipment. One method multiplies a fractional
+error by 1 and gets the Earth's circumference to a few per cent
+off a stick and a road. The other multiplies by 611 and lands
+twenty times out. The second asker was not the lesser
+astronomer -- sensitivity is a property of the METHOD, it is
+computable before anyone goes outside, and neither of them could
+see it.
+
+The names in the RECORDED column are our answer key and nothing
+above it reads them. They are here so the paper can be marked
+against what actually happened, not so this file can decide who
+mattered. engine/standing.py does that question properly, from
+structure, with no names in the ranking at all.
 """
 
 import math

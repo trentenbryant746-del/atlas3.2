@@ -472,6 +472,36 @@ def inside_the_head():
          "rather than running away, because the corpus enters as a "
          "logarithm and the designs come out as an exponent: "
          "doubling what is written buys one more part"),
+        ("artifacts of many parts", "villages that keep in touch",
+         DERIVED, "trade.knowledge_spread_years",
+         "a porter eats the cargo. 30 kg at 32 km a day burning 14 "
+         "MJ against grain at 15 MJ/kg spends 0.058 kg per km of "
+         "round trip, so a load arrives as nothing at 516 km and "
+         "has doubled in price at 258 km -- grain is not traded far "
+         "because the cargo and the fuel are the same substance. "
+         "Technique weighs nothing AND the carrier still has it "
+         "after handing it over, which no other cargo does, so a "
+         "region shares what it knows long before it can share "
+         "what it grows. And settling put neighbours 5.2 km apart "
+         "instead of 9, so they meet 22 times a year instead of 2 "
+         "and a discovery crosses 40 villages in 6.8 years instead "
+         "of 74. Forty villages in touch are 36,480 people: 12,160 "
+         "specialties against a village's 304, and 2.4x the output "
+         "per worker from Wright's law. Nobody built a city"),
+        ("a region in touch", "anyone actually better off", MISSING,
+         "intricacy.malthus_exponent",
+         "every number above rises and none of them lands per "
+         "head. Wright gives output per worker as N^0.234 and more "
+         "skills give yield as N^0.138, against mouths at N^1, so "
+         "surplus per person goes as N^-0.628: grow the network 40x "
+         "and each person is 0.10x as well off. That is the right "
+         "answer for the world it describes -- rising population, "
+         "rising technology, flat living standards for millennia -- "
+         "and it is a GAP, not a result. Escape needs the supply "
+         "exponents to clear 1.0 and they sum to 0.372. Nothing "
+         "derived anywhere on this chain closes it, and it is "
+         "recorded here rather than hidden inside a total that "
+         "keeps going up"),
     ]
 
 

@@ -6980,3 +6980,75 @@ populations stopped being band-sized. Rewritten in log space via
     merit 4/4   intricacy 4/4   tradition 6/6   lineage 7/7
     50 links, 42 derived, 7 forced, 1 crossing, 0 gaps
     77 claims reproduce, 76 skipped on fingerprint, 2.8 s
+
+### 3.1.113 — a porter eats the cargo, and the first real gap in a while
+
+**`engine/trade.py`.** The constraint on travel is not distance, it
+is that the fuel and the freight are the same substance. A porter
+carrying 30 kg at 32 km/day burns 14 MJ against grain at 15 MJ/kg,
+so a round trip spends 0.058 kg of the load per km:
+
+    price has doubled at   258 km
+    load arrives as nothing at   516 km
+
+Grain is not traded far because it *cannot* be. That is a fact
+about food, not about markets.
+
+Value density sorts the rest — salt and obsidian go where grain
+cannot. But **technique weighs nothing AND the carrier still has it
+after handing it over**, which no other cargo does. It is the only
+thing on this chain with no range limit and no loss on transfer, so
+a region shares what it knows long before it can share what it
+grows. Knowledge trade precedes goods trade for a reason in
+physics.
+
+And settling changed the distances. A village of 912 cultivates 21
+km², so settlements sit **5.2 km apart** against the 9 km a forager
+band needed. Neighbours are a morning away, not a migration — they
+meet 22 times a year instead of 2, and a discovery crosses 40
+villages in **6.8 years instead of 74**. The same settling that made
+everyone sick made everyone 11x quicker to hear about it.
+
+Then scale. Forty villages inside a 16 km radius are 36,480 people
+who can reach each other:
+
+    one village      304 specialties
+    the network   12,160 specialties
+    Wright's law   5.3 doublings of volume -> 2.4x output per worker
+
+Fed back into the loop, the fixed point moves from 24.3 parts to
+**29.7 parts and 8.9e8 designs**. Nobody built a city. The
+specialization a city is usually credited with is available to a
+region that merely keeps in touch, because the binding quantity was
+never how close people stand — it was how many the corpus reaches.
+
+**And then the check that fails upward.** Every number in this
+module rises. `intricacy.malthus_exponent()` asks whether any of it
+lands *per head*:
+
+    Wright        output/worker as  N^0.234
+    more skills   yield as          N^0.138
+    mouths        food needed as    N^1.000
+                  surplus per head  N^-0.628
+
+Growing the network 40x leaves each person **0.10x as well off.**
+
+The model produces exactly the world it should — rising population,
+rising technology, flat living standards for millennia. But that is
+a **gap, not a result.** Escape needs the supply exponents to clear
+1.0 and they sum to 0.372. Nothing derived anywhere on this chain
+closes it.
+
+It is registered as the chain's first MISSING link since 3.1.95:
+
+    a region in touch  ->  anyone actually better off
+
+`_malthus` is an inverted check — it *fails* if the loop ever
+quietly makes anyone richer, because that would mean something had
+been assumed that should have been derived. Zero gaps was accurate
+for a long time and was also the chain not yet having asked the
+question.
+
+    trade 4/4   intricacy 6/6   lineage 7/7
+    52 links, 43 derived, 7 forced, 1 crossing, 1 gap
+    79 claims reproduce, 75 skipped on fingerprint

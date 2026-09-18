@@ -245,6 +245,22 @@ def _intricacy():
             round(100 * spare_fraction(s_)))
 
 
+def _trade():
+    from engine.trade import (dead_range_km, price_doubles_km,
+                              spacing_km, knowledge_spread_years,
+                              productivity, VILLAGE)
+    return (round(dead_range_km()), round(price_doubles_km()),
+            round(spacing_km(), 1), round(knowledge_spread_years(40), 1),
+            round(productivity(40 * VILLAGE), 1))
+
+
+def _malthus():
+    from engine.intricacy import (malthus_exponent, settle,
+                                  settle_network)
+    return (round(malthus_exponent(), 3), round(settle(), 1),
+            round(settle_network(), 1))
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -695,6 +711,10 @@ CLAIMS = [
      _merit, (20, 2.58, 0.08, 32, 15, 162), CURRENT),
     ("3.1.112", "speech is a fixed point at 2 specialties; the loop settles at 24",
      _intricacy, (2, 3, 24.3, 20548869, 90), CURRENT),
+    ("3.1.113", "grain dies at 516 km; knowledge has no range limit",
+     _trade, (516, 258, 5.2, 6.8, 2.4), CURRENT),
+    ("3.1.113", "per-capita surplus scales as N^-0.628: the loop does not escape",
+     _malthus, (-0.628, 24.3, 29.7), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -721,8 +741,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.112", "Big Bang to a head in 50 links: 42 derived, 7 forced, 0 gaps",
-     _wholechain, (50, 42, 7, 0, 1), CURRENT),
+    ("3.1.113", "Big Bang to a head in 52 links: 43 derived, 7 forced, 1 gap",
+     _wholechain, (52, 43, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -831,6 +851,12 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.112", "Big Bang to a head in 50 links, 0 gaps",
+     "3.1.113 adds trade and, with it, the first MISSING link the "
+     "chain has carried in a while: total output rises everywhere "
+     "and per-capita surplus falls as N^-0.628. Zero gaps was "
+     "accurate and was also the chain not yet having asked whether "
+     "any of it made anyone better off"),
     ("3.1.111", "literacy reaches 34% in 500 years from one in 28",
      "spread() was value-driven on f**2 alone, which has no floor -- "
      "one literate in a village of 912 took 20,000 years to go "

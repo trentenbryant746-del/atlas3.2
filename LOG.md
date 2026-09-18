@@ -248,3 +248,38 @@ STILL OPEN
 - HERITABILITY = 0.5 sets the 32x; the DIRECTION (claim perfect,
   ability regressing) does not depend on the value.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.113 — trade, network scale, and a named gap
+
+PROGRESS
+- trade.py: a porter eats the cargo. Grain doubles in price at 258
+  km, arrives as nothing at 516. Knowledge is the ONLY cargo with
+  no range limit and no loss on transfer.
+- settling put villages 5.2 km apart vs a band's 9 km: 22 meetings
+  a year instead of 2, diffusion across 40 villages in 6.8 years
+  instead of 74.
+- network of 40 villages = 36,480 reachable people: 12,160
+  specialties vs 304, 2.4x output per worker (Wright). Loop fixed
+  point 24.3 -> 29.7 parts.
+- chain 50 -> 52 links.
+
+GAP OPENED, DELIBERATELY
+- per-capita surplus scales as N^-0.628. Total output rises
+  everywhere in the module and NONE of it lands per head. Supply
+  exponents sum to 0.372 against mouths at 1.0.
+- Registered as the chain's first MISSING link since 3.1.95:
+  "a region in touch -> anyone actually better off".
+- intricacy._malthus is INVERTED: it fails if the loop ever makes
+  anyone richer, because that would mean an assumption had been
+  smuggled in. The correct output of the model as built is
+  stagnation, and saying so is the result.
+
+STILL OPEN
+- the Malthus gap above. Nothing on this chain closes it.
+- LEARNING_RATE 0.85 is MEASURED but PORTER_KG, WALK_HOURS,
+  PORTER_MJ_DAY, FARM_EDIBLE are CHOSEN. The 258 km doubling moves
+  with them; the EXISTENCE of a finite range does not -- it follows
+  from cargo and fuel being the same substance.
+- YIELD_PER_SKILL 1.10 sets both the fixed point and half the
+  Malthus exponent. At 1.6 the exponent would still be negative.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

@@ -642,6 +642,25 @@ def inside_the_head():
          "THEIR error: a three-term derivation of G is +/-17% at "
          "round 2 and 0.2% at round 5, and Cavendish got 1% in "
          "1798, which lands between them"),
+        ("who it says mattered", "why anything gets a name at all",
+         DERIVED, "naming.naming_is_worth",
+         "a name is not imposed from outside, it is a mechanism "
+         "the people inside need, and it is three things already "
+         "priced elsewhere. An INDEX: a corpus of 8,692 items "
+         "costs 4,346 comparisons to search and one to look up, "
+         "so a handle is worth 4,346 retrievals -- names are "
+         "addresses before they are honours, which is why the "
+         "oldest ones are places and rivers. A CREDIT CLAIM: "
+         "engine/merit.py prices a contribution at 1/k, and "
+         "attaching a name is the act that sets k to one, 100% "
+         "against 4%, so naming IS the reward system's addressing "
+         "rather than decoration on it. And an ITEM: a name "
+         "decays like any other, needing 5 holders to last forty "
+         "generations -- the same figure as keeping a script, "
+         "because it is the same arithmetic. What is NOT derived "
+         "is why answerers get named over toolmakers. The "
+         "tellability account was tested and refuted at r = -0.20 "
+         "over 21 primitives"),
         ("a paper that can be marked", "who it says mattered",
          DERIVED, "standing.ranking",
          "who counts should fall out of the structure rather than "

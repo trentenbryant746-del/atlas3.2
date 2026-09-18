@@ -380,6 +380,14 @@ def _standing():
             built, len(REMEMBERED))
 
 
+def _naming():
+    from engine.naming import (naming_is_worth, least_holders,
+                               credit_of, leverage_vs_tellability)
+    r, n = leverage_vs_tellability()
+    return (round(naming_is_worth()), least_holders(),
+            round(100 * credit_of(1)), round(r, 2), n)
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -851,6 +859,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.5", "a name is worth 4,346 retrievals; tellability refuted at r=-0.20",
+     _naming, (4346, 5, 100, -0.2, 21), CURRENT),
     ("3.2.4", "regulation tops the leverage ranking; a tool beats a fact 1.2e8:1",
      _standing, ("regulation", 16, "mark", 10, 8.07, 2, 8), CURRENT),
     ("3.2.2", "Aristarchus reproduced forward: 87 deg gives 19.1, no answer key",
@@ -896,7 +906,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (65, 56, 7, 1, 1), CURRENT),
+     _wholechain, (66, 57, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

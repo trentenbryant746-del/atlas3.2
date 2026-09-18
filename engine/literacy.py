@@ -78,35 +78,53 @@ def least_scribes(generations=40, band=BAND):
     return None
 
 
-def _phase(f):
-    """The conserved quantity of df/dt = r f^2 (1-f). Monotone."""
-    return math.log(f / (1.0 - f)) - 1.0 / f
+# Two things were missing from the first version of spread().
+#
+# A FLOOR. f**2 is peer-to-peer value -- someone to write to, and
+# something written to read. It has no floor, so a single literate
+# in a village of 912 takes 20,000 years to go anywhere, which is
+# wrong. The floor is administrative and it comes from
+# engine/power.py: a store needs an account, and the value of THAT
+# does not depend on how many other people can read. One scribe
+# per holding, one holding per band, so the demand is 1/BAND of
+# the population whatever else is true. This is why the earliest
+# writing anywhere is an inventory.
+#
+# A CEILING. A scribe eats and does not farm, so literacy cannot
+# exceed the surplus that feeds non-producers. engine/group.py had
+# no surplus at all; farming makes one, and how big it is caps how
+# many people can be spared to read.
+ADMIN_DEMAND = 1.0 / BAND   # DERIVED: a scribe per store
+SURPLUS_RATIO = 1.15        # CHOSEN, early farming over subsistence
 
 
-def spread(f0, years):
+def fed_without_farming(ratio=SURPLUS_RATIO):
+    """Fraction of people the surplus can spare. DERIVED."""
+    return max(0.0, (ratio - 1.0) / ratio)
+
+
+def spread(f0, years, ceiling=None, steps=2000):
     """Literate fraction after `years`. DERIVED.
 
-    NOT plain logistic. Nobody learns to read because reading
-    exists -- they learn because there is something written and
-    someone to read it to, and that is the f**2 in usefulness().
-    So the growth rate is proportional to the VALUE, not to the
-    number of teachers:
+    Nobody learns to read because reading exists, so the growth
+    rate tracks the VALUE of the channel, not the number of
+    teachers:
 
-        df/dt = r * f**2 * (1 - f)
+        df/dt = r * (f**2 + ADMIN_DEMAND) * (1 - f/c) * c
 
-    which has the conserved quantity ln(f/(1-f)) - 1/f. Inverting
-    a monotone closed form is not a search.
+    f**2 is peer value, ADMIN_DEMAND is the floor a granary puts
+    under it, and c is the ceiling the food surplus puts over it.
+    Integrating a closed-form rate is not a search.
     """
+    c = fed_without_farming() if ceiling is None else ceiling
+    if c <= 0:
+        return 0.0
     r = math.log(TAUGHT_PER_LIFE) / GENERATION_YEARS
-    want = _phase(f0) + r * years
-    lo, hi = 1e-12, 1.0 - 1e-12
-    for _ in range(200):
-        mid = 0.5 * (lo + hi)
-        if _phase(mid) < want:
-            lo = mid
-        else:
-            hi = mid
-    return 0.5 * (lo + hi)
+    f, dt = min(f0, c), years / steps
+    for _ in range(steps):
+        f += dt * r * (f * f + ADMIN_DEMAND) * (1.0 - f / c) * c
+        f = min(max(f, 0.0), c)
+    return f
 
 
 def usefulness(f):
@@ -186,27 +204,31 @@ def _lost():
 
 
 def _square():
-    f0 = 1.0 / BAND
-    pts = [(y, spread(f0, y)) for y in (0, 500, 2000, 5000)]
+    f0 = 1.0 / 912.0
+    pts = [(y, spread(f0, y)) for y in (0, 200, 500, 2000)]
     early = usefulness(pts[1][1]) / usefulness(pts[0][1])
     late = usefulness(pts[3][1]) / usefulness(pts[2][1])
-    if late >= early:
-        raise ArithmeticError("no acceleration to explain")
-    rows = "; ".join(f"{y}y {100*f:.0f}% -> {usefulness(f):.3f}"
-                     for y, f in pts)
-    return (f"a written item needs a writer AND a reader, so the "
-            f"channel serves f**2 of the possible pairs, not f. "
-            f"Starting from one literate in {BAND}: {rows}. Value "
-            f"multiplies {early:.0f}x over the first {pts[1][0]} "
-            f"years and only {late:.1f}x over the last "
-            f"{pts[3][0]-pts[2][0]}. Growth is proportional to the "
-            f"VALUE, not to the number of teachers -- nobody learns "
-            f"to read because reading exists -- so df/dt = r f^2 "
-            f"(1-f) and the thing crawls for millennia. Which is why "
-            f"writing "
-            f"looks like an expensive hobby for so long and then "
-            f"stops looking like one. Nothing about the technology "
-            f"changed -- the exponent did the work")
+    cap = fed_without_farming()
+    if late >= early or pts[-1][1] > cap + 1e-9:
+        raise ArithmeticError(f"{early} {late} cap {cap}")
+    rows = "; ".join(f"{y}y {100*f:.1f}%" for y, f in pts)
+    return (f"a written item needs a writer AND a reader, so peer "
+            f"value goes as f**2, not f. But f**2 has no floor, and "
+            f"one literate in 912 on peer value alone takes 20,000 "
+            f"years to go anywhere -- which is wrong. The floor is "
+            f"the granary: a store needs an account and that is "
+            f"worth something whoever else can read, so "
+            f"{100*ADMIN_DEMAND:.1f}% of people (one scribe per "
+            f"holding) is demanded whatever happens. This is why the "
+            f"earliest writing anywhere is an inventory. The ceiling "
+            f"is food: a scribe does not farm, so literacy stops at "
+            f"{100*cap:.0f}%, the share a {SURPLUS_RATIO:.2f}x "
+            f"surplus can spare. Between them: {rows}. Value "
+            f"multiplies {early:.0f}x over the first 200 years and "
+            f"{late:.1f}x over the last 1500, and then it STOPS -- "
+            f"not because everyone can read but because nobody else "
+            f"can be spared from the fields. Mass literacy is not "
+            f"waiting on a better alphabet, it is waiting on yield")
 
 
 if __name__ == "__main__":

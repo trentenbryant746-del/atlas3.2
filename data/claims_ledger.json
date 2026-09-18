@@ -56,7 +56,7 @@
 "ok": true
 },
 "3.1.109|oral capacity is 8,692 items; epigenetics holds 3.4a": {
-"fp": "8126986d4bf7ff5b",
+"fp": "d3394be839651b8d",
 "ok": true
 },
 "3.1.109|oral tradition compounds (8692a), epigenetics cannot (3.4a)": {
@@ -68,11 +68,11 @@
 "ok": true
 },
 "3.1.110|a band walks at 0.707 adult pace and innovates 39x per km": {
-"fp": "117933f8a71e975b",
+"fp": "88dfd192b0a793d4",
 "ok": true
 },
 "3.1.110|a lone teller keeps 10 items; 28 voters keep 8,688": {
-"fp": "55addd672b1bd2df",
+"fp": "7e0047fe3a6795f5",
 "ok": true
 },
 "3.1.111|Big Bang to a head in 47 links: 39 derived, 7 forced, 0 gaps": {
@@ -88,7 +88,19 @@
 "ok": true
 },
 "3.1.111|one checked copy is worth 13 speakers; 5 scribes keep a script": {
-"fp": "030192bfc49ff526",
+"fp": "bf0a4a45432a3e1e",
+"ok": true
+},
+"3.1.112|Big Bang to a head in 50 links: 42 derived, 7 forced, 0 gaps": {
+"fp": "8916405580ceafdd",
+"ok": true
+},
+"3.1.112|a 5th-generation heir holds 32x what their ability warrants": {
+"fp": "690136cc0a4388a1",
+"ok": true
+},
+"3.1.112|speech is a fixed point at 2 specialties; the loop settles at 24": {
+"fp": "19b6ef1ea0038122",
 "ok": true
 },
 "3.1.18|folding survival rate 0.573": {
@@ -300,7 +312,7 @@
 "ok": true
 },
 "3.1.91|closure is 0.48 catalysts per reaction, above 2000 molecules": {
-"fp": "13a2e7c662d6effc",
+"fp": "fb37a2e86cba56f1",
 "ok": true
 },
 "3.1.92|10,584 universes generated blind; 864 pass three filters": {

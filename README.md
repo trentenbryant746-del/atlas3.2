@@ -6878,3 +6878,105 @@ mistaken for a result.
     literacy 4/4   disease 5/5   power 5/5   lineage 7/7
     47 links, 39 derived, 7 forced, 1 crossing, 0 gaps
     75 claims reproduce, 70 skipped on fingerprint, 2.8 s
+
+### 3.1.112 — scarcity, bad kings, and whether the loop climbs
+
+**`engine/merit.py`.** 3.1.111 got power from geometry. This is the
+other source, and it is not the value of what you can do:
+
+    1 holder    100%      5 holders   20%
+    2 holders    50%     28 holders    4%
+
+**You are worth what the band cannot do without** — value divided
+by how many others hold the skill. The usefulness of the skill does
+not appear in that at all. A common skill of enormous worth buys
+its holder nothing, which is why "how useful is it" is the wrong
+question.
+
+That collides head-on with `craft.py`, which needs 5 holders or the
+skill is gone in a few generations. The holder wants 1. Going alone
+is **5x the power and a twelfth of the lifetime** — 6.6 generations
+against 81. Neither party is being unreasonable: the specialist's
+horizon is one life and the skill's survival is measured in
+generations, so the individual optimum and the collective optimum
+are different numbers for the same k. Lost crafts do not need a
+catastrophe. They need someone who profited by not teaching.
+
+Then the skew you asked about. Under selection the holder is the
+best of the band — the expected max of 28 draws, sqrt(2 ln 28) =
+**2.58 sigma**. Under inheritance the holder is whoever was born,
+and ability regresses by half a generation while a *written* claim
+regresses by nothing:
+
+    g1  1.29s     g2  0.65s     g5  0.08s     g10  0.00s
+
+By the fifth generation the holding is **32x** what the ability
+warrants and the heir is indistinguishable from anyone. Bad kings
+are two different heritabilities, not bad character.
+
+And it is not deterministic, which is the randomization. The heir
+is a *draw* — mean h^g · 2.58, sd sqrt(1-h^2g) — so:
+
+    P(heir >= founder):  g1 1 in 15    g3 1 in 88    g5 1 in 162
+
+A good king is a tail probability with a number. Anything
+simulating this should draw from *that*, not from a knob.
+
+**`engine/intricacy.py`.** An artifact is a composition — a hafted
+axe is stone working AND cordage AND wood — so what a group can
+build is the subsets of what it holds at once, 2^s - 1. Intricacy
+is exponential in specialization, and specialization is linear in
+the channel:
+
+    band of 28, speaking     2 specialties       3 designs
+    band of 28, writing      9 specialties     511 designs
+
+170x from the same people.
+
+The sharper result: **speech is not a slow version of writing, it
+is a fixed point.** The oral corpus could hold 13 parts' worth of
+designs, but fidelity supports only 2 specialties — so the binding
+constraint is the channel, and nothing the band does relieves it.
+More people means more mouths on the same 8,692-item ceiling,
+because that ceiling is one lifetime of evenings. An oral society
+is not early. It is at equilibrium and will sit there indefinitely
+unless the transmission changes.
+
+Writing moves the binding constraint. In a village of 912 the
+written channel would support 304 specialties, but 13% literacy
+gives 118 scribes and a recopyable corpus worth only 21.5 parts.
+Fidelity, which nothing could fix from inside, has been replaced by
+*how many people can be spared from the fields* — which yield can
+fix. That is the difference between a trap and a loop.
+
+So does the loop run away? Iterating surplus → scribes → corpus →
+specialties → surplus settles at **24 parts, 2.1e7 designs, a
+10.1x yield, 90% off the land.** It converges, and the reason is
+structural: the corpus enters intricacy as a **logarithm** while
+designs come out as an **exponent**. Doubling everything ever
+written buys one more part. The loop climbs and then crawls, and
+every further step costs twice the last. That is a fixed point, not
+a takeoff, and anything claiming a takeoff has to say which term it
+changed.
+
+Two fixes on the way through, both found by the new work rather
+than by a check:
+
+`literacy.spread` was value-driven on f² alone, and f² has no
+floor — one literate in a village of 912 took **20,000 years** to
+go anywhere. Both ends were missing. The floor is administrative: a
+store needs an account, and that is worth something whoever else
+can read, so 1/BAND = 3.6% of people is demanded regardless. (This
+is why the earliest writing anywhere is an inventory.) The ceiling
+is food: a scribe does not farm, so literacy stops at the share a
+surplus can spare — 13% at 1.15x yield. **Mass literacy is not
+waiting on a better alphabet, it is waiting on yield.**
+
+`tradition.garbles` overflowed above about a thousand holders —
+`math.comb` in float space — which had never been reached until
+populations stopped being band-sized. Rewritten in log space via
+`lgamma`.
+
+    merit 4/4   intricacy 4/4   tradition 6/6   lineage 7/7
+    50 links, 42 derived, 7 forced, 1 crossing, 0 gaps
+    77 claims reproduce, 76 skipped on fingerprint, 2.8 s

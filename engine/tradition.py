@@ -85,11 +85,29 @@ EPIGENETIC_HALFLIFE = 2.0   # generations to half, MEASURED-ish
 TELEPHONE = 0.10            # CHOSEN, corruption per retelling
 
 
+def _log_choose(m, i):
+    return (math.lgamma(m + 1) - math.lgamma(i + 1)
+            - math.lgamma(m - i + 1))
+
+
+def _binom_pmf(m, i, e):
+    """P(exactly i of m). Log space: math.comb overflows float
+    above about a thousand holders, which is well inside the
+    populations this is now asked about."""
+    if e <= 0.0:
+        return 1.0 if i == 0 else 0.0
+    lp = _log_choose(m, i) + i * math.log(e) + (m - i) * math.log1p(-e)
+    return math.exp(lp) if lp > -745.0 else 0.0
+
+
 def _binom_tail(m, k, e):
     """P(at least k of m go wrong). Exact, no sampling."""
     tot = 0.0
     for i in range(k, m + 1):
-        tot += math.comb(m, i) * e**i * (1 - e)**(m - i)
+        term = _binom_pmf(m, i, e)
+        tot += term
+        if term == 0.0 and i > k:
+            break
     return tot
 
 
@@ -104,7 +122,7 @@ def garbles(holders, e=TELEPHONE):
         return e
     wrong = _binom_tail(m, m // 2 + 1, e)
     if m % 2 == 0:                        # a tie is settled by chance
-        wrong += 0.5 * math.comb(m, m // 2) * e**(m // 2) * (1 - e)**(m // 2)
+        wrong += 0.5 * _binom_pmf(m, m // 2, e)
     return wrong
 
 

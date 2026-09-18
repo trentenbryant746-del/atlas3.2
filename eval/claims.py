@@ -227,6 +227,24 @@ def _power():
             round(concentration(wall=WALL_ADVANTAGE), 1))
 
 
+def _merit():
+    from engine.merit import (pivotal, best_of, heir_ability,
+                              mismatch, one_in)
+    from engine.tradition import BAND
+    return (round(100 * pivotal(5)), round(best_of(BAND), 2),
+            round(heir_ability(5)[0], 2), round(mismatch(5)),
+            round(one_in(1)), round(one_in(5)))
+
+
+def _intricacy():
+    from engine.intricacy import (designs, oral_fixed_point, settle,
+                                  spare_fraction)
+    o = oral_fixed_point()
+    s_ = settle()
+    return (o, round(designs(o)), round(s_, 1), round(designs(s_)),
+            round(100 * spare_fraction(s_)))
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -668,11 +686,15 @@ CLAIMS = [
     ("3.1.110", "a band walks at 0.707 adult pace and innovates 39x per km",
      _craft, (1.41, 39, 13, 2, 9332, 280, 90), CURRENT),
     ("3.1.111", "one checked copy is worth 13 speakers; 5 scribes keep a script",
-     _literacy, (5, 13, 9, 5, 34), CURRENT),
+     _literacy, (5, 13, 9, 5, 10), CURRENT),
     ("3.1.111", "a crowd disease needs 912 people; cooking pays 58x",
      _disease, (912, 33, 132, 58, 526), CURRENT),
     ("3.1.111", "a granary is 909x cheaper to hold than the range it replaced",
      _power, (909, 15, 1.9, 8, 3.5), CURRENT),
+    ("3.1.112", "a 5th-generation heir holds 32x what their ability warrants",
+     _merit, (20, 2.58, 0.08, 32, 15, 162), CURRENT),
+    ("3.1.112", "speech is a fixed point at 2 specialties; the loop settles at 24",
+     _intricacy, (2, 3, 24.3, 20548869, 90), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -699,8 +721,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.111", "Big Bang to a head in 47 links: 39 derived, 7 forced, 0 gaps",
-     _wholechain, (47, 39, 7, 0, 1), CURRENT),
+    ("3.1.112", "Big Bang to a head in 50 links: 42 derived, 7 forced, 0 gaps",
+     _wholechain, (50, 42, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -809,6 +831,19 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.111", "literacy reaches 34% in 500 years from one in 28",
+     "spread() was value-driven on f**2 alone, which has no floor -- "
+     "one literate in a village of 912 took 20,000 years to go "
+     "anywhere, which is plainly wrong. Two terms were missing: an "
+     "administrative FLOOR (a store needs an account, worth "
+     "something whoever else can read, so 1/BAND = 3.6% is demanded "
+     "regardless) and a food CEILING (a scribe does not farm, so "
+     "literacy stops at the share a surplus can spare, 13% at "
+     "1.15x). The shape was right and both ends were missing"),
+    ("3.1.111", "Big Bang to a head in 47 links: 39 derived",
+     "three added at 3.1.112: power from scarcity rather than "
+     "geometry, the decoupling of an inherited claim from a "
+     "regressing ability, and the technology loop"),
     ("3.1.110", "Big Bang to a head in 43 links: 35 derived",
      "four added at 3.1.111 -- writing as a skill that bootstraps "
      "orally and can be lost, crowd disease derived from the grain "

@@ -428,6 +428,50 @@ def inside_the_head():
          "and 3.5x, and a written claim outlives its witnesses, "
          "which is what inheritance is. A stock crosses a death; a "
          "flow cannot"),
+        ("a holder", "a specialist worth their scarcity", DERIVED,
+         "merit.pivotal",
+         "the other source of power, and it is not the value of "
+         "what you can do. You are worth what the band cannot do "
+         "without, which is value divided by how many others hold "
+         "the skill: 1 holder 100%, 5 holders 20%, 28 holders 4%. "
+         "The skill's usefulness does not appear in that at all. "
+         "And engine/craft.py needs 5 holders or the skill dies in "
+         "a few generations, while its holder wants 1 -- 5x the "
+         "power for a twelfth of the lifetime. Neither is being "
+         "unreasonable: the specialist's horizon is one life and "
+         "the skill's is generations. Lost crafts do not need a "
+         "catastrophe, they need someone who profited by not "
+         "teaching"),
+        ("earned standing", "an heir who did not earn it", DERIVED,
+         "merit.mismatch",
+         "under selection the holder is the best of 28, the "
+         "expected max of 28 draws = sqrt(2 ln 28) = 2.58 sigma. "
+         "Under inheritance the holder is whoever was born, and "
+         "ability regresses by half a generation while a WRITTEN "
+         "claim regresses by nothing: 1.29s, 0.65s, 0.08s by the "
+         "fifth. The holding is then 32x what the ability warrants. "
+         "This is not villainy, it is two different "
+         "heritabilities. And it is not deterministic either -- the "
+         "heir is a draw, so P(heir >= founder) is 1 in 15 at one "
+         "generation and 1 in 162 at five. A good king is a tail "
+         "probability with a number, and anything simulating this "
+         "should draw from that number rather than a knob"),
+        ("a settled order", "artifacts of many parts", DERIVED,
+         "intricacy.settle",
+         "an artifact is a composition, so what a group can build "
+         "is the subsets of what it holds at once: 2^s - 1. Speech "
+         "gives a band 2 specialties and 3 possible things, and it "
+         "is a FIXED POINT, not an early stage -- the corpus could "
+         "hold 13 parts' worth but fidelity supports 2, and more "
+         "people means more mouths on the same one-lifetime-of-"
+         "evenings ceiling. Writing moves the binding constraint "
+         "from fidelity, which nothing fixes from inside, to how "
+         "many can be spared from the fields, which yield fixes. "
+         "Iterating surplus -> scribes -> corpus -> specialties -> "
+         "surplus settles at 24 parts and 2e7 designs. It converges "
+         "rather than running away, because the corpus enters as a "
+         "logarithm and the designs come out as an exponent: "
+         "doubling what is written buys one more part"),
     ]
 
 

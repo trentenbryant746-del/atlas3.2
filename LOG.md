@@ -210,3 +210,41 @@ STILL OPEN
   does not -- it is linear in WALL_ADVANTAGE.
 - TELEPHONE = 0.10 still sets the specialization depth.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.112 — scarcity, inheritance drift, the technology loop
+
+PROGRESS
+- merit.py: power is value/holders, and the skill's usefulness does
+  not enter. Collides with craft.py's 5-holder survival floor: 5x
+  power for a twelfth of the lifetime. Lost crafts are an incentive
+  problem, not an accident.
+- hereditary drift derived: selection gives 2.58 sigma, inheritance
+  gives 0.08 by g5, holding is 32x the ability. Randomization is a
+  real tail: 1 in 15 at g1, 1 in 162 at g5.
+- intricacy.py: designs = 2^s - 1. Speech is a FIXED POINT at 2
+  specialties, not an early stage. Writing moves the binding
+  constraint from fidelity (unfixable from inside) to spare labour
+  (fixable by yield). Loop settles at 24 parts, 10.1x yield.
+- chain 47 -> 50 links, 39 -> 42 derived.
+
+REGRESSION FOUND AND FIXED
+- literacy.spread had no floor and no ceiling. f^2 alone put one
+  literate in 912 at 20,000 years to saturation. Added the
+  administrative floor (1/BAND, derived from power.py) and the food
+  ceiling (spare labour from the surplus). Shape was right, both
+  ends missing. Published 34%@500y -> 10%.
+- tradition.garbles overflowed float via math.comb above ~1000
+  holders. Never triggered while everything was band-sized; the
+  moment populations became villages it raised OverflowError.
+  Rewritten in log space with lgamma. The check caught it by
+  crashing, which is the correct failure.
+
+STILL OPEN
+- YIELD_PER_SKILL = 1.10 is CHOSEN and the fixed point is sensitive
+  to it: the 24-part settle moves with it. The CONVERGENCE does not
+  -- log corpus against exponential designs holds at any value.
+- SURPLUS_RATIO, COPIES_PER_YEAR, COPY_LIFE_YEARS, PROOF_CATCH,
+  WALL_ADVANTAGE all CHOSEN.
+- HERITABILITY = 0.5 sets the 32x; the DIRECTION (claim perfect,
+  ability regressing) does not depend on the value.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

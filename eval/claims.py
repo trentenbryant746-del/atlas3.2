@@ -312,6 +312,16 @@ def _inference():
             round(holders(mkt), 1))
 
 
+def _scale():
+    from eval.scale import (enumerated_tokens, engine_chars,
+                            compression, artifacts, universes)
+    gen, passing = universes()
+    return (round(math.log10(enumerated_tokens()), 2),
+            round(engine_chars() / 1e6, 1),
+            round(compression() / 1e6), gen, passing,
+            round(math.log10(artifacts()), 2))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -783,6 +793,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.117", "7 of 10 derived numbers match the record within 3x",
      _recorded, (7, 1, 2, 6), CURRENT),
+    ("3.1.119", "19 trillion tokens enumerated, from 1.6 MB of rules",
+     _scale, (13.28, 1.6, 36, 10584, 864, 8.87), CURRENT),
     ("3.1.118", "an inference kit is indivisible: 17,300 people for one",
      _inference, (12.14, 11.5, 16, 3368702, 17300, 2.1), CURRENT),
     ("3.1.116", "a press is worth 6.6 parts; proofreading is worth nothing",

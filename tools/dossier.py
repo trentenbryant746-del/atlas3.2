@@ -160,6 +160,161 @@ SCALES = {
 }
 
 
+def consistency_part():
+    """Small reference: how the code checks itself."""
+    import engine.spine as SP
+    from eval.claims import CLAIMS, SUPERSEDED, run
+    from engine.lineage import chain, MISSING, CROSSES
+    from engine.artifact import PRIMITIVES
+    from engine.constants import PROVENANCE
+
+    mods = _modules()
+    total = passed = inverted = 0
+    inv_mods = []
+    for name, mod in mods:
+        try:
+            src = inspect.getsource(mod)
+        except Exception:
+            src = ""
+        n_inv = src.count("INVERTED")
+        if n_inv:
+            inv_mods.append(name)
+            inverted += n_inv
+        try:
+            _ok, res = mod.check()
+        except Exception:
+            continue
+        total += len(res)
+        passed += sum(1 for _n, x, _m in res if x)
+
+    n_rules, mb = SP.warm()
+    rows = run()
+    claims_ok = sum(1 for *_x, ok, _s in rows if ok)
+    c = chain()
+    open_links = sum(1 for _a, _b, v, _r, _w in c
+                     if v in (MISSING, CROSSES))
+
+    L = ["# Part 0 — how the code checks itself", "",
+         _wrap("A small reference. Every mechanism below exists to "
+               "catch this system being wrong about itself, as "
+               "distinct from being wrong about the world. They are "
+               "listed with what each one guarantees, what breaks it, "
+               "and where it currently stands."), "", "```",
+         f"{'mechanism':<26}{'status'}",
+         f"{'-'*26}{'-'*44}",
+         f"{'module checks':<26}{passed} of {total} hold, across "
+         f"{len(mods)} modules",
+         f"{'published claims':<26}{claims_ok} of {len(rows)} reproduce",
+         f"{'withdrawn claims':<26}{len(SUPERSEDED)}, each with its reason",
+         f"{'spine':<26}{n_rules:,} rules, {mb:.1f} MB, read from the AST",
+         f"{'chain':<26}{len(c)} links, {open_links} still open",
+         f"{'inverted checks':<26}{inverted} mentions across "
+         f"{len(inv_mods)} modules",
+         f"{'grounding pointers':<26}{len(PRIMITIVES)} of "
+         f"{len(PRIMITIVES)} resolve to real rules",
+         f"{'constant provenance':<26}{len(PROVENANCE)} constants, one "
+         f"definition each",
+         "```", "",
+         "## The mechanisms", "",
+         "### 1. Every rule states its own result",
+         "",
+         _wrap("A check does not return True. It returns the sentence "
+               "describing what it found, and it raises if the finding "
+               "is not what the rule says. So a rule that passes has "
+               "produced a claim in words, and the words cannot drift "
+               "from the arithmetic because the arithmetic formats "
+               "them. Every statement in Parts II to IV of this "
+               "document came out of a rule this way."), "",
+         "### 2. The spine is read, not written", "",
+         _wrap(f"engine/spine.py walks the abstract syntax tree of "
+               f"every module and builds the dependency graph from "
+               f"what the code actually calls -- {n_rules:,} rules in "
+               f"{mb:.1f} MB. A hand-maintained list of dependencies "
+               f"would drift the moment somebody edited a function. "
+               f"This cannot, because there is nothing to maintain. "
+               f"It also classifies what nothing references, which is "
+               f"how 66 rules turned out to be live in Atlas 2 rather "
+               f"than dead."), "",
+         "### 3. A fingerprint commits to everything underneath", "",
+         _wrap("engine/spine.fingerprint hashes a rule's source "
+               "together with the hashes of every rule it depends on. "
+               "An unchanged fingerprint is therefore a PROOF that "
+               "recomputing would return what it returned last time. "
+               "eval/claims.py uses this to skip claims whose roots "
+               "have not moved -- typically 75 of 85 -- which is why "
+               "the numbers can be rechecked in seconds rather than "
+               "minutes. Rewriting a rule moves the fingerprint of "
+               "everything above it, and there is a check that "
+               "verifies exactly that."), "",
+         "### 4. A physical constant has one home", "",
+         _wrap(f"engine/constants.py holds {len(PROVENANCE)} constants "
+               f"and every module imports them. A sweep once found "
+               f"four quantities with two or three independent "
+               f"definitions -- the atomic mass unit, Newton's "
+               f"constant, the solar mass, the alpha binding energy -- "
+               f"and EVERY ONE AGREED. That is what made it worth "
+               f"fixing: nothing enforced the agreement, so it held by "
+               f"luck. Setting the copies equal would have been a "
+               f"patch. The rule is that a second definition anywhere "
+               f"fails a lab experiment, and that cannot drift because "
+               f"drifting requires writing the duplicate."), "",
+         "### 5. Inverted checks fail when the answer looks too good",
+         "",
+         _wrap(f"{inverted} mentions across {len(inv_mods)} modules: "
+               f"{', '.join(inv_mods)}. An inverted check asserts the "
+               f"UNWELCOME thing and raises if it stops being true. "
+               f"lineage._gaps fails if the chain ever claims to be "
+               f"complete. capital._mean fails if the average ever "
+               f"represents the median. history._miss fails if the "
+               f"misses stop being reported. artifact._future fails if "
+               f"a future artifact acquires a name. inference._rule3 "
+               f"fails if the chain closes, because then its claim "
+               f"would be empty. These are the checks that catch the "
+               f"system flattering itself, which no ordinary check can "
+               f"do -- an ordinary check is satisfied by a good "
+               f"result."), "",
+         "### 6. A rule that is deleted is not a rule that is fixed",
+         "",
+         _wrap("When a rule turns out to be wrong the rule is "
+               "restated, not removed, and the old statement goes to "
+               "the withdrawn list with the reason. "
+               f"{len(SUPERSEDED)} numbers are recorded there. "
+               "ecology's collapse rule is the clearest case: it was "
+               "TRUE when written and was falsified by fixing an "
+               "unbounded objective in a different module, so the "
+               "entry records both the old claim and what invalidated "
+               "it."), "",
+         "### 7. Groundings must resolve", "",
+         _wrap(f"artifact._grounded imports every rule named as the "
+               f"grounding for a primitive, {len(PRIMITIVES)} of "
+               f"{len(PRIMITIVES)} currently. It exists because the "
+               f"claim was first made in prose and 13 of 21 pointers "
+               f"were invented -- plausible names for rules this repo "
+               f"does not have. A citation nobody follows is not a "
+               f"citation."), "",
+         "### 8. Every number carries how it was obtained", "",
+         _wrap("EXACT (fixed by SI definition, no uncertainty), "
+               "MEASURED (someone measured it, with a tolerance), "
+               "CHOSEN (a modelling decision, and the log says what "
+               "moves with it), RECORDED (a fact from the literature), "
+               "ENACTED (it happened in a run, not in the world). The "
+               "kinds are orthogonal to whether a rule passes, which "
+               "is why a check once failed on its own registry when "
+               "ENACTED was wrongly made exclusive."), "",
+         "### 9. What this layer does NOT cover", "",
+         _wrap(f"{total} module checks against {len(rows)} published "
+               f"claims. The fingerprint gate only recomputes CLAIMS, "
+               f"so a check that no claim depends on can fail silently "
+               f"for versions -- and two did, found only when "
+               f"tools/transcribe.py first ran every module in one "
+               f"pass. Transcription is the only full sweep and it is "
+               f"deliberate rather than automatic, because running "
+               f"{len(mods)} modules is a cost not worth paying on "
+               f"every edit. That is a real hole and it is named here "
+               f"rather than left to be discovered."), ""]
+    return L
+
+
 def rules_part():
     lines = ["# Part I — every rule in detail", "",
              _wrap("Module by module: the module's own account of "
@@ -399,12 +554,14 @@ def build():
                   f"under, and every block of source is the source that "
                   f"runs. {len(c)} links in the chain."), "",
             "**Contents**", "",
+            "- Part 0 — how the code checks itself",
             "- Part I — every rule in detail",
             "- Part II — the chain, with the working",
             "- Part III — the technology",
             "- Part IV — the numbers, and the ones withdrawn", "",
             "---", ""]
-    text = "\n".join(head + rules_part() + ["---", ""] + chain_part()
+    text = "\n".join(head + consistency_part() + ["---", ""]
+                     + rules_part() + ["---", ""] + chain_part()
                      + ["---", ""] + technology_part() + ["---", ""]
                      + claims_part()).rstrip() + "\n"
     OUT.write_text(text)

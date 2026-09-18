@@ -12,6 +12,43 @@ It also declines to answer twelve out of twelve ordinary
 general-knowledge questions. Both of those facts are the same design
 decision, and this README is mostly about why.
 
+<!-- SCALE -->
+
+## The two numbers
+
+Written out in full -- every route, every variant, every universe
+that passes -- Atlas is about **19 trillion tokens**.
+
+```
+    layer                                count  tok ea       tokens
+    one history, as written                      1    26400     2.64e+04
+    universes that pass the filters            864    26400     2.28e+07
+    all universes generated blind        1.058e+04    26400     2.79e+08
+    artifacts at the fixed point         7.328e+08       30      2.2e+10
+    artifacts x passing universes        6.332e+11       30      1.9e+13
+```
+
+The rules that generate all of it are **1.6 MB**.
+
+**That is about 36 million to one.**
+
+Which is the whole argument in one figure. The enumeration is not
+the artifact; it is what you unpack on demand for the one route
+somebody asked about. `engine/roots.py` already works this way --
+routes share prefixes, so the store holds the sharing and not the
+list -- and anything else attached to this system belongs on the
+same side of that line.
+
+The cap is a choice and it is declared: counting stops at
+artifacts times passing universes. Allowing 2^13 situations per
+organism per universe, or `engine/occurrence.py`'s 8.13e34
+compartments, takes it past every token ever written by anyone,
+which is a joke about exponents rather than a measurement. Token
+figures are estimates -- no tokenizer ships with this repo -- and
+are computed by `eval/scale.py`, not typed here.
+
+<!-- /SCALE -->
+
 ```python
 from atlas import ask, why
 

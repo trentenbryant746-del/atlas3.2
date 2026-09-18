@@ -220,6 +220,40 @@ class World:
         return {a for a in self.artifacts() if a not in KNOWN_AS}
 
 
+def spec(combo, world=None):
+    """-> a spec sheet for one thing in the ledger. DERIVED.
+
+    What it is MADE OF, what FIRE and what TOLERANCE it needs,
+    and what must already exist before anyone can attempt it.
+
+    What this does NOT say is what the thing does. A set of
+    capabilities is a requirement list, not a design, and naming
+    it would be inventing. The sheet is real and the name would
+    not be.
+    """
+    from engine.artifact import TOL_NEEDED
+    from engine.inference import closure
+    w = world or run()
+    parts = sorted(combo)
+    rests = set()
+    for part in parts:
+        rests |= closure(part)
+    rests -= set(parts)
+    first = None
+    for year, band, kind, what in w.ledger:
+        if kind == "artifact" and what == frozenset(combo):
+            first = (year, band)
+            break
+    return {
+        "made of": [(p, PRIMITIVES[p][3]) for p in parts],
+        "fire": max(PRIMITIVES[p][1] for p in parts),
+        "tolerance": min(TOL_NEEDED.get(p, BASE_TOL) for p in parts),
+        "rests on": sorted(rests),
+        "first built": first,
+        "named in our world": KNOWN_AS.get(frozenset(combo)),
+    }
+
+
 _RUN = {}
 
 
@@ -245,6 +279,7 @@ def check():
     t("most_of_what_is_built_has_no_name_in_our_world", _novel)
     t("INVERTED_it_is_a_search_and_it_can_stall", _stall)
     t("INVERTED_exactly_one_number_here_is_fitted", _fitted)
+    t("anything_in_the_ledger_has_a_spec_and_not_a_name", _spec)
     return all(x for _, x, _ in res), res
 
 
@@ -380,6 +415,32 @@ def _fitted():
             f"and is a category error -- it measures omissions in "
             f"a genome, not human craft attempts -- and it gives "
             f"9 crafts of 21 in fourteen thousand years")
+
+
+def _spec():
+    w = run()
+    late = max(w.unnamed(), key=lambda c: (len(c), sorted(c)))
+    sheet = spec(late, w)
+    if sheet["named in our world"] is not None:
+        raise ArithmeticError("picked a named one")
+    if not sheet["made of"] or sheet["first built"] is None:
+        raise ArithmeticError(f"{sheet}")
+    parts = " + ".join(p for p, _w in sheet["made of"])
+    return (f"anything in the ledger can be given a sheet, and the "
+            f"sheet is real where a name would not be. Take "
+            f"{parts}, first built in year "
+            f"{sheet['first built'][0]:.0f} by band "
+            f"{sheet['first built'][1]}: it needs a fire of "
+            f"{sheet['fire']} K and a tolerance of "
+            f"{sheet['tolerance']:.0e}, and it rests on "
+            f"{len(sheet['rests on'])} crafts that must exist "
+            f"first ({', '.join(sheet['rests on'][:4])}...). That "
+            f"is what it is MADE OF and what it COSTS to attempt. "
+            f"What the sheet does not say is what it DOES, "
+            f"because a set of capabilities is a requirement list "
+            f"and not a design. Naming it would be inventing, and "
+            f"the {len(w.unnamed()):,} unnamed things in this "
+            f"ledger are unnamed on purpose")
 
 
 if __name__ == "__main__":

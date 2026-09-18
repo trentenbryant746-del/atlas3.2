@@ -254,6 +254,44 @@ def spec(combo, world=None):
     }
 
 
+def describe(thing, world=None):
+    """An encyclopedia entry, composed and not written. DERIVED.
+
+    The words come from engine/artifact.PRIMITIVES, which already
+    says what each capability is. The gates come from the same
+    file. The date and the maker come from the ledger. Nothing in
+    the sentence was typed for this object.
+
+    It says what the thing is MADE OF and what it COSTS. It does
+    not say what it is FOR. An earlier version inferred a purpose
+    from what the band managed next, and that was a spurious
+    correlation dressed as a finding -- a band that builds
+    anything goes on to manage other things regardless. An
+    encyclopedia of materials and costs is real; a catalogue of
+    guessed purposes is not.
+    """
+    from engine.artifact import TOL_NEEDED, COLD_NEEDED, BASE_COLD
+    sheet = spec(thing, world)
+    parts = [w for _p, w in sheet["made of"]]
+    body = "; ".join(parts)
+    cold = min((COLD_NEEDED.get(p, BASE_COLD)
+                for p, _w in sheet["made of"]), default=BASE_COLD)
+    gates = f"a fire of {sheet['fire']} K"
+    if sheet["tolerance"] < 1e-1:
+        gates += f", work true to {sheet['tolerance']:.0e}"
+    if cold < BASE_COLD:
+        gates += f", and cold down to {cold:.0f} K"
+    when, who = sheet["first built"] or (None, None)
+    tail = (f"First made in year {when:.0f} by band {who}."
+            if when is not None else "Never made in this run.")
+    named = sheet["named in our world"]
+    ours = (f"Our world calls this {named}."
+            if named else "Our world has no word for it.")
+    return (f"A thing of {body}. Making one takes {gates}, and "
+            f"{len(sheet['rests on'])} crafts must already exist. "
+            f"{tail} {ours}")
+
+
 _RUN = {}
 
 

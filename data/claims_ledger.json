@@ -163,16 +163,20 @@
 "fp": "d42c3fa45b7195a3",
 "ok": true
 },
-"3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
-"fp": "c16a831e544e253b",
+"3.1.117|three gates: heat stops at 5, cold opens at 6, precision ends at the atom": {
+"fp": "48649c09f4b5292d",
 "ok": true
 },
+"3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
+"fp": "48649c09f4b5292d",
+"ok": false
+},
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "fc493c856d449e64",
+"fp": "00bab603cca127d9",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
-"fp": "ee198e507bb01bc9",
+"fp": "835c5cd558c8a4e5",
 "ok": true
 },
 "3.1.119|19 trillion tokens enumerated, from 1.6 MB of rules": {
@@ -188,7 +192,7 @@
 "ok": true
 },
 "3.1.120|52 comparisons: 37 match, 28 of them free": {
-"fp": "8bca0fe79a9adeb0",
+"fp": "582860aa57e63362",
 "ok": true
 },
 "3.1.121|the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor": {
@@ -196,7 +200,7 @@
 "ok": true
 },
 "3.1.122|instrument order predicts science order, Kendall tau 0.77": {
-"fp": "eac9756d6b67e5ff",
+"fp": "0bbe19dd87465f4e",
 "ok": true
 },
 "3.1.123|42 constants are chosen; two stopped being, one pair disagrees 8.5x": {
@@ -448,7 +452,7 @@
 "ok": false
 },
 "3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {
-"fp": "e41d5d7805212b19",
+"fp": "39761bc2bfe67db3",
 "ok": true
 },
 "3.2.2|Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611": {
@@ -456,11 +460,11 @@
 "ok": true
 },
 "3.2.4|regulation tops the leverage ranking; a tool beats a fact 1.2e8:1": {
-"fp": "ee96d5516cad5829",
+"fp": "34143de0fa64767d",
 "ok": true
 },
 "3.2.5|a name is worth 4,346 retrievals; audience explains what tellability did not": {
-"fp": "c842285bd8f7ef8d",
+"fp": "2587046c30a7d0ca",
 "ok": true
 },
 "3.2.5|a name is worth 4,346 retrievals; tellability refuted at r=-0.20": {
@@ -469,6 +473,10 @@
 },
 "3.2.7|a world that runs: 21 crafts by year 11,380, 4,334 unnamed things": {
 "fp": "a2d9359fe88c80da",
+"ok": true
+},
+"3.2.9|a nanometre spec is 90 bits: 130 fit in one telling": {
+"fp": "e74ac9f2379fb043",
 "ok": true
 }
 }

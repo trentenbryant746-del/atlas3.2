@@ -69,12 +69,53 @@ PRIMITIVES = {
     "semiconductor": (("vacuum", "alloy"), 1700, "eos.classify", "a crystal pure enough to switch"),
     "switching":   (("semiconductor", "electricity"), 1700, "learning.landauer_j", "a gate that opens on a signal"),
     "inference":   (("switching", "regulation"), 1700, "learning.store_bits", "statistics run at a scale no head holds"),
+    # A THIRD GATE, and it is not invented. The heat ladder only
+    # ever went UP. Going DOWN is a separate physical scarcity
+    # with its own floor -- thermal noise kT against the energy
+    # you are trying to hold -- and nothing in this tree had
+    # touched it. These are gated by cold, not by fire.
+    "superconduction": (("alloy", "electricity"), 1700, "thermo.cv_molar", "resistance gone below a critical temperature"),
+    "coherence":   (("superconduction", "switching"), 1700, "learning.landauer_j", "a quantum state held against the noise"),
+    "placement":   (("coherence", "optics"), 1700, "eos.classify", "matter set down one atom at a time"),
 }
 
 # The second gate. A hand fits to about a tenth; a screw-cutting
 # lathe to a thousandth; interferometry to a millionth; light
 # printed through a mask to a billionth. Each needs what the last
 # one made, exactly as the furnace did.
+# THE FLOOR OF THE TOLERANCE LADDER IS DERIVED, NOT CHOSEN.
+# You cannot place matter more finely than an atom is wide, and
+# the Bohr radius falls out of hbar, the electron mass and the
+# charge: 4 pi eps0 hbar^2 / (m_e e^2) = 5.29e-11 m. A silicon
+# lattice is 5.43e-10. So 1e-10 is a WALL and not a rung -- the
+# difference between a ladder that ends and one nobody has
+# climbed yet.
+M_ELECTRON = 9.1093837015e-31     # kg, MEASURED
+EPS_0 = 8.8541878128e-12          # F/m, MEASURED
+
+
+def bohr_radius():
+    """4 pi eps0 hbar^2 / (m_e e^2). DERIVED."""
+    from engine.constants import HBAR, E_CHARGE
+    return (4 * math.pi * EPS_0 * HBAR**2
+            / (M_ELECTRON * E_CHARGE**2))
+
+
+# What a cold stage reaches and what it needs to get there.
+# Cooling CASCADES: no liquid helium without liquid air first,
+# because the helium must be pre-cooled -- the same shape as the
+# bellows needing the tuyere it was for.
+BASE_COLD = 300.0
+COLD_GAINS = {
+    "expanding a compressed gas": (("pressure", "regulation"), 77.0),
+    "pumping on a cascaded bath": (("vacuum", "superconduction"), 4.0),
+}
+COLD_NEEDED = {
+    "superconduction": 77.0,
+    "coherence": 4.0,
+    "placement": 4.0,
+}
+
 BASE_TOL = 1e-1
 # These were wrong on the first pass and the bootstrap DEADLOCKED,
 # which is the right failure. Gearing was set at 1e-2 and the only
@@ -91,11 +132,14 @@ TOL_NEEDED = {
     "optics": 1e-2, "vacuum": 1e-3, "alloy": 1e-3,
     "semiconductor": 1e-6, "switching": 1e-6,   # point contact
     "inference": 1e-9,                          # printed, at scale
+    "superconduction": 1e-6, "coherence": 1e-9,
+    "placement": 1e-10,                         # the atomic wall
 }
 TOL_GAINS = {
     "a screw-cutting lathe": (("gearing", "smelting"), 1e-3),
     "interferometry": (("optics", "regulation"), 1e-6),
     "light printed through a mask": (("optics", "switching"), 1e-9),
+    "a tip that feels single atoms": (("coherence", "vacuum"), 1e-10),
 }
 
 # What a wood fire in the open reaches, and what each built thing
@@ -150,6 +194,15 @@ def temperature(held):
     return t
 
 
+def coldness(held):
+    """Lowest temperature reachable with what is held. DERIVED."""
+    t = BASE_COLD
+    for _label, (needs, got) in COLD_GAINS.items():
+        if set(needs) <= set(held):
+            t = min(t, got)
+    return t
+
+
 def tolerance(held):
     """Finest placement achievable with what is held. DERIVED."""
     t = BASE_TOL
@@ -169,10 +222,11 @@ def bootstrap():
     held, rounds = set(), []
     while True:
         t = temperature(held)
-        tol = tolerance(held)
+        tol, cold = tolerance(held), coldness(held)
         got = {n for n, (needs, k, _r, _w) in PRIMITIVES.items()
                if n not in held and set(needs) <= held and k <= t
-               and TOL_NEEDED.get(n, 1e-1) >= tol}
+               and TOL_NEEDED.get(n, 1e-1) >= tol
+               and COLD_NEEDED.get(n, BASE_COLD) >= cold}
         if not got:
             return rounds
         held |= got

@@ -642,6 +642,41 @@ def inside_the_head():
          "THEIR error: a three-term derivation of G is +/-17% at "
          "round 2 and 0.2% at round 5, and Cavendish got 1% in "
          "1798, which lands between them"),
+        ("two gates", "a third that only goes down", DERIVED,
+         "artifact.coldness",
+         "the heat ladder only ever went UP and nothing in the "
+         "tree had touched the other direction. Going cold is a "
+         "separate physical scarcity with its own cascade: you "
+         "cannot reach liquid helium without liquid air first, "
+         "because the helium must be pre-cooled -- the same shape "
+         "as the bellows needing the tuyere they were for. "
+         "Expanding a compressed gas reaches 77 K and needs "
+         "pressure and regulation; pumping on a cascaded bath "
+         "reaches 4 K and needs vacuum and superconduction. That "
+         "adds superconduction, coherence and placement, and the "
+         "tree runs to eleven rounds. The precision ladder now "
+         "ENDS rather than stopping: matter cannot be placed more "
+         "finely than an atom is wide, and the Bohr radius falls "
+         "out of hbar, the electron mass and the charge at "
+         "5.29e-11 m. That is a wall, not a rung"),
+        ("a part too fine to copy", "a drawing", DERIVED,
+         "drawing.first_round_needing_one",
+         "the obvious account of a drawing is that a shape is a "
+         "lot of information, and it is wrong by a wide margin: "
+         "pinning a dimension to a tolerance costs log2(1/t) "
+         "bits, so a three-dimensional part at a BILLIONTH is 90 "
+         "bits against the 11,700 one telling carries. A hundred "
+         "and thirty such specifications fit in one story and you "
+         "could read a nanometre tolerance aloud. What actually "
+         "forces a drawing is that the object stops being its own "
+         "specification: copying by eye reaches a tenth, so above "
+         "that you hand someone the original, and below it a "
+         "NUMBER has to travel instead of a thing. 11 of 24 "
+         "crafts are tighter than a sample can carry and the "
+         "first is at round 5. And a projection is a convention, "
+         "so it needs a drawer AND a reader -- f squared, the "
+         "same exponent as literacy, and slow for the same "
+         "reason. A drawing is a second literacy"),
         ("a constraint envelope", "a world that runs", DERIVED,
          "world.run",
          "everything before this computed what a human-like "

@@ -36,7 +36,7 @@ a { color:#0b5; text-decoration:none; }
 <h2>1. The claim</h2>
 <blockquote>Scientific codebases fail in characteristic ways, and there is very little labelled data about <em>what catches the failures</em>. This is a corpus of 25 dated faults from one 33,600-line scientific codebase, each annotated in-source with its cause and the mechanism that detected it, partitioned into five categories. **Seven of the 25 are faults in the verification machinery itself.**</blockquote>
 <p>The corpus is the contribution. The infrastructure that makes it affordable to record — a fingerprint-gated claim ledger, §6 — is method, and I do not claim it is novel.</p>
-<p><strong>I am not claiming the domain results are correct.</strong> The substrate is a rule-based physics and chemistry model. 47 of its 135 registered inputs are values I picked. The system&#x27;s job is to make that distinction machine-checkable, and §8 says where it fails.</p>
+<p><strong>I am not claiming the domain results are correct.</strong> The substrate is a rule-based physics and chemistry model. 47 of its 135 registered inputs are values I picked. The system&#x27;s job is to make that distinction machine-checkable, and §9 says where it fails.</p>
 <hr>
 <h2>2. Why this data is scarce</h2>
 <p>Empirical software engineering has bug corpora — Defects4J, BugSwarm, ManyBugs — and they are mined from version control after the fact. That gives the <em>fix</em>. It rarely gives the <em>cause</em>, and it almost never gives <strong>what caught it</strong>, because the commit that fixes a bug does not usually record how the bug surfaced.</p>
@@ -67,12 +67,28 @@ a { color:#0b5; text-decoration:none; }
 <p><strong>Checking apparatus fails at roughly the rate of the code it checks</strong> (7 vs 18). I have not seen this quantified elsewhere and would not have guessed parity.</p>
 <p><strong>External anchoring is disproportionately valuable.</strong> 4 faults were caught purely by comparing against a value from outside the system, and two were order-of-magnitude unit errors that no internal consistency check would ever surface.</p>
 <hr>
-<h2>5. The practice that produces the record</h2>
+<h2>5. Why any of it is checkable: the floor is real</h2>
+<p>Root depth (§8.4) only means something if the bottom of a root is something a stranger can verify. A chain that terminates in a number somebody typed is not grounded, however long it is. So the substrate is built downward to elements, and the properties of those elements are <strong>derived rather than looked up</strong>.</p>
+<p><code>engine/valence.py</code> computes bonding capacity from shell filling:</p>
+<pre><code>C    4    Z=6 has 4 outer electrons, so it bonds 4 ways -- sharing them
+O    2    Z=8 has 6 outer electrons, so it bonds 2 ways -- accepting the 2 it lacks
+P    3    Z=15 has 5 outer electrons, so it bonds 3 ways -- accepting the 3 it lacks</code></pre>
+<p>Ten valences had been typed in by hand. Deriving them from shell filling <strong>reproduced all ten and produced 50</strong>, with nothing added. Noble gases come out zero independently of being told they are inert.</p>
+<p><strong>And 68 elements are refused rather than assigned:</strong></p>
+<pre><code>Fe   None   Z=26 is in the d-block, where an element has several
+            valences rather than one -- iron is +2 and +3, manganese
+            +2 to +7, and which appears depends on the partner.
+            Deciding needs orbital energies this repo does not compute.</code></pre>
+<p>That refusal is the mechanism working, not failing. The system states what it cannot determine <strong>and why</strong>, and a claim that would need iron&#x27;s valence cannot quietly get one.</p>
+<p>Above that layer the ladder continues: nucleotides carried as molecular formulae rather than letters, so a strand has a mass and an elemental composition; tissue as stoichiometry (C₁₀₆H₂₆₃O₁₁₀N₁₆P₁), so growth is a withdrawal of specific atoms from a finite pool and death returns them; wood as cellulose, which holds 1.26× the carbon of tissue and <strong>no nitrogen</strong>, so a rule written for one cannot silently apply to the other.</p>
+<p><strong>35% of the 1,819 rules reach this floor</strong> — the periodic table, derived valences, elemental abundances, or the defined constants. <code>experts.PT</code>, the 118-element table, is the single most load-bearing object in the codebase at <strong>254 dependent rules</strong>, ahead of Boltzmann (249), Avogadro (215), <em>c</em> (187) and <em>h</em> (178).</p>
+<p>This is what makes an external check possible at all. &quot;A brain holds 6× the phosphorus of ordinary tissue per atom&quot; is checkable by a chemist who has never seen the code, because phosphorus has an atomic weight and both tissues have formulae. The same sentence backed by a constant named <code>BRAIN_PHOSPHORUS_FACTOR = 6.0</code> is not checkable by anyone — it is a restatement of its input, and §3.1 is seven faults of exactly that kind.</p>
+<h2>6. The practice that produces the record</h2>
 <p>The corpus exists because of two conventions, which are cheap and which I would defend independently of any tooling.</p>
 <p><strong>Inverted checks.</strong> When a check&#x27;s premise turns out false, the check is <em>flipped and kept</em>, carrying its own history, rather than deleted. Nine checks in five modules currently read &quot;INVERTED, kept&quot; followed by what they used to assert and why that was wrong. Deleting them would have erased nine data points.</p>
 <p><strong>Supersession with written reasons.</strong> 14 published numbers have been withdrawn, each with a paragraph explaining <em>why</em>, not merely that. Several were withdrawn while remaining arithmetically correct — the question they answered was wrong, which is a distinct failure and one that a pass/fail suite cannot express.</p>
 <hr>
-<h2>6. Method: making continuous verification cheap</h2>
+<h2>7. Method: making continuous verification cheap</h2>
 <p>Recording errors requires noticing them, which requires re-checking often, which has to be affordable.</p>
 <p>47 numbered claims, each a value plus a function that recomputes it. Full re-verification cost 77 s, 70 of them re-deriving results nothing could have changed.</p>
 <p><code>engine/spine.py</code> recovers each claim&#x27;s dependency graph from the AST — what a function calls, what those call, out through imports, to a fixpoint — and fingerprints each node over <strong>its own source text and its dependencies&#x27; fingerprints</strong>. One 16-byte value therefore commits to the whole chain beneath a claim. Hashing <em>source</em> rather than <em>values</em> matters: a rule can be rewritten and still return the same number today.</p>
@@ -83,18 +99,18 @@ biome.hydraulic_ceiling          f9c540e277ba9178
 biome.escalation_stops_at        1d7e6a21f337415b   &lt;- the claim</code></pre>
 <p>Nobody declared that this claim depends on <code>life.RHO_WATER</code>. It does, transitively, and the walk found it. An unchanged fingerprint is a proof the answer cannot have moved.</p>
 <table class="wide"><tr><th></th><th>cold</th><th>warm</th></tr><tr><td>47-claim ledger</td><td>70.9 s</td><td><strong>0.0 s</strong> (47/47 skipped)</td></tr><tr><td>full suite</td><td>77 s</td><td><strong>7.3 s</strong></td></tr><tr><td>whole-repo fingerprint (1,772 rules)</td><td>26.0 s</td><td>0.15 ms</td></tr></table>
-<p><strong>This mechanism is not novel.</strong> Nix, Bazel and ccache hash build inputs; DVC and Snakemake track pipeline staleness. The only differences here are that the unit is a <em>published claim</em> rather than a build artifact, and that the graph is also read as a diagnostic (§7.4). Whether either difference matters is an open question (§8.2).</p>
-<h3>6.1 Provenance typing</h3>
+<p><strong>This mechanism is not novel.</strong> Nix, Bazel and ccache hash build inputs; DVC and Snakemake track pipeline staleness. The only differences here are that the unit is a <em>published claim</em> rather than a build artifact, and that the graph is also read as a diagnostic (§8.4). Whether either difference matters is an open question (§9.2).</p>
+<h3>7.1 Provenance typing</h3>
 <p>135 inputs, each typed <code>EXACT</code> (6), <code>MEASURED</code> (80), <code>CHOSEN</code> (47) or <code>RECORDED</code> (2); results additionally <code>ENACTED</code> (14) when they are the output of a <em>run</em> rather than an observation. Claims are graded by their worst input, and citing a <code>CHOSEN</code>-backed result as derived is refused.</p>
 <hr>
-<h2>7. Does the gate actually work?</h2>
+<h2>8. Does the gate actually work?</h2>
 <p>A fast wrong answer is worse than a slow right one, so the gate was tested by fault injection rather than assumed.</p>
 <p><strong>Recall</strong> — faults injected into source, caches cleared, ledger rerun:</p>
 <table class=""><tr><th>injected fault</th><th>recomputed</th><th>failed</th></tr><tr><td>photosynthetic efficiency +5%</td><td>7 / 47</td><td>3</td></tr><tr><td>bone compressive strength +12%</td><td>9 / 47</td><td>3</td></tr><tr><td>ribozyme error rate +20%</td><td>4 / 47</td><td>4</td></tr><tr><td>gravitational constant +0.1%</td><td>6 / 47</td><td>4</td></tr></table>
 <p>4 of 4 detected; none triggered a full recompute.</p>
 <p><strong>Precision</strong> — edits that should change nothing:</p>
 <table class=""><tr><th>edit</th><th>recomputed</th></tr><tr><td>whitespace in an unrelated docstring</td><td>0 / 47</td></tr><tr><td>render resolution (no claim depends on it)</td><td>0 / 47</td></tr><tr><td>a constant used by exactly one claim</td><td>1 / 47</td></tr></table>
-<h3>7.4 Root depth</h3>
+<h3>8.4 Root depth</h3>
 <p>A by-product: the depth of a claim&#x27;s dependency graph separates results the rules <em>derive</em> from results that are arithmetic over a constant.</p>
 <pre><code>radiative.grey_equivalent_full     37 nodes
 nucleo.mass_bar                    15
@@ -102,10 +118,10 @@ atoms.limiting_element              6
 &lt;a &quot;does a tool pay for itself&quot; claim&gt;  2   &lt;- flagged</code></pre>
 <p>Two nodes: one constant and itself. Rebuilding it to derive from material strengths already present moved it to 13 and changed the answer. <strong>This caught one real case. One case is an anecdote</strong>, and it is gameable — inlining shortens a root, a pass-through lengthens one.</p>
 <hr>
-<h2>8. Limitations</h2>
-<ol><li><strong>One codebase, one author, no external replication.</strong> The distribution in §4 is 25 points from a system I wrote; my blind spots are in the data twice — once as faults, once as faults I failed to record.</li><li><strong>No comparison against Nix, Bazel, DVC or Snakemake.</strong> Not run. This bounds §6 entirely, and &quot;use Bazel&quot; is a legitimate response.</li><li><strong>Survivorship.</strong> The corpus contains faults that were <em>found</em>. Faults still present are by definition absent, and I have no estimate of the ratio.</li><li><strong>The curriculum is self-generated.</strong> 5,737 items at 0 wrong is consistency, not accuracy. I do not lean on it.</li><li><strong>Root depth is a heuristic on one case.</strong></li><li><strong>Source-hashing is conservative</strong> — a comment inside a dependent function forces recomputation.</li><li><strong>The domain content is unreviewed.</strong> 47 of 135 inputs are <code>CHOSEN</code>; 19 <code>MISSING_RULE</code>s are open. Labelling is not validation.</li><li><strong>Static analysis misses dynamic dispatch</strong> — 32 functions resolved by name at runtime are invisible to the walk. Reported, not hidden.</li></ol>
+<h2>9. Limitations</h2>
+<ol><li><strong>One codebase, one author, no external replication.</strong> The distribution in §4 is 25 points from a system I wrote; my blind spots are in the data twice — once as faults, once as faults I failed to record.</li><li><strong>No comparison against Nix, Bazel, DVC or Snakemake.</strong> Not run. This bounds §7 entirely, and &quot;use Bazel&quot; is a legitimate response.</li><li><strong>Survivorship.</strong> The corpus contains faults that were <em>found</em>. Faults still present are by definition absent, and I have no estimate of the ratio.</li><li><strong>The curriculum is self-generated.</strong> 5,737 items at 0 wrong is consistency, not accuracy. I do not lean on it.</li><li><strong>Root depth is a heuristic on one case.</strong></li><li><strong>Source-hashing is conservative</strong> — a comment inside a dependent function forces recomputation.</li><li><strong>The domain content is unreviewed.</strong> 47 of 135 inputs are <code>CHOSEN</code>; 19 <code>MISSING_RULE</code>s are open. Labelling is not validation.</li><li><strong>Static analysis misses dynamic dispatch</strong> — 32 functions resolved by name at runtime are invisible to the walk. Reported, not hidden.</li></ol>
 <hr>
-<h2>9. What I am asking</h2>
+<h2>10. What I am asking</h2>
 <ol><li>**Is a labelled fault corpus with catching-mechanism annotations useful to anyone?** If empirical SE or RSE people already have this, I would like to be pointed at it.</li><li>**Is the parity in §4 — verification machinery failing about as often as the code it verifies — known?** It surprised me and I have not found it quantified.</li><li>**Does the claim-granularity framing add anything over a build system?** I have not run the comparison and would rather be told it is unnecessary.</li></ol>
 <p><strong>Reproduction.</strong> Stock Python 3.9, no dependencies, no network.</p>
 <pre><code>python3 -m eval.benchmark    # full suite, ~7 s warm / ~77 s cold

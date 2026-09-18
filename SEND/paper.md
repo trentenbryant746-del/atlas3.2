@@ -24,7 +24,7 @@ method, and I do not claim it is novel.
 **I am not claiming the domain results are correct.** The substrate is
 a rule-based physics and chemistry model. 47 of its 135 registered
 inputs are values I picked. The system's job is to make that
-distinction machine-checkable, and §8 says where it fails.
+distinction machine-checkable, and §9 says where it fails.
 
 ---
 
@@ -181,7 +181,58 @@ consistency check would ever surface.
 
 ---
 
-## 5. The practice that produces the record
+## 5. Why any of it is checkable: the floor is real
+
+Root depth (§8.4) only means something if the bottom of a root is
+something a stranger can verify. A chain that terminates in a number
+somebody typed is not grounded, however long it is. So the substrate
+is built downward to elements, and the properties of those elements
+are **derived rather than looked up**.
+
+`engine/valence.py` computes bonding capacity from shell filling:
+
+    C    4    Z=6 has 4 outer electrons, so it bonds 4 ways -- sharing them
+    O    2    Z=8 has 6 outer electrons, so it bonds 2 ways -- accepting the 2 it lacks
+    P    3    Z=15 has 5 outer electrons, so it bonds 3 ways -- accepting the 3 it lacks
+
+Ten valences had been typed in by hand. Deriving them from shell
+filling **reproduced all ten and produced 50**, with nothing added.
+Noble gases come out zero independently of being told they are inert.
+
+**And 68 elements are refused rather than assigned:**
+
+    Fe   None   Z=26 is in the d-block, where an element has several
+                valences rather than one -- iron is +2 and +3, manganese
+                +2 to +7, and which appears depends on the partner.
+                Deciding needs orbital energies this repo does not compute.
+
+That refusal is the mechanism working, not failing. The system states
+what it cannot determine **and why**, and a claim that would need
+iron's valence cannot quietly get one.
+
+Above that layer the ladder continues: nucleotides carried as
+molecular formulae rather than letters, so a strand has a mass and an
+elemental composition; tissue as stoichiometry (C₁₀₆H₂₆₃O₁₁₀N₁₆P₁),
+so growth is a withdrawal of specific atoms from a finite pool and
+death returns them; wood as cellulose, which holds 1.26× the carbon of
+tissue and **no nitrogen**, so a rule written for one cannot silently
+apply to the other.
+
+**35% of the 1,819 rules reach this floor** — the periodic table,
+derived valences, elemental abundances, or the defined constants.
+`experts.PT`, the 118-element table, is the single most load-bearing
+object in the codebase at **254 dependent rules**, ahead of Boltzmann
+(249), Avogadro (215), *c* (187) and *h* (178).
+
+This is what makes an external check possible at all. "A brain holds
+6× the phosphorus of ordinary tissue per atom" is checkable by a
+chemist who has never seen the code, because phosphorus has an atomic
+weight and both tissues have formulae. The same sentence backed by a
+constant named `BRAIN_PHOSPHORUS_FACTOR = 6.0` is not checkable by
+anyone — it is a restatement of its input, and §3.1 is seven faults of
+exactly that kind.
+
+## 6. The practice that produces the record
 
 The corpus exists because of two conventions, which are cheap and
 which I would defend independently of any tooling.
@@ -200,7 +251,7 @@ that a pass/fail suite cannot express.
 
 ---
 
-## 6. Method: making continuous verification cheap
+## 7. Method: making continuous verification cheap
 
 Recording errors requires noticing them, which requires re-checking
 often, which has to be affordable.
@@ -236,10 +287,10 @@ proof the answer cannot have moved.
 **This mechanism is not novel.** Nix, Bazel and ccache hash build
 inputs; DVC and Snakemake track pipeline staleness. The only
 differences here are that the unit is a *published claim* rather than a
-build artifact, and that the graph is also read as a diagnostic (§7.4).
-Whether either difference matters is an open question (§8.2).
+build artifact, and that the graph is also read as a diagnostic (§8.4).
+Whether either difference matters is an open question (§9.2).
 
-### 6.1 Provenance typing
+### 7.1 Provenance typing
 
 135 inputs, each typed `EXACT` (6), `MEASURED` (80), `CHOSEN` (47) or
 `RECORDED` (2); results additionally `ENACTED` (14) when they are the
@@ -249,7 +300,7 @@ refused.
 
 ---
 
-## 7. Does the gate actually work?
+## 8. Does the gate actually work?
 
 A fast wrong answer is worse than a slow right one, so the gate was
 tested by fault injection rather than assumed.
@@ -273,7 +324,7 @@ tested by fault injection rather than assumed.
 | render resolution (no claim depends on it) | 0 / 47 |
 | a constant used by exactly one claim | 1 / 47 |
 
-### 7.4 Root depth
+### 8.4 Root depth
 
 A by-product: the depth of a claim's dependency graph separates
 results the rules *derive* from results that are arithmetic over a
@@ -291,14 +342,14 @@ is gameable — inlining shortens a root, a pass-through lengthens one.
 
 ---
 
-## 8. Limitations
+## 9. Limitations
 
 1. **One codebase, one author, no external replication.** The
    distribution in §4 is 25 points from a system I wrote; my blind
    spots are in the data twice — once as faults, once as faults I
    failed to record.
 2. **No comparison against Nix, Bazel, DVC or Snakemake.** Not run.
-   This bounds §6 entirely, and "use Bazel" is a legitimate response.
+   This bounds §7 entirely, and "use Bazel" is a legitimate response.
 3. **Survivorship.** The corpus contains faults that were *found*.
    Faults still present are by definition absent, and I have no
    estimate of the ratio.
@@ -314,7 +365,7 @@ is gameable — inlining shortens a root, a pass-through lengthens one.
 
 ---
 
-## 9. What I am asking
+## 10. What I am asking
 
 1. **Is a labelled fault corpus with catching-mechanism annotations
    useful to anyone?** If empirical SE or RSE people already have this,

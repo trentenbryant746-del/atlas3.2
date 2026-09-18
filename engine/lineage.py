@@ -168,12 +168,20 @@ def before_luca():
          "polymer set is closed under complementation. It selects "
          "the join rather than permitting it, and comp(comp(s)) is "
          "s, so two rounds replicate"),
-        ("a copied sequence", "a cell that is", MISSING,
-         "nothing reads it",
-         "no strand codes for a catalyst, so a sequence is carried "
-         "and never read. Template replication is heredity of "
-         "SEQUENCE; translation would be heredity of FUNCTION, and "
-         "that is the remaining thing"),
+        ("a copied sequence", "one that is read", DERIVED,
+         "code.affordable_code",
+         "a code is the rule that closes reading, and it is not "
+         "free: each meaning costs an adaptor and every adaptor is "
+         "a sequence. The modern 20-letter code needs 1,520 bases "
+         "against the 200 fidelity allows -- it does not fit. Five "
+         "meanings do, so the first code was small and how small is "
+         "set by temperature"),
+        ("a small code", "a cell that is", MISSING,
+         "nothing selects one mapping over another",
+         "the rule says a code CAN be afforded and how wide. Any "
+         "assignment of subsequences to catalysts works equally "
+         "well here, which is why the one we have looks arbitrary, "
+         "and nothing selects between them"),
     ]
 
 

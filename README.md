@@ -6101,3 +6101,66 @@ would be heredity of *function*. That is the remaining thing.
 
     35 links, 25 derived, 7 forced, 1 crossing, 2 gaps
     template 6/6    56 claims reproduce
+
+### 3.1.100 — two rules written, and only one of them closed
+
+The instruction was right in both places: where the numbers do not
+close a gap, **write the rule** and let them decide. Two rules were
+written. One closed its gap. The other measured it.
+
+### the code closed reading
+
+A sequence was carried and never read, because a strand codes only
+for its own complement. **A code** is the missing rule — a mapping
+from subsequences to catalysts that is neither the identity nor the
+complement. And it is not free: each meaning costs an adaptor, every
+adaptor is itself a sequence, so the code competes for genome with
+the thing it codes for.
+
+    the modern code    20 adaptors x 76 bases = 1,520 bases
+    a genome holds                               200 at 259 K
+                                                 DOES NOT FIT, 7.6x
+
+         T   genome  meanings  codon  left over
+     273 K      152         3      1      92 b
+     259 K      200         5      2     100 b
+     252 K      232         5      2     132 b
+
+**So the first code was small, and how small is set by temperature.**
+That is a derived prediction, not an assumption — an adaptor costs
+sequence, a genome is capped by fidelity, and both were already on
+the table. The conclusion survives the dial: at 30%, 50%, 70% and
+90% of the genome the affordable code is 2, 5, 7 and 9 meanings, and
+none reaches 20.
+
+### the waiting-time rule did not close the seven
+
+For the FORCED links the rule is the one selection already implies:
+a trait under pressure moves by response = s·σ² per generation, so
+the step is taken when variation crosses the distance in the time
+available. Written down and evaluated:
+
+    step             gens    predicted     recorded   orders out
+    eukaryote       1,023          3 y   2.00e+09 y          8.9
+    multicellular     758          2 y   1.20e+09 y          8.8
+    large-bodied    2,312          6 y   6.00e+07 y          7.0
+    large brain     1,888          5 y   2.18e+08 y          7.6
+
+**Wrong by seven to nine orders of magnitude, and wrong in the
+informative direction.** A rule predicting these steps were too
+*slow* would mean the pressure or the variation needed a bigger
+number, and either could be patched. It predicts they are **instant**.
+Nothing about selection is missing; something about the steps is.
+
+A continuous trait under constant pressure really does move that
+fast. **What separates LUCA from a eukaryote is not a bigger LUCA —
+it is a membrane inside a membrane**, and no amount of incremental
+size change reaches it. The seven links are not distances in a trait.
+They are **discrete innovations**, and nothing here produces one —
+the same absence `engine/descent.py` found for pumps, skins and
+skeletons.
+
+They stay FORCED. The rule did not close the gap; it gave it a size.
+
+    36 links, 26 derived, 7 forced, 2 gaps
+    code 6/6   reach 5/5   57 claims reproduce

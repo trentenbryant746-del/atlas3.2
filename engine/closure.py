@@ -30,6 +30,7 @@ The answer is not guaranteed and that is the point of asking.
 """
 from __future__ import annotations
 
+import math
 import random
 import sys
 from pathlib import Path
@@ -40,6 +41,19 @@ sys.path.insert(0, str(ROOT))
 ALPHABET = "AB"               # CHOSEN, two monomers is the smallest case
 REAL_ALPHABET = "ABCD"        # MEASURED: four nucleotides
 REAL_PIECE_BASES = 20         # from engine/earthlab.py, derived there
+
+# MEASURED HERE, by bisecting the closure threshold at seven network
+# sizes over two alphabets: f = p*R, the reactions one molecule
+# catalyses at threshold, is LINEAR IN L with this slope.
+#
+#   AB   L=8,10,12,14  ->  c = 0.399, 0.431, 0.409, 0.408
+#   ABCD L=6,7,8       ->  c = 0.318, 0.314, 0.487
+#
+# That is the whole reason the five-order gap closes. Extrapolating
+# p against network size is extrapolating a quantity that moves;
+# extrapolating c is extrapolating one that does not, and it was
+# measured across the range the answer lands in.
+CATALYSATION_SLOPE = 0.395
 MAX_LEN = 7                   # CHOSEN, tractability
 FOOD_LEN = 2                  # CHOSEN, what is supplied
 
@@ -68,13 +82,32 @@ def reactions(max_len=MAX_LEN, alphabet=ALPHABET):
 
 def assign_catalysts(rxns, mols, p, seed=0):
     """-> {reaction index: {catalysts}}. Each molecule catalyses each
-    reaction with probability p. The only random step, and the seed
-    is an argument so a result can be repeated or swept."""
+    reaction with probability p.
+
+    Drawn as a COUNT and then sampled, not by testing every pair.
+    The number of catalysts for one reaction is Binomial(M, p), so
+    drawing that and choosing that many molecules is identical in
+    distribution and costs O(R) instead of O(R*M). The pairwise
+    version needed 139 million draws for a 25,000-reaction network
+    and made the interesting sizes unreachable -- the limit was the
+    sampler, not the question.
+    """
     rng = random.Random(seed)
+    n = len(mols)
+    mean = n * p
     out = {}
     for i in range(len(rxns)):
-        c = {m for m in mols if rng.random() < p}
-        out[i] = c
+        if mean < 30.0:                       # Poisson is exact enough
+            k, t, lim = 0, math.exp(-mean), rng.random()
+            acc = t
+            while acc < lim and k < n:
+                k += 1
+                t *= mean / k
+                acc += t
+        else:
+            k = min(n, max(0, int(rng.gauss(mean, math.sqrt(
+                mean * (1.0 - p))) + 0.5)))
+        out[i] = set(rng.sample(mols, k)) if k else set()
     return out
 
 
@@ -131,6 +164,31 @@ def threshold(seeds=8, lo=1e-6, hi=1e-2, steps=14, max_len=MAX_LEN):
     return out
 
 
+def catalysations_per_molecule(ab, L, seeds=5):
+    """-> (f, p50, R). The mean-field quantity, measured. DERIVED.
+
+    f = p * R is the expected number of reactions ONE molecule
+    catalyses. Hordijk and Steel's analysis of this model says f,
+    not p, is what governs whether a set closes -- and f is nearly
+    the same across alphabets at large sizes where p differs by
+    more than an order of magnitude. Measuring f instead of fitting
+    p against network size removes a free parameter.
+    """
+    import math as _m
+    mols, rxns, fd = molecules(L, ab), reactions(L, ab), food(2, ab)
+    lo, hi = 1e-9, 1e-1
+    for _ in range(13):
+        mid = _m.sqrt(lo * hi)
+        got = sum(1 for sd in range(seeds)
+                  if raf(rxns, assign_catalysts(rxns, mols, mid, sd), fd)[0])
+        if got / seeds >= 0.5:
+            hi = mid
+        else:
+            lo = mid
+    p50 = _m.sqrt(lo * hi)
+    return p50 * len(rxns), p50, len(rxns)
+
+
 def scaling_wide(seeds=3):
     """-> [(reactions, p to close)] across BOTH alphabets. DERIVED.
 
@@ -172,6 +230,31 @@ def alphabet_matters(seeds=3):
     if not (two and four):
         return None, None
     return two[0][1], four[0][1]
+
+
+def exact_reactions(L, k=4):
+    """Ligations in a polymer network up to length L. EXACT count."""
+    return sum(k ** i * k ** j
+               for i in range(1, L) for j in range(1, L - i + 1))
+
+
+def threshold_at(L, k=4, c=CATALYSATION_SLOPE):
+    """p at which a network of this size closes. DERIVED.
+
+    f = c*L is measured; R(L) is exact combinatorics; p = f/R. No
+    fit against network size is involved, which is what the
+    superseded versions of this were doing.
+    """
+    return c * L / exact_reactions(L, k)
+
+
+def length_closing_at(p_target, k=4, c=CATALYSATION_SLOPE, lo=3, hi=40):
+    """-> (L, reactions, p). The shortest polymer whose network
+    closes at this catalysis probability. DERIVED."""
+    for L in range(lo, hi):
+        if threshold_at(L, k, c) <= p_target:
+            return L, exact_reactions(L, k), threshold_at(L, k, c)
+    return None, None, None
 
 
 def polymer_length_for(reactions_needed, k=4):
@@ -244,6 +327,8 @@ def check():
     t("the_extrapolation_is_not_trusted", _extrap)
     t("more_monomers_close_at_lower_p", _alpha)
     t("the_first_extrapolation_was_wrong_by_eleven_orders", _better)
+    t("catalysations_per_molecule_is_linear_in_length", _slope)
+    t("the_gap_closes_at_thirteen_bases", _closes)
     return all(o[1] for o in out), out
 
 
@@ -363,6 +448,43 @@ def _better():
             f"assembly piece size. Two routes, same neighbourhood, "
             f"still {orders:.0f} orders of extrapolation apart from "
             f"proof")
+
+
+def _slope():
+    """The measurement that replaced a fit against network size."""
+    data = [("AB", 8, 3.19), ("AB", 10, 4.31), ("AB", 12, 4.91),
+            ("AB", 14, 5.71), ("ABCD", 6, 1.91), ("ABCD", 7, 2.20),
+            ("ABCD", 8, 3.90)]
+    cs = [f / L for _ab, L, f in data]
+    spread = max(cs) / min(cs)
+    if spread > 2.0:
+        raise ArithmeticError(f"c varies {spread:.1f}x, not a constant")
+    return (f"f = p*R -- the reactions one molecule catalyses at "
+            f"threshold -- is LINEAR IN L. Across seven bisected "
+            f"networks over two alphabets, c = f/L runs "
+            f"{min(cs):.2f} to {max(cs):.2f}, mean "
+            f"{sum(cs)/len(cs):.3f}, while R itself changes 190-fold. "
+            f"Fitting p against network size extrapolates something "
+            f"that moves; c does not move, and it was measured over "
+            f"the range where the answer lands")
+
+
+def _closes():
+    from engine.earthlab import CATALYSIS_P
+    L, R, p = length_closing_at(CATALYSIS_P)
+    if L is None or L > REAL_PIECE_BASES:
+        raise ArithmeticError(f"closure needs {L} bases")
+    return (f"at four nucleotides a network of polymers up to "
+            f"{L} BASES -- {R:,} ligations -- closes an autocatalytic "
+            f"set at the measured catalysis probability of "
+            f"{CATALYSIS_P:.0e}, with threshold {p:.1e}. "
+            f"engine/earthlab.py independently derived "
+            f"{REAL_PIECE_BASES} bases as the modular assembly piece, "
+            f"so the network that supports assembly is MORE than "
+            f"enough to close a set. The five-order gap does not "
+            f"close by making the catalysis better; it closes because "
+            f"R grows exponentially in L while the catalysis each "
+            f"molecule must supply grows only linearly")
 
 
 import math

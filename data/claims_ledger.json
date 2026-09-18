@@ -188,7 +188,7 @@
 "ok": false
 },
 "3.1.88|a set closes above 1e-3; the measured p is 1e-8": {
-"fp": "8761ade585f46a1b",
+"fp": "b65caae7c3abe332",
 "ok": true
 },
 "3.1.88|cold buys 11x on build/break and 436x on lifetime": {
@@ -201,6 +201,10 @@
 },
 "3.1.89|wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap": {
 "fp": "20f96da464e34e1c",
+"ok": true
+},
+"3.1.90|closure at measured catalysis needs a 13-mer, under 20": {
+"fp": "44ab126094d5e842",
 "ok": true
 }
 }

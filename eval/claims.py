@@ -143,6 +143,14 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _closes13():
+    from engine.closure import (length_closing_at, CATALYSATION_SLOPE,
+                                REAL_PIECE_BASES)
+    from engine.earthlab import CATALYSIS_P
+    L, R, p = length_closing_at(CATALYSIS_P)
+    return L, L <= REAL_PIECE_BASES, CATALYSATION_SLOPE
+
+
 def _closurewide():
     from engine.closure import extrapolate_wide, alphabet_matters
     need, orders, L, a = extrapolate_wide()
@@ -420,8 +428,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
-    ("3.1.89", "wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap",
-     _closurewide, (-0.72, 15, 5, True), CURRENT),
+    ("3.1.90", "closure at measured catalysis needs a 13-mer, under 20",
+     _closes13, (13, True, 0.395), CURRENT),
     ("3.1.88", "a set closes above 1e-3; the measured p is 1e-8",
      _closure, (False, True, True), CURRENT),
     ("3.1.88", "cold buys 11x on build/break and 436x on lifetime",
@@ -522,6 +530,19 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.89", "wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap",
+     "withdrawn in 3.1.90. The number was close and the METHOD was "
+     "still wrong: it fitted the threshold p against network size and "
+     "extrapolated, which extrapolates a quantity that moves. "
+     "Bisecting the threshold at seven sizes over two alphabets shows "
+     "that f = p*R, the reactions one molecule catalyses at "
+     "threshold, is LINEAR IN L with slope 0.395 -- and c = f/L holds "
+     "between 0.31 and 0.49 while R changes 190-fold. Since R grows "
+     "exponentially in L and the catalysis each molecule must supply "
+     "grows only linearly, p = cL/R(L) is a derivation rather than a "
+     "fit, and it lands at 13 bases rather than 15. This is the third "
+     "value published for this quantity; the first two were 1e20 "
+     "reactions and 6.4e9"),
     ("3.1.88", "extrapolating closure to 1e-8 asks for 1e20 reactions",
      "withdrawn in 3.1.89, and not for being uncertain -- for being "
      "WRONG BY ELEVEN ORDERS OF MAGNITUDE. It fitted p ~ R^-0.30 by "

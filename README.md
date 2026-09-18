@@ -5648,3 +5648,55 @@ neighbourhood. Still five orders of extrapolation short of proof, and
 that is now the live number.
 
     closure 8/8    suite 7.9 s    48 claims, 15 superseded
+
+### 3.1.90 — the five orders close, at thirteen bases
+
+The gap was attacked directly rather than extrapolated across.
+
+**First, the sampler was the limit, not the question.**
+`assign_catalysts` drew a random number for every (reaction, molecule)
+pair — 139 million draws for a 25,000-reaction network — which put the
+interesting sizes out of reach. The catalyst count for one reaction is
+Binomial(M, p), so drawing the count and sampling that many molecules
+is identical in distribution and costs **O(R) instead of O(R·M)**.
+ABCD L=6 went from minutes to 1.26 s, and L=8 (582,544 reactions)
+became reachable.
+
+**Then the threshold was bisected rather than swept**, 5–9 seeds, at
+seven network sizes over two alphabets:
+
+    AB   L=8    3,076 rxns   p50 1.04e-03   f = p*R  3.19
+    AB   L=10  16,388        p50 2.63e-04            4.31
+    AB   L=12  81,924        p50 6.00e-05            4.91
+    AB   L=14 393,220        p50 1.45e-05            5.71
+    ABCD L=6   25,488        p50 7.51e-05            1.91
+    ABCD L=7  123,792        p50 1.78e-05            2.20
+    ABCD L=8  582,544        p50 6.69e-06            3.90
+
+**f = p·R is linear in L.** While R changes 190-fold, c = f/L stays
+between **0.31 and 0.49**, mean 0.395, across both alphabets. That is
+the Hordijk–Steel mean-field quantity, and measuring it removes the
+fit entirely:
+
+    p_threshold(L) = c·L / R(L)      c measured, R(L) exact
+
+Solving at four nucleotides for the measured catalysis probability:
+
+    L=11    54,059,920 reactions    8.04e-08
+    L=12   238,609,296             1.99e-08
+    L=13 1,043,915,664             4.92e-09   <- crosses 1e-8
+
+**Thirteen bases.** `engine/earthlab.py` independently derived **20
+bases** as the modular-assembly piece size, so the network that
+supports assembly is more than enough to close an autocatalytic set.
+
+**The gap does not close by making catalysis better.** It closes
+because R grows exponentially in L while the catalysis each molecule
+must supply grows only linearly.
+
+**This is the third value published for this quantity** — 10²⁰
+reactions, then 6.4×10⁹, now a 13-mer. The first two were fits of
+threshold against network size, which extrapolates something that
+moves. Both are superseded with that reason recorded.
+
+    closure 10/10    suite 8.0 s    49 claims, 16 superseded

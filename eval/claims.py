@@ -322,6 +322,19 @@ def _scale():
             round(math.log10(artifacts()), 2))
 
 
+def _farfuture():
+    from engine.farfuture import (hawking_temperature, evaporation_years,
+                                  de_sitter_temperature,
+                                  star_lifetime_years,
+                                  black_holes_start_shrinking,
+                                  LIGHTEST_STAR_MSUN)
+    return (round(math.log10(hawking_temperature(1.98847e30)), 2),
+            round(math.log10(evaporation_years(1.98847e30)), 2),
+            round(math.log10(de_sitter_temperature()), 2),
+            round(math.log10(star_lifetime_years(LIGHTEST_STAR_MSUN)), 2),
+            round(math.log10(black_holes_start_shrinking()), 2))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -791,8 +804,10 @@ CLAIMS = [
      _novelty, (0.8, 32, 21.5, 26.8, 99.7, 0.032), CURRENT),
     ("3.1.117", "two gates: heat stops at round 5, tolerance runs to 10",
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
-    ("3.1.120", "46 comparisons: 32 match, 24 of them free",
-     _recorded, (32, 5, 3, 24), CURRENT),
+    ("3.1.120", "52 comparisons: 37 match, 28 of them free",
+     _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.1.121", "the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor",
+     _farfuture, (-7.21, 67.32, -29.58, 12.74, 11.41), CURRENT),
     ("3.1.119", "19 trillion tokens enumerated, from 1.6 MB of rules",
      _scale, (13.28, 1.6, 36, 10584, 864, 8.87), CURRENT),
     ("3.1.118", "an inference kit is indivisible: 17,300 people for one",
@@ -826,7 +841,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (58, 50, 7, 0, 1), CURRENT),
+     _wholechain, (62, 53, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

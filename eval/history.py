@@ -101,6 +101,35 @@ def build():
        "J/bit", "kT ln2 at 300 K -- a definition recomputed",
        free=False)
 
+    # --- the far future ----------------------------------------------
+    from engine.farfuture import (hawking_temperature, evaporation_years,
+                                  de_sitter_temperature,
+                                  star_lifetime_years,
+                                  black_holes_start_shrinking,
+                                  hubble_time_yr, LIGHTEST_STAR_MSUN)
+    _r("Hawking temperature, one sun", hawking_temperature(1.98847e30),
+       6.17e-8,
+       "K", "the standard figure for a solar-mass hole is 6.2e-8 K; "
+       "this recomputes it from hbar, c, G and k")
+    _r("solar-mass hole lifetime", evaporation_years(1.98847e30), 2.1e67,
+       "yr", "Page's evaporation time for a solar mass is about "
+       "2e67 years")
+    _r("de Sitter floor temperature", de_sitter_temperature(), 2.6e-30,
+       "K", "the horizon temperature of a universe expanding at the "
+       "observed rate is quoted around 2.6e-30 K")
+    _r("Hubble time", hubble_time_yr(), 1.45e10,
+       "yr", "1/H0 at 67.4 km/s/Mpc is 14.5 Gyr -- arithmetic on a "
+       "measured rate", free=False)
+    _r("longest-lived star", star_lifetime_years(LIGHTEST_STAR_MSUN),
+       1e13,
+       "yr", "0.08 solar-mass red dwarfs are given lifetimes of "
+       "order 1e12-1e13 years")
+    _r("when holes start to shrink", black_holes_start_shrinking(),
+       1e12,
+       "yr", "the CMB falls below a stellar Hawking temperature "
+       "somewhere around 1e11-1e12 years in the standard account",
+       basis="estimated")
+
     # --- origin of life ---------------------------------------------
     _r("smallest closing compartment", 1e6 * closure_floor(), 0.3,
        "um", "the smallest free-living cells, Pelagibacter and "

@@ -164,7 +164,7 @@
 "ok": true
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "4ff998364729e8fb",
+"fp": "dab63e73dd05a631",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -177,6 +177,14 @@
 },
 "3.1.120|46 comparisons: 32 match, 24 of them free": {
 "fp": "b5e0c87336048a31",
+"ok": true
+},
+"3.1.120|52 comparisons: 37 match, 28 of them free": {
+"fp": "346d425d1221f4b3",
+"ok": true
+},
+"3.1.121|the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor": {
+"fp": "33db2bd6b23e2051",
 "ok": true
 },
 "3.1.18|folding survival rate 0.573": {

@@ -618,7 +618,57 @@ def inside_the_head():
          "rule 3 a machine that answers by searching is an "
          "admission: its usefulness measures what has not been "
          "derived, and it is the only quantity here that shrinks "
-         "as the work gets better")
+         "as the work gets better"),
+        ("everything derived so far", "one epoch of many", DERIVED,
+         "farfuture.star_lifetime_years",
+         "engine/epochs.py stops at the neutron-star merger, about "
+         "ten billion years, because that is the last epoch that "
+         "makes a new KIND of matter -- and everything above, "
+         "cells through lithography, happens INSIDE that one epoch "
+         "using nothing the universe had not already made. Main "
+         "sequence lifetime goes as M^(1-3.5), so the lightest "
+         "star that burns at all, 0.08 solar masses, lasts 5.5e12 "
+         "years against the Sun's 1e10. The era with people in it "
+         "is a 552nd of the era with stars in it, and the chain "
+         "had an end that nobody had written down"),
+        ("the last starlight", "holes that finally shrink", DERIVED,
+         "farfuture.black_holes_start_shrinking",
+         "a solar-mass hole radiates at 6.2e-8 K, colder than "
+         "today's 2.725 K sky, so it GROWS -- nothing evaporates "
+         "until the universe has cooled past it, which under "
+         "exponential expansion takes ln(2.725/6.2e-8) Hubble "
+         "times, about 2.6e11 years. Then t = 5120 pi G^2 M^3 / "
+         "hbar c^4, three constants and a mass with nothing "
+         "fitted: 2.1e67 years for a stellar hole and 2.1e94 for a "
+         "galactic one, because a cube turns 1e9 into 1e27. The "
+         "last event in the universe is the evaporation of the "
+         "largest hole in it"),
+        ("no gradient", "nothing further can be derived", DERIVED,
+         "farfuture.de_sitter_temperature",
+         "every rule in this repository runs on a GRADIENT. A cell "
+         "eats one, a body sheds one, a fire needs one, Carnot is "
+         "defined by one, and the 58x return on cooking exists "
+         "only because there is somewhere for the heat to go. The "
+         "floor is the de Sitter temperature, hbar H / 2 pi k = "
+         "2.7e-30 K, set by the horizon itself and by the same "
+         "formula as a black hole's. At that temperature "
+         "everything is at the horizon and there is no somewhere. "
+         "So the final link does not say the universe is cold. It "
+         "says the machinery this repository is built from has "
+         "nothing left to bite on, which is an ANSWER and not a "
+         "gap -- the one place on the chain where 'nothing further "
+         "can be derived' is the correct result"),
+        ("ordinary matter", "whether it lasts at all", MISSING,
+         "farfuture.PROTON_DECAY_BOUND_YR",
+         "a gap in the WORLD rather than in the model, and the "
+         "distinction is worth keeping. The proton has never been "
+         "observed to decay; Super-Kamiokande puts the lifetime "
+         "beyond 1.6e34 years, which is a bound and not a value. "
+         "If protons decay near that bound, white dwarfs and cold "
+         "planets evaporate long before the 2.1e67 years a stellar "
+         "hole needs and the degenerate era ends early. If they do "
+         "not, cold matter simply waits. Nothing here can decide "
+         "it and neither can anyone else yet")
     ]
 
 

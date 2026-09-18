@@ -154,6 +154,12 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _comprehension():
+    from engine.comprehension import binding, situations, unique_to
+    return (len(binding("bacterium")), len(binding("human")),
+            situations("human"), len(unique_to("human")))
+
+
 def _regard():
     from engine.regard import (regard_is_worth, taking_capacity, wins,
                                decisions)
@@ -550,6 +556,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.104", "comprehension is a count: 6 binds on a microbe, 13 on us",
+     _comprehension, (6, 13, 8192, 3), CURRENT),
     ("3.1.103", "regard is worth 1e19 times what it costs to hold",
      _regard, (True, 7300, 19), CURRENT),
     ("3.1.102", "the code freezes at 100% cost; rank steps at 3.8 children",

@@ -6342,3 +6342,52 @@ to *who is where*. Rank is arbitrary in the way the genetic code is
 arbitrary.
 
     regard 5/5    62 claims reproduce
+
+### 3.1.104 — an organism needs the replies, not the code
+
+This repository can read its own rules — `spine.py` walks the graph,
+`vocabulary.py` indexes every rule by its own words, `frozen.py`
+knows why a code mapping is locked. **None of that is available to a
+bacterium, and a bacterium is fine.**
+
+An organism does not need the code. It needs a **response to every
+constraint that can kill it**, and no more. The rules of the
+environment are already in the environment; what has to be carried
+is the reply.
+
+So comprehension is not a scale of insight. **It is a count.**
+
+    organism      binds   situations    brain bits
+    bacterium         6           64       none
+    bee               8          256       3.5e8
+    mouse            10        1,024       1.4e11
+    human            13        8,192       4.7e14
+
+**What does not bind needs nothing.** A bacterium has no reply to
+predation, heat rejection or provisioning because none of those bind
+at a micron. It is not ignorant of them — they are not there.
+`biome.py` prices predation for bodies that can be caught,
+`shelter.py` prices heat loss for bodies that make 82 W, and a
+bacterium is neither.
+
+    bee adds     heat out, food in, predation
+    mouse adds   oxygen to tissue, skeleton
+    human adds   provisioning, allocation, a shared corpus
+
+**A bigger brain understands more because more binds on it**, not
+because understanding is a virtue. The three a human carries alone
+were each derived elsewhere for its own reasons — eighteen years of
+provisioning in `ontogeny.py`, an allocation rule above the carrying
+number in `rank.py`, a corpus too large for one head in `school.py`.
+
+**And storage is not what scales.** A human holds 4.7×10¹⁴ bits and
+thirteen constraints; `learning.py` already showed that store fills
+in 1.49 years through one nerve. What scales is the number of
+distinct **situations** — 8,192 combinations of thirteen constraints,
+against 64 for a microbe.
+
+This file derives no constraint of its own. Every one of the fourteen
+names the module that produced it, across ten modules. It is a census
+of what the repository already refuses to let an organism ignore.
+
+    comprehension 6/6    63 claims reproduce

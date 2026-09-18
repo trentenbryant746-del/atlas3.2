@@ -165,6 +165,10 @@ INPUTS = {
     "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
     "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
     "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "comprehension.BINDS": (
+        MEASURED, "a census of constraints derived in other modules; "
+                  "adds none of its own"),
+    "comprehension.BRAIN_KG": (MEASURED, "brain mass by grade"),
     "lineage.chain": (
         MEASURED, "assembled from rules proved elsewhere; no number "
                   "of its own"),

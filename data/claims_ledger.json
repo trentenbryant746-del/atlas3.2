@@ -79,12 +79,16 @@
 "fp": "83d70b567823bc8c",
 "ok": true
 },
-"3.1.111|a crowd disease needs 912 people; cooking pays 58x": {
-"fp": "ea9aaa3d37887ddd",
+"3.1.111|a crowd disease needs 912 people; cooking pays 52x": {
+"fp": "2e0c0aac3ef80f8d",
 "ok": true
 },
+"3.1.111|a crowd disease needs 912 people; cooking pays 58x": {
+"fp": "2e0c0aac3ef80f8d",
+"ok": false
+},
 "3.1.111|a granary is 909x cheaper to hold than the range it replaced": {
-"fp": "1122eca13a2513e3",
+"fp": "80de0eb0fb040e3e",
 "ok": true
 },
 "3.1.111|one checked copy is worth 13 speakers; 5 scribes keep a script": {
@@ -116,7 +120,7 @@
 "ok": true
 },
 "3.1.114|24% of possible specialists are priced out by their tools": {
-"fp": "eccddf48a2085b14",
+"fp": "83f8f18b47d4d37a",
 "ok": true
 },
 "3.1.114|Big Bang to a head in 54 links: 46 derived, 7 forced, 0 gaps": {
@@ -180,7 +184,7 @@
 "ok": true
 },
 "3.1.120|52 comparisons: 37 match, 28 of them free": {
-"fp": "346d425d1221f4b3",
+"fp": "ef177d1f1e450f01",
 "ok": true
 },
 "3.1.121|the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor": {
@@ -189,6 +193,10 @@
 },
 "3.1.122|instrument order predicts science order, Kendall tau 0.77": {
 "fp": "eac9756d6b67e5ff",
+"ok": true
+},
+"3.1.123|42 constants are chosen; two stopped being, one pair disagrees 8.5x": {
+"fp": "9ab6dcddaed9b111",
 "ok": true
 },
 "3.1.18|folding survival rate 0.573": {

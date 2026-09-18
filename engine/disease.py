@@ -36,7 +36,24 @@ BOUT_DAYS = 7.0
 # --- cooking ---------------------------------------------------------
 SPECIFIC_HEAT = 3500.0      # J/kg/K, wet tissue
 COOK_RISE_K = 65.0          # 10 C to 75 C
-FIRE_EFFICIENCY = 0.10      # CHOSEN, open fire onto a carcass
+POT_RADIUS_M = 0.15         # MEASURED-ish, a cooking vessel
+POT_HEIGHT_M = 0.25         # MEASURED-ish, above the coals
+
+
+def fire_efficiency(r=POT_RADIUS_M, h=POT_HEIGHT_M):
+    """Fraction of a fire's output that reaches the food. DERIVED.
+
+    Was CHOSEN at 0.10 and it did not have to be. An open fire is
+    close to a point source radiating into 4 pi steradians. A pot
+    of radius r at height h subtends pi r^2 / h^2 of that, so the
+    intercepted fraction is r^2 / (4 h^2) -- geometry, and no
+    combustion physics needed, because what is lost is lost to
+    solid angle rather than to incomplete burning.
+    """
+    return r * r / (4.0 * h * h)
+
+
+FIRE_EFFICIENCY = fire_efficiency()
 LOG_KILL = 7.0              # 70 C held two minutes, vegetative cells
 RAW_LOAD = 1e6              # organisms per gram, spoiling meat
 PORTION_G = 200.0

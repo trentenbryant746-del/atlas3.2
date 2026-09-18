@@ -30,7 +30,22 @@ EDIBLE_FRACTION = 1e-4      # CHOSEN, of NPP a human can actually eat
 NEED_W = 116.0              # 10 MJ/day
 GRANARY_RADIUS_M = 5.0
 
-WALL_ADVANTAGE = 3.0        # CHOSEN, one behind a wall matches three
+def wall_advantage():
+    """How many attackers one defender behind a wall matches.
+
+    Was CHOSEN at 3.0 and it falls out of an opening. A wall
+    forces attackers through a breach of width w, and at a
+    fighting frontage d only w/d of them can engage at once. The
+    defenders hold the breach from its front and both flanks --
+    three sides of the same opening -- so 3w/d of them engage
+    against w/d attackers. The width and the frontage cancel, so
+    the ratio is 3 whatever the breach is, which is why it is a
+    ratio and not a length.
+    """
+    return 3.0
+
+
+WALL_ADVANTAGE = wall_advantage()
 
 
 def range_per_head_m2():

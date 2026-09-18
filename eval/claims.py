@@ -344,6 +344,14 @@ def _literature():
             when("optics"), when("solid state"), first)
 
 
+def _chosen():
+    from eval.chosen import (count, load_bearing_present,
+                             rate_disagreement, NOW_DERIVED)
+    n, mods = count()
+    return (n, mods, len(NOW_DERIVED), len(load_bearing_present()),
+            round(rate_disagreement(), 1))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -795,8 +803,8 @@ CLAIMS = [
      _craft, (1.41, 39, 13, 2, 9332, 280, 90), CURRENT),
     ("3.1.111", "one checked copy is worth 13 speakers; 5 scribes keep a script",
      _literacy, (5, 13, 9, 5, 10), CURRENT),
-    ("3.1.111", "a crowd disease needs 912 people; cooking pays 58x",
-     _disease, (912, 33, 132, 58, 526), CURRENT),
+    ("3.1.111", "a crowd disease needs 912 people; cooking pays 52x",
+     _disease, (912, 33, 132, 52, 526), CURRENT),
     ("3.1.111", "a granary is 909x cheaper to hold than the range it replaced",
      _power, (909, 15, 1.9, 8, 3.5), CURRENT),
     ("3.1.112", "a 5th-generation heir holds 32x what their ability warrants",
@@ -815,6 +823,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.1.123", "42 constants are chosen; two stopped being, one pair disagrees 8.5x",
+     _chosen, (42, 25, 2, 9, 8.5), CURRENT),
     ("3.1.122", "instrument order predicts science order, Kendall tau 0.77",
      _literature, (13, 55, 7, 0.77, 5, 8, 6), CURRENT),
     ("3.1.121", "the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor",
@@ -961,6 +971,14 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.111", "cooking pays for itself 58 times over",
+     "FIRE_EFFICIENCY was CHOSEN at 0.10 and did not have to be. An "
+     "open fire is close to a point source radiating into 4 pi, and "
+     "a pot of radius r at height h intercepts r^2/(4h^2) of that "
+     "-- 0.090 for a 15 cm pot at 25 cm. What an open fire wastes "
+     "is solid angle, not incomplete combustion. Cooking pays 52x, "
+     "not 58x, and the conclusion is untouched because it was two "
+     "orders clear either way"),
     ("3.1.117", "7 of 10 derived numbers match the record within 3x",
      "ten comparisons was too few to distinguish a method that "
      "finds real structure from one that propagates a single error "

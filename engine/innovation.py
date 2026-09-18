@@ -91,16 +91,44 @@ def wait_years(k, r=REACTIONS_IN_A_CELL):
     return combinations(k, r) / rate
 
 
-def coordination_for(years, r=REACTIONS_IN_A_CELL):
-    """-> k. How many at once a wait of this length implies.
+def coordination_size():
+    """-> k. How many reactions one omission changes. DERIVED.
 
-    READ OFF THE RECORD, not derived. It is the one number here
-    that is fitted, and it is reported as fitted.
+    NO LONGER FITTED. Losing a single molecule type removes every
+    reaction it catalysed, and that count is the Poisson mean p*M
+    that engine/closure.py measured -- 3.58. So a coordinated
+    change of that size is not a rare conjunction to wait for, it
+    is what ONE loss already is. The earlier version searched for
+    the k that reproduced the record and found 3, which was
+    reading this number off the answer.
     """
+    from engine.heredity import sole_catalyst_fraction
+    _sole, lam = sole_catalyst_fraction()
+    return lam
+
+
+def coordination_for(years, r=REACTIONS_IN_A_CELL):
+    """-> k. Kept so the old fitted route stays visible."""
     for k in range(1, 6):
         if wait_years(k, r) >= years:
             return k
     return None
+
+
+def useful_fraction(recorded_years=2e9):
+    """-> fraction. What the derived rate still leaves unexplained.
+
+    With k derived, the distinct coordinated sets available are
+    the molecule TYPES, and they are sampled in 2.2e5 years
+    against a record of 2e9. The residue is not a free parameter
+    dressed up -- it is a named quantity nobody here has measured:
+    the share of viable omissions that are also USEFUL.
+    """
+    from engine.occurrence import types_up_to, longest_complete_polymer
+    types = types_up_to(longest_complete_polymer())
+    sampled_yr = types / (innovations_per_division()
+                          * DIVISIONS_PER_YEAR)
+    return sampled_yr / recorded_years, sampled_yr
 
 
 def check():
@@ -115,7 +143,7 @@ def check():
     t("every_innovation_is_omit_duplicate_or_combine", _tax)
     t("the_rate_falls_out_of_heredity", _rate)
     t("single_omissions_are_not_the_barrier", _single)
-    t("coordination_is_fitted_and_says_so", _fit)
+    t("the_coordination_number_is_derived_now", _fit)
     t("the_taxonomy_is_falsifiable", _fals)
     return all(o[1] for o in out), out
 
@@ -160,18 +188,26 @@ def _single():
 
 
 def _fit():
-    k = coordination_for(2e9)
-    w = wait_years(k) if k else None
-    if k is None:
-        raise ArithmeticError("no coordination number reaches 2 Gyr")
-    return (f"matching the ~2 Gyr the record gives between LUCA and "
-            f"eukaryotes needs k = {k} coordinated omissions, which "
-            f"takes {w:.1e} years. THAT NUMBER IS FITTED. It is read "
-            f"off the record rather than derived, and it is the only "
-            f"one in this file that is -- the taxonomy is structural "
-            f"and the rate comes from engine/heredity.py. A fitted "
-            f"parameter reported as fitted is a different object "
-            f"from one quietly used")
+    k = coordination_size()
+    old = coordination_for(2e9)
+    frac, sampled = useful_fraction()
+    if abs(k - old) > 1.0:
+        raise ArithmeticError(f"derived {k:.2f} against fitted {old}")
+    if frac > 0.01:
+        raise ArithmeticError("nothing is left unexplained")
+    return (f"k IS DERIVED NOW: {k:.2f}, the Poisson mean p*M that "
+            f"engine/closure.py measured, because losing one "
+            f"molecule type removes every reaction it catalysed and "
+            f"that is how many. A coordinated change of that size is "
+            f"not a conjunction to wait for, it is what ONE loss "
+            f"already is. The fitted value was {old}, so the fit had "
+            f"been reading this number off the answer. What the "
+            f"derivation does NOT explain is the timing: types are "
+            f"sampled in {sampled:.1e} years against a record of "
+            f"2e9, leaving a factor of {1/frac:,.0f}. That is now a "
+            f"named unmeasured quantity -- the share of viable "
+            f"omissions that are also USEFUL, about {frac:.1e} -- "
+            f"rather than a parameter tuned to hide it")
 
 
 def _fals():

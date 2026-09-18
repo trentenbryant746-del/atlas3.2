@@ -6221,3 +6221,70 @@ is false. It predicts where to look: every innovation should have a
 creating rather than recombining.
 
     innovation 5/5    59 claims reproduce
+
+### 3.1.102 — the fitted number derived, and both gaps closed
+
+**k was reading the answer off the record.** The coordination number
+is p·M, the Poisson mean `engine/closure.py` already measured:
+**3.58**, because losing one molecule type removes every reaction it
+catalysed and that is how many. A coordinated change of that size is
+not a conjunction to wait for — **it is what one loss already is.**
+The fitted value was 3.
+
+What the derivation does *not* explain is the timing: types are
+sampled in 2.2×10⁵ years against a record of 2×10⁹. That leaves a
+factor of **9,137**, and it is now a *named unmeasured quantity* —
+the share of viable omissions that are also **useful**, about
+10⁻⁴ — rather than a parameter tuned to hide it.
+
+### gap one: what freezes a code mapping
+
+`engine/code.py` left it open — any assignment works equally well, so
+nothing selects one. Something does: **the cost of changing it.**
+
+    meanings   one change breaks
+           4             100.00%
+           5             100.00%
+          20              99.41%
+          64              79.30%
+
+With 5 meanings over 100 codons a single change breaks **100% of
+every sequence written so far** — and it is total *from the first
+sequences*, before anything has had time to be good. **A narrow code
+freezes hardest**, and `code.py` says the first code had five
+meanings.
+
+So something selects **having** a code and is blind to **which**. The
+answer to why the real code looks arbitrary is that it *is*
+arbitrary, and the arbitrariness is now derived rather than left as a
+gap.
+
+### gap two: when rank has a price
+
+The absence was in the scenarios, not the rules. Every group priced
+in `civ` and `empire` had a surplus, and where there is enough for
+everyone the order of serving does not matter.
+
+**Rank is not a preference. It is an allocation rule**, and an
+allocation rule has no work to do until there is a shortfall.
+
+    two adults    children   shortfall   price of rank
+                         3         0 W             0 W
+                         4         9 W            82 W
+                         5        60 W            82 W
+
+A forager nets 97 W and a child costs 51 W, so **N adults carry 1.9N
+children**. Below that line rank is worth nothing; above it, what the
+low-ranked person loses is not a share of the shortfall — **it is
+their whole 82 W.** The price is discontinuous and appears exactly at
+the carrying number.
+
+Asking "what makes people want status" found nothing because the
+question was about wanting. The answer is about **who does not eat.**
+
+    37 links, 28 derived, 7 forced, 1 gap
+    innovation 5/5   frozen 4/4   rank 5/5   61 claims reproduce
+
+The one remaining gap: **nothing prices regard.** What is derived is
+who eats, not who is admired, and whether those are the same thing is
+not a question these rules can reach.

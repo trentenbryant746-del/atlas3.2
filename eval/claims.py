@@ -154,6 +154,20 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _frozen():
+    from engine.frozen import cost_of_change, narrow_is_worse
+    frac, codons, m = cost_of_change()
+    rows = narrow_is_worse()
+    return round(100 * frac, 1), codons, rows[0][1] > rows[-1][1]
+
+
+def _rank():
+    from engine.rank import carrying_children, rank_is_priced
+    ok0, p0, _w = rank_is_priced(2, 3)
+    ok1, p1, _w = rank_is_priced(2, 4)
+    return round(carrying_children(2), 1), ok0, ok1, round(p1)
+
+
 def _innovation():
     from engine.innovation import (INNOVATIONS, innovations_per_division,
                                    wait_years, coordination_for, OMIT)
@@ -527,6 +541,10 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.102", "the code freezes at 100% cost; rank steps at 3.8 children",
+     _frozen, (100.0, 100, True), CURRENT),
+    ("3.1.102", "rank is worth zero then 82 W at the carrying number",
+     _rank, (3.8, False, True, 82), CURRENT),
     ("3.1.101", "innovation is omit/duplicate/combine at 4.48 per division",
      _innovation, (6, 4, 4.48, 3), CURRENT),
     ("3.1.100", "the modern code needs 1520 bases and 200 are held",
@@ -539,8 +557,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.95", "Big Bang to a head in 36 links: 26 derived, 7 forced, 2 gaps",
-     _wholechain, (36, 26, 7, 2, 1), CURRENT),
+    ("3.1.95", "Big Bang to a head in 37 links: 28 derived, 7 forced, 1 gap",
+     _wholechain, (37, 28, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

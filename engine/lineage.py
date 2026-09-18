@@ -176,12 +176,14 @@ def before_luca():
          "against the 200 fidelity allows -- it does not fit. Five "
          "meanings do, so the first code was small and how small is "
          "set by temperature"),
-        ("a small code", "a cell that is", MISSING,
-         "nothing selects one mapping over another",
-         "the rule says a code CAN be afforded and how wide. Any "
-         "assignment of subsequences to catalysts works equally "
-         "well here, which is why the one we have looks arbitrary, "
-         "and nothing selects between them"),
+        ("a small code", "a cell that is", DERIVED,
+         "frozen.cost_of_change",
+         "a mapping is selected by the cost of CHANGING it: with 5 "
+         "meanings over 100 codons one change breaks 100% of every "
+         "sequence written so far, and it is total from the first "
+         "ones, before anything has had time to be good. Something "
+         "selects HAVING a code and is blind to WHICH, which is why "
+         "the real one looks arbitrary"),
     ]
 
 
@@ -286,10 +288,19 @@ def inside_the_head():
          f"{100*speech_as_fraction_of_a_brain():.4f}% of a lifetime's "
          f"input and is worth it because it is the part somebody "
          f"already selected"),
-        ("a corpus", "what it is for", MISSING, "nothing prices rank",
-         "engine/civ.py and engine/empire.py both stop here: nothing "
-         "makes one person's share depend on another's regard, so "
-         "status, belief and rest are absences rather than results"),
+        ("a corpus", "an allocation rule", DERIVED, "rank.rank_is_priced",
+         "the absence was in the scenarios. N adults carry 1.9N "
+         "children, and below that line the order of serving changes "
+         "nothing while above it somebody does not eat. Rank is not "
+         "a preference, it is an allocation rule, and its price is "
+         "discontinuous: zero below the carrying number and a whole "
+         "82 W life above it"),
+        ("an allocation rule", "what it is for", MISSING,
+         "nothing prices regard",
+         "what is derived is who eats, not who is admired. Belief "
+         "and rest remain absences too, and whether regard and "
+         "allocation are the same thing is not a question these "
+         "rules can reach"),
     ]
 
 

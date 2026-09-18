@@ -160,7 +160,15 @@
 "ok": true
 },
 "3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
-"fp": "f07fd0a13c563f6f",
+"fp": "c16a831e544e253b",
+"ok": true
+},
+"3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
+"fp": "4ff998364729e8fb",
+"ok": true
+},
+"3.1.118|an inference kit is indivisible: 17,300 people for one": {
+"fp": "be69b6f4c87b5097",
 "ok": true
 },
 "3.1.18|folding survival rate 0.573": {

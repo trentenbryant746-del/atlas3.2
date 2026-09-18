@@ -6,7 +6,7 @@ describes, so it cannot drift from what the system actually does.
 
 ## The chain
 
-57 links from a nebula to a head. Each one names the rule that drives
+58 links from a nebula to a head. Each one names the rule that drives
 it and the module the rule lives in. A link is DERIVED when something
 here forces it, FORCED when it is both permitted and driven, CROSSES
 when it is permitted and nothing drives it, and MISSING when it is a
@@ -602,6 +602,27 @@ centuries past now the model gives 29.4 -> 49.4 parts and an exponent,
 and refuses to name anything, because a name for a primitive nobody has
 made is a word with no rule under it
 
+### 58. a corpus too large to hold -> a machine that searches it
+
+*DERIVED* &nbsp; `inference.least_population`
+
+engine/artifact.py has inference as a primitive and nothing runs there.
+Priced against rules that already exist, the costs are not where anyone
+puts them. The corpus is 1.38e12 bits and Landauer's floor for erasing
+it is 4.1e-9 J -- under a second of one human at rest -- while a real
+gate spends 3.4e11 times that, so the thermodynamic limit is not the
+constraint and is not within ten orders of being one. The cost is the
+KIT. engine/capital.py priced a part at 50 days for a village making
+things to a tenth; holding a billionth costs 10,000x that, so the kit
+is 3.4 million labour-days. A village of 912 affords 0.0005 of one,
+which is why the thing sits ten rounds out; it takes 17,300 people for
+ONE. The result is not that it is dear but that it is INDIVISIBLE -- a
+network of 36,480 has room for two, and engine/merit.py prices a holder
+of a 2-deep specialty at 50%, the highest pivotality on this chain. And
+by README rule 3 a machine that answers by searching is an admission:
+its usefulness measures what has not been derived, and it is the only
+quantity here that shrinks as the work gets better
+
 ## The technology
 
 21 physical capabilities, each grounded in a rule that already existed
@@ -625,10 +646,10 @@ that raise it need the things it makes:
 
 **Round 1** — 1100 K
 
-- **cordage** (300 K, needs nothing) — fibre twisted until it holds &nbsp; `tools.grip_gate`
-- **edge** (300 K, needs nothing) — a worked face that cuts &nbsp; `tools.grip_gate`
+- **cordage** (300 K, needs nothing) — fibre twisted until it holds &nbsp; `tools.breaks`
+- **edge** (300 K, needs nothing) — a worked face that cuts &nbsp; `tools.stress`
 - **heat** (600 K, needs nothing) — fire held at a temperature &nbsp; `disease.cook_cost_mj`
-- **lever** (300 K, needs nothing) — a length trading force for distance &nbsp; `tools.torque`
+- **lever** (300 K, needs nothing) — a length trading force for distance &nbsp; `tools.usable`
 
 **Round 2** — 1100 K
 
@@ -639,36 +660,36 @@ that raise it need the things it makes:
 **Round 3** — 1400 K
 
 - **breeding** (300 K, needs mark) — kept records of who bred with whom &nbsp; `heredity.copies_per_type`
-- **smelting** (1350 K, needs heat, containment) — ore reduced past its melting point &nbsp; `arrhenius.rate`
+- **smelting** (1350 K, needs heat, containment) — ore reduced past its melting point &nbsp; `thermo.effective_temperature`
 
 **Round 4** — 1600 K
 
-- **gearing** (1350 K, needs rotation, smelting) — teeth that carry a ratio &nbsp; `tools.torque`
+- **gearing** (1350 K, needs rotation, smelting) — teeth that carry a ratio &nbsp; `tools.what_works`
 
 **Round 5** — 1750 K
 
-- **electricity** (1700 K, needs smelting, rotation) — charge moved on purpose &nbsp; `landauer.kT`
+- **electricity** (1700 K, needs smelting, rotation) — charge moved on purpose &nbsp; `learning.landauer_j`
 - **optics** (1700 K, needs heat, containment) — glass shaped to bend light &nbsp; `senses.diffraction_limit`
-- **pressure** (1700 K, needs smelting, containment) — a vessel that holds against itself &nbsp; `eos.pressure`
-- **spring** (1700 K, needs smelting) — steel: stored strain released on demand &nbsp; `eos.strain`
+- **pressure** (1700 K, needs smelting, containment) — a vessel that holds against itself &nbsp; `eos.ceiling`
+- **spring** (1700 K, needs smelting) — steel: stored strain released on demand &nbsp; `eos.band`
 
 **Round 6** — 1750 K
 
-- **regulation** (1700 K, needs gearing, spring) — a machine that corrects itself &nbsp; `control.feedback`
-- **steam** (1700 K, needs pressure, heat) — heat turned into a stroke &nbsp; `carnot.efficiency`
+- **regulation** (1700 K, needs gearing, spring) — a machine that corrects itself &nbsp; `signal.signal_bits`
+- **steam** (1700 K, needs pressure, heat) — heat turned into a stroke &nbsp; `thermo.gamma`
 
 **Round 7** — 1750 K
 
 - **alloy** (1700 K, needs smelting, regulation) — composition held to a specification &nbsp; `atoms.Pool`
-- **vacuum** (1700 K, needs pressure, regulation) — a volume with the air taken out &nbsp; `eos.pressure`
+- **vacuum** (1700 K, needs pressure, regulation) — a volume with the air taken out &nbsp; `eos.floor`
 
 **Round 8** — 1750 K
 
-- **semiconductor** (1700 K, needs vacuum, alloy) — a crystal pure enough to switch &nbsp; `landauer.kT`
+- **semiconductor** (1700 K, needs vacuum, alloy) — a crystal pure enough to switch &nbsp; `eos.classify`
 
 **Round 9** — 1750 K
 
-- **switching** (1700 K, needs semiconductor, electricity) — a gate that opens on a signal &nbsp; `landauer.kT`
+- **switching** (1700 K, needs semiconductor, electricity) — a gate that opens on a signal &nbsp; `learning.landauer_j`
 
 **Round 10** — 1750 K
 
@@ -715,7 +736,7 @@ trying harder buys nothing. Only a changed term moves it:
 
 ## The rules, and what each one says
 
-557 of 557 rules hold across 91 modules.
+562 of 562 rules hold across 92 modules.
 
 Every check below is a rule that produced its own sentence. An INVERTED
 check is one that fails when the result looks too good -- it is there
@@ -967,6 +988,17 @@ that bounded an eye, steam in Carnot. A primitive that needs others
 cannot come first, so the order is forced: depth 0 is ['cordage',
 'edge', 'heat', 'lever'], and the deepest is inference at 8. Nobody
 sequenced this; the prerequisites did
+
+**every_grounding_pointer_resolves_to_a_real_rule** — holds
+
+all 21 primitives point at a rule that exists and is importable, across
+11 modules: ['atoms', 'biome', 'disease', 'eos', 'heredity',
+'learning', 'literacy', 'senses', 'signal', 'thermo', 'tools']. This
+check exists because the claim was made in prose first and 13 of the 21
+pointers were invented -- tools.torque, eos.strain, carnot.efficiency,
+control.feedback, landauer.kT. Plausible names for rules this repo does
+not have. A grounding that is not resolved is a citation nobody
+followed
 
 **the_count_of_designs_now_has_objects_under_it** — holds
 
@@ -2433,7 +2465,7 @@ has asked. That is the entire cost, paid once
 **questions_are_lookups_afterwards** — holds
 
 a three-condition question -- in the band, brine still liquid, a body
-able to shed its own heat -- returns 864 universes in 46 ms.
+able to shed its own heat -- returns 864 universes in 45 ms.
 engine/multiverse.py answered a narrower version of this by sweeping
 seeds and took 22 s per 20,000 worlds
 
@@ -2755,6 +2787,64 @@ leak is not a cycle
 warning -- a stock divided by a rate. Whether the estimate of what is
 recoverable matches what was buried is a question this file cannot
 answer, and the burial fraction it rests on is CHOSEN
+
+### engine/inference.py
+
+What a machine that answers by searching would cost, and what its
+existence would say about this repository.
+
+**the_thermodynamic_floor_is_not_the_constraint** — holds
+
+the corpus is 1.38e+12 bits -- 1.18e+08 items at 11700 bits a telling,
+speech running 39 bit/s across every language anyone has measured.
+Landauer at 310 K puts the floor for erasing it once at 4.11e-09 J:
+less than a second of one human at rest. A real gate at 1e-15 J
+touching each bit 1e+06 times spends 1.38e+03 J, which is 3.4e+11x the
+floor. The thermodynamic limit is not the constraint and is not within
+ten orders of being one -- the same shape as temperature, which stopped
+mattering at round 5 and kept being quoted
+
+**the_kit_is_the_cost_and_scarcity_is_the_consequence** — holds
+
+inference rests transitively on 15 other primitives, so the kit is the
+near-whole tree. But a part is not a part: engine/capital.py's 50 days
+was set for a village where everything is made to a tenth, and holding
+1e-09 costs 10,000x that. The kit is 3,368,702 labour-days. A village
+of 912 affords 0.0527 of one, so the specialty cannot exist there at
+all -- which is the derived answer to why it sits ten rounds out. It
+takes 17,300 people before ONE kit is affordable, a city rather than a
+region, and a network of 36480 affords 2.1. That is the result: not
+that it is expensive but that it is INDIVISIBLE and there is room for
+about two. engine/merit.py prices a holder at 1/k, so each is worth 50%
+of what the thing is worth to everybody -- the highest pivotality of
+any specialty on this chain. The cost was never the electricity, and
+the consequence is not cost, it is that two parties hold it
+
+**it_attacks_the_one_term_the_record_says_is_wrong** — holds
+
+engine/novelty.py found that novelty per head falls because a design of
+p parts needs p people who between them hold p crafts -- the team is
+the whole headwind. A corpus one head can consult collapses exactly
+that term: team 26.8 -> 1, so the model says novelty per head rises 27x
+and the 0.80 decline reverses. Take that lightly. eval/history.py
+records this same term as the repo's second-worst miss: the model's
+decline is 16x GENTLER than measured, so team size is already known not
+to be what is really limiting. Removing a term that was too weak cannot
+buy back a gap it never explained. The prediction is large and the rule
+under it is one of the two this repo knows to be wrong
+
+**INVERTED_its_usefulness_measures_what_is_underived** — holds
+
+README rule 3: if a check runs a search, the rule underneath it has not
+been found yet. A machine that answers by searching a corpus is that
+sentence industrialised -- it is very good at the thing this repository
+treats as an admission. So its usefulness here is not a measure of how
+good it is; it is a measure of how much has not been derived. The chain
+has 58 links and 1 still open, and every one of the 550 rules that DID
+get found is a question such a machine would no longer be needed for.
+That is the honest account of what building one would be worth to this
+system, and it is the only claim here that gets smaller as the work
+gets better
 
 ### engine/inherit.py
 
@@ -3129,8 +3219,8 @@ Nebula to human, one chain, every link named.
 
 **the_chain_runs_end_to_end** — holds
 
-57 links from a nebula to what a head does, in order and in one list:
-CROSSES 1, DERIVED 49, FORCED 7. engine/planetlab.py,
+58 links from a nebula to what a head does, in order and in one list:
+CROSSES 1, DERIVED 50, FORCED 7. engine/planetlab.py,
 engine/earthlab.py and engine/ancestry.py each walked part of this and
 none handed off, so the chain the repository is for was the one thing
 nobody could read
@@ -3148,13 +3238,13 @@ per gene falls as 1/r until membranes go inside, which buys 200x
 
 **every_link_names_its_rule** — holds
 
-57 of 57 links name the rule and module that produce them; the 0 that
+58 of 58 links name the rule and module that produce them; the 0 that
 do not are exactly the 0 marked MISSING, whose whole content is that no
 rule produces them
 
 **the_gaps_are_named_and_counted** — holds
 
-57 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
+58 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
 is permitted and undriven -- the gates open and nothing makes it
 happen, so permission is not occurrence and the distance between them
 is not measured anywhere here
@@ -4320,8 +4410,8 @@ photosynthesis
 
 **following_beats_running_everything** — holds
 
-10 questions, 6.73 ms warm against 17.3 s for the full suite on a warm
-cache -- 2,571x. The suite re-establishes the past on every question.
+10 questions, 6.63 ms warm against 17.3 s for the full suite on a warm
+cache -- 2,607x. The suite re-establishes the past on every question.
 This establishes it once, because the past does not move. Roots get
 longer and deeper as modules are added and the cost stays at the tip
 
@@ -5259,7 +5349,7 @@ written past it
 
 **every_rule_is_reachable_by_its_own_words** — holds
 
-656 rules across 127 modules, indexed under 3,380 distinct terms,
+658 rules across 127 modules, indexed under 3,399 distinct terms,
 against the 350 facts the Atlas 2 shim carried. The gap was never
 machinery -- it was that 3.1's rules had never been given their words
 
@@ -5273,14 +5363,14 @@ the answer
 
 **nothing_in_the_index_was_written_by_hand** — holds
 
-656 of 656 entries carry terms taken from the rule's own name and
+658 of 658 entries carry terms taken from the rule's own name and
 docstring, and the answer is the sentence its check() already emitted.
 No lexicon was written by hand, so a rule added tomorrow is reachable
 tomorrow
 
 **only_what_moved_is_recomputed** — holds
 
-127 modules untouched, 0 rechecked, in 56 ms. An earlier version of
+128 modules untouched, 0 rechecked, in 59 ms. An earlier version of
 this SWEPT -- ran every check and compared 512 sentences, 180 seconds
 to re-derive answers nothing could have changed. That is the mistake
 eval/claims.py had already fixed with fingerprints, committed again
@@ -5322,7 +5412,7 @@ did
 
 ## The published numbers
 
-84 of 84 reproduce. A claim is tied to a fingerprint over the rule that
+85 of 85 reproduce. A claim is tied to a fingerprint over the rule that
 produced it and everything that rule depends on, so an unchanged
 fingerprint is a proof that recomputing would return the same thing.
 
@@ -5344,6 +5434,7 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.115` novelty per head falls to 0.80 while the total rises 32x — reproduces (`(0.8, 32, 21.5, 26.8, 99.7, 0.032)`)
 - `3.1.117` two gates: heat stops at round 5, tolerance runs to 10 — reproduces (`(21, 10, 1750, 3, 5, 9, 10)`)
 - `3.1.117` 7 of 10 derived numbers match the record within 3x — reproduces (`(7, 1, 2, 6)`)
+- `3.1.118` an inference kit is indivisible: 17,300 people for one — reproduces (`(12.14, 11.5, 16, 3368702, 17300, 2.1)`)
 - `3.1.116` a press is worth 6.6 parts; proofreading is worth nothing — reproduces (`(6.6, 0.322, 0.0, 3.3)`)
 - `3.1.107` the derived group is 3; transitivity saves 10x on contests — reproduces (`(3, 10, 0.0, 0.02)`)
 - `3.1.106` a microbe needs 6 to adapt yearly, a human 40,792 — reproduces (`(6, 40792, 0.5)`)
@@ -5358,7 +5449,7 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.99` every ligation is templated; the template is the catalyst — reproduces (`(True, 25488, True, True, 200)`)
 - `3.1.98` divides at 2x volume, 28 copies, 1.39 types lost — reproduces (`(2.0, 28, 1.39, 10.0)`)
 - `3.1.96` one compartment closes at 14 bases; an ocean is 1e35 — reproduces (`(True, 14, 13, 35)`)
-- `3.1.117` Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps — reproduces (`(57, 49, 7, 0, 1)`)
+- `3.1.118` Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps — reproduces (`(58, 50, 7, 0, 1)`)
 - `3.1.95` abundance falls as mass^-3/4 exactly — reproduces (`1.0`)
 - `3.1.94` the lineage holds at the 1.58 um closure floor — reproduces (`(1.58, True, True)`)
 - `3.1.91` closure is 0.48 catalysts per reaction, above 2000 molecules — reproduces (`(0.48, True, 13, True)`)
@@ -5413,9 +5504,18 @@ fingerprint is a proof that recomputing would return the same thing.
 
 ## What was published and later withdrawn
 
-28 numbers were published here and are wrong. They are kept with the
+29 numbers were published here and are wrong. They are kept with the
 reason, because a record that only holds the surviving answers is not a
 record.
+
+### `3.1.116` every primitive is grounded in a rule that already exists
+
+13 of 21 pointed at NOTHING. tools.torque, eos.strain,
+carnot.efficiency, control.feedback, landauer.kT -- plausible names for
+rules this repo does not have, written in prose where nothing checked
+them. Repointed at real functions and artifact._grounded now imports
+every one of them. A grounding that is not resolved is a citation
+nobody followed, and I wrote thirteen
 
 ### `3.1.116` temperature gates the tech tree, 16 primitives in 6 rounds
 

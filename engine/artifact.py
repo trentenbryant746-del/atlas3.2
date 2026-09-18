@@ -44,30 +44,30 @@ import math
 # Each entry: (needs, temperature K, grounding rule, words).
 PRIMITIVES = {
     "heat":        ((), 600, "disease.cook_cost_mj", "fire held at a temperature"),
-    "edge":        ((), 300, "tools.grip_gate", "a worked face that cuts"),
-    "cordage":     ((), 300, "tools.grip_gate", "fibre twisted until it holds"),
-    "lever":       ((), 300, "tools.torque", "a length trading force for distance"),
+    "edge":        ((), 300, "tools.stress", "a worked face that cuts"),
+    "cordage":     ((), 300, "tools.breaks", "fibre twisted until it holds"),
+    "lever":       ((), 300, "tools.usable", "a length trading force for distance"),
     "rotation":    (("edge", "lever"), 300, "biome.escalation_stops_at", "a bearing and a round thing on it"),
     "mark":        (("edge",), 300, "literacy.copy_error", "a durable trace standing for a sound"),
     "breeding":    (("mark",), 300, "heredity.copies_per_type", "kept records of who bred with whom"),
     "containment": (("heat",), 1000, "atoms.Pool", "fired clay that holds against a gradient"),
-    "smelting":    (("heat", "containment"), 1350, "arrhenius.rate", "ore reduced past its melting point"),
-    "gearing":     (("rotation", "smelting"), 1350, "tools.torque", "teeth that carry a ratio"),
+    "smelting":    (("heat", "containment"), 1350, "thermo.effective_temperature", "ore reduced past its melting point"),
+    "gearing":     (("rotation", "smelting"), 1350, "tools.what_works", "teeth that carry a ratio"),
     "optics":      (("heat", "containment"), 1700, "senses.diffraction_limit", "glass shaped to bend light"),
-    "spring":      (("smelting",), 1700, "eos.strain", "steel: stored strain released on demand"),
-    "pressure":    (("smelting", "containment"), 1700, "eos.pressure", "a vessel that holds against itself"),
-    "steam":       (("pressure", "heat"), 1700, "carnot.efficiency", "heat turned into a stroke"),
-    "regulation":  (("gearing", "spring"), 1700, "control.feedback", "a machine that corrects itself"),
-    "electricity": (("smelting", "rotation"), 1700, "landauer.kT", "charge moved on purpose"),
+    "spring":      (("smelting",), 1700, "eos.band", "steel: stored strain released on demand"),
+    "pressure":    (("smelting", "containment"), 1700, "eos.ceiling", "a vessel that holds against itself"),
+    "steam":       (("pressure", "heat"), 1700, "thermo.gamma", "heat turned into a stroke"),
+    "regulation":  (("gearing", "spring"), 1700, "signal.signal_bits", "a machine that corrects itself"),
+    "electricity": (("smelting", "rotation"), 1700, "learning.landauer_j", "charge moved on purpose"),
     # Past iron, heat stops being the gate. Everything below is
     # reachable at 1750 K and none of it was available in 1750,
     # because the thing in short supply changed: not how hot you
     # can get but how ACCURATELY you can place matter. A second
     # scalar, and it bootstraps the same way.
-    "vacuum":      (("pressure", "regulation"), 1700, "eos.pressure", "a volume with the air taken out"),
+    "vacuum":      (("pressure", "regulation"), 1700, "eos.floor", "a volume with the air taken out"),
     "alloy":       (("smelting", "regulation"), 1700, "atoms.Pool", "composition held to a specification"),
-    "semiconductor": (("vacuum", "alloy"), 1700, "landauer.kT", "a crystal pure enough to switch"),
-    "switching":   (("semiconductor", "electricity"), 1700, "landauer.kT", "a gate that opens on a signal"),
+    "semiconductor": (("vacuum", "alloy"), 1700, "eos.classify", "a crystal pure enough to switch"),
+    "switching":   (("semiconductor", "electricity"), 1700, "learning.landauer_j", "a gate that opens on a signal"),
     "inference":   (("switching", "regulation"), 1700, "learning.store_bits", "statistics run at a scale no head holds"),
 }
 
@@ -303,6 +303,7 @@ def check():
             res.append((n, False, f"{type(e).__name__}: {e}"))
 
     t("a_primitive_cannot_precede_what_it_is_made_of", _order)
+    t("every_grounding_pointer_resolves_to_a_real_rule", _grounded)
     t("the_count_of_designs_now_has_objects_under_it", _objects)
     t("every_name_is_checked_against_the_derivation", _names)
     t("our_own_age_arrives_last_and_not_by_being_listed", _modern)
@@ -327,6 +328,40 @@ def _order():
             f"{[n for n in o if d[n]==0]}, and the deepest is "
             f"{max(d, key=d.get)} at {max(d.values())}. Nobody "
             f"sequenced this; the prerequisites did")
+
+
+def _grounded():
+    """Every rule named as grounding must actually exist.
+
+    Added at 3.1.118 because it did not. The module claimed each
+    primitive was grounded in a rule that already existed and 13
+    of 21 pointed at nothing -- tools.torque, eos.strain,
+    carnot.efficiency, landauer.kT, control.feedback, none of
+    them real. Nothing checked, because the claim was in prose.
+    """
+    import importlib
+    bad = []
+    for n, (_needs, _k, rule, _w) in PRIMITIVES.items():
+        mod, _, fn = rule.partition(".")
+        try:
+            m = importlib.import_module("engine." + mod)
+            if not hasattr(m, fn):
+                bad.append(f"{n} -> {rule}")
+        except Exception:
+            bad.append(f"{n} -> {rule} (no module)")
+    if bad:
+        raise ArithmeticError(f"{len(bad)} ungrounded: {bad}")
+    mods = sorted({r.split(".")[0] for _n, (_a, _b, r, _c)
+                   in PRIMITIVES.items()})
+    return (f"all {len(PRIMITIVES)} primitives point at a rule that "
+            f"exists and is importable, across {len(mods)} modules: "
+            f"{mods}. This check exists because the claim was made "
+            f"in prose first and 13 of the 21 pointers were "
+            f"invented -- tools.torque, eos.strain, "
+            f"carnot.efficiency, control.feedback, landauer.kT. "
+            f"Plausible names for rules this repo does not have. A "
+            f"grounding that is not resolved is a citation nobody "
+            f"followed")
 
 
 def _objects():

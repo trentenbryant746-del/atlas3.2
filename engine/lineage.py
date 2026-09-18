@@ -595,7 +595,30 @@ def inside_the_head():
          "centuries past now the model gives 29.4 -> 49.4 parts "
          "and an exponent, and refuses to name anything, because "
          "a name for a primitive nobody has made is a word with no "
-         "rule under it")
+         "rule under it"),
+        ("a corpus too large to hold", "a machine that searches it",
+         DERIVED, "inference.least_population",
+         "engine/artifact.py has inference as a primitive and "
+         "nothing runs there. Priced against rules that already "
+         "exist, the costs are not where anyone puts them. The "
+         "corpus is 1.38e12 bits and Landauer's floor for erasing "
+         "it is 4.1e-9 J -- under a second of one human at rest -- "
+         "while a real gate spends 3.4e11 times that, so the "
+         "thermodynamic limit is not the constraint and is not "
+         "within ten orders of being one. The cost is the KIT. "
+         "engine/capital.py priced a part at 50 days for a village "
+         "making things to a tenth; holding a billionth costs "
+         "10,000x that, so the kit is 3.4 million labour-days. A "
+         "village of 912 affords 0.0005 of one, which is why the "
+         "thing sits ten rounds out; it takes 17,300 people for "
+         "ONE. The result is not that it is dear but that it is "
+         "INDIVISIBLE -- a network of 36,480 has room for two, and "
+         "engine/merit.py prices a holder of a 2-deep specialty at "
+         "50%, the highest pivotality on this chain. And by README "
+         "rule 3 a machine that answers by searching is an "
+         "admission: its usefulness measures what has not been "
+         "derived, and it is the only quantity here that shrinks "
+         "as the work gets better")
     ]
 
 

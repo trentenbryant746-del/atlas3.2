@@ -445,3 +445,37 @@ STILL OPEN
   which is the honest content.
 - the two misses above are the largest open items in the repo.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.118 — inference, priced
+
+REGRESSION FOUND AND FIXED — a bad one
+- artifact.py claimed every primitive was grounded in an existing
+  rule. 13 of 21 pointed at nothing: tools.torque, eos.strain,
+  carnot.efficiency, control.feedback, landauer.kT. Plausible
+  names for rules this repo does not have, asserted in PROSE where
+  no check could see them. Repointed; _grounded now imports each.
+- inference.py first reported 3,739 holders of an inference kit.
+  Wrong, and the cause was capital.DAYS_PER_PART being a village
+  constant carried to a billionth of a metre unchanged. A part is
+  not a part. Added a precision multiplier, (base/tol)**0.5.
+
+PROGRESS
+- Landauer floor 4.1e-9 J for the whole corpus, 3.4e11x below a
+  real gate. The thermodynamic limit is not near binding.
+- the kit is 3.4e6 labour-days. Village affords 0.0005; 17,300
+  people afford one; the network affords 2.1. INDIVISIBLE, and
+  merit prices a 2-deep specialty at 50% -- highest on the chain.
+- it collapses novelty's team term, 26.8 -> 1, predicting 27x.
+  Stated with the counterweight: history.py already records that
+  term as 16x too gentle, so the prediction rests on a rule known
+  to be wrong.
+- _rule3 INVERTED: by README rule 3 the usefulness of a searching
+  machine measures what is underived. Fails if the chain closes.
+- chain 57 -> 58 links.
+
+STILL OPEN
+- PRECISION_EXPONENT 0.5 is CHOSEN and sets the whole kit price.
+  The INDIVISIBILITY survives 0.35-0.7; below ~0.3 it does not.
+- PASSES 1e6, SWITCH_J 1e-15 CHOSEN. The Landauer headroom is 11
+  orders, so no plausible value makes the floor bind.
+- the two history misses remain the largest open items.

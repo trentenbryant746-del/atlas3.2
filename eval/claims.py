@@ -301,6 +301,17 @@ def _recorded():
     return score()
 
 
+def _inference():
+    from engine.inference import (corpus_bits, headroom, kit_days,
+                                  holders, least_population,
+                                  kit_parts, VILLAGE)
+    mkt = 40 * VILLAGE
+    return (round(math.log10(corpus_bits()), 2),
+            round(math.log10(headroom()), 1), kit_parts(),
+            round(kit_days(mkt)), round(least_population()),
+            round(holders(mkt), 1))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -772,6 +783,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.117", "7 of 10 derived numbers match the record within 3x",
      _recorded, (7, 1, 2, 6), CURRENT),
+    ("3.1.118", "an inference kit is indivisible: 17,300 people for one",
+     _inference, (12.14, 11.5, 16, 3368702, 17300, 2.1), CURRENT),
     ("3.1.116", "a press is worth 6.6 parts; proofreading is worth nothing",
      _levers, (6.6, 0.322, 0.0, 3.3), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
@@ -800,8 +813,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.117", "Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps",
-     _wholechain, (57, 49, 7, 0, 1), CURRENT),
+    ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
+     _wholechain, (58, 50, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -910,6 +923,14 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.116", "every primitive is grounded in a rule that already exists",
+     "13 of 21 pointed at NOTHING. tools.torque, eos.strain, "
+     "carnot.efficiency, control.feedback, landauer.kT -- plausible "
+     "names for rules this repo does not have, written in prose "
+     "where nothing checked them. Repointed at real functions and "
+     "artifact._grounded now imports every one of them. A "
+     "grounding that is not resolved is a citation nobody "
+     "followed, and I wrote thirteen"),
     ("3.1.116", "temperature gates the tech tree, 16 primitives in 6 rounds",
      "true as far as it went and it did not go far enough. Heat "
      "stops moving at round 5 and everything after -- vacuum, "

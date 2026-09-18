@@ -88,7 +88,7 @@ def disequilibrium(mix_fractions, T=288.0):
 # replaced per year against its lifetime in the presence of the
 # other. Earth's methane needs hundreds of teragrams a year. Mars'
 # carbon monoxide needs almost nothing.
-SECONDS_PER_YEAR = 3.155693e7
+from engine.constants import YEAR_S as SECONDS_PER_YEAR  # one home
 
 # THE FLUX RULE WAS THE WRONG SECOND TEST, AND MARS SHOWED IT TWICE.
 #

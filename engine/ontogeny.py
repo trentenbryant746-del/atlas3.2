@@ -51,7 +51,7 @@ ONTOGENY = [
 NEURAL = {"C": 40.0, "H": 80.0, "O": 8.0, "N": 1.0, "P": 1.0}
 
 FORAGER_W = 97.0               # MEASURED, 2000 kcal/day net
-SECONDS_PER_YEAR = 3.15576e7   # EXACT, Julian
+from engine.constants import YEAR_S as SECONDS_PER_YEAR  # one home
 
 
 def budget_w(mass_kg):

@@ -30,7 +30,11 @@ from engine.trade import LEARNING_RATE
 YIELD_PER_SKILL = 1.10      # CHOSEN, what one craft adds to output
 COPY_LIFE_YEARS = 100.0     # MEASURED-ish, a written surface
 COPIES_PER_YEAR = 250.0     # CHOSEN, a working scribe
-VILLAGE = 912.0             # engine/disease.critical_community
+# One home. Was the literal 912, a ROUNDING of 912.5, in two
+# modules at once -- found by eval/agreement.py as a frozen
+# copy already adrift from the rule it was copied from.
+from engine.disease import critical_community as _ccs
+VILLAGE = _ccs()
 
 
 def designs(s):

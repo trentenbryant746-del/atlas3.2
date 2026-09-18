@@ -47,7 +47,7 @@ BITS_PER_SYNAPSE = 4.7          # Bartol et al., from spine-head sizes
 OPTIC_FIBRES = 1.0e6
 BITS_PER_FIBRE_S = 10.0
 BODY_TEMP_K = 310.0
-SECONDS_PER_YEAR = 3.15576e7
+from engine.constants import YEAR_S as SECONDS_PER_YEAR  # one home
 
 
 def store_bits():

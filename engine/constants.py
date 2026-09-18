@@ -58,7 +58,16 @@ G_GRAV = 6.67430e-11           # m^3 kg^-1 s^-2   +/- 22 ppm, the worst
 U_KG = 1.66053906660e-27       # kg               atomic mass unit
 M_SUN_KG = 1.98847e30          # kg
 L_SUN_W = 3.828e26             # W
-YEAR_S = 3.155693e7            # s                Julian year
+YEAR_S = 31557600.0            # s   EXACT, Julian: 365.25 x 86400
+#   Was 3.155693e7 and labelled "Julian year", which it is not --
+#   that is the TROPICAL year, 31,556,926 s, which is measured and
+#   drifts. The Julian year is exact by IAU definition and is the
+#   standard unit for an astronomical time interval, so it is the
+#   one that belongs in a file whose whole point is that EXACT and
+#   MEASURED are marked differently. Found by eval/agreement.py:
+#   engine/learning.py and engine/ontogeny.py had each defined
+#   SECONDS_PER_YEAR = 3.15576e7, correctly labelled Julian, and
+#   were right where the canonical file was wrong.
 B_ALPHA_MEV = 28.296           # MeV              binding of helium-4
 
 # Derived, not stored as data: hbar is h over two pi. It lived as a

@@ -32,8 +32,8 @@ from engine.merit import pivotal
 from engine.novelty import team_size, multiple, SPECIALTIES_PER_HEAD
 from engine.artifact import PRIMITIVES, TOL_NEEDED
 
-SPEECH_BITS_S = 39.0        # MEASURED: cross-linguistic speech rate
-TELL_SECONDS = 300.0        # engine/tradition
+from engine.civ import SPEECH_BITS_S  # one home, MEASURED
+from engine.tradition import TELL_SECONDS  # one home
 SWITCH_J = 1e-15            # MEASURED-ish, a modern gate operation
 PASSES = 1e6                # CHOSEN, touches per stored bit
 

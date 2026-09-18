@@ -30,9 +30,13 @@ FOOD_MJ_KG = 15.0           # grain
 PORTER_MJ_DAY = 14.0        # 10 at rest, loaded and walking
 LEARNING_RATE = 0.85        # MEASURED, unit cost per doubling
 FARM_EDIBLE = 1e-2          # DERIVED-ish: cultivation over foraging
-NPP_W_M2 = 0.5
-NEED_W = 116.0
-VILLAGE = 912.0
+from engine.power import NPP_W_M2  # one home
+from engine.power import NEED_W  # one home
+# One home. Was the literal 912, a ROUNDING of 912.5, in two
+# modules at once -- found by eval/agreement.py as a frozen
+# copy already adrift from the rule it was copied from.
+from engine.disease import critical_community as _ccs
+VILLAGE = _ccs()
 
 
 def porter_km_day():

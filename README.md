@@ -24,8 +24,8 @@ that passes -- Atlas is about **19 trillion tokens**.
     one history, as written                      1    26400     2.64e+04
     universes that pass the filters            864    26400     2.28e+07
     all universes generated blind        1.058e+04    26400     2.79e+08
-    artifacts at the fixed point         7.328e+08       30      2.2e+10
-    artifacts x passing universes        6.332e+11       30      1.9e+13
+    artifacts at the fixed point         7.332e+08       30      2.2e+10
+    artifacts x passing universes        6.335e+11       30      1.9e+13
 ```
 
 The rules that generate all of it are **1.6 MB**.

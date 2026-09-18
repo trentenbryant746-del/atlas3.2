@@ -352,6 +352,13 @@ def _chosen():
             round(rate_disagreement(), 1))
 
 
+def _agreement():
+    from eval.agreement import scan, duplicates, frozen_copies
+    rows = frozen_copies()
+    return (len(scan()), len(duplicates()), len(rows),
+            sum(1 for r in rows if not r[3]))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -810,7 +817,7 @@ CLAIMS = [
     ("3.1.112", "a 5th-generation heir holds 32x what their ability warrants",
      _merit, (20, 2.58, 0.08, 32, 15, 162), CURRENT),
     ("3.1.114", "speech is a fixed point at 2 specialties; the loop settles at 23.5",
-     _intricacy, (2, 3, 23.5, 12163632, 53), CURRENT),
+     _intricacy, (2, 3, 23.5, 12170300, 53), CURRENT),
     ("3.1.113", "grain dies at 516 km; knowledge has no range limit",
      _trade, (516, 258, 5.2, 6.8, 2.4), CURRENT),
     ("3.1.114", "ideas are non-rival: escape turns on a 0.372 land share",
@@ -823,14 +830,16 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.1", "302 constants, 5 with two homes, 3 frozen copies tracked",
+     _agreement, (302, 5, 3, 0), CURRENT),
     ("3.1.123", "42 constants are chosen; two stopped being, one pair disagrees 8.5x",
      _chosen, (42, 25, 2, 9, 8.5), CURRENT),
     ("3.1.122", "instrument order predicts science order, Kendall tau 0.77",
      _literature, (13, 55, 7, 0.77, 5, 8, 6), CURRENT),
     ("3.1.121", "the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor",
      _farfuture, (-7.21, 67.32, -29.58, 12.74, 11.41), CURRENT),
-    ("3.1.119", "19 trillion tokens enumerated, from 1.6 MB of rules",
-     _scale, (13.28, 1.6, 36, 10584, 864, 8.87), CURRENT),
+    ("3.1.119", "19 trillion tokens enumerated, from 1.6 MB of rules (35M:1)",
+     _scale, (13.28, 1.6, 35, 10584, 864, 8.87), CURRENT),
     ("3.1.118", "an inference kit is indivisible: 17,300 people for one",
      _inference, (12.14, 11.5, 16, 3368702, 17300, 2.1), CURRENT),
     ("3.1.116", "a press is worth 6.6 parts; proofreading is worth nothing",
@@ -971,6 +980,16 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.119", "the rules compress 36 million to one",
+     "35 million, not 36. VILLAGE was the literal 912 in two "
+     "modules and is 912.5 computed -- a rounding frozen into a "
+     "copy, which eval/agreement.py caught as already adrift. "
+     "0.05% on the input, and it moved the design count and the "
+     "compression ratio because both sit on the far side of an "
+     "exponential"),
+    ("3.1.112", "the loop settles at 23.5 parts, 12,163,632 designs",
+     "12,170,300. Same cause: VILLAGE corrected from a frozen 912 "
+     "to a computed 912.5"),
     ("3.1.111", "cooking pays for itself 58 times over",
      "FIRE_EFFICIENCY was CHOSEN at 0.10 and did not have to be. An "
      "open fire is close to a point source radiating into 4 pi, and "

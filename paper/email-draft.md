@@ -2,43 +2,51 @@
 
 Subject lines, pick one:
 
-- `Fingerprint-gated verification of published claims — is this a solved problem?`
-- `Short question: claim-granularity staleness detection (6pp, with fault injection)`
-- `Asking whether I've reinvented Bazel`
+- `25 labelled faults from a scientific codebase, incl. 7 in the test apparatus`
+- `Does anyone have data on what actually catches errors in scientific code?`
+- `A fault corpus with catching-mechanism annotations — is this useful to anyone?`
 
 ---
 
 Dear Professor ——,
 
-I'm an independent developer, not affiliated with a university. I've
-built something I can't evaluate on my own and I'd value ten minutes of
-your judgement — specifically on whether it is already a solved
-problem.
+I'm an independent developer, not affiliated with a university, and I
+have data I can't evaluate on my own.
 
-The system is a scientific codebase (33k lines, no dependencies) that
-publishes 47 numbered results. Each result's re-verification is gated
-on a content-addressed fingerprint of its transitive dependencies,
-recovered from the AST rather than declared. An unchanged fingerprint
-is a proof the answer cannot have moved, so verification drops from
-70.9 s to 0.0 s. I tested soundness by fault injection rather than
-assuming it: four injected faults, all four caught, each recomputing
-only its dependent subset; three irrelevant edits, zero spurious
-recomputes.
+Over eight months I built a 33,600-line scientific codebase under a
+rule that every result carries a check that would catch it being
+wrong. In the process I recorded **25 faults, each annotated in-source
+with its cause and with the mechanism that caught it.** The
+distribution is not what I expected:
 
-The part I'm least sure about is a by-product. The depth of a claim's
-dependency graph turns out to separate results the rules *derive* from
-results that are arithmetic over a constant wearing the shape of a
-derivation. It caught one real case in my own code. One case is an
-anecdote.
+    deriving something previously asserted        7
+    faults in the verification machinery itself   7
+    an automated check fired                      6
+    comparison against an external known value    4
+    cross-referencing an earlier release          1
 
-**My honest question is whether the claim-granularity framing adds
-anything over Nix, Bazel, DVC or Snakemake.** I haven't run that
-comparison and I'd rather be told it's unnecessary than keep going.
+Two things surprised me. **Tests caught only 6 of 25.** The largest
+category required re-deriving a quantity that had been typed in — work
+no test suite performs, because the code was self-consistent and
+everything passed. And **the checking apparatus failed at roughly the
+same rate as the code it checks**, 7 against 18, which I have not seen
+quantified anywhere.
 
-Six pages attached, including a section listing what the system got
-wrong — fourteen withdrawn results, nine checks that had to be inverted
-when their premise turned out false, and a unit error that was off by a
-factor of a million. That section is the one I'd read first.
+The reason I have this data at all is a convention rather than a tool:
+when a check's premise turns out false, the check is **flipped and
+kept** with its history rather than deleted. Nine checks currently
+record what they used to assert and why that was wrong. Deleting them
+is the normal thing to do, and it would have erased nine data points.
+
+My question is whether a fault corpus annotated by *catching
+mechanism* is useful to anyone. Defects4J and BugSwarm are mined from
+version control after the fact, which gives the fix but rarely the
+cause and almost never what surfaced it. If this already exists I'd be
+glad to be pointed at it.
+
+Six pages attached. The corpus itself is a separate file and is the
+part worth reading; §3.2, the faults in my own verification, is the
+section I'd want a reviewer on.
 
 No reply needed if it's not interesting.
 
@@ -50,22 +58,30 @@ Trenten Bryant
 
 ## Notes on sending
 
-**Who.** Software engineering / programming languages / research
-software engineering. People who work on build systems, provenance,
-reproducibility, or scientific-software quality. Not systems-biology or
-astronomy people — the domain content is the substrate, not the claim,
-and sending it to a domain expert invites them to review physics I am
-not defending.
+**Who.** Empirical software engineering, research software engineering,
+software testing, mining software repositories. People who build fault
+corpora or study scientific-software quality. Secondarily, provenance
+and reproducibility researchers.
 
-**Do not** lead with the physics, the scale of the codebase, or the
-5,737-item curriculum. The first is unreviewed, the second is not a
-virtue, and the third is self-generated and proves consistency rather
-than accuracy.
+**Not** domain scientists — not yet. The physics is the substrate, not
+the claim; 47 of 135 inputs are values I picked, and a domain expert
+would rightly review the science instead of the method.
 
-**Do** lead with the falsifiable part: fault injection, the benchmark,
-and the list of errors. A cold email that volunteers its own failures
-reads differently from one that does not.
+**Lead with the corpus and the distribution.** That is the part nobody
+else has. The verification infrastructure is a means of production for
+it, and leading with the speed number invites "you reimplemented
+Bazel," which is fair and which the paper concedes.
 
-**Expect** "this is Bazel." That is a legitimate answer and §8.2 of the
-paper already concedes the comparison has not been run. If two people
-say it independently, run the comparison before writing to anyone else.
+**Do not** lead with 33,600 lines, 5,737 curriculum items, or the
+physics. Size is not a virtue, the curriculum is self-generated so its
+0-wrong rate is consistency rather than accuracy, and the physics is
+unreviewed.
+
+**Attach `LOG.md`, not only the paper.** The corpus is the artifact.
+The paper is an argument about the corpus.
+
+**Expect three responses.** (i) "This exists, see X" — the best
+outcome, take it. (ii) "n=1, from your own codebase" — correct, and
+§8.1 concedes it; the reply is that n=1 with mechanism annotations may
+still be worth more than n=400 without. (iii) Silence, which is the
+base rate for cold email and means nothing.

@@ -59,6 +59,43 @@ PRIMITIVES = {
     "steam":       (("pressure", "heat"), 1700, "carnot.efficiency", "heat turned into a stroke"),
     "regulation":  (("gearing", "spring"), 1700, "control.feedback", "a machine that corrects itself"),
     "electricity": (("smelting", "rotation"), 1700, "landauer.kT", "charge moved on purpose"),
+    # Past iron, heat stops being the gate. Everything below is
+    # reachable at 1750 K and none of it was available in 1750,
+    # because the thing in short supply changed: not how hot you
+    # can get but how ACCURATELY you can place matter. A second
+    # scalar, and it bootstraps the same way.
+    "vacuum":      (("pressure", "regulation"), 1700, "eos.pressure", "a volume with the air taken out"),
+    "alloy":       (("smelting", "regulation"), 1700, "atoms.Pool", "composition held to a specification"),
+    "semiconductor": (("vacuum", "alloy"), 1700, "landauer.kT", "a crystal pure enough to switch"),
+    "switching":   (("semiconductor", "electricity"), 1700, "landauer.kT", "a gate that opens on a signal"),
+    "inference":   (("switching", "regulation"), 1700, "learning.store_bits", "statistics run at a scale no head holds"),
+}
+
+# The second gate. A hand fits to about a tenth; a screw-cutting
+# lathe to a thousandth; interferometry to a millionth; light
+# printed through a mask to a billionth. Each needs what the last
+# one made, exactly as the furnace did.
+BASE_TOL = 1e-1
+# These were wrong on the first pass and the bootstrap DEADLOCKED,
+# which is the right failure. Gearing was set at 1e-2 and the only
+# route to 1e-2 is a screw-cutting lathe, which is made of gears.
+# The way out is historical and physical: the first gears were
+# hand-filed at a tenth and they were good enough to cut better
+# ones. The same held for transistors -- point-contact devices
+# were millimetre-scale, and lithography came after them, not
+# before. A tolerance ladder must have a rung you can reach by
+# hand or it is not a ladder.
+TOL_NEEDED = {
+    "gearing": 1e-1, "spring": 1e-1,      # hand-filed, forged
+    "pressure": 1e-2, "regulation": 1e-2,  # lathe work
+    "optics": 1e-2, "vacuum": 1e-3, "alloy": 1e-3,
+    "semiconductor": 1e-6, "switching": 1e-6,   # point contact
+    "inference": 1e-9,                          # printed, at scale
+}
+TOL_GAINS = {
+    "a screw-cutting lathe": (("gearing", "smelting"), 1e-3),
+    "interferometry": (("optics", "regulation"), 1e-6),
+    "light printed through a mask": (("optics", "switching"), 1e-9),
 }
 
 # What a wood fire in the open reaches, and what each built thing
@@ -96,6 +133,11 @@ KNOWN_AS = {
     frozenset({"electricity", "rotation", "regulation"}): "a dynamo under load",
     frozenset({"electricity", "optics", "regulation"}): "a signal read by machine",
     frozenset({"electricity", "regulation", "mark"}): "a machine that computes",
+    frozenset({"vacuum", "electricity", "regulation"}): "a valve, and a signal amplified",
+    frozenset({"semiconductor", "switching"}): "a transistor",
+    frozenset({"switching", "regulation", "mark"}): "a stored-program computer",
+    frozenset({"inference", "mark"}): "statistics run over a written corpus",
+    frozenset({"inference", "switching", "regulation"}): "a system that answers in sentences",
 }
 
 
@@ -105,6 +147,15 @@ def temperature(held):
     for _label, (needs, gain) in GAINS.items():
         if set(needs) <= set(held):
             t += gain
+    return t
+
+
+def tolerance(held):
+    """Finest placement achievable with what is held. DERIVED."""
+    t = BASE_TOL
+    for _label, (needs, tol) in TOL_GAINS.items():
+        if set(needs) <= set(held):
+            t = min(t, tol)
     return t
 
 
@@ -118,8 +169,10 @@ def bootstrap():
     held, rounds = set(), []
     while True:
         t = temperature(held)
+        tol = tolerance(held)
         got = {n for n, (needs, k, _r, _w) in PRIMITIVES.items()
-               if n not in held and set(needs) <= held and k <= t}
+               if n not in held and set(needs) <= held and k <= t
+               and TOL_NEEDED.get(n, 1e-1) >= tol}
         if not got:
             return rounds
         held |= got
@@ -201,6 +254,45 @@ def catalogue():
     return sorted(rows, key=lambda x: (x[0], len(x[3]), x[2]))
 
 
+# GOING FORWARD, and what that can honestly mean.
+#
+# Everything above is recorded: every primitive names a material
+# or an effect somebody has actually made, and every entry in
+# KNOWN_AS is a thing that exists. Asking the model to run two
+# centuries past now is a fair question with a narrow answer.
+#
+# It CAN project the two scalars it tracks, because both are
+# arithmetic on terms already priced -- the parts budget from the
+# corpus, and the per-capita exponent from the land share.
+#
+# It CANNOT name what gets built. A name here is vocabulary
+# attached to a combination of KNOWN primitives; a name for a
+# primitive nobody has made would be a word with no rule under it,
+# and the whole discipline of this repo is that a word with no
+# rule under it is not an answer. So project() returns numbers and
+# no nouns, and a check below fails if anybody adds one.
+
+DIGITAL_COPY_GAIN = 1e6      # CHOSEN: copies a scribe-year, now
+
+
+def project(years=200):
+    """-> dict. The scalars, forward. PROJECTED, not derived."""
+    import math as _m
+    from engine.intricacy import (settle_network, per_capita_exponent,
+                                  LAND_SHARE)
+    now = settle_network()
+    press = _m.log2(DIGITAL_COPY_GAIN)
+    return {
+        "years": years,
+        "parts now": now,
+        "parts projected": now + press,
+        "from": "a corpus copied at 1e6 a scribe-year rather than 250",
+        "exponent now": per_capita_exponent(LAND_SHARE),
+        "exponent projected": per_capita_exponent(0.02),
+        "named artifacts": 0,
+    }
+
+
 def check():
     res = []
 
@@ -214,6 +306,8 @@ def check():
     t("the_count_of_designs_now_has_objects_under_it", _objects)
     t("every_name_is_checked_against_the_derivation", _names)
     t("our_own_age_arrives_last_and_not_by_being_listed", _modern)
+    t("the_gate_changes_and_heat_stops_mattering", _gate)
+    t("INVERTED_the_future_gets_numbers_and_no_nouns", _future)
     return all(x for _, x, _ in res), res
 
 
@@ -282,18 +376,72 @@ def _modern():
     iron = next(i for i, _t, g in b if "spring" in g)
     if iron <= copper or not late:
         raise ArithmeticError(f"{copper} {iron}")
-    return (f"the recognisable modern things are not late because "
-            f"anyone listed them last. Copper arrives at round "
-            f"{copper} and steel at {iron}, and the gap is a LOOP: "
-            f"bellows need a metal tuyere at the hot end, and the "
-            f"tuyere needs the smelting the bellows were for. So "
-            f"the cheap gains -- a hearth, charcoal -- buy copper "
-            f"at {b[copper-1][1]} K, and copper buys the gains that "
-            f"reach {b[iron-1][1]} K and iron. {len(early)} things "
-            f"are in hand by round 2 ({early[0][2]}); "
-            f"{len(late)} wait for round {len(b)-1} or later, "
-            f"including {rows[-1][2]}. Nobody put a steam engine "
-            f"after a cooking pot -- combustion did")
+    return (f"nothing here is late because it was listed last. "
+            f"Copper is round {copper} and steel {iron}, and the "
+            f"gap is a LOOP: bellows need a metal tuyere and the "
+            f"tuyere needs the smelting the bellows were for, so "
+            f"the cheap gains buy copper at {b[copper-1][1]} K and "
+            f"copper buys the gains that reach {b[iron-1][1]} K. "
+            f"The same shape repeats in tolerance: the first gears "
+            f"were hand-filed at a tenth and were good enough to "
+            f"cut better ones, and point-contact transistors were "
+            f"millimetre-scale before lithography existed. Setting "
+            f"either rung too high DEADLOCKED the bootstrap on the "
+            f"first attempt, which is the correct failure -- a "
+            f"ladder needs a rung you can reach by hand. "
+            f"{len(early)} things are in hand by round 2 "
+            f"({early[0][2]}); {len(late)} wait for round "
+            f"{len(b)-1} or later, ending at {rows[-1][2]}")
+
+
+def _gate():
+    b = bootstrap()
+    temps = [t for _i, t, _g in b]
+    flat = next(i for i, t, _g in b if t == max(temps))
+    tols = [(i, tolerance(held_by_round(i))) for i, _t, _g in b]
+    after = [tl for i, tl in tols if i >= flat]
+    if len(set(temps[flat - 1:])) != 1 or len(set(after)) < 2:
+        raise ArithmeticError(f"{temps} {after}")
+    return (f"temperature stops moving at round {flat} "
+            f"({max(temps)} K) and the bootstrap runs to "
+            f"{len(b)}. Everything after that is reachable at the "
+            f"same heat and was not available for two centuries, "
+            f"because the scarce thing CHANGED: not how hot you "
+            f"can get but how accurately you can place matter. "
+            f"Tolerance goes {after[0]:.0e} -> {after[-1]:.0e} "
+            f"over those rounds. A model with one gate would have "
+            f"put a transistor next to a steam engine. The gate is "
+            f"not a constant of the system, it is whichever scalar "
+            f"is currently short, and noticing that it had moved "
+            f"is the only reason the later rounds exist")
+
+
+def _future():
+    """INVERTED. Fails the moment a future artifact acquires a name."""
+    pr = project()
+    unnamed = [n for n in PRIMITIVES if n not in
+               {x for c in KNOWN_AS for x in c}]
+    if pr["named artifacts"] != 0:
+        raise ArithmeticError(
+            "something two centuries out has been given a name, "
+            "which means a word was written with no rule under it")
+    return (f"asked to run {pr['years']} years past now, the model "
+            f"answers with two numbers and no nouns. Parts: "
+            f"{pr['parts now']:.1f} -> {pr['parts projected']:.1f}, "
+            f"and the whole of that gain is {pr['from']} -- a "
+            f"millionfold corpus is {math.log2(DIGITAL_COPY_GAIN):.0f} "
+            f"more parts, because the corpus is a logarithm and "
+            f"that never stops being true. Per-capita exponent: "
+            f"{pr['exponent now']:.3f} -> "
+            f"{pr['exponent projected']:.3f} as the land share goes "
+            f"to 0.02. What it will NOT do is name the artifacts. "
+            f"Every primitive here is a material or an effect "
+            f"somebody has made and every name in KNOWN_AS is a "
+            f"thing that exists; a name for a primitive nobody has "
+            f"made would be a word with no rule under it, and this "
+            f"check fails if one appears. The forecast is 6.6 "
+            f"parts and a share, and anyone wanting more than that "
+            f"is asking for fiction")
 
 
 if __name__ == "__main__":

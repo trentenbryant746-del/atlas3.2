@@ -296,6 +296,11 @@ def _artifact():
             catalogue()[-1][0])
 
 
+def _recorded():
+    from eval.history import score
+    return score()
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -763,8 +768,10 @@ CLAIMS = [
      _capital, (1177, 368, 24, 1.33, 14.0), CURRENT),
     ("3.1.115", "novelty per head falls to 0.80 while the total rises 32x",
      _novelty, (0.8, 32, 21.5, 26.8, 99.7, 0.032), CURRENT),
-    ("3.1.116", "temperature gates the tech tree: copper at round 3, steel at 5",
-     _artifact, (16, 6, 1750, 3, 5, 5, 6), CURRENT),
+    ("3.1.117", "two gates: heat stops at round 5, tolerance runs to 10",
+     _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
+    ("3.1.117", "7 of 10 derived numbers match the record within 3x",
+     _recorded, (7, 1, 2, 6), CURRENT),
     ("3.1.116", "a press is worth 6.6 parts; proofreading is worth nothing",
      _levers, (6.6, 0.322, 0.0, 3.3), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
@@ -793,8 +800,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.116", "Big Bang to a head in 56 links: 48 derived, 7 forced, 0 gaps",
-     _wholechain, (56, 48, 7, 0, 1), CURRENT),
+    ("3.1.117", "Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps",
+     _wholechain, (57, 49, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -903,6 +910,15 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.116", "temperature gates the tech tree, 16 primitives in 6 rounds",
+     "true as far as it went and it did not go far enough. Heat "
+     "stops moving at round 5 and everything after -- vacuum, "
+     "alloy, semiconductor, switching, inference -- is reachable "
+     "at the same 1750 K and was not available for two centuries, "
+     "because the scarce scalar CHANGED to how accurately matter "
+     "can be placed. 21 primitives in 10 rounds, with tolerance "
+     "going 1e-3 to 1e-9 after the heat stops. The gate is not a "
+     "constant of the system, it is whichever scalar is short"),
     ("3.1.68", "competition prevents the size collapse, 1.76 vs 0.64",
      "TRUE WHEN WRITTEN and false now, through no fault of its own. "
      "engine/descent.py ran an unbounded fitness objective and a "

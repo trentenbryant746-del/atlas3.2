@@ -151,6 +151,18 @@
 "fp": "153d4ebf01ef02a5",
 "ok": true
 },
+"3.1.117|7 of 10 derived numbers match the record within 3x": {
+"fp": "9c6dbeb3092e75a0",
+"ok": true
+},
+"3.1.117|Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps": {
+"fp": "d42c3fa45b7195a3",
+"ok": true
+},
+"3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
+"fp": "f07fd0a13c563f6f",
+"ok": true
+},
 "3.1.18|folding survival rate 0.573": {
 "fp": "21579abf6579714b",
 "ok": true

@@ -7244,3 +7244,92 @@ all of them.
     novelty 4/4   ecology 5/5   power 5/5   lineage 7/7
     55 links, 47 derived, 7 forced, 1 crossing, 0 gaps
     81 claims reproduce; 550 of 550 rules hold across 90 modules
+
+### 3.1.117 — two gates, and how close any of this is to the record
+
+**`eval/history.py`.** Ten numbers this system derived, against ten
+somebody recorded. The recorded column is not from the system and
+cannot be adjusted by it.
+
+    band size               28      vs  ~30 ethnographic      MATCH
+    village spacing        5.2 km   vs  2-5 km                MATCH
+    oral corpus          8,692      vs  ~12,000 (Iliad, Rigveda) MATCH
+    grain doubles          258 km   vs  300-500 km            MATCH
+    literacy ceiling        13%     vs  5-15% pre-industrial  MATCH
+    land share at takeoff  0.372    vs  ~0.35 England C18     MATCH
+    copper before iron    2 rounds  vs  2                     built in
+    crowd disease floor    912      vs  250,000-500,000       MISS 329x
+    invention team          21.5    vs  ~5 authors            LOOSE 4.3x
+    novelty per head        0.80    vs  ~0.05 measured        MISS 16x
+
+**7 match within 3x, and 6 of those could have come out
+otherwise** — the arithmetic for band size could have said 3 or
+300. The seventh is marked as built-in and not counted: copper
+before iron follows from a tuyere loop I wrote, so it is not
+evidence of anything.
+
+The misses are the useful part, and `_miss` is inverted — it fails
+if they ever stop being reported, because a model of this scope
+agreeing with everything would mean the baselines had been chosen
+to agree.
+
+**The crowd-disease floor is wrong by 329x** and the reason is
+nameable: the derivation asks only that *one* susceptible arrive
+per infectious period, which is a deterministic condition. A real
+chain breaks by chance long before that — infectives are few and
+integer, and a run of bad luck ends it. The stochastic margin is
+the missing rule. The conclusion drawn from it survives (28 is far
+below both figures) but the floor itself should not be quoted.
+
+**The novelty decline is 16x too gentle.** The model's only
+headwind is team size, which is a logarithm. Something else is
+eating the returns and this system does not have it. Two
+candidates — the easy region of the space being exhausted first
+rather than uniformly, and verification cost rising with the
+corpus even when discovery does not — are named and neither is
+derived, so neither is claimed.
+
+**The second gate.** Extending `artifact.py` past iron found that
+**temperature stops mattering.** It reaches 1750 K at round 5 and
+never moves again — yet vacuum, alloy, semiconductor, switching
+and inference are all reachable at exactly that heat and were not
+available for two centuries. The scarce scalar changed: not how
+hot you can get but **how accurately you can place matter.**
+
+    round 4   1600 K   1e-1    gearing
+    round 5   1750 K   1e-3    electricity, optics, pressure, spring
+    round 6   1750 K   1e-3    steam, regulation
+    round 7   1750 K   1e-6    alloy, vacuum
+    round 8   1750 K   1e-6    semiconductor
+    round 9   1750 K   1e-9    switching
+    round 10  1750 K   1e-9    inference
+
+A model with one gate would have put a transistor next to a steam
+engine. **The gate is not a constant of the system — it is
+whichever scalar is currently short.**
+
+And the same trap appeared twice. My first tolerance ladder
+**deadlocked**: gearing needed 1e-2 and the only route to 1e-2 is
+a screw-cutting lathe, which is made of gears. That is the correct
+failure. The way out is physical — the first gears were hand-filed
+at a tenth and were good enough to cut better ones, exactly as
+point-contact transistors were millimetre-scale before lithography
+existed. **A ladder needs a rung you can reach from the ground.**
+
+**Going forward.** Asked to run two centuries past now, the model
+answers with two numbers and no nouns:
+
+    parts      29.4  ->  49.4    (a corpus copied 1e6/scribe-year, not 250)
+    exponent   0.072 ->  0.352   (land share to 0.02)
+
+`_future` is inverted and **fails the moment a future artifact
+acquires a name.** Every primitive here is a material or an effect
+somebody has actually made, and every entry in `KNOWN_AS` is a
+thing that exists. A name for a primitive nobody has made is a
+word with no rule under it, which is the one thing this repo does
+not do. The forecast is 6.6 parts and a share; anyone wanting more
+is asking for fiction.
+
+    artifact 6/6   history 4/4   lineage 7/7
+    57 links, 49 derived, 7 forced, 1 crossing, 0 gaps
+    84 claims reproduce; history.md 5,678 lines, 0 failures

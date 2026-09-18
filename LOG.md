@@ -404,3 +404,44 @@ STILL OPEN
   prerequisite loop, not the magnitudes.
 - levers() prices a press at a hundredfold corpus, CHOSEN.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.117 — the record, and the second gate
+
+PROGRESS
+- eval/history.py: 10 derived numbers against 10 recorded. 7 match
+  within 3x, 6 of those could have differed. _miss is INVERTED:
+  fails if the misses stop being reported.
+- artifact.py extended past iron. Temperature stops at 1750 K /
+  round 5 and NEVER MOVES. Tolerance takes over, 1e-1 by hand to
+  1e-9 printed. 21 primitives, 10 rounds, through to inference.
+- project(200) returns two numbers and refuses to name anything.
+  _future is INVERTED: fails if a future artifact gets a name.
+- chain 56 -> 57 links.
+
+MISSES NAMED (the point of the history file)
+- crowd disease floor 912 vs 250,000-500,000 measured. Off 329x.
+  The derivation is DETERMINISTIC -- one susceptible per
+  infectious period -- and a real chain breaks by chance first.
+  Missing rule: the stochastic margin. The conclusion survives
+  (28 is far below both) but the floor must not be quoted.
+- novelty per head 0.80 vs ~0.05 measured. Off 16x. The only
+  headwind in the model is team size and team size is a log.
+  Candidates named, none derived, none claimed.
+- invention team 21.5 vs ~5. Off 4.3x, same root cause.
+
+REGRESSION FOUND AND FIXED
+- the tolerance ladder DEADLOCKED on first write: gearing needed
+  1e-2 and the only route to 1e-2 is a lathe made of gears. The
+  first rung has to be reachable by hand. Same for transistors --
+  point contact before lithography. Fixed by setting the rungs
+  where the record puts them.
+- the single-gate model would have placed a transistor beside a
+  steam engine. Found only by extending past iron.
+
+STILL OPEN
+- KNOWN_AS is now 21 names and still the only hand-authored table.
+- DIGITAL_COPY_GAIN 1e6 is CHOSEN and sets the whole 200-year
+  projection. The projection is 6.6 parts, i.e. almost nothing,
+  which is the honest content.
+- the two misses above are the largest open items in the repo.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

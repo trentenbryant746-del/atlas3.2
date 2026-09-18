@@ -576,7 +576,26 @@ def inside_the_head():
          "smelting the bellows were for, and that loop is why "
          "copper comes at round 3 and steel at round 5. Six "
          "rounds from a hafted axe to a governed engine, and "
-         "nobody put the engine last -- combustion did")
+         "nobody put the engine last -- combustion did"),
+        ("one gate", "whichever scalar is short", DERIVED,
+         "artifact.tolerance",
+         "temperature stops moving at round 5 and 1750 K, and "
+         "everything after it -- vacuum, alloy, semiconductor, "
+         "switching, inference -- is reachable at exactly that "
+         "heat and was not available for two centuries. The scarce "
+         "thing changed: not how hot you can get but how "
+         "accurately you can place matter, 1e-1 by hand through "
+         "1e-9 printed through a mask. The same bootstrap shape "
+         "holds and the same trap: setting the first rung too high "
+         "DEADLOCKED it, because a screw-cutting lathe is made of "
+         "gears and the first gears must therefore be filable by "
+         "hand, exactly as the first transistors were "
+         "millimetre-scale before lithography existed. A ladder "
+         "needs a rung reachable from the ground. Asked to run two "
+         "centuries past now the model gives 29.4 -> 49.4 parts "
+         "and an exponent, and refuses to name anything, because "
+         "a name for a primitive nobody has made is a word with no "
+         "rule under it")
     ]
 
 

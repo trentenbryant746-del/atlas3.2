@@ -6,7 +6,7 @@ describes, so it cannot drift from what the system actually does.
 
 ## The chain
 
-56 links from a nebula to a head. Each one names the rule that drives
+57 links from a nebula to a head. Each one names the rule that drives
 it and the module the rule lives in. A link is DERIVED when something
 here forces it, FORCED when it is both permitted and driven, CROSSES
 when it is permitted and nothing drives it, and MISSING when it is a
@@ -584,12 +584,30 @@ smelting the bellows were for, and that loop is why copper comes at
 round 3 and steel at round 5. Six rounds from a hafted axe to a
 governed engine, and nobody put the engine last -- combustion did
 
+### 57. one gate -> whichever scalar is short
+
+*DERIVED* &nbsp; `artifact.tolerance`
+
+temperature stops moving at round 5 and 1750 K, and everything after it
+-- vacuum, alloy, semiconductor, switching, inference -- is reachable
+at exactly that heat and was not available for two centuries. The
+scarce thing changed: not how hot you can get but how accurately you
+can place matter, 1e-1 by hand through 1e-9 printed through a mask. The
+same bootstrap shape holds and the same trap: setting the first rung
+too high DEADLOCKED it, because a screw-cutting lathe is made of gears
+and the first gears must therefore be filable by hand, exactly as the
+first transistors were millimetre-scale before lithography existed. A
+ladder needs a rung reachable from the ground. Asked to run two
+centuries past now the model gives 29.4 -> 49.4 parts and an exponent,
+and refuses to name anything, because a name for a primitive nobody has
+made is a word with no rule under it
+
 ## The technology
 
-16 physical capabilities, each grounded in a rule that already existed
+21 physical capabilities, each grounded in a rule that already existed
 for another reason. An artifact is a set of them used together. What
 gates the sequence is not how many parts anyone can compose -- the tree
-is only 5 deep against a budget of 29.4 -- but TEMPERATURE: every step
+is only 9 deep against a budget of 29.4 -- but TEMPERATURE: every step
 past cordage is a material you cannot have until you can reach the heat
 that makes it.
 
@@ -639,6 +657,23 @@ that raise it need the things it makes:
 - **regulation** (1700 K, needs gearing, spring) — a machine that corrects itself &nbsp; `control.feedback`
 - **steam** (1700 K, needs pressure, heat) — heat turned into a stroke &nbsp; `carnot.efficiency`
 
+**Round 7** — 1750 K
+
+- **alloy** (1700 K, needs smelting, regulation) — composition held to a specification &nbsp; `atoms.Pool`
+- **vacuum** (1700 K, needs pressure, regulation) — a volume with the air taken out &nbsp; `eos.pressure`
+
+**Round 8** — 1750 K
+
+- **semiconductor** (1700 K, needs vacuum, alloy) — a crystal pure enough to switch &nbsp; `landauer.kT`
+
+**Round 9** — 1750 K
+
+- **switching** (1700 K, needs semiconductor, electricity) — a gate that opens on a signal &nbsp; `landauer.kT`
+
+**Round 10** — 1750 K
+
+- **inference** (1700 K, needs switching, regulation) — statistics run at a scale no head holds &nbsp; `learning.store_bits`
+
 ### The things themselves
 
 Names are vocabulary and derive nothing. Each is checked against the
@@ -661,6 +696,11 @@ a prediction. The order is not a list anybody wrote.
 - **round 6, 1750 K** — a signal read by machine (electricity + optics + regulation)
 - **round 6, 1750 K** — a steam engine turning a shaft (gearing + rotation + steam)
 - **round 6, 1750 K** — a governed engine (regulation + rotation + smelting + steam)
+- **round 7, 1750 K** — a valve, and a signal amplified (electricity + regulation + vacuum)
+- **round 9, 1750 K** — a transistor (semiconductor + switching)
+- **round 9, 1750 K** — a stored-program computer (mark + regulation + switching)
+- **round 10, 1750 K** — statistics run over a written corpus (inference + mark)
+- **round 10, 1750 K** — a system that answers in sentences (inference + regulation + switching)
 
 ### What would move it further
 
@@ -675,7 +715,7 @@ trying harder buys nothing. Only a changed term moves it:
 
 ## The rules, and what each one says
 
-555 of 555 rules hold across 91 modules.
+557 of 557 rules hold across 91 modules.
 
 Every check below is a rule that produced its own sentence. An INVERTED
 check is one that fails when the result looks too good -- it is there
@@ -921,43 +961,71 @@ The things themselves, so that the technology can be read.
 
 **a_primitive_cannot_precede_what_it_is_made_of** — holds
 
-16 primitives, each grounded in a rule that already existed for another
+21 primitives, each grounded in a rule that already existed for another
 reason -- heat in the cooking bill, optics in the diffraction limit
 that bounded an eye, steam in Carnot. A primitive that needs others
 cannot come first, so the order is forced: depth 0 is ['cordage',
-'edge', 'heat', 'lever'], and the deepest is regulation at 4. Nobody
+'edge', 'heat', 'lever'], and the deepest is inference at 8. Nobody
 sequenced this; the prerequisites did
 
 **the_count_of_designs_now_has_objects_under_it** — holds
 
 engine/intricacy.py counted 2**s designs and never said what one WAS.
 Giving them objects found that composition depth is NOT the constraint:
-the prerequisite tree is 5 deep and a village affords 23.5 parts, so on
+the prerequisite tree is 9 deep and a village affords 23.5 parts, so on
 composition alone a literate village reaches a governed engine. It does
 not, and the thing stopping it is TEMPERATURE. Every step past cordage
 is a material you cannot have until you can reach the heat that makes
-it, and the bootstrap takes 6 rounds from 1100 K to 1750 K. The count
+it, and the bootstrap takes 10 rounds from 1100 K to 1750 K. The count
 now has objects under it and the objects have a metallurgy
 
 **every_name_is_checked_against_the_derivation** — holds
 
-16 names, and they derive NOTHING -- they are vocabulary so the output
+21 names, and they derive NOTHING -- they are vocabulary so the output
 can be read. Every one is checked against the derivation and a name
 whose parts never become reachable is an error, not a prediction. They
 arrive where the bootstrap puts them: r1 a bow; r1 a hafted axe; r2 a
 cooking pot; r2 a potter's wheel; r2 a sealed tablet, an account ...
-and a governed engine at r6
+and a system that answers in sentences at r10
 
 **our_own_age_arrives_last_and_not_by_being_listed** — holds
 
-the recognisable modern things are not late because anyone listed them
-last. Copper arrives at round 3 and steel at 5, and the gap is a LOOP:
-bellows need a metal tuyere at the hot end, and the tuyere needs the
-smelting the bellows were for. So the cheap gains -- a hearth, charcoal
--- buy copper at 1400 K, and copper buys the gains that reach 1750 K
-and iron. 6 things are in hand by round 2 (a bow); 8 wait for round 5
-or later, including a governed engine. Nobody put a steam engine after
-a cooking pot -- combustion did
+nothing here is late because it was listed last. Copper is round 3 and
+steel 5, and the gap is a LOOP: bellows need a metal tuyere and the
+tuyere needs the smelting the bellows were for, so the cheap gains buy
+copper at 1400 K and copper buys the gains that reach 1750 K. The same
+shape repeats in tolerance: the first gears were hand-filed at a tenth
+and were good enough to cut better ones, and point-contact transistors
+were millimetre-scale before lithography existed. Setting either rung
+too high DEADLOCKED the bootstrap on the first attempt, which is the
+correct failure -- a ladder needs a rung you can reach by hand. 6
+things are in hand by round 2 (a bow); 4 wait for round 9 or later,
+ending at a system that answers in sentences
+
+**the_gate_changes_and_heat_stops_mattering** — holds
+
+temperature stops moving at round 5 (1750 K) and the bootstrap runs to
+10. Everything after that is reachable at the same heat and was not
+available for two centuries, because the scarce thing CHANGED: not how
+hot you can get but how accurately you can place matter. Tolerance goes
+1e-03 -> 1e-09 over those rounds. A model with one gate would have put
+a transistor next to a steam engine. The gate is not a constant of the
+system, it is whichever scalar is currently short, and noticing that it
+had moved is the only reason the later rounds exist
+
+**INVERTED_the_future_gets_numbers_and_no_nouns** — holds
+
+asked to run 200 years past now, the model answers with two numbers and
+no nouns. Parts: 29.4 -> 49.4, and the whole of that gain is a corpus
+copied at 1e6 a scribe-year rather than 250 -- a millionfold corpus is
+20 more parts, because the corpus is a logarithm and that never stops
+being true. Per-capita exponent: 0.072 -> 0.352 as the land share goes
+to 0.02. What it will NOT do is name the artifacts. Every primitive
+here is a material or an effect somebody has made and every name in
+KNOWN_AS is a thing that exists; a name for a primitive nobody has made
+would be a word with no rule under it, and this check fails if one
+appears. The forecast is 6.6 parts and a share, and anyone wanting more
+than that is asking for fiction
 
 ### engine/atoms.py
 
@@ -3061,8 +3129,8 @@ Nebula to human, one chain, every link named.
 
 **the_chain_runs_end_to_end** — holds
 
-56 links from a nebula to what a head does, in order and in one list:
-CROSSES 1, DERIVED 48, FORCED 7. engine/planetlab.py,
+57 links from a nebula to what a head does, in order and in one list:
+CROSSES 1, DERIVED 49, FORCED 7. engine/planetlab.py,
 engine/earthlab.py and engine/ancestry.py each walked part of this and
 none handed off, so the chain the repository is for was the one thing
 nobody could read
@@ -3080,13 +3148,13 @@ per gene falls as 1/r until membranes go inside, which buys 200x
 
 **every_link_names_its_rule** — holds
 
-56 of 56 links name the rule and module that produce them; the 0 that
+57 of 57 links name the rule and module that produce them; the 0 that
 do not are exactly the 0 marked MISSING, whose whole content is that no
 rule produces them
 
 **the_gaps_are_named_and_counted** — holds
 
-56 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
+57 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
 is permitted and undriven -- the gates open and nothing makes it
 happen, so permission is not occurrence and the distance between them
 is not measured anywhere here
@@ -4252,8 +4320,8 @@ photosynthesis
 
 **following_beats_running_everything** — holds
 
-10 questions, 6.57 ms warm against 17.3 s for the full suite on a warm
-cache -- 2,632x. The suite re-establishes the past on every question.
+10 questions, 6.73 ms warm against 17.3 s for the full suite on a warm
+cache -- 2,571x. The suite re-establishes the past on every question.
 This establishes it once, because the past does not move. Roots get
 longer and deeper as modules are added and the cost stays at the tip
 
@@ -5254,7 +5322,7 @@ did
 
 ## The published numbers
 
-83 of 83 reproduce. A claim is tied to a fingerprint over the rule that
+84 of 84 reproduce. A claim is tied to a fingerprint over the rule that
 produced it and everything that rule depends on, so an unchanged
 fingerprint is a proof that recomputing would return the same thing.
 
@@ -5274,7 +5342,8 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.114` ideas are non-rival: escape turns on a 0.372 land share — reproduces (`(0.372, 0.072, -0.128, 0.372, 23.5, 29.4)`)
 - `3.1.114` 24% of possible specialists are priced out by their tools — reproduces (`(1177, 368, 24, 1.33, 14.0)`)
 - `3.1.115` novelty per head falls to 0.80 while the total rises 32x — reproduces (`(0.8, 32, 21.5, 26.8, 99.7, 0.032)`)
-- `3.1.116` temperature gates the tech tree: copper at round 3, steel at 5 — reproduces (`(16, 6, 1750, 3, 5, 5, 6)`)
+- `3.1.117` two gates: heat stops at round 5, tolerance runs to 10 — reproduces (`(21, 10, 1750, 3, 5, 9, 10)`)
+- `3.1.117` 7 of 10 derived numbers match the record within 3x — reproduces (`(7, 1, 2, 6)`)
 - `3.1.116` a press is worth 6.6 parts; proofreading is worth nothing — reproduces (`(6.6, 0.322, 0.0, 3.3)`)
 - `3.1.107` the derived group is 3; transitivity saves 10x on contests — reproduces (`(3, 10, 0.0, 0.02)`)
 - `3.1.106` a microbe needs 6 to adapt yearly, a human 40,792 — reproduces (`(6, 40792, 0.5)`)
@@ -5289,7 +5358,7 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.99` every ligation is templated; the template is the catalyst — reproduces (`(True, 25488, True, True, 200)`)
 - `3.1.98` divides at 2x volume, 28 copies, 1.39 types lost — reproduces (`(2.0, 28, 1.39, 10.0)`)
 - `3.1.96` one compartment closes at 14 bases; an ocean is 1e35 — reproduces (`(True, 14, 13, 35)`)
-- `3.1.116` Big Bang to a head in 56 links: 48 derived, 7 forced, 0 gaps — reproduces (`(56, 48, 7, 0, 1)`)
+- `3.1.117` Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps — reproduces (`(57, 49, 7, 0, 1)`)
 - `3.1.95` abundance falls as mass^-3/4 exactly — reproduces (`1.0`)
 - `3.1.94` the lineage holds at the 1.58 um closure floor — reproduces (`(1.58, True, True)`)
 - `3.1.91` closure is 0.48 catalysts per reaction, above 2000 molecules — reproduces (`(0.48, True, 13, True)`)
@@ -5344,9 +5413,19 @@ fingerprint is a proof that recomputing would return the same thing.
 
 ## What was published and later withdrawn
 
-27 numbers were published here and are wrong. They are kept with the
+28 numbers were published here and are wrong. They are kept with the
 reason, because a record that only holds the surviving answers is not a
 record.
+
+### `3.1.116` temperature gates the tech tree, 16 primitives in 6 rounds
+
+true as far as it went and it did not go far enough. Heat stops moving
+at round 5 and everything after -- vacuum, alloy, semiconductor,
+switching, inference -- is reachable at the same 1750 K and was not
+available for two centuries, because the scarce scalar CHANGED to how
+accurately matter can be placed. 21 primitives in 10 rounds, with
+tolerance going 1e-3 to 1e-9 after the heat stops. The gate is not a
+constant of the system, it is whichever scalar is short
 
 ### `3.1.68` competition prevents the size collapse, 1.76 vs 0.64
 

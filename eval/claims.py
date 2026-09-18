@@ -153,6 +153,21 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _wholechain():
+    from engine.lineage import chain, DERIVED, MISSING, CROSSES
+    c = chain()
+    k = {}
+    for _a, _b, v, _r, _w in c:
+        k[v] = k.get(v, 0) + 1
+    return len(c), k.get(DERIVED, 0), k.get(MISSING, 0), k.get(CROSSES, 0)
+
+
+def _damuth():
+    from engine.lineage import size_span
+    _a, _b, ratio = size_span(1000.0, 1e-3, 1e3)
+    return round(ratio / (1e6 ** 0.75), 3)
+
+
 def _floor():
     from engine.descent import closure_floor_m, run, fitness, Organism
     snaps = run(generations=600, population=200)
@@ -459,6 +474,10 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.95", "nebula to a head in 19 links: 9 derived, 2 gaps, 1 crossing",
+     _wholechain, (19, 9, 2, 1), CURRENT),
+    ("3.1.95", "abundance falls as mass^-3/4 exactly",
+     _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
      _floor, (1.58, True, True), CURRENT),
     ("3.1.91", "closure is 0.48 catalysts per reaction, above 2000 molecules",

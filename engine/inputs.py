@@ -165,6 +165,9 @@ INPUTS = {
     "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
     "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
     "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "lineage.chain": (
+        MEASURED, "assembled from rules proved elsewhere; no number "
+                  "of its own"),
     "generate.AXES": (
         CHOSEN, "the grid the rules are walked over; chosen to span "
                 "what the rules accept, NOT to bracket an answer"),
@@ -343,6 +346,8 @@ CLAIMS_ON = {
     "the fidelity gate opens in a 7 K window": [],
     "cold slows breaking 11x more than building": [],
     "closure is 0.48 catalysts per reaction": [],
+    "nebula to a head in 19 links": [],
+    "abundance falls as mass^-3/4": [],
     "10,584 universes generated blind, queried in 45 ms": [
         "generate.AXES"],
     "a set closes above p=1e-3, measured is 1e-8": [

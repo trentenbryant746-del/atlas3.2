@@ -5838,3 +5838,63 @@ alphabet comparison stopped depending on a hardcoded size window that
 no longer bracketed an AB network.
 
     eight modules, 160.6s -> 4.84s, every check still passing
+
+### 3.1.95 — nebula to a head, one chain, nineteen links
+
+The pieces existed and did not connect. `planetlab` walked a planet to
+land creatures, `earthlab` asked whether a first cell was possible,
+`ancestry` walked LUCA to us. Each was written for its own question,
+none handed off, and **the chain the repository is for was the one
+thing nobody could read.**
+
+`engine/lineage.py` assembles it by **derivation** — every link is a
+rule already proved elsewhere, cited, with its verdict carried
+forward. It calls no run, sweep, census or generate.
+
+    DERIVED  a nebula              -> a star and planets      genesis.composition
+    DERIVED  planets               -> one in the band         evolve.habitable_band
+    DERIVED  a warm ocean          -> a cold brine            cold.temperature_for
+    DERIVED  brine                 -> an autocatalytic set    closure.length_closing_derived
+    DERIVED  a closed set          -> a bounded cell          earthlab.size_window
+    MISSING  a cell that could be  -> a cell that is          nothing produces one
+    ALLOWED  LUCA                  -> eukaryote               ancestry.steps
+    ALLOWED  eukaryote             -> multicellular
+    ALLOWED  multicellular         -> large-bodied
+    ALLOWED  large-bodied          -> skeletal
+    ALLOWED  skeletal              -> land
+    ALLOWED  land                  -> endotherm
+    ALLOWED  endotherm             -> large brain
+    CROSSES  large brain           -> us
+    DERIVED  a large brain         -> a filter, not a store   learning.fill_time_years
+    DERIVED  a filter              -> recognition             recognize.sharp_fraction
+    DERIVED  one head              -> several                 civ.smallest_group
+    DERIVED  several heads         -> a shared corpus         school.grow
+    MISSING  a corpus              -> what it is for          nothing prices rank
+
+**9 derived, 7 allowed, 1 crossing, 2 gaps.** 17 of 19 links name the
+rule and module that produce them; the two that do not are exactly
+the two marked MISSING, whose whole content is that no rule produces
+them.
+
+**The first gap is the one that matters.** Every gate opens and
+nothing makes a cell. Permission is not occurrence, and the distance
+between them is not measured anywhere here.
+
+### biodiversity and competition, as theorems
+
+Not runs. `engine/ecology.py` answered the coexistence question by
+running 600 generations of 12 species; the bound needs no population
+at all.
+
+**Competitive exclusion is a statement about rank.** At equilibrium
+each species needs one resource it is best at, so two sharing a best
+cannot both stay: **coexisting species ≤ limiting resources.**
+
+**Energetic equivalence falls out of Kleiber.** One body costs
+b·m^(3/4), so on a fixed energy share abundance goes as **m^(−3/4)** —
+a gram-sized animal is 31,623× commoner than a tonne-sized one, which
+is 10⁶^0.75 **exactly**. Population *energy use* is then the same at
+every body size. A field holds few large animals and many small ones,
+and nothing chose that; Kleiber did.
+
+    lineage 6/6    53 claims reproduce

@@ -30,7 +30,7 @@ that passes -- Atlas is about **19 trillion tokens**.
 
 The rules that generate all of it are **1.6 MB**.
 
-**That is about 36 million to one.**
+**That is about 35 million to one.**
 
 Which is the whole argument in one figure. The enumeration is not
 the artifact; it is what you unpack on demand for the one route

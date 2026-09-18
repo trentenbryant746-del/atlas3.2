@@ -6,7 +6,7 @@ describes, so it cannot drift from what the system actually does.
 
 ## The chain
 
-58 links from a nebula to a head. Each one names the rule that drives
+63 links from a nebula to a head. Each one names the rule that drives
 it and the module the rule lives in. A link is DERIVED when something
 here forces it, FORCED when it is both permitted and driven, CROSSES
 when it is permitted and nothing drives it, and MISSING when it is a
@@ -623,6 +623,81 @@ by README rule 3 a machine that answers by searching is an admission:
 its usefulness measures what has not been derived, and it is the only
 quantity here that shrinks as the work gets better
 
+### 59. people with instruments -> a literature of their own
+
+*DERIVED* &nbsp; `literature.order_agreement`
+
+this repository derives from constants it simply has. The people inside
+it do not have them -- they have senses reaching 8 of 13 constraints
+and instruments arriving in an order engine/artifact.py already fixed
+from melting points and machining tolerances. So a science is possible
+exactly when its instrument is, which PREDICTS AN ORDER: statics,
+surveying, positional astronomy, metallurgy, machines, optics,
+thermometry, then the rest. Against the century each actually appeared
+that is 55 concordant pairs to 7, Kendall tau 0.77 on a sequence that
+could have come out 6.2e9 ways. The rounds were not tuned for this and
+the centuries are the answer key, but the science-to-instrument mapping
+is mine and a different hand would score differently. The 7 discordant
+pairs concentrate on metallurgy, pneumatics and spectroscopy, and each
+names a requirement the mapping missed -- a ruled grating is precision
+machining, not optics. Their rules also carry THEIR error: a three-term
+derivation of G is +/-17% at round 2 and 0.2% at round 5, and Cavendish
+got 1% in 1798, which lands between them
+
+### 60. everything derived so far -> one epoch of many
+
+*DERIVED* &nbsp; `farfuture.star_lifetime_years`
+
+engine/epochs.py stops at the neutron-star merger, about ten billion
+years, because that is the last epoch that makes a new KIND of matter
+-- and everything above, cells through lithography, happens INSIDE that
+one epoch using nothing the universe had not already made. Main
+sequence lifetime goes as M^(1-3.5), so the lightest star that burns at
+all, 0.08 solar masses, lasts 5.5e12 years against the Sun's 1e10. The
+era with people in it is a 552nd of the era with stars in it, and the
+chain had an end that nobody had written down
+
+### 61. the last starlight -> holes that finally shrink
+
+*DERIVED* &nbsp; `farfuture.black_holes_start_shrinking`
+
+a solar-mass hole radiates at 6.2e-8 K, colder than today's 2.725 K
+sky, so it GROWS -- nothing evaporates until the universe has cooled
+past it, which under exponential expansion takes ln(2.725/6.2e-8)
+Hubble times, about 2.6e11 years. Then t = 5120 pi G^2 M^3 / hbar c^4,
+three constants and a mass with nothing fitted: 2.1e67 years for a
+stellar hole and 2.1e94 for a galactic one, because a cube turns 1e9
+into 1e27. The last event in the universe is the evaporation of the
+largest hole in it
+
+### 62. no gradient -> nothing further can be derived
+
+*DERIVED* &nbsp; `farfuture.de_sitter_temperature`
+
+every rule in this repository runs on a GRADIENT. A cell eats one, a
+body sheds one, a fire needs one, Carnot is defined by one, and the 58x
+return on cooking exists only because there is somewhere for the heat
+to go. The floor is the de Sitter temperature, hbar H / 2 pi k =
+2.7e-30 K, set by the horizon itself and by the same formula as a black
+hole's. At that temperature everything is at the horizon and there is
+no somewhere. So the final link does not say the universe is cold. It
+says the machinery this repository is built from has nothing left to
+bite on, which is an ANSWER and not a gap -- the one place on the chain
+where 'nothing further can be derived' is the correct result
+
+### 63. ordinary matter -> whether it lasts at all
+
+*MISSING* &nbsp; `farfuture.PROTON_DECAY_BOUND_YR`
+
+a gap in the WORLD rather than in the model, and the distinction is
+worth keeping. The proton has never been observed to decay;
+Super-Kamiokande puts the lifetime beyond 1.6e34 years, which is a
+bound and not a value. If protons decay near that bound, white dwarfs
+and cold planets evaporate long before the 2.1e67 years a stellar hole
+needs and the degenerate era ends early. If they do not, cold matter
+simply waits. Nothing here can decide it and neither can anyone else
+yet
+
 ## The technology
 
 21 physical capabilities, each grounded in a rule that already existed
@@ -736,7 +811,7 @@ trying harder buys nothing. Only a changed term moves it:
 
 ## The rules, and what each one says
 
-562 of 562 rules hold across 92 modules.
+572 of 572 rules hold across 94 modules.
 
 Every check below is a rule that produced its own sentence. An INVERTED
 check is one that fails when the result looks too good -- it is there
@@ -2335,6 +2410,66 @@ greenhouse. Published maximum-greenhouse estimates put the outer edge
 at 1.67-1.77 AU. It was UNDETERMINED in 3.1.36 and refused rather than
 bounded by hand, which is what made the missing rule findable
 
+### engine/farfuture.py
+
+After the last element, and how the chain ends.
+
+**the_chain_ends_and_the_end_was_never_written_down** — holds
+
+engine/epochs.py stops at ns_merger at 1e+10 years, because that is the
+last epoch that makes a new KIND of matter. Everything this repository
+derives after it -- cells, bodies, bands, writing, lithography --
+happens inside that one epoch and uses nothing the universe had not
+already made. The chain had an end and nobody had written it down.
+Main-sequence lifetime goes as M^(1-3.5), so the lightest star that
+burns at all, 0.08 solar masses, lasts 5.52e+12 years against the Sun's
+1e10. The stelliferous era is 552 times longer than the part with
+people in it
+
+**nothing_evaporates_until_the_sky_is_colder_than_it** — holds
+
+a solar-mass hole radiates at 6.17e-08 K, which is colder than today's
+2.725 K sky -- so it GROWS. Nothing evaporates until the universe has
+cooled past it, and under exponential expansion that takes
+ln(2.725/6.2e-08) Hubble times, about 2.55e+11 years. The floor is the
+de Sitter temperature 2.66e-30 K, set by the horizon itself at hbar H /
+2 pi k, which is the same formula as the hole's. Nothing gets colder
+than that, which is why this is an end and not a stage
+
+**the_last_structures_go_by_a_formula_in_three_constants** — holds
+
+t = 5120 pi G^2 M^3 / hbar c^4 -- three constants and a mass, nothing
+fitted. A solar-mass hole takes 2.10e+67 years and a billion-solar-mass
+one 2.10e+94, because the cube makes a factor of 1e+27 out of a factor
+of 1e9. The largest structures last longest and they last by a wide
+margin, so the last event in the universe is the evaporation of the
+biggest hole in it
+
+**MISSING_whether_matter_itself_decays** — holds
+
+whether ordinary matter survives to meet any of this is NOT KNOWN. The
+proton has never been observed to decay and Super-Kamiokande puts the
+lifetime beyond 1.6e+34 years, which is a BOUND and not a value. If
+protons do decay near that bound, white dwarfs and planets evaporate
+long before the 2.1e+67 years a stellar black hole needs, and the
+degenerate era ends early. If they do not, cold matter simply waits.
+This repository cannot decide it and neither can anyone else yet, so it
+is carried as a gap in the world rather than a gap in the model -- a
+distinction worth keeping separate
+
+**INVERTED_heat_death_is_where_derivation_stops** — holds
+
+every rule in this repository runs on a GRADIENT. A cell eats one, a
+body sheds one, a fire needs one, Carnot is defined by one, and
+engine/disease.py prices a cooking fire at 58x precisely because there
+is somewhere for the heat to go. At 2.66e-30 K everything is at the
+horizon temperature and there is no somewhere. So the last link does
+not say the universe is cold; it says that the machinery this
+repository is built out of has nothing left to bite on. That is an
+ANSWER and not a gap, and it is the only place on the chain where
+'nothing further can be derived' is the correct result rather than an
+admission
+
 ### engine/folding.py
 
 Every fold enumerated, and Levinthal's paradox answered by counting.
@@ -2465,7 +2600,7 @@ has asked. That is the entire cost, paid once
 **questions_are_lookups_afterwards** — holds
 
 a three-condition question -- in the band, brine still liquid, a body
-able to shed its own heat -- returns 864 universes in 45 ms.
+able to shed its own heat -- returns 864 universes in 44 ms.
 engine/multiverse.py answered a narrower version of this by sweeping
 seeds and took 22 s per 20,000 worlds
 
@@ -2840,7 +2975,7 @@ been found yet. A machine that answers by searching a corpus is that
 sentence industrialised -- it is very good at the thing this repository
 treats as an admission. So its usefulness here is not a measure of how
 good it is; it is a measure of how much has not been derived. The chain
-has 58 links and 1 still open, and every one of the 550 rules that DID
+has 63 links and 2 still open, and every one of the 550 rules that DID
 get found is a question such a machine would no longer be needed for.
 That is the honest account of what building one would be worth to this
 system, and it is the only claim here that gets smaller as the work
@@ -3219,8 +3354,8 @@ Nebula to human, one chain, every link named.
 
 **the_chain_runs_end_to_end** — holds
 
-58 links from a nebula to what a head does, in order and in one list:
-CROSSES 1, DERIVED 50, FORCED 7. engine/planetlab.py,
+63 links from a nebula to what a head does, in order and in one list:
+CROSSES 1, DERIVED 54, FORCED 7, MISSING 1. engine/planetlab.py,
 engine/earthlab.py and engine/ancestry.py each walked part of this and
 none handed off, so the chain the repository is for was the one thing
 nobody could read
@@ -3238,16 +3373,17 @@ per gene falls as 1/r until membranes go inside, which buys 200x
 
 **every_link_names_its_rule** — holds
 
-58 of 58 links name the rule and module that produce them; the 0 that
-do not are exactly the 0 marked MISSING, whose whole content is that no
+63 of 63 links name the rule and module that produce them; the 0 that
+do not are exactly the 1 marked MISSING, whose whole content is that no
 rule produces them
 
 **the_gaps_are_named_and_counted** — holds
 
-58 links, 0 gaps, 1 crossings. Crossings: large brain -> us. A crossing
-is permitted and undriven -- the gates open and nothing makes it
-happen, so permission is not occurrence and the distance between them
-is not measured anywhere here
+63 links, 1 gaps, 1 crossings. Gaps: ordinary matter -> whether it
+lasts at all Crossings: large brain -> us. A crossing is permitted and
+undriven -- the gates open and nothing makes it happen, so permission
+is not occurrence and the distance between them is not measured
+anywhere here
 
 **competition_is_a_theorem_not_a_run** — holds
 
@@ -3320,6 +3456,65 @@ the first 200 years and 2.3x over the last 1500, and then it STOPS --
 not because everyone can read but because nobody else can be spared
 from the fields. Mass literacy is not waiting on a better alphabet, it
 is waiting on yield
+
+### engine/literature.py
+
+What the people in the simulation could write down, and when.
+
+**the_order_of_the_sciences_is_predicted_not_assumed** — holds
+
+a science is possible when its instrument is, and engine/artifact.py
+already derived the instrument order from temperature and then
+tolerance. Nothing here consults a date. The predicted sequence is
+statics and levers(r1) -> surveying(r2) -> positional astronomy(r2) ->
+metallurgy(r3) -> mechanics of machines(r4) -> optics(r5) ... and
+against the century each one actually appeared it scores 55 concordant
+pairs to 7 discordant, Kendall tau 0.77. A sequence of 13 could come
+out 6.2e+09 ways. This is the hardest thing in the repository to have
+got right by accident
+
+**an_instrument_decides_what_can_be_known** — holds
+
+the nearest star shifts 0.76 arcseconds and the naked eye resolves
+about 60 -- so heliocentrism was unfalsifiable for two thousand years
+by 79x, and the people arguing about it were not being stupid, they
+were being under-equipped. Parallax becomes reachable at round 6, when
+glass and a graduated circle put the angle at 1.0e-06 rad. An
+instrument does not merely help with a question; it decides whether the
+question has an answer yet
+
+**their_rules_carry_their_error_and_it_is_computable** — holds
+
+their version of a rule carries their measurement error, not ours. A
+three-term derivation of Newton's constant would come out to r2
++/-17.3%; r5 +/-0.2%; r7 +/-0.0%; r9 +/-0.0%. Cavendish got 1% in 1798
+with a torsion balance, which is between rounds 5 and 7 here. The point
+is not the agreement, it is that the SHAPE of what they could know is
+computable from what they could build
+
+**INVERTED_a_rule_they_could_not_check_is_not_their_rule** — holds
+
+at the last round they reach 1e-09 and 13 of 13 sciences, ending with
+[]. They still cannot check most of what this repository asserts. The
+de Sitter floor is 2.7e-30 K and no instrument in the tree measures it;
+the proton decay bound needs a detector the size of a lake; the closure
+floor is a claim about chemistry that never happened here. A rule they
+could not have checked is not a rule they would have written, so the
+overlap between their literature and ours is small and bounded -- and
+pretending otherwise would make this module a mirror instead of a test
+
+**the_discordant_pairs_name_which_mapping_is_wrong** — holds
+
+7 pairs come out backwards, and they are not spread evenly -- three
+entries carry most of them: metallurgy (3), pneumatics (3),
+spectroscopy (2). Spectroscopy is predicted at round 5 because it needs
+only glass and a current, and it actually waited until the 19th -- the
+missing requirement is a RULED GRATING, which is precision machining
+rather than optics, and this module does not model that. Pneumatics is
+predicted late because a vacuum here needs regulation, and Guericke did
+it in 1650 with a leather seal and patience. Both are errors in MY
+science-to-primitive mapping, not in engine/artifact.py's ordering, and
+naming which is which is the only thing that keeps the tau honest
 
 ### engine/luca.py
 
@@ -4410,8 +4605,8 @@ photosynthesis
 
 **following_beats_running_everything** — holds
 
-10 questions, 6.63 ms warm against 17.3 s for the full suite on a warm
-cache -- 2,607x. The suite re-establishes the past on every question.
+10 questions, 6.46 ms warm against 17.3 s for the full suite on a warm
+cache -- 2,677x. The suite re-establishes the past on every question.
 This establishes it once, because the past does not move. Roots get
 longer and deeper as modules are added and the cost stays at the tip
 
@@ -5349,7 +5544,7 @@ written past it
 
 **every_rule_is_reachable_by_its_own_words** — holds
 
-658 rules across 127 modules, indexed under 3,399 distinct terms,
+663 rules across 128 modules, indexed under 3,429 distinct terms,
 against the 350 facts the Atlas 2 shim carried. The gap was never
 machinery -- it was that 3.1's rules had never been given their words
 
@@ -5363,14 +5558,14 @@ the answer
 
 **nothing_in_the_index_was_written_by_hand** — holds
 
-658 of 658 entries carry terms taken from the rule's own name and
+663 of 663 entries carry terms taken from the rule's own name and
 docstring, and the answer is the sentence its check() already emitted.
 No lexicon was written by hand, so a rule added tomorrow is reachable
 tomorrow
 
 **only_what_moved_is_recomputed** — holds
 
-128 modules untouched, 0 rechecked, in 59 ms. An earlier version of
+130 modules untouched, 0 rechecked, in 57 ms. An earlier version of
 this SWEPT -- ran every check and compared 512 sentences, 180 seconds
 to re-derive answers nothing could have changed. That is the mistake
 eval/claims.py had already fixed with fingerprints, committed again
@@ -5412,7 +5607,7 @@ did
 
 ## The published numbers
 
-85 of 85 reproduce. A claim is tied to a fingerprint over the rule that
+88 of 88 reproduce. A claim is tied to a fingerprint over the rule that
 produced it and everything that rule depends on, so an unchanged
 fingerprint is a proof that recomputing would return the same thing.
 
@@ -5433,7 +5628,10 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.114` 24% of possible specialists are priced out by their tools — reproduces (`(1177, 368, 24, 1.33, 14.0)`)
 - `3.1.115` novelty per head falls to 0.80 while the total rises 32x — reproduces (`(0.8, 32, 21.5, 26.8, 99.7, 0.032)`)
 - `3.1.117` two gates: heat stops at round 5, tolerance runs to 10 — reproduces (`(21, 10, 1750, 3, 5, 9, 10)`)
-- `3.1.117` 7 of 10 derived numbers match the record within 3x — reproduces (`(7, 1, 2, 6)`)
+- `3.1.120` 52 comparisons: 37 match, 28 of them free — reproduces (`(37, 6, 3, 28)`)
+- `3.1.122` instrument order predicts science order, Kendall tau 0.77 — reproduces (`(13, 55, 7, 0.77, 5, 8, 6)`)
+- `3.1.121` the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor — reproduces (`(-7.21, 67.32, -29.58, 12.74, 11.41)`)
+- `3.1.119` 19 trillion tokens enumerated, from 1.6 MB of rules — reproduces (`(13.28, 1.6, 36, 10584, 864, 8.87)`)
 - `3.1.118` an inference kit is indivisible: 17,300 people for one — reproduces (`(12.14, 11.5, 16, 3368702, 17300, 2.1)`)
 - `3.1.116` a press is worth 6.6 parts; proofreading is worth nothing — reproduces (`(6.6, 0.322, 0.0, 3.3)`)
 - `3.1.107` the derived group is 3; transitivity saves 10x on contests — reproduces (`(3, 10, 0.0, 0.02)`)
@@ -5449,7 +5647,7 @@ fingerprint is a proof that recomputing would return the same thing.
 - `3.1.99` every ligation is templated; the template is the catalyst — reproduces (`(True, 25488, True, True, 200)`)
 - `3.1.98` divides at 2x volume, 28 copies, 1.39 types lost — reproduces (`(2.0, 28, 1.39, 10.0)`)
 - `3.1.96` one compartment closes at 14 bases; an ocean is 1e35 — reproduces (`(True, 14, 13, 35)`)
-- `3.1.118` Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps — reproduces (`(58, 50, 7, 0, 1)`)
+- `3.1.118` Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps — reproduces (`(63, 54, 7, 1, 1)`)
 - `3.1.95` abundance falls as mass^-3/4 exactly — reproduces (`1.0`)
 - `3.1.94` the lineage holds at the 1.58 um closure floor — reproduces (`(1.58, True, True)`)
 - `3.1.91` closure is 0.48 catalysts per reaction, above 2000 molecules — reproduces (`(0.48, True, 13, True)`)
@@ -5504,9 +5702,19 @@ fingerprint is a proof that recomputing would return the same thing.
 
 ## What was published and later withdrawn
 
-29 numbers were published here and are wrong. They are kept with the
+30 numbers were published here and are wrong. They are kept with the
 reason, because a record that only holds the surviving answers is not a
 record.
+
+### `3.1.117` 7 of 10 derived numbers match the record within 3x
+
+ten comparisons was too few to distinguish a method that finds real
+structure from one that propagates a single error into several places
+that then agree. Expanded to 46 rows spanning nucleosynthesis to
+lithography. Six rows carry a baseline I chose rather than found and
+are shown WITHOUT being scored -- three of those would have counted as
+matches, which is why they do not. 40 scored: 32 match, 5 loose, 3
+miss, and 24 of the matches could have come out otherwise
 
 ### `3.1.116` every primitive is grounded in a rule that already exists
 

@@ -164,7 +164,7 @@
 "ok": true
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "dab63e73dd05a631",
+"fp": "306527a46ec65c13",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -185,6 +185,10 @@
 },
 "3.1.121|the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor": {
 "fp": "33db2bd6b23e2051",
+"ok": true
+},
+"3.1.122|instrument order predicts science order, Kendall tau 0.77": {
+"fp": "eac9756d6b67e5ff",
 "ok": true
 },
 "3.1.18|folding survival rate 0.573": {

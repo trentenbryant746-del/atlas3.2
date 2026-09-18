@@ -619,6 +619,29 @@ def inside_the_head():
          "admission: its usefulness measures what has not been "
          "derived, and it is the only quantity here that shrinks "
          "as the work gets better"),
+        ("people with instruments", "a literature of their own",
+         DERIVED, "literature.order_agreement",
+         "this repository derives from constants it simply has. "
+         "The people inside it do not have them -- they have "
+         "senses reaching 8 of 13 constraints and instruments "
+         "arriving in an order engine/artifact.py already fixed "
+         "from melting points and machining tolerances. So a "
+         "science is possible exactly when its instrument is, "
+         "which PREDICTS AN ORDER: statics, surveying, positional "
+         "astronomy, metallurgy, machines, optics, thermometry, "
+         "then the rest. Against the century each actually "
+         "appeared that is 55 concordant pairs to 7, Kendall tau "
+         "0.77 on a sequence that could have come out 6.2e9 ways. "
+         "The rounds were not tuned for this and the centuries "
+         "are the answer key, but the science-to-instrument "
+         "mapping is mine and a different hand would score "
+         "differently. The 7 discordant pairs concentrate on "
+         "metallurgy, pneumatics and spectroscopy, and each names "
+         "a requirement the mapping missed -- a ruled grating is "
+         "precision machining, not optics. Their rules also carry "
+         "THEIR error: a three-term derivation of G is +/-17% at "
+         "round 2 and 0.2% at round 5, and Cavendish got 1% in "
+         "1798, which lands between them"),
         ("everything derived so far", "one epoch of many", DERIVED,
          "farfuture.star_lifetime_years",
          "engine/epochs.py stops at the neutron-star merger, about "

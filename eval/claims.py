@@ -335,6 +335,15 @@ def _farfuture():
             round(math.log10(black_holes_start_shrinking()), 2))
 
 
+def _literature():
+    from engine.literature import (order_agreement, when,
+                                   parallax_reachable, SCIENCES)
+    con, dis, tau = order_agreement()
+    first = next(i for i in range(1, 11) if parallax_reachable(i))
+    return (len(SCIENCES), con, dis, round(tau, 2),
+            when("optics"), when("solid state"), first)
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -806,6 +815,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.1.122", "instrument order predicts science order, Kendall tau 0.77",
+     _literature, (13, 55, 7, 0.77, 5, 8, 6), CURRENT),
     ("3.1.121", "the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor",
      _farfuture, (-7.21, 67.32, -29.58, 12.74, 11.41), CURRENT),
     ("3.1.119", "19 trillion tokens enumerated, from 1.6 MB of rules",
@@ -841,7 +852,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (62, 53, 7, 1, 1), CURRENT),
+     _wholechain, (63, 54, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

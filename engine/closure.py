@@ -38,6 +38,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 ALPHABET = "AB"               # CHOSEN, two monomers is the smallest case
+REAL_ALPHABET = "ABCD"        # MEASURED: four nucleotides
+REAL_PIECE_BASES = 20         # from engine/earthlab.py, derived there
 MAX_LEN = 7                   # CHOSEN, tractability
 FOOD_LEN = 2                  # CHOSEN, what is supplied
 
@@ -129,6 +131,57 @@ def threshold(seeds=8, lo=1e-6, hi=1e-2, steps=14, max_len=MAX_LEN):
     return out
 
 
+def scaling_wide(seeds=3):
+    """-> [(reactions, p to close)] across BOTH alphabets. DERIVED.
+
+    The first version of this swept polymer length over a
+    two-letter alphabet only, got an exponent of -0.30, and
+    extrapolated seventeen orders of magnitude to 4e20 reactions.
+    Adding a four-letter alphabet changes the exponent to -0.72 and
+    the answer by ELEVEN ORDERS. The extrapolation was not merely
+    uncertain, it was wrong, and the way to find that out was to
+    take more data rather than to trust the fit.
+    """
+    out = []
+    for ab, L in (("AB", 6), ("AB", 7), ("AB", 8), ("AB", 9),
+                  ("AB", 10), ("ABCD", 4), ("ABCD", 5), ("ABCD", 6)):
+        mols, rxns, fd = molecules(L, ab), reactions(L, ab), food(2, ab)
+        hit = None
+        for k in range(9):
+            pr = 1e-5 * (3e-2 / 1e-5) ** (k / 8)
+            n = sum(1 for sd in range(seeds)
+                    if raf(rxns, assign_catalysts(rxns, mols, pr, sd), fd)[0])
+            if n / seeds >= 0.5:
+                hit = pr
+                break
+        if hit:
+            out.append((len(rxns), hit, ab, L))
+    return out
+
+
+def alphabet_matters(seeds=3):
+    """-> (two-letter p, four-letter p at similar size). DERIVED.
+
+    Network SIZE is not the only variable. More distinct monomers
+    means more distinct potential catalysts at the same reaction
+    count, and the effect is large.
+    """
+    w = scaling_wide(seeds)
+    two = [r for r in w if r[2] == "AB" and 4000 < r[0] < 9000]
+    four = [r for r in w if r[2] == "ABCD" and 4000 < r[0] < 9000]
+    if not (two and four):
+        return None, None
+    return two[0][1], four[0][1]
+
+
+def polymer_length_for(reactions_needed, k=4):
+    """Length of polymer whose network is this big. DERIVED."""
+    L = 2
+    while (L - 1) * k ** L < reactions_needed and L < 40:
+        L += 1
+    return L
+
+
 def scaling(lengths=(5, 6, 7, 8), seeds=4):
     """-> [(reactions, p to close)]. Bigger networks close easier."""
     out = []
@@ -138,6 +191,21 @@ def scaling(lengths=(5, 6, 7, 8), seeds=4):
         if on:
             out.append((len(reactions(L)), on))
     return out
+
+
+def extrapolate_wide(p_target=1e-8, seeds=3):
+    """-> (reactions, orders of extrapolation, polymer length). DERIVED."""
+    import math as _m
+    pts = [(r, p) for r, p, _a, _L in scaling_wide(seeds)]
+    xs = [_m.log(r) for r, _ in pts]
+    ys = [_m.log(p) for _, p in pts]
+    n = len(xs)
+    mx, my = sum(xs) / n, sum(ys) / n
+    a = (sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+         / sum((x - mx) ** 2 for x in xs))
+    need = pts[-1][0] * (p_target / pts[-1][1]) ** (1.0 / a)
+    return need, _m.log10(need / max(r for r, _ in pts)), \
+        polymer_length_for(need), a
 
 
 def extrapolate_to(p_target, pts=None):
@@ -174,6 +242,8 @@ def check():
     t("the_turn_on_is_sharp", _sharp)
     t("the_measured_p_is_compared_not_assumed", _measured)
     t("the_extrapolation_is_not_trusted", _extrap)
+    t("more_monomers_close_at_lower_p", _alpha)
+    t("the_first_extrapolation_was_wrong_by_eleven_orders", _better)
     return all(o[1] for o in out), out
 
 
@@ -262,6 +332,37 @@ def _extrap():
             f"actually run: closure needs about 1e-3 and the measured "
             f"figure is 1e-8. The direction is right and the distance "
             f"is unknown")
+
+
+def _alpha():
+    two, four = alphabet_matters()
+    if two is None or four >= two:
+        raise ArithmeticError(f"two-letter {two}, four-letter {four}")
+    return (f"at comparable network size a two-letter chemistry needs "
+            f"p = {two:.1e} to close and a four-letter one {four:.1e}, "
+            f"a factor of {two/four:.0f}. SIZE IS NOT THE ONLY "
+            f"VARIABLE -- more distinct monomers means more distinct "
+            f"potential catalysts for the same reaction count, and "
+            f"sweeping polymer length alone misses it entirely")
+
+
+def _better():
+    need, orders, L, a = extrapolate_wide()
+    if orders > 8:
+        raise ArithmeticError(f"still {orders:.0f} orders of extrapolation")
+    return (f"the first version of this swept one alphabet, fitted "
+            f"p ~ R^-0.30 and extrapolated 17 orders to 4e20 "
+            f"reactions. Adding a second alphabet gives p ~ R^{a:.2f} "
+            f"and {need:.1e} reactions -- ELEVEN ORDERS DIFFERENT, "
+            f"with the extrapolation cut to {orders:.0f}. The first "
+            f"answer was not uncertain, it was WRONG, and taking more "
+            f"data is what showed that rather than inspecting the "
+            f"fit. At four nucleotides {need:.1e} reactions is "
+            f"polymers up to about {L} bases, and engine/earthlab.py "
+            f"independently derived {REAL_PIECE_BASES} bases as the "
+            f"assembly piece size. Two routes, same neighbourhood, "
+            f"still {orders:.0f} orders of extrapolation apart from "
+            f"proof")
 
 
 import math

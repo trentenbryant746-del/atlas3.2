@@ -198,5 +198,9 @@
 "3.1.88|three gates shut at 298 K, one at 255": {
 "fp": "24ae882d253814ab",
 "ok": true
+},
+"3.1.89|wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap": {
+"fp": "20f96da464e34e1c",
+"ok": true
 }
 }

@@ -143,6 +143,13 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _closurewide():
+    from engine.closure import extrapolate_wide, alphabet_matters
+    need, orders, L, a = extrapolate_wide()
+    two, four = alphabet_matters()
+    return (round(a, 2), L, round(orders), two > four * 5)
+
+
 def _closure():
     from engine.closure import search, threshold
     from engine.earthlab import CATALYSIS_P
@@ -413,6 +420,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.89", "wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap",
+     _closurewide, (-0.72, 15, 5, True), CURRENT),
     ("3.1.88", "a set closes above 1e-3; the measured p is 1e-8",
      _closure, (False, True, True), CURRENT),
     ("3.1.88", "cold buys 11x on build/break and 436x on lifetime",
@@ -513,6 +522,18 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.88", "extrapolating closure to 1e-8 asks for 1e20 reactions",
+     "withdrawn in 3.1.89, and not for being uncertain -- for being "
+     "WRONG BY ELEVEN ORDERS OF MAGNITUDE. It fitted p ~ R^-0.30 by "
+     "sweeping polymer length over a two-letter alphabet, which "
+     "varies network size and holds monomer diversity fixed. Adding "
+     "a four-letter alphabet gives p ~ R^-0.72 and 6.4e9 reactions. "
+     "The published number carried its extrapolation distance (17 "
+     "orders) attached, which is why it was not trusted, but "
+     "labelling an extrapolation as untrustworthy is not the same as "
+     "checking it. Taking more data is. At four nucleotides the new "
+     "figure is polymers up to about 15 bases, and earthlab derived "
+     "20 bases independently as the assembly piece size"),
     ("3.1.87", "two gates shut at 298 K: fidelity and search",
      "withdrawn in 3.1.88 by ADDING A GATE, not by any number "
      "moving. Nothing was asking whether a replicase survives long "

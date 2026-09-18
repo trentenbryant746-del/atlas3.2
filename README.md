@@ -5606,3 +5606,45 @@ magnitude of network size and the answer sits 17 beyond the last point.
 The direction is right; the distance is unknown.
 
     closure 6/6    cold 7/7    earthlab 10/10    suite 8.2 s
+
+### 3.1.89 — the extrapolation was wrong by eleven orders
+
+3.1.88 published a figure with its own untrustworthiness attached:
+extrapolating the closure threshold to the measured catalysis
+probability asked for ~10²⁰ reactions, from a fit spanning 1.2 orders
+of network size and running 17 beyond the data. Labelling it as
+untrustworthy was honest. **It was not the same as checking it.**
+
+The fit swept polymer length over a **two-letter** alphabet, which
+varies network size while holding monomer diversity fixed. Adding a
+four-letter alphabet:
+
+    alphabet   L   reactions   p to close
+    AB         6         516     4.05e-03
+    AB         8       3,076     1.49e-03
+    AB        10      16,388     5.48e-04
+    ABCD       4         912     2.01e-04
+    ABCD       5       5,008     2.72e-05
+    ABCD       6      25,488     7.40e-05
+
+**Size is not the only variable.** At comparable reaction counts —
+7,172 against 5,008 — the two-letter chemistry needs 5.5×10⁻⁴ and the
+four-letter one 2.7×10⁻⁵, a factor of 20. More distinct monomers means
+more distinct potential catalysts for the same number of reactions,
+and sweeping length alone misses it entirely.
+
+    exponent        -0.30  ->  -0.72
+    reactions needed 4e20  ->  6.4e9
+    extrapolation   17 orders -> 5
+
+**Eleven orders of magnitude.** The published answer was not uncertain,
+it was wrong, and what found that out was taking more data, not
+inspecting the fit more carefully.
+
+At four nucleotides, 6.4×10⁹ reactions is polymers up to about **15
+bases** — and `engine/earthlab.py` independently derived **20 bases**
+as the piece size for modular assembly. Two routes, same
+neighbourhood. Still five orders of extrapolation short of proof, and
+that is now the live number.
+
+    closure 8/8    suite 7.9 s    48 claims, 15 superseded

@@ -6441,3 +6441,52 @@ transport, which understates real high-latitude temperatures.
 Correcting it would need a circulation this repository does not have.
 
     trajectory 6/6    64 claims reproduce
+
+### 3.1.106 — adaptation is a search, and reproduction is how it is paid for
+
+`trajectory.py` showed that a new latitude imposes a constraint the
+old one did not. It did not say how a population comes to answer one.
+
+**The answer needs nothing new.** `heredity.py` gives variation
+without a mutation rate — 4.48 non-lethal variants per division —
+and `innovation.py` gives the useful share, 1.1×10⁻⁴ and honestly
+unmeasured. Multiply: **4.9×10⁻⁴ useful variants per individual per
+generation.**
+
+> **Reproduction is the search.** It is not a way of continuing, it
+> is how the answers are looked for.
+
+    population   per generation   generations to one answer
+            10        4.90e-03                     204
+           100        4.90e-02                      20
+        10,000        4.90e+00                       0.2
+     1,000,000        4.90e+02                       0.002
+
+**And the floor turned out to be tiny, which was informative.** I
+expected fifty individuals to be too few; a microbe answering a
+yearly challenge needs **six**. With a division a day the search is
+simply fast.
+
+**Generation time is the lever, not population:**
+
+    microbe    1 day         6 individuals
+    insect    30 days      168
+    mouse     90 days      503
+    wolf       3 years    6,119
+    human     20 years   40,792
+
+A human generation is 7,300× a microbe's, so the population needed
+to answer the same challenge is **7,300× larger**. A slow breeder
+does not adapt by being patient. It adapts by being numerous, or it
+does not adapt.
+
+**And selection costs nothing extra.** Variation without differential
+survival is drift — and the differential is already there:
+`heredity.py` has **50% of daughters unable to close** before
+anything is selected *for*. Selection is not a force applied to a
+population. It is what the failures already do.
+
+This file introduces two constants and both are generation lengths.
+No selection coefficient, no mutation rate, no fitness function.
+
+    adapt 5/5    65 claims reproduce

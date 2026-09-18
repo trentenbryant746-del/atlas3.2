@@ -165,6 +165,7 @@ INPUTS = {
     "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
     "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
     "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "adapt.GENERATIONS": (MEASURED, "days between generations by grade"),
     "trajectory.T_EQUATOR": (MEASURED, "300 K mean equatorial surface"),
     "comprehension.BINDS": (
         MEASURED, "a census of constraints derived in other modules; "

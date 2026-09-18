@@ -154,6 +154,14 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _adapt():
+    from engine.adapt import (useful_per_individual, minimum_population,
+                              GENERATIONS, selection_is_free)
+    return (round(minimum_population(1.0, 1.0)),
+            round(minimum_population(1.0, GENERATIONS["human"])),
+            round(selection_is_free()[0], 2))
+
+
 def _trajectory():
     from engine.trajectory import ladder, tool_available, seasonality
     rows = ladder()
@@ -565,6 +573,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
+     _adapt, (6, 40792, 0.5), CURRENT),
     ("3.1.105", "3 grades worn, 3 need a tool; the edge opens 97% of land",
      _trajectory, (3, 3, 97, True, 109), CURRENT),
     ("3.1.104", "comprehension is a count: 6 binds on a microbe, 13 on us",

@@ -206,5 +206,9 @@
 "3.1.90|closure at measured catalysis needs a 13-mer, under 20": {
 "fp": "44ab126094d5e842",
 "ok": true
+},
+"3.1.91|closure is 0.48 catalysts per reaction, above 2000 molecules": {
+"fp": "b36dda14b462e918",
+"ok": true
 }
 }

@@ -143,6 +143,16 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _pm():
+    from engine.closure import (catalysts_per_reaction, MEANFIELD_MIN_M,
+                                length_closing_derived, threshold_derived)
+    from engine.earthlab import CATALYSIS_P
+    mean, spread, n = catalysts_per_reaction()
+    L, _M, _p = length_closing_derived(CATALYSIS_P)
+    return (round(mean, 2), spread < 2.0, L,
+            threshold_derived(4) is None)
+
+
 def _closes13():
     from engine.closure import (length_closing_at, CATALYSATION_SLOPE,
                                 REAL_PIECE_BASES)
@@ -428,6 +438,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.91", "closure is 0.48 catalysts per reaction, above 2000 molecules",
+     _pm, (0.48, True, 13, True), CURRENT),
     ("3.1.90", "closure at measured catalysis needs a 13-mer, under 20",
      _closes13, (13, True, 0.395), CURRENT),
     ("3.1.88", "a set closes above 1e-3; the measured p is 1e-8",

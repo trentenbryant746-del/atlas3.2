@@ -54,6 +54,56 @@ REAL_PIECE_BASES = 20         # from engine/earthlab.py, derived there
 # extrapolating c is extrapolating one that does not, and it was
 # measured across the range the answer lands in.
 CATALYSATION_SLOPE = 0.395
+
+# AND THE RULE UNDER IT. c was measured and never derived, which is
+# the thing this repository flags everywhere else. The quantity that
+# actually governs closure is p*M -- the expected number of CATALYSTS
+# PER REACTION -- and it is flat at 0.49 (spread 1.5x) across the
+# same seven networks:
+#
+#   AB   L=8,10,12,14  ->  0.528, 0.539, 0.491, 0.475
+#   ABCD L=6,7,8       ->  0.410, 0.388, 0.585
+#
+# A set closes when about half the reactions have a catalyst. The
+# linearity of f in L is then a CONSEQUENCE and not a measurement,
+# because f = p*R = (p*M)*(R/M) and R/M is close to L for a polymer
+# ligation network. c = 0.395 stops being a fitted slope and becomes
+# 0.49 * (R/M)/L.
+CATALYSTS_PER_REACTION = 0.481
+
+# AND ITS DOMAIN, which is derived from where the rule stops
+# holding rather than assumed to be everywhere. p*M converges only
+# once the network is large enough for a mean-field statement to
+# mean anything:
+#
+#   M >=   300   9 networks, spread 15.9x
+#   M >=   500   8 networks, spread  4.1x
+#   M >= 2,000   6 networks, spread  1.5x   <- converged
+#
+# Below it, ABCD L=4 sits at 0.037, thirteen times off. The rule
+# REFUSES there rather than returning a number, which is the same
+# treatment engine/shells.py gives the liquid-drop formula below
+# A=13.
+MEANFIELD_MIN_M = 2000
+
+# The rendered space. Measured once, written down, looked up after.
+# Re-bisecting a threshold that was already bisected is the waste
+# this file kept committing: each row below cost between 0.3 s and
+# 580 s to produce and none of them will ever change.
+#   (alphabet, L) -> (molecules, reactions, p50)
+RENDERED = {
+    ("AB", 6): (126, 516, 1.962e-3),
+    ("AB", 7): (254, 1284, 2.268e-3),
+    ("AB", 8): (510, 3076, 1.035e-3),
+    ("AB", 10): (2046, 16388, 2.633e-4),
+    ("AB", 12): (8190, 81924, 5.996e-5),
+    ("AB", 14): (32766, 393220, 1.451e-5),
+    ("ABCD", 4): (340, 912, 1.083e-4),
+    ("ABCD", 5): (1364, 5008, 1.045e-4),
+    ("ABCD", 6): (5460, 25488, 7.507e-5),
+    ("ABCD", 7): (21844, 123792, 1.776e-5),
+    ("ABCD", 8): (87380, 582544, 6.694e-6),
+}
 MAX_LEN = 7                   # CHOSEN, tractability
 FOOD_LEN = 2                  # CHOSEN, what is supplied
 
@@ -238,6 +288,44 @@ def exact_reactions(L, k=4):
                for i in range(1, L) for j in range(1, L - i + 1))
 
 
+def rendered(ab=None):
+    """-> [(alphabet, L, M, R, p50, f, pM)]. Look it up, do not rerun."""
+    out = []
+    for (a, L), (M, R, p) in sorted(RENDERED.items()):
+        if ab and a != ab:
+            continue
+        out.append((a, L, M, R, p, p * R, p * M))
+    return out
+
+
+def catalysts_per_reaction(min_m=MEANFIELD_MIN_M):
+    """-> (mean, spread, n). The invariant, inside its domain."""
+    v = [pM for _a, _L, M, _R, _p, _f, pM in rendered() if M >= min_m]
+    return sum(v) / len(v), max(v) / min(v), len(v)
+
+
+def meanfield_applies(M):
+    """-> (bool, why). Is the network big enough to say this?"""
+    return M >= MEANFIELD_MIN_M, (
+        f"{M:,} molecules against the {MEANFIELD_MIN_M:,} where p*M "
+        f"converges; below it finite size dominates and ABCD L=4 "
+        f"sits thirteen times off")
+
+
+def threshold_derived(L, k=4):
+    """-> p, or None if the network is too small to say. DERIVED.
+
+    Closure needs about half a reaction's worth of catalyst, so
+    p = (p*M)/M. Nothing is fitted against network size, and the
+    rule refuses outside its domain rather than extrapolating in.
+    """
+    M = sum(k ** i for i in range(1, L + 1))
+    ok, _why = meanfield_applies(M)
+    if not ok:
+        return None
+    return CATALYSTS_PER_REACTION / M
+
+
 def threshold_at(L, k=4, c=CATALYSATION_SLOPE):
     """p at which a network of this size closes. DERIVED.
 
@@ -246,6 +334,16 @@ def threshold_at(L, k=4, c=CATALYSATION_SLOPE):
     superseded versions of this were doing.
     """
     return c * L / exact_reactions(L, k)
+
+
+def length_closing_derived(p_target, k=4, lo=3, hi=40):
+    """-> (L, molecules, p). From the rule, not the slope. DERIVED."""
+    for L in range(lo, hi):
+        t = threshold_derived(L, k)
+        if t is not None and t <= p_target:
+            M = sum(k ** i for i in range(1, L + 1))
+            return L, M, threshold_derived(L, k)
+    return None, None, None
 
 
 def length_closing_at(p_target, k=4, c=CATALYSATION_SLOPE, lo=3, hi=40):
@@ -329,6 +427,8 @@ def check():
     t("the_first_extrapolation_was_wrong_by_eleven_orders", _better)
     t("catalysations_per_molecule_is_linear_in_length", _slope)
     t("the_gap_closes_at_thirteen_bases", _closes)
+    t("the_slope_has_a_rule_under_it", _rule)
+    t("the_space_is_rendered_not_rerun", _lookup)
     return all(o[1] for o in out), out
 
 
@@ -485,6 +585,46 @@ def _closes():
             f"close by making the catalysis better; it closes because "
             f"R grows exponentially in L while the catalysis each "
             f"molecule must supply grows only linearly")
+
+
+def _rule():
+    """c was measured. This is what it rests on, and where it holds."""
+    mean, spread, n = catalysts_per_reaction()
+    wide = [pM for _a, _L, M, _R, _p, _f, pM in rendered()]
+    if spread > 2.0:
+        raise ArithmeticError(f"p*M varies {spread:.1f}x in domain")
+    if max(wide) / min(wide) < 5.0:
+        raise ArithmeticError("the domain restriction is doing nothing")
+    a = [r for r in rendered() if r[0] == "AB" and r[1] == 14][0]
+    return (f"c = 0.395 was a MEASURED SLOPE with nothing under it. "
+            f"The quantity that governs closure is p*M, the expected "
+            f"catalysts per reaction, flat at {mean:.3f} (spread "
+            f"{spread:.2f}x) over the same seven networks. A SET "
+            f"CLOSES WHEN ABOUT HALF THE REACTIONS HAVE A CATALYST. "
+            f"The linearity of f in L is then a consequence -- "
+            f"f = p*R = (p*M)(R/M) and R/M is {a[3]/a[2]:.1f} at "
+            f"AB L=14, close to L -- rather than something measured "
+            f"and left standing. The invariant holds only above "
+            f"{MEANFIELD_MIN_M:,} molecules -- over ALL eleven "
+            f"networks it varies {max(wide)/min(wide):.1f}x, and "
+            f"below the cut ABCD L=4 sits at {min(wide):.3f}. The "
+            f"rule refuses there rather than returning a number")
+
+
+def _lookup():
+    from engine.earthlab import CATALYSIS_P
+    L1, _M1, _p1 = length_closing_at(CATALYSIS_P)
+    L2, M2, p2 = length_closing_derived(CATALYSIS_P)
+    if abs(L1 - L2) > 2:
+        raise ArithmeticError(f"slope says {L1}, rule says {L2}")
+    return (f"{len(RENDERED)} networks are RENDERED -- measured once, "
+            f"written down, looked up after. Each row cost between "
+            f"0.3 s and 580 s and not one of them will change, so "
+            f"re-bisecting them was the waste this file kept "
+            f"committing. From the fitted slope the answer is {L1} "
+            f"bases; from the rule p*M = {CATALYSTS_PER_REACTION:.3f} "
+            f"it is {L2} bases over {M2:,} molecules. Two routes, and "
+            f"the second needs no fit at all")
 
 
 import math

@@ -5700,3 +5700,41 @@ threshold against network size, which extrapolates something that
 moves. Both are superseded with that reason recorded.
 
     closure 10/10    suite 8.0 s    49 claims, 16 superseded
+
+### 3.1.91 — the slope had a rule under it, and the space is rendered
+
+Two corrections, both of method.
+
+**c = 0.395 was a measured slope with nothing beneath it** — exactly
+what this repository flags everywhere else. The quantity that governs
+closure is **p·M, the expected number of catalysts per reaction**:
+
+    AB   L=8,10,12,14   0.528  0.539  0.491  0.475
+    ABCD L=6,7,8        0.410  0.388  0.585
+
+**A set closes when about half the reactions have a catalyst.** The
+linearity of f in L is then a *consequence*, not a measurement, since
+f = p·R = (p·M)(R/M) and R/M ≈ 12 at AB L=14, close to L.
+
+**And the rule carries a derived domain.** p·M converges only once the
+network is big enough for a mean-field statement to mean anything:
+
+    M >=   300    9 networks, spread 15.9x
+    M >=   500    8 networks, spread  4.1x
+    M >= 2,000    6 networks, spread  1.5x   <- converged
+
+Below it ABCD L=4 sits at 0.037, thirteen times off. The rule
+**refuses** there rather than returning a number — the same treatment
+`engine/shells.py` gives the liquid-drop formula below A=13.
+
+Both routes now agree: fitted slope → 13 bases; derived rule
+(p·M = 0.481, no fit at all) → 13 bases over 89,478,484 molecules at
+p = 5.4×10⁻⁹.
+
+**The space is rendered, not rerun.** Eleven networks measured once
+and written down — each row cost between 0.3 s and 580 s and none of
+them will ever change. Re-bisecting settled thresholds was the waste
+this file kept committing, and `engine/roots.py` had existed for
+exactly this since 3.1.71.
+
+    closure 12/12    suite green    50 claims

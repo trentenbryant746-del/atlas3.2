@@ -160,12 +160,20 @@ def before_luca():
          "exactly one catalyst, so about half of daughters cannot "
          "close. Variation and differential survival, neither added "
          "and no mutation rate introduced"),
-        ("a selected lineage", "a cell that is", MISSING,
-         "nothing copies a sequence",
-         "compositional inheritance passes on WHICH molecules are "
-         "present, not what any of them says. There is no genome, so "
-         "nothing carries an instruction forward, and that is the "
-         "one of the four that was always hardest"),
+        ("a selected lineage", "one that copies a sequence", DERIVED,
+         "template.templated_fraction",
+         "a ligation is templated when its product's complement is "
+         "present, and THE TEMPLATE IS THE CATALYST. 25,488 of "
+         "25,488 ligations have one available, because a complete "
+         "polymer set is closed under complementation. It selects "
+         "the join rather than permitting it, and comp(comp(s)) is "
+         "s, so two rounds replicate"),
+        ("a copied sequence", "a cell that is", MISSING,
+         "nothing reads it",
+         "no strand codes for a catalyst, so a sequence is carried "
+         "and never read. Template replication is heredity of "
+         "SEQUENCE; translation would be heredity of FUNCTION, and "
+         "that is the remaining thing"),
     ]
 
 

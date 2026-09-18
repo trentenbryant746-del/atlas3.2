@@ -154,6 +154,15 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _template():
+    from engine.template import (templated_fraction, replicates,
+                                 copy_fidelity, accepts)
+    n, total = templated_fraction()
+    err, bases = copy_fidelity()
+    return (n == total, n, replicates("ACCDBA"),
+            not accepts("ABCD", "AB", "CD"), round(bases))
+
+
 def _heredity():
     from engine.heredity import (divides_at, lost_per_division,
                                  copies_per_type, sole_catalyst_fraction)
@@ -495,12 +504,14 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.99", "every ligation is templated; the template is the catalyst",
+     _template, (True, 25488, True, True, 200), CURRENT),
     ("3.1.98", "divides at 2x volume, 28 copies, 1.39 types lost",
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.95", "Big Bang to a head in 34 links: 24 derived, 7 forced, 2 gaps",
-     _wholechain, (34, 24, 7, 2, 1), CURRENT),
+    ("3.1.95", "Big Bang to a head in 35 links: 25 derived, 7 forced, 2 gaps",
+     _wholechain, (35, 25, 7, 2, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

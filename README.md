@@ -6044,3 +6044,60 @@ no genome, so nothing carries an instruction forward.
 
     34 links, 24 derived, 7 forced, 1 crossing, 2 gaps
     heredity 5/5    56 claims reproduce
+
+### 3.1.99 — the reaction that copies a sequence was already in the network
+
+`engine/heredity.py` named the fourth absence precisely: nothing
+copies a **sequence**. Compositional inheritance passes on which
+molecules are present, not what any of them says.
+
+The instruction was to look at every reaction until one copies a
+sequence. **Every one of them does.**
+
+A ligation a + b → ab is **templated** when the complement of its
+product is present: the fragments anneal along that strand and are
+joined in the order it dictates. And the thing that makes it happen
+is the strand itself, so
+
+> **the template is the catalyst.**
+
+That is not a new reaction type. It is the ligation already in the
+network, with its catalyst *named* rather than drawn at random — and
+the catalyst is always available, because a complete polymer set is
+closed under complementation.
+
+    25,488 of 25,488 ligations have their product's complement present
+
+**It selects the join, it does not permit it.**
+
+    template ABCD -> product must be CDAB
+       C + DAB  -> CDAB   templated
+      CD + AB   -> CDAB   templated
+     CDA + B    -> CDAB   templated
+      AB + CD   -> ABCD   rejected
+
+The product's sequence is the template's, read off. That is the
+difference between chemistry that sustains itself and chemistry that
+**says something**.
+
+**And it replicates in two rounds.** comp(comp(s)) is s exactly, so a
+strand makes its complement and the complement makes the strand.
+
+**Its catalysis is not 10⁻⁸.** A random molecule catalyses a random
+reaction at the measured probability; a template catalyses its own
+copy by base pairing — which is why `engine/cold.py` could price the
+fidelity at all. 1 error in 200 at 259 K, holding a 200-base strand:
+**400 bits carried forward**, from the same ΔG that set the
+temperature window.
+
+### the gap moved again, and it is smaller
+
+    DERIVED  a selected lineage -> one that copies a sequence
+    MISSING  a copied sequence  -> a cell that is
+
+**No strand codes for a catalyst**, so a sequence is carried and never
+read. Template replication is heredity of *sequence*; translation
+would be heredity of *function*. That is the remaining thing.
+
+    35 links, 25 derived, 7 forced, 1 crossing, 2 gaps
+    template 6/6    56 claims reproduce

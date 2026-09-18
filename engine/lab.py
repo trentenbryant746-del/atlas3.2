@@ -261,6 +261,19 @@ def checks_do_not_grep_themselves():
                 continue
             if "ast" in seg or "signature" in seg:
                 continue
+            # SPECIFIED FURTHER. The hazard is a check that reads
+            # source AND SEARCHES IT FOR A LITERAL IT CONTAINS --
+            # that is how five checks came to pass no matter what.
+            # Reading source to HASH it cannot self-match: a
+            # fingerprint is compared against a stored digest, not
+            # against the reader's own wording, and json.loads of a
+            # cache is not reading source at all. Flagging those
+            # made the rule fire on descent._r and
+            # evolve._solar_band, which persist a result keyed on a
+            # fingerprint and grep nothing.
+            if ("fingerprint" in seg or "json.loads" in seg
+                    or "sha256" in seg):
+                continue
             # PRECISE: the danger is searching source for a literal
             # the searcher itself contains. A function that reads a
             # data file, or matches names from a table, cannot find

@@ -153,6 +153,15 @@ def _generated():
     return len(rows) == n, len(rows), len(got)
 
 
+def _floor():
+    from engine.descent import closure_floor_m, run, fitness, Organism
+    snaps = run(generations=600, population=200)
+    last = snaps[-1]["median_radius_m"]
+    tiny = fitness(Organism(1e-8))
+    return (round(1e6 * closure_floor_m(), 2),
+            last >= closure_floor_m() * 0.95, tiny == 0.0)
+
+
 def _pm():
     from engine.closure import (catalysts_per_reaction, MEANFIELD_MIN_M,
                                 length_closing_derived, threshold_derived)
@@ -450,6 +459,8 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
+    ("3.1.94", "the lineage holds at the 1.58 um closure floor",
+     _floor, (1.58, True, True), CURRENT),
     ("3.1.91", "closure is 0.48 catalysts per reaction, above 2000 molecules",
      _pm, (0.48, True, 13, True), CURRENT),
     ("3.1.90", "closure at measured catalysis needs a 13-mer, under 20",
@@ -554,6 +565,22 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.61", "seeded life collapses to 0.10 microns",
+     "withdrawn in 3.1.94. IT WAS AN UNBOUNDED OBJECTIVE, not a "
+     "biological result. fitness() returned surplus PER GRAM -- "
+     "a*m^(-1/3) - b*m^(-1/4) -- which diverges as mass falls: 3.3e6 "
+     "at 1.58 microns and 5.5e8 a hundredth of the way down. The "
+     "lineage was descending that without limit into max(r, 1e-7), a "
+     "clamp with nothing behind it, and the resting place was "
+     "therefore the clamp rather than any rule. The function's own "
+     "docstring said 'bigger is cheaper per gram by Kleiber and "
+     "harder to feed by geometry, and where they cross is a size', "
+     "which is true of surplus and false of surplus per gram. "
+     "engine/earthlab.py had already derived the missing bound -- "
+     "1.58 microns, below which a compartment cannot hold the "
+     "molecule types to catalyse its own repair -- and descent never "
+     "consulted it. With closure in place the lineage neither "
+     "collapses nor grows; it holds at 1.78 microns"),
     ("3.1.89", "wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap",
      "withdrawn in 3.1.90. The number was close and the METHOD was "
      "still wrong: it fitted the threshold p against network size and "

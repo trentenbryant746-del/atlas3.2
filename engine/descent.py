@@ -73,7 +73,10 @@ class Organism:
         land = self.land
         if rng.random() < MUTATION_TRAIT:
             land = not land
-        return Organism(max(r, 1e-7), t, land)
+        # The clamp was 1e-7, a number with nothing behind it.
+        # Mutation may still produce a body below closure; fitness
+        # refuses it rather than a floor hiding it.
+        return Organism(max(r, 1e-9), t, land)
 
 
 # THE SECOND ORGANISM. Every rule before this is one body against
@@ -189,14 +192,49 @@ def energy_balance(org):
     return intake, cost
 
 
-def fitness(org):
-    """Surplus energy per gram. DERIVED, and bounded above.
+_FLOOR = {}
 
-    Bigger is cheaper per gram by Kleiber and harder to feed by
-    geometry. The two cross, and where they cross is a size.
+
+def closure_floor_m():
+    """m of radius below which nothing maintains itself. DERIVED.
+
+    Not a new number. engine/earthlab.py derives it from
+    autocatalytic closure -- how many molecule types must sit
+    inside one compartment for the set to catalyse its own
+    repair -- and gets 1.58 microns. descent never consulted it.
+    """
+    if "r" not in _FLOOR:
+        from engine.earthlab import size_window
+        _FLOOR["r"] = size_window()[0]
+    return _FLOOR["r"]
+
+
+def fitness(org):
+    """Surplus energy per gram, floored by closure. DERIVED.
+
+    THE MISSING RULE, and it was in the objective itself. Surplus
+    is a*m^(2/3) - b*m^(3/4), so surplus per gram is
+    a*m^(-1/3) - b*m^(-1/4), and as m falls the first term grows
+    faster than the second. FITNESS DIVERGES AS SIZE GOES TO
+    ZERO -- 3.3e6 at 1.58 microns, 5.5e8 at a hundredth of that.
+    The lineage was not collapsing for any biological reason; it
+    was walking down an unbounded objective into max(r, 1e-7),
+    which is a clamp somebody typed and not a rule.
+
+    The docstring said "bigger is cheaper per gram by Kleiber and
+    harder to feed by geometry, and where they cross is a size."
+    That is true of SURPLUS and false of surplus PER GRAM, which
+    is what the function returned.
+
+    What bounds it is closure: below 1.58 microns a compartment
+    cannot hold the molecule types needed to catalyse its own
+    repair, so it does not maintain itself and its surplus buys
+    nothing. That floor was already derived next door.
     """
     m = org.mass()
     if m <= 0:
+        return 0.0
+    if org.radius < closure_floor_m():
         return 0.0
     intake, cost = energy_balance(org)
     surplus = intake - cost
@@ -324,14 +362,14 @@ def check():
 
     t("the_seed_has_no_traits", _seed)
     t("nothing_rewards_complexity", _noreward)
-    t("size_grows_until_a_wall", _grow)
+    t("size_holds_at_the_closure_floor", _grow)
     t("what_emerges_was_not_supplied", _emerge)
     t("intake_bounds_size_from_above", _bound)
-    t("nothing_here_selects_for_being_large", _nosize)
+    t("nothing_selects_for_size_in_either_direction", _nosize)
     t("encounter_rate_is_no_refuge", _encounter)
     t("a_second_organism_reverses_it", _predation)
     t("shrinking_does_not_delete_matter", _matter)
-    t("the_collapse_is_not_the_energy_balance", _fixed)
+    t("the_collapse_was_an_unbounded_objective", _fixed)
     return all(o[1] for o in out), out
 
 
@@ -339,36 +377,25 @@ _C = {}
 
 
 def _fixed():
-    """MISSING_RULE, found by trying to derive what the run reports.
-
-    The intent was to replace a 4,000-generation search with the
-    closed form it was searching for. Intake goes as m^(2/3) and
-    cost as m^(3/4), so they cross at m = (a/b)^12 -- and that
-    number is 0.17 m, six orders away from the 0.1 microns the run
-    settles at. The derivation does not reproduce the run, which
-    means the collapse is NOT the energy balance.
-    """
+    """CLOSED. The missing rule was found and it was the objective."""
     m = break_even_mass()
-    r = collapses_to()
+    floor = closure_floor_m()
     snaps = _r()
-    try:
-        last = snaps[-1]
-        got = last.get("median_r") or last.get("radius") or None
-    except Exception:
-        got = None
-    if 1e-7 < r < 1e-5:
-        raise ArithmeticError("the closed form now matches the run, so "
-                              "this MISSING_RULE has been closed")
-    return (f"MISSING_RULE. Intake m^(2/3) against cost m^(3/4) cross "
-            f"at {m:.2e} kg, a radius of {r:.3f} m. The run settles "
-            f"around 1e-7 m. Six orders apart, so THE COLLAPSE IS NOT "
-            f"THE ENERGY BALANCE -- above the crossing an organism "
-            f"starves, which makes it a ceiling and not a floor, and "
-            f"nothing derived here says why the lineage falls instead "
-            f"of rising to it. The search was going to be replaced by "
-            f"its closed form and the closed form answers a different "
-            f"question; that is worth more than the speed would have "
-            f"been")
+    last = snaps[-1]["median_radius_m"]
+    if last < floor * 0.95:
+        raise ArithmeticError("the lineage is still below closure")
+    return (f"the collapse to 0.1 microns is GONE, and it was never "
+            f"the energy balance. fitness returned surplus PER GRAM, "
+            f"a*m^(-1/3) - b*m^(-1/4), which diverges as mass falls "
+            f"-- 3.3e6 at 1.58 microns and 5.5e8 a hundredth of the "
+            f"way down. The lineage was descending an unbounded "
+            f"objective into max(r, 1e-7), a typed clamp. Consulting "
+            f"engine/earthlab.py's closure floor bounds it: below "
+            f"{1e6*floor:.2f} microns a compartment cannot hold the "
+            f"molecule types to catalyse its own repair, so surplus "
+            f"buys nothing. The lineage now holds at "
+            f"{1e6*last:.2f} microns, and the break-even at "
+            f"{m:.2e} kg is the ceiling it never approaches")
 
 
 def _matter():
@@ -452,26 +479,37 @@ def _noreward():
 
 
 def _grow():
-    """WRITTEN BEFORE THE INTAKE RULE, AND NOW FALSIFIED BY IT.
+    """INVERTED TWICE. The record of both is the point.
 
-    This asserted that size grows, because the first run grew --
-    to eighty-one metres, on a model where bigness was free. Adding
-    the intake rule reversed it, and rather than delete the check
-    it is inverted: the claim now is that size SHRINKS, which is
-    what the rules actually say and what Earth actually did for
-    three billion years.
+    v1 asserted size GROWS until a wall -- it did not, and the
+    rule was inverted rather than deleted.
+    v2 asserted size COLLAPSES to 0.1 microns -- it does not
+    either, and the reason was found: fitness was surplus PER
+    GRAM, which diverges as mass goes to zero, so the lineage was
+    walking down an unbounded objective into max(r, 1e-7), a
+    clamp somebody typed.
+    v3, with closure consulted: it does NEITHER. A rule wrong in
+    both directions is worth more written down than a rule
+    quietly replaced.
     """
-    r = _r()
-    first, last = r[0]["median_radius_m"], r[-1]["median_radius_m"]
-    if last > first:
-        raise ArithmeticError(
-            f"size grew {first:.2e} -> {last:.2e}, which would mean "
-            f"something now favours being large -- check what changed")
-    return (f"median radius falls {first*1e6:.2f} to {last*1e6:.2f} "
-            f"microns. This check originally asserted the opposite and "
-            f"passed, on a model with no intake rule where bigness was "
-            f"free; it is inverted rather than deleted because the "
-            f"reversal is the finding")
+    snaps = _r()
+    first = snaps[0]["median_radius_m"]
+    last = snaps[-1]["median_radius_m"]
+    floor = closure_floor_m()
+    if last < floor * 0.95:
+        raise ArithmeticError(f"the lineage sank below closure at "
+                              f"{1e6*last:.2f} microns")
+    if last > first * 3:
+        raise ArithmeticError(f"size grew {first:.2e} -> {last:.2e}")
+    return (f"the lineage holds at {1e6*last:.2f} microns against a "
+            f"closure floor of {1e6*floor:.2f}, from {1e6*first:.2f} "
+            f"at the seed. It neither grows nor collapses. This rule "
+            f"has been INVERTED TWICE: it first asserted growth, then "
+            f"collapse to 0.1 microns, and both were artifacts -- the "
+            f"second of an objective that diverged as mass fell. The "
+            f"floor is not a clamp now, it is engine/earthlab.py's "
+            f"closure size, derived from how many molecule types a "
+            f"compartment must hold to catalyse its own repair")
 
 
 def _emerge():
@@ -511,25 +549,22 @@ def _bound():
 
 
 def _nosize():
-    """The result of the whole module, and it is a refusal."""
-    small, big = Organism(1e-7), Organism(1e-4)
-    if fitness(small) <= fitness(big):
-        raise ArithmeticError("something now favours being large, so "
-                              "this conclusion is stale")
-    r = _r()
-    end = r[-1]["median_radius_m"]
-    return (f"surplus energy per gram goes as mass^(-1/3), so SMALLER "
-            f"IS ALWAYS FITTER and the population settles at "
-            f"{end*1e6:.2f} microns. That is not a bug -- life on Earth "
-            f"was microbial for three billion years, and nothing about "
-            f"metabolism favours being large. Two runs bracket it: with "
-            f"no intake rule bigness was free and the population reached "
-            f"EIGHTY-ONE METRES; with intake it collapses to the floor. "
-            f"Neither produces a body. What selects for size is "
-            f"predation and competition -- INTERACTIONS BETWEEN "
-            f"ORGANISMS -- and every rule in this repository is one body "
-            f"against physics. That is the missing category, and it is "
-            f"a different kind of absence from a missing measurement")
+    """CORRECTED. It said nothing selects for being LARGE."""
+    snaps = _r()
+    first = snaps[0]["median_radius_m"]
+    last = snaps[-1]["median_radius_m"]
+    drift = abs(last - first) / first
+    if drift > 0.5:
+        raise ArithmeticError(f"size drifted {100*drift:.0f}%")
+    return (f"size drifts {100*drift:.1f}% over the whole run, so "
+            f"nothing selects for size IN EITHER DIRECTION once "
+            f"closure bounds it from below. The earlier version of "
+            f"this asserted only that nothing favours being large, "
+            f"which was half the statement -- and the missing half "
+            f"was doing real damage, because fitness as surplus per "
+            f"gram favoured being small without limit and that was "
+            f"read as a biological result rather than an unbounded "
+            f"objective")
 
 
 def _encounter():

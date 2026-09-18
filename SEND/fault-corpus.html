@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset='utf-8'><title>Fault corpus - regressions and progressions</title><style>
+@page { size: A4; margin: 19mm 17mm; }
+* { box-sizing: border-box; }
+body { font: 10.5pt/1.5 "Charter","Georgia","Times New Roman",serif;
+       color:#111; max-width: 46em; margin: 0 auto; padding: 2em 1.2em; }
+h1 { font-size: 19pt; line-height:1.25; margin:0 0 .15em; letter-spacing:-.01em; }
+h1 + p strong { font-weight:600; }
+h2 { font-size: 13pt; margin: 1.9em 0 .5em; padding-top:.5em;
+     border-top: 1px solid #ddd; }
+h3 { font-size: 11pt; margin: 1.4em 0 .35em; }
+p, li { margin: .5em 0; }
+code { font: 9.5pt ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+       background:#f4f4f3; padding:.1em .3em; border-radius:3px; }
+pre { font: 9pt/1.45 ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+      background:#f7f7f6; border-left:2.5px solid #bbb; padding:.7em .9em;
+      overflow-x:auto; white-space:pre; border-radius:0 3px 3px 0; }
+pre code { background:none; padding:0; font-size:inherit; }
+table { border-collapse: collapse; margin: .9em 0; font-size: 9.5pt;
+        width:100%; }
+th,td { border-bottom:1px solid #ddd; padding:.32em .7em .32em 0;
+        text-align:left; vertical-align:top; }
+th { border-bottom:1.5px solid #888; font-weight:600; }
+td:nth-child(n+2), th:nth-child(n+2) { text-align:right; }
+table.wide td:nth-child(n+2), table.wide th:nth-child(n+2){text-align:left;}
+blockquote { margin:1em 0; padding:.4em 0 .4em 1em; border-left:3px solid #888;
+             color:#333; font-style:normal; }
+hr { border:0; border-top:1px solid #ddd; margin:2em 0; }
+strong { font-weight:600; }
+h2, h3 { page-break-after: avoid; }
+pre, table, blockquote { page-break-inside: avoid; }
+a { color:#0b5; text-decoration:none; }
+</style></head><body><h1>Log — regressions and progressions</h1>
+<p>Running record of what broke, what fixed it, and what moved forward. Ordered newest first. Every entry here is also in <code>README.md</code> at its version, and every withdrawn number is in <code>eval/claims.py:SUPERSEDED</code> with a written reason.</p>
+<p><strong>Standing counts:</strong> 47 published claims · 14 superseded · 9 checks inverted rather than deleted · 19 open <code>MISSING_RULE</code>s · 406 module checks across 63 modules · suite 7.3 s warm.</p>
+<hr>
+<h2>Regressions — found, and how</h2>
+<p>Grouped by what caught them, because that is the useful axis.</p>
+<h3>Caught by an automated check</h3>
+<table class="wide"><tr><th>what</th><th>detail</th></tr><tr><td><code>id(body)</code> as a cache key</td><td>CPython reused a freed address; a published outer edge moved 1.899 → 1.984 AU. <strong>Claims checker.</strong></td></tr><tr><td>duplicate constants</td><td>Two quantities redefined minutes after the rule forbidding it was written. <strong>The rule caught its own author, twice.</strong></td></tr><tr><td>self-grepping checks</td><td>Five checks matched a literal they themselves contained, so could never fail. <strong>Meta-check over every module.</strong></td></tr><tr><td>infinite recursion</td><td><code>rules_that_have_never_fired</code> called <code>run()</code>. <strong>Lab.</strong></td></tr><tr><td>stale published numbers</td><td>Five separate occasions. <strong>Claims checker.</strong></td></tr><tr><td>frozen-fingerprint tampering</td><td>Editing the ledger raises <code>SOLID PREFIX BROKE</code>. <strong>Root store.</strong></td></tr></table>
+<h3>Caught by comparison against a known value</h3>
+<table class="wide"><tr><th>what</th><th>detail</th></tr><tr><td>pumping power ×10⁶</td><td>ml vs m³; gave 6,528% of a human energy budget against a known 1–2 W heart.</td></tr><tr><td>Kleiber double conversion</td><td>The returned <code>Fact</code> said &quot;53.9 W&quot; in its own metadata and I converted anyway, shrinking every animal&#x27;s bill 20×.</td></tr><tr><td>Mercury &quot;+2.8 K&quot;</td><td>Compared a redistributed prediction to a dayside mean. Real error +97 K. Withdrawn.</td></tr><tr><td>tool count 26 vs 21</td><td>Typed into the README by hand instead of read from the check. No claim was registered to catch it; one is now.</td></tr></table>
+<h3>Caught by deriving something previously asserted</h3>
+<table class="wide"><tr><th>what</th><th>detail</th></tr><tr><td>Kleiber applied to a tree trunk</td><td>An animal rule on a plant: a trunk is 4% alive at 100 m. Pricing dead heartwood as breathing made a 155-tonne tree cost 1.3 MW.</td></tr><tr><td>crown tied to height</td><td>Made tallness pay for itself with no competitor — it assumed the conclusion. Rule <strong>inverted and kept</strong>.</td></tr><tr><td><code>ENGINE_GAIN</code> as a learning rate</td><td>1.2%/yr took 450 years to reach a ceiling because it was told to crawl. Efficiency is a material property.</td></tr><tr><td>a saturated <code>reach</code> cap</td><td>A cap I chose was already saturated before the variable under test was added, so the experiment measured the cap.</td></tr><tr><td>calibration 10⁵ too small</td><td>Made a corpus grow 0.007 units in six centuries, hiding every limit behind arithmetic that never moved.</td></tr><tr><td>sign inversion, Arrhenius</td><td>Reported cold as <em>harmful</em> to persistence. The higher barrier slows more on cooling.</td></tr><tr><td>food ceiling guessed</td><td>3.5 TW out of the air gave 81 billion people, which is nobody&#x27;s estimate.</td></tr></table>
+<h3>Caught by cross-referencing an earlier release</h3>
+<table class="wide"><tr><th>what</th><th>detail</th></tr><tr><td>&quot;119 functions are dead code&quot;</td><td><strong>66 of them are referenced in Atlas 2.</strong> The tree had grown past the call site, not the rule. Split into lineage / dispatched / stranded: 66 / 32 / 22.</td></tr></table>
+<h3>Structural errors in my own verification</h3>
+<table class="wide"><tr><th>what</th><th>detail</th></tr><tr><td>hand-written dependency spine</td><td>Eleven stages typed by hand. Replaced with AST derivation, which immediately found two bugs.</td></tr><tr><td><code>_defs</code> walking function bodies</td><td>Bisection locals (<code>lo</code>, <code>mid</code>, <code>hi</code>) appeared as <em>rules</em> in a dependency root.</td></tr><tr><td>linear keying of a DAG</td><td>Keyed nodes on their position in one walk; sharing collapsed to 6 of 115. A node&#x27;s own fingerprint is the key.</td></tr><tr><td><code>ENACTED</code> made exclusive</td><td>Required that nothing be both enacted and input-graded. They are orthogonal axes. <strong>The check failed on its own registry in one run, correctly.</strong></td></tr><tr><td>a check pinned to a rule name</td><td>Asserted <code>atoms.standing_crop</code> was stranded; a later version wired it, so the check failed <em>because what it watched got fixed</em>. Now tests the ordering.</td></tr><tr><td>a condition always true</td><td>The Carnot branch fired in year zero of every run once engines started at the ceiling. A condition that is always true is not a finding.</td></tr><tr><td>audit asserting a count</td><td><code>len(EXECUTABLE) == 3</code> made a machine without an optional runtime report failure while working. The claim is that backends <em>agree</em>.</td></tr></table>
+<hr>
+<h2>Progressions</h2>
+<table class="wide"><tr><th>version</th><th>what moved</th></tr><tr><td>3.1.88</td><td>Four deferred defects fixed. Persistence added as a gate. Self-maintaining set <strong>searched for</strong> rather than priced — and the search returns a refusal with a number: measured catalysis is 5 orders below threshold.</td></tr><tr><td>3.1.87</td><td>Fidelity shown to be a <strong>temperature, not a catalyst</strong>. The best ribozyme is at its thermodynamic limit for 298 K. Seven-kelvin window.</td></tr><tr><td>3.1.83</td><td>Verification cost 77 s → 7.3 s via fingerprint gating, <strong>soundness demonstrated by fault injection</strong> rather than asserted.</td></tr><tr><td>3.1.82</td><td>Root depth 2 → 13 for a claim that was arithmetic wearing the shape of a derivation.</td></tr><tr><td>3.1.78</td><td><code>ENACTED</code> added as a fifth epistemic kind.</td></tr><tr><td>3.1.75</td><td>Whole dependency graph held in 43 MB, enabling repository-wide questions a partial walk could not ask.</td></tr><tr><td>3.1.72</td><td>Dependency spine moved from <strong>hand-written to AST-derived</strong>. Nuclear, atmospheric and biological questions all acquired roots with no wiring.</td></tr><tr><td>3.1.69</td><td>Matter conservation enforced across every life module; <code>O2_PER_C</code> stopped being <code>32/12</code> typed by hand.</td></tr><tr><td>3.1.63</td><td>Claims graded by their worst input.</td></tr></table>
+<hr>
+<h2>Set aside</h2>
+<p><strong>3.1.79–3.1.86, the human line</strong> — civilisation, empire, industrial revolution, schooling. Retained and still checked, but not the direction of work. What carried over: <code>ENACTED</code>, fingerprint-gated claims, and the habit of marking what was handed over rather than derived.</p>
+<h2>Open</h2>
+<ul><li>19 <code>MISSING_RULE</code>s, including: nothing purges a deleterious mutation; nothing prices a shared educational foundation; a trophic level is treated as a species rather than a guild.</li><li>Venus CO₂ ceiling — needs an H₂SO₄ saturation curve; the derivation chain fails because ε ∝ σ⁻⁶ exponentiates through Clausius–Clapeyron.</li><li>Climate manifestations REFUSED — four bodies, one blocked.</li><li>No comparison against Nix / Bazel / DVC / Snakemake. **This is the most important open item** and it bounds the paper&#x27;s claim.</li></ul></body></html>

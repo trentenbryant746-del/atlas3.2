@@ -1,0 +1,37 @@
+Subject: Tests caught 6 of 25 faults. Is that known?
+
+
+Dear Professor ——,
+
+I'm an independent developer with no university affiliation. I have a
+small dataset I can't evaluate alone.
+
+Building a scientific codebase under the rule that every result carries
+a check that would catch it being wrong, I ended up recording 25 faults,
+each annotated with the mechanism that caught it:
+
+    deriving something previously asserted        7
+    faults in the verification machinery itself   7
+    an automated check fired                      6
+    comparison against an external known value    4
+    cross-referencing an earlier release          1
+
+Tests caught 6 of 25. The largest category needed someone to re-derive
+a quantity that had been typed in — work no test performs, because the
+code was self-consistent and everything passed. And the checking
+apparatus failed at about the rate of the code it checks, 7 against 18.
+
+The data exists because of a convention, not a tool: when a check's
+premise turns out false, it is flipped and kept with its history rather
+than deleted. Deleting is normal, and would have erased nine data
+points.
+
+Is a fault corpus annotated by catching-mechanism useful to anyone, or
+does this already exist? Defects4J and BugSwarm are mined from version
+control, which gives the fix but rarely what surfaced it.
+
+Corpus and a six-page write-up attached; the corpus is the part worth
+your time. Happy to be told it's a solved problem.
+
+Trenten Bryant
+github.com/trentenbryant746-del/atlas3.1

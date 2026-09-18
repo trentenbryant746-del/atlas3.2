@@ -1,0 +1,49 @@
+Subject: 25 labelled faults from a scientific codebase, incl. 7 in the test apparatus
+
+Dear Professor ——,
+
+I'm an independent developer, not affiliated with a university, and I
+have data I can't evaluate on my own.
+
+I built a scientific codebase under one rule: every result carries a
+check that would catch it being wrong. Working that way produced
+something I did not set out to make — 25 faults, each annotated
+in-source with its cause and with the mechanism that caught it. The
+distribution is not what I expected:
+
+    deriving something previously asserted        7
+    faults in the verification machinery itself   7
+    an automated check fired                      6
+    comparison against an external known value    4
+    cross-referencing an earlier release          1
+
+Two things surprised me. Tests caught only 6 of 25. The largest
+category required re-deriving a quantity that had been typed in — work
+no test suite performs, because the code was self-consistent and
+everything passed. And the checking apparatus failed at roughly the
+same rate as the code it checks, 7 against 18, which I have not seen
+quantified anywhere.
+
+The reason I have this data at all is a convention rather than a tool:
+when a check's premise turns out false, the check is flipped and
+kept with its history rather than deleted. Nine checks currently
+record what they used to assert and why that was wrong. Deleting them
+is the normal thing to do, and it would have erased nine data points.
+
+My question is whether a fault corpus annotated by *catching
+mechanism* is useful to anyone. Defects4J and BugSwarm are mined from
+version control after the fact, which gives the fix but rarely the
+cause and almost never what surfaced it. If this already exists I'd be
+glad to be pointed at it.
+
+Six pages attached. The corpus itself is a separate file and is the
+part worth reading; §3.2, the faults in my own verification, is the
+section I'd want a reviewer on.
+
+No reply needed if it's not interesting.
+
+Thank you,
+Trenten Bryant
+github.com/trentenbryant746-del/atlas3.1
+
+---

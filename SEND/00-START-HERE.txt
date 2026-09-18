@@ -1,0 +1,45 @@
+SEND — everything needed for the professor email
+=================================================
+
+DO THIS
+-------
+1. Open paper.html and fault-corpus.html in a browser.
+   Press Cmd+P, choose "Save as PDF". Two files, done.
+   (No PDF tool was installed, so they are print-ready HTML.)
+
+2. Copy the body of email.txt. Replace "Professor ——" with a name.
+
+3. Attach BOTH PDFs. The corpus is the artifact; the paper argues
+   about it. If you attach only one, attach the corpus.
+
+4. Send to ONE person first. Wait a week before the next.
+
+
+WHAT EACH FILE IS
+-----------------
+email.txt          210 words, copy-paste ready. The short version.
+email-long.txt     350 words, if you want more context up front.
+paper.html         Six pages. Print to PDF.
+fault-corpus.html  The 25 faults. Print to PDF. THIS IS THE ARTIFACT.
+targeting.txt      Who to send to, and what not to say.
+*.md               The sources, if you want to edit anything.
+
+
+THE ONE-LINE VERSION
+--------------------
+"I recorded 25 faults from a scientific codebase with the mechanism
+that caught each one. Tests caught 6 of 25. Is that known?"
+
+
+BEFORE YOU SEND — three checks
+-------------------------------
+[ ] The name is right and the person actually works on empirical
+    software engineering, software testing, or research software
+    engineering. Not a physicist. Not yet.
+
+[ ] You have not mentioned how long the project took. An earlier
+    draft said "eight months"; the git history shows two days. Nothing
+    in the claim depends on duration.
+
+[ ] You are comfortable being told "this is Bazel" or "n=1." Both are
+    fair. The paper concedes both in section 8.

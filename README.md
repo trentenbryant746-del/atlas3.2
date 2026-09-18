@@ -5476,3 +5476,62 @@ must hold**, so the cost is understated, and the number was not
 adjusted to hide it.
 
     school 6/6    suite 7.7 s warm    46 claims
+
+### the human line is set aside
+
+3.1.79–3.1.86 ran the human chain — civilisation, empire, the
+industrial revolution, schooling. It stays in the repository and in the
+claims checker, and **it is not what this is for.** The findings that
+matter carried over: `ENACTED` as a kind, fingerprint-gated claims, and
+the habit of marking what was handed over. The rest is noted and
+parked.
+
+### 3.1.87 — the fidelity gate is a temperature, not a catalyst
+
+Back to the planet, and **strictly by the rules — nothing handed over.**
+
+`engine/earthlab.py` walks Earth to the first gate that will not open
+and reports two: search, short by 5.1×10¹¹, and fidelity, short by
+exactly **2**. Fidelity was being carried by a measured constant — the
+best known ribozyme copies at one error in a hundred — with no rule
+behind the number.
+
+    copying is discrimination:  mu = exp(-dG/kT)
+    1 in 100 at 298 K implies   dG = 2.73 kcal/mol
+
+**Which is an ordinary base-pair gap.** So the ribozyme is not a poor
+copier — it is **at the thermodynamic limit for its temperature**, and
+no better catalyst exists at 298 K because that gap is the whole of
+what a catalyst has to work with.
+
+dG is fixed by chemistry, so the only free term is T:
+
+         T      error    genome    brine   liquid
+     298.0 K   0.0100      100 b     1.0x    yes
+     273.1 K   0.0066      152 b     1.0x    yes
+     259.0 K   0.0050      200 b     6.3x    yes
+     252.0 K   0.0043      232 b     9.5x    yes
+     245.0 K   0.0037      271 b    12.6x     NO
+
+**It is a window, not a threshold.** Fidelity is SHUT at 298 K, OPEN at
+255, and SHUT again at 245 — seven kelvin wide, bounded above by
+copying too sloppily to hold a replicase and below by the NaCl eutectic
+at 251.9 K, where there is no brine left to react in. **A gate that
+opens in solid ice has not opened.**
+
+**And getting there is not free, which is the second finding.** Holding
+water liquid at 259 K needs 7.6 mol/kg of solute against seawater's
+1.2 — so the brine is **6.3× concentrated**, which is the crowding
+gate's own requirement arriving as a side effect. Neither was aimed at
+the other.
+
+**Inside the window, nine of ten gates open** and the tenth is search,
+which `earthlab`'s own assembly gate is the route around. Cold also
+changed what assembly is *for*: at 298 K the replicase is excluded by
+search *and* fidelity; below 259 K fidelity stops excluding it — the
+genome is directly maintainable and only search still needs stepping
+around. The bootstrap gate's text said "both bounds" and had to be
+corrected, because that stopped being true the moment fidelity became
+a function of temperature.
+
+    cold 6/6    earthlab 9/9    suite green

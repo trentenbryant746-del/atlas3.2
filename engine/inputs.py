@@ -162,6 +162,12 @@ INPUTS = {
     "revolution.BIRTH_AT_SURPLUS": (CHOSEN, "1.5%/yr at full surplus"),
     "revolution.FOOD_W_PER_PERSON": (
         MEASURED, "upkeep plus a child's share, about 130 W"),
+    "cold.KF_WATER": (MEASURED, "cryoscopic constant, 1.86 K kg/mol"),
+    "cold.SEAWATER_OSMOLAL": (MEASURED, "about 1.2 mol particles per kg"),
+    "cold.NACL_EUTECTIC_K": (MEASURED, "251.9 K, below it no brine"),
+    "cold.REF_ERROR": (
+        MEASURED, "best ribozyme, 1 error in 100 at 298 K; the "
+                  "discrimination energy is READ OFF this, not chosen"),
     "school.LIFE_LEARN_HOURS": (
         CHOSEN, "40,000 waking hours of teaching in a life; generous"),
     "school.WORKING_LIFE_YR": (MEASURED, "about 50 years"),
@@ -316,6 +322,8 @@ CLAIMS_ON = {
     "we burn 51 years of burial every year": ["industry.BURIAL_FRACTION"],
     "instructions cost 0.0003% of a brain": [],
     "one head holds about four trades": [],
+    "the fidelity gate opens in a 7 K window": [],
+    "a ribozyme is at its thermodynamic limit": [],
     "holding never binds; discovery rate does": [
         "school.SPECIALIST_FRACTION", "school.LIFE_LEARN_HOURS"],
     "infrastructure taxes 8% and shortens the clock": [

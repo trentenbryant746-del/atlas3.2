@@ -143,6 +143,17 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _cold():
+    from engine.cold import (discrimination_kcal, temperature_for,
+                             NACL_EUTECTIC_K, concentration_factor)
+    from engine.earthlab import gates, SHUT, MIN_REPLICASE_BASES
+    def shut(T):
+        return sorted(n for n, v, _w in gates(T) if str(v) == str(SHUT))
+    return (round(discrimination_kcal(), 2),
+            round(temperature_for(1.0 / MIN_REPLICASE_BASES), 1),
+            shut(298.0), shut(255.0))
+
+
 def _school():
     from engine.school import (trades_per_person, grow, holdable,
                                specialists_for, CORPUS)
@@ -387,6 +398,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.87", "fidelity is a temperature: 2.73 kcal/mol, 259 K window",
+     _cold, (2.73, 259.0, ["fidelity", "search"], ["search"]), CURRENT),
     ("3.1.86", "a head holds 4 trades; today needs 750k; holding never binds",
      _school, (4.0, 750000, True), CURRENT),
     ("3.1.85", "four gifts, four shorter clocks: 1411, 998, 957, 695",

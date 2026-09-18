@@ -218,7 +218,7 @@ def size_window(T=288.0, p=CATALYSIS_P):
         f"neither bound was aimed at")
 
 
-def gates():
+def gates(temperature=298.0):
     """-> [(name, OPEN/SHUT, why)]. Earth, one step at a time."""
     from engine.origin import genome_cost, length_ceiling
     from engine.terraform import BODIES, thermostat
@@ -277,13 +277,32 @@ def gates():
                 f"universe; the smallest self-copier needs about "
                 f"{MIN_REPLICASE_BASES // 3} coded"))
 
-    best = min(ERROR_RATES.values())
-    keep = error_threshold(best)
-    out.append(("fidelity", OPEN if keep >= MIN_REPLICASE_BASES else SHUT,
-                f"the most accurate copier without enzymes loses one "
-                f"base in {1/best:.0f}, so it can hold {keep:.0f} bases "
-                f"before every copy carries a mutation. A replicase is "
-                f"{MIN_REPLICASE_BASES}"))
+    # FIDELITY IS A TEMPERATURE. The measured 1-in-100 was being
+    # carried as a constant with no rule behind it.
+    # engine/cold.py reads a discrimination energy off it -- 2.73
+    # kcal/mol, an ordinary base-pair gap -- which means the best
+    # known ribozyme is not a poor copier, it is AT THE
+    # THERMODYNAMIC LIMIT FOR 298 K. The gate then asks a different
+    # question: not whether a better catalyst exists, but whether
+    # Earth has anywhere cold enough, and whether there is still
+    # liquid there.
+    from engine.cold import (error_at, genome_at, still_liquid,
+                             NACL_EUTECTIC_K, concentration_factor)
+    T = temperature
+    best = error_at(T)
+    keep = genome_at(T)
+    liquid, lwhy = still_liquid(T)
+    out.append(("fidelity",
+                OPEN if (keep >= MIN_REPLICASE_BASES and liquid) else SHUT,
+                f"copying is discrimination, mu = exp(-dG/kT), and the "
+                f"measured 1-in-100 at 298 K implies dG = 2.73 "
+                f"kcal/mol -- an ordinary base pair. So it is not a "
+                f"catalyst that is missing, it is cold. At {T:.1f} K "
+                f"the rate is 1 in {1/best:.0f} and a genome of "
+                f"{keep:.0f} bases holds against a replicase's "
+                f"{MIN_REPLICASE_BASES}; {lwhy}"
+                + (f", and the brine is {concentration_factor(T):.1f}x "
+                   f"concentrated as a side effect" if liquid else "")))
 
     fnd, mnt, npc, mwhy = modular_reach()
     out.append(("assembly", OPEN if (fnd and mnt) else SHUT,
@@ -293,14 +312,29 @@ def gates():
     out.append(("self-maintaining", OPEN if floor < roof else SHUT,
                 f"autocatalytic closure: {swhy}"))
 
+    # WHICH bounds exclude the whole replicase depends on
+    # temperature now, and saying "both" stopped being true the
+    # moment fidelity became a function of T. At 298 K search and
+    # fidelity both exclude it. Below 259 K fidelity does not --
+    # the genome is directly maintainable and only search still
+    # needs stepping around.
+    by_search = MIN_REPLICASE_BASES // 3 > ceil
+    by_fidelity = MIN_REPLICASE_BASES > keep
+    blocking = ([f"{ceil} residues by search"] if by_search else []) + \
+               ([f"{keep:.0f} bases by fidelity"] if by_fidelity else [])
     out.append(("bootstrap", OPEN if (fnd and mnt) else SHUT,
-                f"the {MIN_REPLICASE_BASES}-base replicase exceeds both "
-                f"bounds as a unit -- {ceil} residues by search, "
-                f"{keep:.0f} bases by fidelity -- and neither bound "
-                f"applies to a {LIGATION_PIECE_BASES}-base piece. "
-                f"{npc} pieces, each findable and each maintainable. The "
-                f"loop is not broken by raising a bound, it is stepped "
-                f"around by not needing the whole object at once"))
+                f"the {MIN_REPLICASE_BASES}-base replicase is excluded "
+                f"as a unit by " + (" and ".join(blocking) or "nothing")
+                + f", and no such bound applies to a "
+                f"{LIGATION_PIECE_BASES}-base piece: {npc} pieces, each "
+                f"findable and each maintainable. "
+                + ("At this temperature fidelity has STOPPED excluding "
+                   "it -- the genome is directly maintainable and only "
+                   "search still needs stepping around. "
+                   if not by_fidelity else "")
+                + "The loop is not broken by raising a bound, it is "
+                  "stepped around by not needing the whole object at "
+                  "once"))
     return out
 
 
@@ -392,6 +426,7 @@ def check():
     t("cancelling_a_rule_sizes_the_gap", _size)
     t("assembly_clears_what_search_cannot", _assembly)
     t("closure_and_diffusion_bracket_a_real_cell", _window)
+    t("fidelity_opens_in_a_seven_kelvin_window", _cold)
     return all(o[1] for o in out), out
 
 
@@ -511,6 +546,29 @@ def _window():
             f"aimed at the other, and what they bracket is the size "
             f"life actually is")
 
+
+
+def _cold():
+    """The gate that was short by 2x, and where it opens."""
+    from engine.cold import NACL_EUTECTIC_K, temperature_for
+    def shut_at(T):
+        return {n for n, v, _w in gates(T) if str(v) == str(SHUT)}
+    warm, cold, frozen = shut_at(298.0), shut_at(255.0), shut_at(245.0)
+    if "fidelity" not in warm:
+        raise ArithmeticError("fidelity was already open at 298 K")
+    if "fidelity" in cold:
+        raise ArithmeticError("cold did not open fidelity")
+    if "fidelity" not in frozen:
+        raise ArithmeticError("fidelity stayed open below the eutectic")
+    top = temperature_for(1.0 / MIN_REPLICASE_BASES)
+    return (f"fidelity is SHUT at 298 K, OPEN at 255, and SHUT again "
+            f"at 245 -- a window {top - NACL_EUTECTIC_K:.0f} K wide "
+            f"between {NACL_EUTECTIC_K:.0f} K, where the brine "
+            f"freezes, and {top:.0f} K, where copying gets too "
+            f"sloppy to hold a replicase. It is not a threshold, it "
+            f"is a WINDOW, and Earth has one. Inside it only "
+            f"{sorted(cold)} stays shut, which engine/earthlab.py's "
+            f"own assembly gate is the route around")
 
 if __name__ == "__main__":
     for nm, st, why in gates():

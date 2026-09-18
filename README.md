@@ -7052,3 +7052,96 @@ question.
     trade 4/4   intricacy 6/6   lineage 7/7
     52 links, 43 derived, 7 forced, 1 crossing, 1 gap
     79 claims reproduce, 75 skipped on fingerprint
+
+### 3.1.114 — a design is not divided among its users
+
+The gap opened at 3.1.113 was not a gap. It was an arithmetic
+error, and naming what was wrong is the result.
+
+`malthus_exponent` subtracted mouths at N^1 from two terms that
+were **already per worker** — Wright's law gives output per worker,
+and `yield_ratio` is a ratio to subsistence. Counting the mouths
+again made every invention look as though it were being shared out
+and thinned.
+
+It is not. A loaf feeds one person, so a thousand loaves among
+36,480 people is 0.027 each. A *technique* for making loaves is
+used by everyone who knows it, at the same time, and nobody has
+less of it for that — a thousand techniques is a thousand each.
+**The design stock is not divided, which is why the knowledge terms
+carry no N underneath.**
+
+And it runs the other way too. An invention costs one specialist's
+time whoever ends up using it, and returns b to each of N users, so
+the worst invention still worth making needs only b > C/N — a
+threshold that falls from 1.1e-3 in a village to 2.7e-5 in the
+network. **More people is more ideas AND more users per idea**, and
+those are two separate gains.
+
+The one genuinely rival input is land, which does not grow:
+
+    Wright        output/worker   N^0.234
+    more skills   yield           N^0.138
+    supply                        N^0.372
+    fixed land, 0.30 share        N^0.072   -> 1.30x over 40x growth
+    fixed land, 0.50 share        N^-0.128  -> nobody gains
+
+The crossover is a land share of **0.372**, and that is a
+falsifiable line: while farming is more than 37% of output,
+technology rises and living standards do not; below it they move
+together. The escape is not an invention, it is a share.
+
+**A second error the same work exposed.** `yield_ratio` compounded
+`YIELD_PER_SKILL` over *every* specialty and reached 40x
+subsistence, which no agrarian economy has ever managed — because a
+potter does not raise the grain yield. Only the eight crafts that
+touch a field do. Capped at `FOOD_SKILLS = 8`: **2.14x yield, 53%
+sparable.** Past that, further specialization buys designs and
+comfort rather than calories, which is exactly why living standards
+cannot be read off the food surplus once anyone is specialized.
+
+**`engine/capital.py`.** Everything above counted the specialties a
+channel could keep and assumed anyone could take one up. A specialty
+is a toolkit, and a toolkit is other people's labour:
+
+    a 23.5-part kit          1,177 labour-days
+    one specialist-year      365 eating + 118 kit = 483 food-days
+    village of 912 supports  368 specialists, not the 487 food allows
+
+**24% of possible specialists are priced out by their own tools**,
+and no rule above this one saw that cost.
+
+One person works one craft however rich they are. So surplus held in
+fewer hands than S/K sits idle, and split thinner than K it buys no
+kit at all — the right spread is 368 of 912, arithmetic rather than
+politics. `power.py`'s walled holders put the working surplus in
+about 29% of hands, *below* the optimum. **Concentration here is not
+only unfair, it is idle capital — a cost the holders pay too.**
+
+One thing came out backwards and is worth keeping. Rising intricacy
+should price people out of their own crafts: more parts, dearer kit.
+It does not, because Wright's law on a 40x market cuts unit cost to
+0.42 and that beats the 1.25x rise in part count — 1,177 days in the
+village against 620 in the network. The network makes each specialty
+*cheaper to enter* as well as possible. In a village that did **not**
+trade, intricacy would indeed close crafts to people.
+
+**And the number everything above was reporting is a mean.**
+`capital.income_stats` is inverted — it fails if the mean ever
+represents the median. Income is 1/k for a craft held by k people,
+and k is not the same for every craft, so the distribution is skewed
+before anyone is greedy:
+
+    mean / median                     1.33x
+    rarest craft / median (scarcity)   4.0x
+    walled holder / median            14.0x
+
+So "everyone is 1.3x better off" is a sentence no individual
+satisfies. A few are near 14x, most are at or below the median, and
+the mean sits above the median by construction. **Every per-head
+number on this chain is the first moment of a skewed distribution
+and is not to be quoted alone.**
+
+    capital 4/4   intricacy 7/7   lineage 7/7
+    54 links, 46 derived, 7 forced, 1 crossing, 0 gaps
+    80 claims reproduce, 79 skipped on fingerprint

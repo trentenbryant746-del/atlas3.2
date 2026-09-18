@@ -488,20 +488,57 @@ def inside_the_head():
          "of 74. Forty villages in touch are 36,480 people: 12,160 "
          "specialties against a village's 304, and 2.4x the output "
          "per worker from Wright's law. Nobody built a city"),
-        ("a region in touch", "anyone actually better off", MISSING,
-         "intricacy.malthus_exponent",
-         "every number above rises and none of them lands per "
-         "head. Wright gives output per worker as N^0.234 and more "
-         "skills give yield as N^0.138, against mouths at N^1, so "
-         "surplus per person goes as N^-0.628: grow the network 40x "
-         "and each person is 0.10x as well off. That is the right "
-         "answer for the world it describes -- rising population, "
-         "rising technology, flat living standards for millennia -- "
-         "and it is a GAP, not a result. Escape needs the supply "
-         "exponents to clear 1.0 and they sum to 0.372. Nothing "
-         "derived anywhere on this chain closes it, and it is "
-         "recorded here rather than hidden inside a total that "
-         "keeps going up"),
+        ("a region in touch", "anyone actually better off", DERIVED,
+         "intricacy.per_capita_exponent",
+         "this was carried as a GAP at 3.1.113 and the gap was an "
+         "arithmetic error: per-capita surplus was computed by "
+         "subtracting mouths at N^1 from two terms that were "
+         "ALREADY per worker, which made every invention look as "
+         "though it were being shared out and thinned. It is not. "
+         "A loaf feeds one person, so loaves per head is loaves/N; "
+         "a technique for making loaves is used by everyone who "
+         "knows it, at once, and nobody has less of it for that. "
+         "The design stock is NOT divided, which is why the "
+         "knowledge terms carry no N underneath. It runs the other "
+         "way too: an invention costs one specialist's time "
+         "whoever uses it and returns b to each of N, so the worst "
+         "one worth making needs only b > C/N -- more people is "
+         "more ideas AND more users per idea. The one genuinely "
+         "rival input is LAND, which does not grow, so supply at "
+         "N^0.372 against a 0.30 land share leaves N^0.072. The "
+         "crossover is a land share of 0.372: while farming is "
+         "more than 37% of output, technology rises and living "
+         "standards do not. The escape is not an invention, it is "
+         "a share"),
+        ("a surplus", "a specialist who can afford the kit", DERIVED,
+         "capital.affordable_specialists",
+         "everything above counted the specialties a channel could "
+         "keep and assumed anyone could take one up. A specialty "
+         "is a toolkit and a toolkit is other people's labour: a "
+         "23.5-part kit is 1,177 labour-days, so a specialist "
+         "costs 365 food-days of eating plus 118 of kit, and a "
+         "village of 912 keeps 368 of them rather than the 487 the "
+         "food alone allows. 24% of possible specialists are "
+         "priced out by their own tools. One person works one "
+         "craft however rich they are, so surplus in fewer hands "
+         "than S/K sits idle and thinner than K buys no kit at "
+         "all -- the right spread is 368 of 912, and the walled "
+         "holders of engine/power.py sit below it. Concentration "
+         "here is not only unfair, it is IDLE CAPITAL, which is a "
+         "cost the holders pay too"),
+        ("a gain per head", "a gain nobody actually receives", DERIVED,
+         "capital.income_stats",
+         "the per-head figure is a MEAN and the distribution under "
+         "it is skewed by construction, before anyone is greedy. "
+         "engine/merit.py pays a specialist 1/k for a craft held "
+         "by k people, and k is not the same for every craft: at "
+         "mean depth 3 the mean is 1.33x the median, the rarest "
+         "craft pays 4x the median on scarcity alone, and a walled "
+         "holder multiplies that to 14x. So 'everyone is 1.3x "
+         "better off' is a sentence no individual satisfies -- a "
+         "few are near 14x, most are at or below the median. Every "
+         "per-head number on this chain is the first moment of a "
+         "skewed distribution and is not to be quoted alone")
     ]
 
 

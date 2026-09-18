@@ -255,10 +255,25 @@ def _trade():
 
 
 def _malthus():
-    from engine.intricacy import (malthus_exponent, settle,
+    from engine.intricacy import (per_capita_exponent, supply_exponent,
+                                  critical_land_share, settle,
                                   settle_network)
-    return (round(malthus_exponent(), 3), round(settle(), 1),
-            round(settle_network(), 1))
+    return (round(supply_exponent(), 3), round(per_capita_exponent(), 3),
+            round(per_capita_exponent(0.50), 3),
+            round(critical_land_share(), 3),
+            round(settle(), 1), round(settle_network(), 1))
+
+
+def _capital():
+    from engine.capital import (toolkit_days, affordable_specialists,
+                                tooling_loss, income_stats)
+    from engine.intricacy import settle, VILLAGE
+    p_ = settle()
+    mean, med, top, ratio = income_stats(3.0)
+    return (round(toolkit_days(p_, VILLAGE)),
+            round(affordable_specialists(VILLAGE, p_)),
+            round(100 * tooling_loss(VILLAGE, p_)),
+            round(mean / med, 2), round(ratio, 1))
 
 
 def _bandsize():
@@ -709,12 +724,14 @@ CLAIMS = [
      _power, (909, 15, 1.9, 8, 3.5), CURRENT),
     ("3.1.112", "a 5th-generation heir holds 32x what their ability warrants",
      _merit, (20, 2.58, 0.08, 32, 15, 162), CURRENT),
-    ("3.1.112", "speech is a fixed point at 2 specialties; the loop settles at 24",
-     _intricacy, (2, 3, 24.3, 20548869, 90), CURRENT),
+    ("3.1.114", "speech is a fixed point at 2 specialties; the loop settles at 23.5",
+     _intricacy, (2, 3, 23.5, 12163632, 53), CURRENT),
     ("3.1.113", "grain dies at 516 km; knowledge has no range limit",
      _trade, (516, 258, 5.2, 6.8, 2.4), CURRENT),
-    ("3.1.113", "per-capita surplus scales as N^-0.628: the loop does not escape",
-     _malthus, (-0.628, 24.3, 29.7), CURRENT),
+    ("3.1.114", "ideas are non-rival: escape turns on a 0.372 land share",
+     _malthus, (0.372, 0.072, -0.128, 0.372, 23.5, 29.4), CURRENT),
+    ("3.1.114", "24% of possible specialists are priced out by their tools",
+     _capital, (1177, 368, 24, 1.33, 14.0), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -741,8 +758,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.113", "Big Bang to a head in 52 links: 43 derived, 7 forced, 1 gap",
-     _wholechain, (52, 43, 7, 1, 1), CURRENT),
+    ("3.1.114", "Big Bang to a head in 54 links: 46 derived, 7 forced, 0 gaps",
+     _wholechain, (54, 46, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -851,6 +868,25 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.113", "per-capita surplus scales as N^-0.628, the loop cannot escape",
+     "WRONG, and wrong by my arithmetic rather than by the world. "
+     "The exponent subtracted mouths at N^1 from two terms that "
+     "were already PER WORKER -- Wright's law gives output per "
+     "worker and yield_ratio is a ratio to subsistence -- so every "
+     "invention was counted as though it were divided among its "
+     "users and thinned. A design is not divided: a loaf feeds one "
+     "person, a technique for making loaves is used by everyone at "
+     "once. The only rival input is land. Corrected: N^0.072 at a "
+     "0.30 land share, with the crossover at 0.372"),
+    ("3.1.112", "the loop settles at 24.3 parts, 10.13x yield, 90% off the land",
+     "yield_ratio compounded YIELD_PER_SKILL over EVERY specialty "
+     "and reached 40x subsistence in the network case, which no "
+     "agrarian economy has ever managed -- a potter does not raise "
+     "the grain yield. Only the eight crafts that touch a field "
+     "do. Capped: 2.14x yield, 53% sparable, and past FOOD_SKILLS "
+     "further specialization buys designs rather than calories, "
+     "which is why living standards cannot be read off the food "
+     "surplus once anyone is specialized at all"),
     ("3.1.112", "Big Bang to a head in 50 links, 0 gaps",
      "3.1.113 adds trade and, with it, the first MISSING link the "
      "chain has carried in a while: total output rises everywhere "

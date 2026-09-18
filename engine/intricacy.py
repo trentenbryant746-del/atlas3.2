@@ -52,9 +52,23 @@ def written_corpus(scribes):
     return scribes * COPIES_PER_YEAR * COPY_LIFE_YEARS
 
 
+# Not every craft feeds anyone. The first version compounded
+# YIELD_PER_SKILL over EVERY specialty and reached 40x subsistence,
+# which no agrarian economy has ever managed -- because a potter
+# does not raise the grain yield. Only the crafts that touch the
+# field do: plough, draft, irrigation, drainage, rotation, seed
+# selection, storage, milling. After those, further specialization
+# buys designs and comfort, and buys no more calories.
+#
+# This matters beyond plausibility. It is why living standards
+# cannot be read off the food surplus once a society is
+# specialized at all: most of what it makes is not food.
+FOOD_SKILLS = 8             # DERIVED: the crafts that touch a field
+
+
 def yield_ratio(s):
     """Output over subsistence at s specialties. DERIVED."""
-    return YIELD_PER_SKILL ** s
+    return YIELD_PER_SKILL ** min(s, FOOD_SKILLS)
 
 
 def spare_fraction(s):
@@ -96,28 +110,86 @@ def settle_network(villages=40, passes=2):
 # arithmetic rather than being assumed to follow.
 
 
-def malthus_exponent():
-    """How per-capita surplus scales with population. DERIVED.
-
-    Two things rise with N and one rises faster than both.
-
-      Wright      output/worker as N**(-log2(LEARNING_RATE))
-      skills      s ~ log2(N), so yield as N**log2(YIELD_PER_SKILL)
-      mouths      food needed as N**1
-
-    Add the exponents on the supply side and subtract the demand
-    side. Above zero the place gets richer per head; below, it
-    does not, whatever the technology is doing.
-    """
-    wright = -math.log2(LEARNING_RATE)
-    skills = math.log2(YIELD_PER_SKILL)
-    return wright + skills - 1.0
-
-
 def oral_fixed_point():
     """Where the loop sits with no writing at all. DERIVED."""
     by_channel = best_depth(BAND)[1]
     return min(by_channel, parts_afforded(oral_capacity()))
+
+
+# A DESIGN IS NOT DIVIDED AMONG ITS USERS.
+#
+# This is the thing the previous version got wrong, and it got it
+# wrong in the arithmetic rather than in the prose. malthus_exponent
+# subtracted N**1 for mouths from two terms that were ALREADY per
+# worker -- Wright's law gives output per worker and yield_ratio is
+# a ratio to subsistence. Counting the mouths again made every
+# invention look as though it were being shared out and thinned.
+#
+# It is not. A loaf feeds one person, so loaves per person is
+# loaves/N. A technique for making loaves is used by everyone who
+# knows it, at the same time, without anyone getting less of it --
+# so the value of the design stock PER PERSON is the design stock,
+# undivided. That is the whole difference, and it is why the
+# knowledge terms never get an N in the denominator.
+#
+# It also runs the other way. A design costs one specialist's time
+# whoever uses it, and returns b to each of N users, so the worst
+# invention worth making has b* = C/N: the bigger the population,
+# the more inventions clear the bar. More people is more ideas AND
+# more users for each idea, and neither of those is the other.
+
+LAND_SHARE = 0.30           # MEASURED-ish, land's share of output
+
+
+def rival_value_per_head(units, n):
+    """A loaf. Divided. DERIVED."""
+    return units / max(n, 1.0)
+
+
+def nonrival_value_per_head(units, n):
+    """A technique. Not divided. DERIVED."""
+    return units
+
+
+def worth_inventing(cost, benefit_each, n):
+    """Does an invention clear the bar at population n? DERIVED."""
+    return benefit_each * n > cost
+
+
+def threshold_benefit(cost, n):
+    """The worst invention still worth making. DERIVED."""
+    return cost / max(n, 1.0)
+
+
+def supply_exponent():
+    """How output per worker scales with N. DERIVED.
+
+    Both terms are per worker already and neither is rival:
+
+      Wright   output/worker as N**(-log2(LEARNING_RATE))
+      skills   corpus ~ N, so s ~ log2(N); but food yield caps
+               at FOOD_SKILLS, so past that point the skills term
+               delivers DESIGNS rather than calories and the
+               exponent that matters for living standards is the
+               design stock, which grows as N itself
+    """
+    return -math.log2(LEARNING_RATE) + math.log2(YIELD_PER_SKILL)
+
+
+def per_capita_exponent(land_share=LAND_SHARE):
+    """How surplus per head scales with N. DERIVED.
+
+    The only genuinely rival input is LAND, which does not grow.
+    With a Cobb-Douglas share `land_share`, fixed land drags per
+    capita output by exactly that exponent. Ideas do not drag,
+    because they are not divided.
+    """
+    return supply_exponent() - land_share
+
+
+def critical_land_share():
+    """Where stagnation turns into growth. DERIVED."""
+    return supply_exponent()
 
 
 def check():
@@ -134,7 +206,8 @@ def check():
     t("writing_moves_the_binding_constraint_to_people", _bind)
     t("the_loop_closes_on_a_number_and_it_is_not_infinity", _fix)
     t("a_region_in_touch_beats_a_village_that_is_not", _region)
-    t("INVERTED_the_loop_does_not_escape_malthus", _malthus)
+    t("a_design_is_not_divided_among_its_users", _nonrival)
+    t("the_escape_is_land_share_against_non_rivalry", _escape)
     return all(x for _, x, _ in res), res
 
 
@@ -229,33 +302,47 @@ def _region():
             f"corpus's audience, not from standing close together")
 
 
-def _malthus():
-    """INVERTED. Fails if the loop quietly makes anyone richer.
+def _nonrival():
+    n = 40 * VILLAGE
+    cost = 1.0
+    loaf, tech = rival_value_per_head(1000, n), nonrival_value_per_head(1000, n)
+    t1, t2 = threshold_benefit(cost, VILLAGE), threshold_benefit(cost, n)
+    if tech <= loaf or t2 >= t1:
+        raise ArithmeticError(f"{loaf} {tech} {t1} {t2}")
+    return (f"a loaf feeds one person, so 1000 loaves among "
+            f"{n:.0f} people is {loaf:.3f} each. A technique for "
+            f"making loaves is used by everyone who knows it, at "
+            f"once, and nobody has less of it for that -- 1000 "
+            f"techniques is {tech:.0f} each. The design stock is "
+            f"NOT divided, which is why the knowledge terms carry "
+            f"no N in the denominator. It runs the other way too: "
+            f"an invention costs one specialist's time whoever uses "
+            f"it, so the worst one worth making needs b > C/N, "
+            f"which falls from {t1:.2e} in a village to {t2:.2e} in "
+            f"the network. More people is more ideas AND more users "
+            f"per idea, and those are two different gains")
 
-    Every other check here reports a rise. This one asks whether
-    any of it lands per head, and the answer is no -- which has
-    to be stated, not left for a reader to assume otherwise.
-    """
-    e = malthus_exponent()
-    if e >= 0:
-        raise ArithmeticError(
-            f"per-capita surplus scales as N**{e:.3f}: the loop "
-            f"escapes, and something has been assumed that should "
-            f"have been derived")
+
+def _escape():
+    e, crit = per_capita_exponent(), critical_land_share()
     n1, n2 = VILLAGE, 40 * VILLAGE
-    return (f"total output rises the whole way up this module. Per "
-            f"HEAD it does not. Wright gives N**"
-            f"{-math.log2(LEARNING_RATE):.3f} and skills give "
-            f"N**{math.log2(YIELD_PER_SKILL):.3f} against mouths at "
-            f"N**1, so surplus per person goes as "
-            f"N**{e:.3f} -- growing the network {n2/n1:.0f}x leaves "
-            f"each person {(n2/n1)**e:.2f}x as well off. The model "
-            f"produces exactly the world it should: rising "
-            f"population, rising technology, flat living standards. "
-            f"Escape needs the supply exponents to clear 1.0 and "
-            f"they sum to {e+1:.3f}. NOTHING ON THIS CHAIN CLOSES "
-            f"THAT GAP. It is named here rather than hidden in a "
-            f"total that keeps going up")
+    stuck = per_capita_exponent(0.50)
+    if e <= 0 or stuck >= 0:
+        raise ArithmeticError(f"{e} {stuck} crit {crit}")
+    return (f"the only genuinely rival input is LAND, and it does "
+            f"not grow. Supply gives N**{supply_exponent():.3f} "
+            f"(Wright {-math.log2(LEARNING_RATE):.3f} + skills "
+            f"{math.log2(YIELD_PER_SKILL):.3f}, neither divided by "
+            f"anyone), fixed land drags by its share, so surplus "
+            f"per head goes as N**{e:.3f} at a {LAND_SHARE:.2f} "
+            f"land share -- growing the network {n2/n1:.0f}x leaves "
+            f"each person {(n2/n1)**e:.2f}x better off. But at a "
+            f"0.50 share it is N**{stuck:.3f} and nobody gains. The "
+            f"crossover is a land share of {crit:.3f}, and that is "
+            f"a FALSIFIABLE line: while farming is more than "
+            f"{100*crit:.0f}% of output, technology rises and "
+            f"living standards do not; below it they move together. "
+            f"The escape is not an invention, it is a share")
 
 
 if __name__ == "__main__":

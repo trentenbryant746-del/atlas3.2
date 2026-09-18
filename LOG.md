@@ -283,3 +283,40 @@ STILL OPEN
 - YIELD_PER_SKILL 1.10 sets both the fixed point and half the
   Malthus exponent. At 1.6 the exponent would still be negative.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.114 — non-rivalry, the food cap, tools, and the mean
+
+REGRESSION FOUND AND FIXED — the big one
+- the "Malthus gap" of 3.1.113 was MY ARITHMETIC, not the world.
+  per-capita exponent subtracted mouths at N^1 from two terms that
+  were already per-worker. Every invention was counted as though
+  divided among its users. A design is non-rival: not divided.
+  Corrected N^-0.628 -> N^0.072, crossover at a 0.372 land share.
+  A gap I opened deliberately and loudly turned out to be a bug,
+  which is the strongest argument for opening them loudly.
+- yield_ratio compounded over EVERY specialty to 40x subsistence.
+  A potter does not raise grain yield. Capped at FOOD_SKILLS = 8:
+  2.14x, 53% sparable. Knock-on: every downstream number moved.
+
+PROGRESS
+- non-rivalry stated as a rule with its converse: an invention
+  costs C once and returns b to each of N, so the threshold worth
+  inventing is C/N and falls with population.
+- capital.py: a specialty is a toolkit. 24% of possible specialists
+  priced out. Optimum concentration is S/K = 368 of 912; walled
+  holders sit below it, so concentration is IDLE CAPITAL.
+- intricacy would price people out of their own crafts in a village
+  that did not trade; Wright's law on the network reverses it.
+- income_stats INVERTED: fails if mean ever equals median. Mean
+  1.33x median, top 14x median. Per-head figures are first moments.
+- chain 52 -> 54 links, gap closed, 46 derived.
+
+STILL OPEN
+- LAND_SHARE 0.30 is MEASURED-ish and sets the sign of the escape.
+  The CROSSOVER (0.372) is derived and does not depend on it.
+- DAYS_PER_PART 50, TOOL_LIFE_YEARS 10, FOOD_SKILLS 8 all CHOSEN.
+  The 24% tooling loss moves with them; its EXISTENCE does not.
+- income_stats models depth spread as uniform 1..2k-1. The repo has
+  no measured distribution of craft depths. The skew is real, the
+  14x is a shape assumption.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

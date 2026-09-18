@@ -359,6 +359,16 @@ def _agreement():
             sum(1 for r in rows if not r[3]))
 
 
+def _exam():
+    from engine.exam import (half_moon_ratio, half_moon_sensitivity,
+                             answerable_at, score, ARISTARCHUS_DEG,
+                             QUESTIONS)
+    q = "how far is the Sun, in Moon distances"
+    return (round(half_moon_ratio(ARISTARCHUS_DEG), 1),
+            round(half_moon_sensitivity()), answerable_at(q),
+            score(2)[1], score(6)[1], score(9)[1], len(QUESTIONS))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -830,6 +840,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.2", "Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611",
+     _exam, (19.1, 611, 6, 2, 6, 8, 8), CURRENT),
     ("3.2.1", "302 constants, 5 with two homes, 3 frozen copies tracked",
      _agreement, (302, 5, 3, 0), CURRENT),
     ("3.1.123", "42 constants are chosen; two stopped being, one pair disagrees 8.5x",
@@ -871,7 +883,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (63, 54, 7, 1, 1), CURRENT),
+     _wholechain, (64, 55, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

@@ -642,6 +642,28 @@ def inside_the_head():
          "THEIR error: a three-term derivation of G is +/-17% at "
          "round 2 and 0.2% at round 5, and Cavendish got 1% in "
          "1798, which lands between them"),
+        ("a literature", "a paper that can be marked", DERIVED,
+         "exam.half_moon_sensitivity",
+         "a question is not a topic, it is a METHOD, and every "
+         "method has a SENSITIVITY: how much the answer moves "
+         "when the measurement is off by a fraction. Eratosthenes "
+         "measured a shadow and a road, sensitivity 1, and got "
+         "the Earth's circumference to a few per cent with a "
+         "stick. Aristarchus, same century and same equipment, "
+         "measured the Sun's distance and was out by twenty "
+         "times. Feeding his reported 87 degrees into 1/cos gives "
+         "19.1 and he published 'about 19' -- so the arithmetic "
+         "was right and the error was entirely in the input. His "
+         "method multiplies by theta tan(theta) = 611. And the "
+         "measurement was not the angle: the angle only means "
+         "anything AT half moon, and the Moon moves 13.2 degrees "
+         "a day, so his 2.85-degree error is 5.2 HOURS of timing. "
+         "A water clock leaves 187% on the answer. He attempted a "
+         "round-6 question with round-2 equipment, could not have "
+         "known it, and the figure stood for seventeen centuries "
+         "-- not corrected by better thinking but by the transit "
+         "of Venus, a different method with a different "
+         "sensitivity"),
         ("everything derived so far", "one epoch of many", DERIVED,
          "farfuture.star_lifetime_years",
          "engine/epochs.py stops at the neutron-star merger, about "

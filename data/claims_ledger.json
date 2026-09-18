@@ -168,7 +168,7 @@
 "ok": true
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "43ca9c3a4b63d845",
+"fp": "dfe934c016e864c7",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -446,5 +446,9 @@
 "3.2.1|303 constants, 6 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",
 "ok": false
+},
+"3.2.2|Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611": {
+"fp": "c08386cada11f1e3",
+"ok": true
 }
 }

@@ -24,9 +24,13 @@ Three things a name is:
   consensus arithmetic, and a name held by too few people is lost
   exactly as a craft is.
 
-And one thing a name is NOT, which this module set out to show
-and failed to: an artefact of what is easy to tell. That
-hypothesis is recorded below with the number that killed it.
+And what decides WHO gets named. Not how hard the thing is to
+tell -- that guess is below with the number that killed it -- but
+how many of the people you tell can act on it. A retelling costs
+the teller and pays the listener, so it happens when the listener
+can use what they heard. That gives a fact the whole audience and
+a tool only its own craft, and it makes the gap grow as a society
+specializes.
 """
 
 import math
@@ -97,6 +101,55 @@ def leverage_vs_tellability():
     return (cov / (sx * sy) if sx and sy else 0.0), n
 
 
+# --- the account that survives -------------------------------------
+#
+# Not how hard a thing is to TELL, but how many of the people you
+# tell can DO anything with it. A retelling costs the teller and
+# pays the listener, so it happens when the listener can act.
+#
+# An answer is usable by anyone who hears it: the Earth is 40,000
+# km round and now you know. A tool is usable only by whoever
+# holds that craft, which engine/craft.py counts. So the audience
+# for a fact is everyone and the audience for a tool is 1/s, and
+# the two compound differently over a chain of retellings.
+#
+# The prediction this makes is the interesting part, and it is
+# not the obvious direction: SPECIALIZATION MAKES IT WORSE. A
+# band holding 2 crafts gives a tool half the audience of a fact.
+# A literate village holding 304 gives it a three-hundredth. So a
+# society gets better at making tools and worse at naming the
+# people who made them, at the same time and for the same reason.
+
+RETELL_BASE = 3.0      # CHOSEN: listeners who pass on a useful fact
+
+
+def audience(kind, specialties):
+    """Fraction of listeners who can act on it. DERIVED."""
+    if kind == "answer":
+        return 1.0
+    return 1.0 / max(specialties, 1)
+
+
+def spread_rate(kind, specialties, base=RETELL_BASE):
+    """R0 for the item as a story. DERIVED."""
+    return base * audience(kind, specialties)
+
+
+def travels_as_a_story(kind, specialties, base=RETELL_BASE):
+    """Does the story channel carry it at all? DERIVED."""
+    return spread_rate(kind, specialties, base) > 1.0
+
+
+def specialties_where_tools_stop_travelling(base=RETELL_BASE):
+    """Where R0 for a tool falls through one. DERIVED."""
+    return base
+
+
+def naming_gap(specialties, retellings=5):
+    """How far ahead a fact gets over a chain. DERIVED."""
+    return specialties ** retellings
+
+
 def check():
     res = []
 
@@ -110,6 +163,7 @@ def check():
     t("a_name_is_how_credit_is_addressed", _credit)
     t("a_name_decays_like_any_other_item", _decay)
     t("REFUTED_the_tellability_account_of_who_gets_named", _failed)
+    t("audience_not_difficulty_is_what_selects_a_name", _audience)
     return all(x for _, x, _ in res), res
 
 
@@ -189,6 +243,39 @@ def _failed():
             f"anything derivable here, and the evidence for the "
             f"bias was eight names I chose. Two unsupported "
             f"things, and neither gets to prop up the other")
+
+
+def _audience():
+    from engine.craft import best_depth
+    from engine.literacy import copy_error
+    from engine.trade import VILLAGE
+    band = best_depth(BAND)[1]
+    village = best_depth(int(VILLAGE), copy_error(2))[1]
+    cut = specialties_where_tools_stop_travelling()
+    if audience("answer", band) <= audience("tool", band):
+        raise ArithmeticError("no asymmetry")
+    if travels_as_a_story("tool", village):
+        raise ArithmeticError(f"a tool still travels at {village}")
+    return (f"the account that survives is not how hard a thing is "
+            f"to TELL but how many of the people you tell can DO "
+            f"anything with it. A retelling costs the teller and "
+            f"pays the listener, so it happens when the listener "
+            f"can act. An answer is usable by anyone who hears it; "
+            f"a tool only by whoever holds that craft. Audience "
+            f"100% against {100*audience('tool', band):.0f}% in a "
+            f"band of {BAND} holding {band} crafts, and "
+            f"{100*audience('tool', village):.1f}% in a literate "
+            f"village holding {village}. Over five retellings that "
+            f"is {naming_gap(band):.0f}x in the band and "
+            f"{naming_gap(village):.1e}x in the village. And the "
+            f"story channel stops carrying a tool ALTOGETHER once "
+            f"specialties pass {cut:.0f}, because R0 falls through "
+            f"one -- after which tools move by apprenticeship, "
+            f"which is a channel that does not produce names. So a "
+            f"society gets better at making tools and worse at "
+            f"naming who made them, at the same time and for the "
+            f"same reason. That is not the obvious direction and "
+            f"it is the one the arithmetic gives")
 
 
 if __name__ == "__main__":

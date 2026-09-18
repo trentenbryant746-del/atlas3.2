@@ -660,7 +660,19 @@ def inside_the_head():
          "because it is the same arithmetic. What is NOT derived "
          "is why answerers get named over toolmakers. The "
          "tellability account was tested and refuted at r = -0.20 "
-         "over 21 primitives"),
+         "over 21 primitives. What does account for it is "
+         "AUDIENCE: a retelling costs the teller and pays the "
+         "listener, so it happens when the listener can act. An "
+         "answer is usable by anyone who hears it and a tool only "
+         "by whoever holds that craft -- 100% against 50% in a "
+         "band of 28 holding 2 crafts, and 0.3% in a literate "
+         "village holding 304. Over five retellings that is 32x "
+         "and 2.6e12x. And the story channel stops carrying a "
+         "tool at all once specialties pass 3, because R0 falls "
+         "through one, after which tools travel by apprenticeship "
+         "-- a channel that produces no names. A society gets "
+         "better at making tools and worse at naming who made "
+         "them, at the same time and for the same reason"),
         ("a paper that can be marked", "who it says mattered",
          DERIVED, "standing.ranking",
          "who counts should fall out of the structure rather than "

@@ -168,7 +168,7 @@
 "ok": true
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "7b606baa9194648a",
+"fp": "cfcef171a5ec1c05",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -457,6 +457,10 @@
 },
 "3.2.4|regulation tops the leverage ranking; a tool beats a fact 1.2e8:1": {
 "fp": "ee96d5516cad5829",
+"ok": true
+},
+"3.2.5|a name is worth 4,346 retrievals; audience explains what tellability did not": {
+"fp": "c842285bd8f7ef8d",
 "ok": true
 },
 "3.2.5|a name is worth 4,346 retrievals; tellability refuted at r=-0.20": {

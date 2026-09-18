@@ -362,11 +362,12 @@ def _agreement():
 def _exam():
     from engine.exam import (half_moon_ratio, half_moon_sensitivity,
                              answerable_at, score, ARISTARCHUS_DEG,
-                             QUESTIONS)
+                             QUESTIONS, METHODS, their_answer)
     q = "how far is the Sun, in Moon distances"
     return (round(half_moon_ratio(ARISTARCHUS_DEG), 1),
             round(half_moon_sensitivity()), answerable_at(q),
-            score(2)[1], score(6)[1], score(9)[1], len(QUESTIONS))
+            score(2)[1], score(6)[1], score(9)[1], len(QUESTIONS),
+            len(METHODS), round(their_answer(q, 9), 1))
 
 
 def _levers():
@@ -840,8 +841,8 @@ CLAIMS = [
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
-    ("3.2.2", "Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611",
-     _exam, (19.1, 611, 6, 2, 6, 8, 8), CURRENT),
+    ("3.2.2", "Aristarchus reproduced forward: 87 deg gives 19.1, no answer key",
+     _exam, (19.1, 611, 6, 2, 6, 8, 8, 5, 415.6), CURRENT),
     ("3.2.1", "302 constants, 5 with two homes, 3 frozen copies tracked",
      _agreement, (302, 5, 3, 0), CURRENT),
     ("3.1.123", "42 constants are chosen; two stopped being, one pair disagrees 8.5x",

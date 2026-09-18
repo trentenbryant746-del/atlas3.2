@@ -447,6 +447,10 @@
 "fp": "dacf6ae250a1a99c",
 "ok": false
 },
+"3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {
+"fp": "e41d5d7805212b19",
+"ok": true
+},
 "3.2.2|Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611": {
 "fp": "c08386cada11f1e3",
 "ok": true

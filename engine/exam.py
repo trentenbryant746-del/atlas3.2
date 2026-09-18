@@ -151,11 +151,95 @@ def answer_error(question, round_n):
     return sensitivity(question) * measurement_error(question, round_n)
 
 
-def their_answer(question, round_n):
-    """-> (low, high) around the truth. DERIVED."""
-    true = QUESTIONS[question][3]
-    e = answer_error(question, round_n)
-    return true * max(0.0, 1 - e), true * (1 + e)
+# THE PEOPLE INSIDE CANNOT READ THE RULES.
+#
+# The first version of this file computed their answer as the
+# TRUE answer with error bars on it. That is a mistake of the
+# worst available kind here: it assumes the thing they are trying
+# to find out is already known, and it only produces a sensible
+# number because the truth was fed in.
+#
+# Aristarchus disproves it outright. That function would have
+# reported 390 x (1 +/- 6%), which is 366 to 414. He got 19.
+#
+# So the answer runs FORWARD, and only forward. They measure an
+# input with the instruments they have; the method turns that
+# reading into an answer; the answer is whatever it is. The true
+# answer is used for MARKING and never appears on the path that
+# produces their result -- there is a check below that enforces
+# it by calling the forward path with the answer key removed.
+
+MERCURY_DENSITY = 13595.0     # kg/m3, MEASURED
+G_SURFACE = 9.80665           # m/s2, EXACT by definition
+WIEN_M_K = 2.897771955e-3     # m K, EXACT from the SI constants
+
+METHODS = {
+    "how far round is the Earth": (
+        {"shadow angle at the solstice, deg": 7.2,
+         "north-south distance, km": 800.0},
+        lambda a, d: d * 360.0 / a,
+        "Eratosthenes: the shadow angle is the arc between the "
+        "two places, so the circumference is the distance times "
+        "360 over the angle"),
+    "how far is the Sun, in Moon distances": (
+        {"elongation at half moon, deg": HALF_MOON_DEG},
+        lambda th: 1.0 / math.cos(math.radians(th)),
+        "Aristarchus: at half moon the Earth-Moon-Sun angle is a "
+        "right angle, so the distance ratio is 1/cos of the "
+        "elongation"),
+    "how fast does light travel": (
+        {"eclipse delay across the orbit, s": 996.0,
+         "orbit diameter, km": 2.9919e8},
+        lambda dt, d: d / dt,
+        "Romer: Io's eclipses run late by the time light takes to "
+        "cross the Earth's orbit"),
+    "how heavy is the air above us": (
+        {"mercury column, m": 0.760},
+        lambda h: MERCURY_DENSITY * G_SURFACE * h,
+        "Torricelli: the column the air holds up weighs what the "
+        "air above does, so the pressure is rho g h"),
+    "how hot is the Sun's surface": (
+        {"peak wavelength, m": 5.02e-7},
+        lambda lam: WIEN_M_K / lam,
+        "Wien: the peak of a hot body's spectrum moves as 1/T, so "
+        "the temperature is the displacement constant over the "
+        "wavelength"),
+}
+
+
+def has_method(question):
+    """Is there a forward model, or only a sensitivity? DERIVED."""
+    return question in METHODS
+
+
+def reading(question, round_n, blunder=0.0):
+    """What their instruments actually read. DERIVED.
+
+    Each input is perturbed by the error their equipment leaves
+    on it. `blunder` adds a further fractional slip, which is
+    how a real observer differs from a perfect one.
+    """
+    inputs, _fn, _why = METHODS[question]
+    e = measurement_error(question, round_n) + blunder
+    return {k: v * (1.0 + e) for k, v in inputs.items()}
+
+
+def answer_from(question, readings):
+    """Run the method on a set of readings. FORWARD ONLY.
+
+    This function cannot see the true answer and must not be
+    given it. Everything it returns is a consequence of the
+    numbers handed in.
+    """
+    _inputs, fn, _why = METHODS[question]
+    return fn(*readings.values())
+
+
+def their_answer(question, round_n, blunder=0.0):
+    """-> what they would report. DERIVED, forward only."""
+    if not has_method(question):
+        return None
+    return answer_from(question, reading(question, round_n, blunder))
 
 
 def passes(question, round_n, within=1.10):
@@ -201,6 +285,7 @@ def check():
     t("sensitivity_not_cleverness_decides_the_paper", _sens)
     t("the_paper_gets_better_in_the_order_the_tools_arrive", _paper)
     t("INVERTED_a_wrong_answer_they_could_not_catch", _blind)
+    t("their_answer_is_computed_without_the_answer_key", _forward)
     return all(x for _, x, _ in res), res
 
 
@@ -296,6 +381,44 @@ def _blind():
             f"sensitivity is not visible from inside the "
             f"calculation. The figure stood for seventeen "
             f"centuries and was not fixed by better thinking")
+
+
+def _forward():
+    """The people inside cannot read the rules. Enforced, not said.
+
+    Every true answer is blanked and the forward path is run
+    again. If any of them changes, something on that path was
+    reading the answer key.
+    """
+    before = {q: their_answer(q, 9) for q in METHODS}
+    global QUESTIONS
+    keep = QUESTIONS
+    QUESTIONS = {q: (v[0], v[1], v[2], float("nan")) + v[4:]
+                 for q, v in keep.items()}
+    try:
+        after = {q: their_answer(q, 9) for q in METHODS}
+    finally:
+        QUESTIONS = keep
+    moved = [q for q in METHODS
+             if before[q] != after[q] or after[q] != after[q]]
+    if moved:
+        raise ArithmeticError(f"the answer key leaks into {moved}")
+    arist = answer_from("how far is the Sun, in Moon distances",
+                        {"elongation at half moon, deg":
+                         ARISTARCHUS_DEG})
+    return (f"the people inside this simulation cannot read these "
+            f"rules. They make tools and find things out, so their "
+            f"answer has to run FORWARD -- measure an input, apply "
+            f"the method, report whatever comes out. The first "
+            f"version of this file did not: it returned the TRUE "
+            f"answer with error bars, which assumes the thing "
+            f"being looked for is already known. Aristarchus "
+            f"disproves it, because that version would have said "
+            f"390 +/- 6% and he got {arist:.0f}. This check blanks "
+            f"every true answer and reruns all {len(METHODS)} "
+            f"forward paths; none of them moves, so none of them "
+            f"is reading the key. The key is used to MARK the "
+            f"paper and never to write it")
 
 
 if __name__ == "__main__":

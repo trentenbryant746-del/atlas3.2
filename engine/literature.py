@@ -140,12 +140,21 @@ def parallax_reachable(round_n, nearest_arcsec=0.76):
     return their_angle(round_n) <= nearest_arcsec * 4.8481e-6
 
 
-def their_value(true_value, round_n, terms=1):
-    """-> (low, high). What their version of a rule would say.
+def error_band(true_value, round_n, terms=1):
+    """-> (low, high). How WIDE their answer would be, not where.
 
-    Errors compound over the terms in a derivation, so a rule
-    resting on `terms` measurements carries sqrt(terms) times the
-    single-measurement error.
+    Renamed from their_value, which was wrong in a way worth
+    recording. It returned the true value with error bars, and
+    that reads as a prediction of what they would report -- which
+    assumes they already know the answer they are looking for.
+    They do not. They have tools.
+
+    What this can honestly say is the WIDTH their instruments
+    leave, not the CENTRE. A method with a systematic flaw lands
+    outside this band and stays there: engine/exam.py has
+    Aristarchus 20x out where his band was 6% wide. For a centre
+    you need a forward model of the method, which exam.py has for
+    five questions and this module has for none.
     """
     e = their_precision(round_n) * math.sqrt(terms)
     return true_value * (1 - e), true_value * (1 + e)
@@ -153,7 +162,7 @@ def their_value(true_value, round_n, terms=1):
 
 def would_notice(true_value, claimed, round_n, terms=1):
     """Could they tell their answer was wrong? DERIVED."""
-    lo, hi = their_value(true_value, round_n, terms)
+    lo, hi = error_band(true_value, round_n, terms)
     return not (lo <= claimed <= hi)
 
 
@@ -216,7 +225,7 @@ def _error():
     from engine.constants import G_GRAV
     rows = []
     for r in (2, 5, 7, 9):
-        lo, hi = their_value(G_GRAV, r, terms=3)
+        lo, hi = error_band(G_GRAV, r, terms=3)
         rows.append((r, their_precision(r), (hi - lo) / 2 / G_GRAV))
     if rows[0][2] <= rows[-1][2]:
         raise ArithmeticError("error does not fall")

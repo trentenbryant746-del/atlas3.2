@@ -178,7 +178,19 @@ def answer(question):
     out = {"call": f"{attr}({ent})", "read_as": gloss, "dim": sem.dim}
 
     # route the call: a sourced fact, grounded and cited
-    import responder_shim as _rs
+    #
+    # A BARE IMPORT, which resolved only when this file was run from
+    # inside engine/. Imported as engine.english it raised
+    # ModuleNotFoundError and took the whole English path down with
+    # it -- so the one mechanism in this repository for asking a
+    # question in words and getting the answer, the call it was
+    # understood as, and the check that was applied, was silently
+    # unavailable. Ninety versions of hand-written searches were
+    # written past it.
+    try:
+        from engine import responder_shim as _rs
+    except ImportError:
+        import responder_shim as _rs
     rows = _rs.facts()
     key = f"{ent}.{attr}"
     hit = next((r for r in rows if r[0] == key), None)

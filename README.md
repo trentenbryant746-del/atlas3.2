@@ -5738,3 +5738,59 @@ this file kept committing, and `engine/roots.py` had existed for
 exactly this since 3.1.71.
 
     closure 12/12    suite green    50 claims
+
+### 3.1.93 — nineteen sweeps replaced by the rules under them
+
+Atlas 2 answered in milliseconds. This one had reached 181 seconds,
+and the cause was not Python and not the absence of a Godot
+simulator — there is no Godot simulator anywhere in Atlas 1, 2 or
+3.1, only a gdscript **codegen** backend in `ir.py` that
+cross-verifies emitted code against python and ruby.
+
+    ProcessPoolExecutor      atlas2  0     atlas3.1  2
+    sweep / census / Monte   atlas2  1     atlas3.1 19
+
+**Atlas 2 never simulated.** Its modules are language, typing,
+binding, indexing, composition, explanation. Every answer was a
+calculation through a rule chain. 3.1 added nineteen modules that
+*sample a space* instead of deriving an answer, and that is the
+whole difference.
+
+    multiverse   63.0s -> 0.02s    deterministic grid, no seeds, no pool
+    spine        35.0s -> 2.52s    loads the persisted graph
+    watch        15.7s -> 0.54s    was paying for _solar_band on import
+    census       15.7s -> 0.36s    same
+    pov           9.3s -> 0.00s    checks assert geometry, not pixels
+    evolve        9.2s -> 0.16s    band edge keyed on its own fingerprint
+    descent       6.8s -> 1.24s    trajectory persisted on run()'s hash
+    closure       5.9s -> 0.00s    reads RENDERED
+                160.6s -> 4.84s
+
+**The governing rule, which was there all along:**
+
+> If a check runs a search, the rule underneath it has not been
+> found yet.
+
+A sweep is an admission that the invariant is unknown. `multiverse`
+spawned ten processes to learn *which gates bind* — but a gate is an
+inequality in orbit, mass and temperature, and only composition needs
+a seed. The grid answer is complete where the sweep was partial.
+`evolve` bisected a band edge 24 times per run to re-derive an edge
+that moves only when the thermostat does. `pov` rendered 460,000
+pixels to assert that acuity comes from `senses.py`.
+
+**And trying to derive one of them found a MISSING_RULE instead.**
+`descent`'s 4,000-generation search was going to be replaced by its
+closed form: intake m^(2/3) against cost m^(3/4) cross at
+m = (a/b)¹², which is **0.17 m**. The run settles at **0.1 µm** — six
+orders apart. Above the crossing an organism starves, so it is a
+*ceiling*, not a floor, and **nothing here says why the lineage falls
+rather than rising to it.** The collapse is not the energy balance.
+That is worth more than the speed would have been.
+
+Two checks inverted rather than deleted: `closure`'s distrust of its
+own extrapolation now fails **by having been fixed**, and the
+alphabet comparison stopped depending on a hardcoded size window that
+no longer bracketed an AB network.
+
+    eight modules, 160.6s -> 4.84s, every check still passing

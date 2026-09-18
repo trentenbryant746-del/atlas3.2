@@ -155,6 +155,30 @@ def viable(org, o2_fraction=1.0, T=288.0):
 INTAKE_COEFFICIENT = 90.0      # sets where supply and demand cross
 
 
+def break_even_mass(n_traits=0):
+    """kg where intake meets cost. CLOSED FORM, no generations.
+
+    intake = a*m^(2/3) and cost = b*m^(3/4), so they cross where
+    m^(3/4 - 2/3) = a/b, i.e. m = (a/b)^12. The 4,000-generation
+    run was finding this number numerically and taking 5.5 s to
+    do it. A loop that searches for a fixed point an equation
+    gives is a rule that has not been found yet.
+    """
+    a = INTAKE_COEFFICIENT
+    b = 70.0 * (1.0 + TRAIT_COST * n_traits)
+    return (a / b) ** 12.0
+
+
+def radius_of(mass_kg, density=1000.0):
+    """m. DERIVED: a sphere of that mass."""
+    return (3.0 * mass_kg / (4.0 * math.pi * density)) ** (1.0 / 3.0)
+
+
+def collapses_to(n_traits=0):
+    """m of radius the lineage settles at. DERIVED, closed form."""
+    return radius_of(break_even_mass(n_traits))
+
+
 def energy_balance(org):
     """-> (intake W, cost W). DERIVED: surface feeds, volume burns."""
     m = org.mass()
@@ -307,10 +331,44 @@ def check():
     t("encounter_rate_is_no_refuge", _encounter)
     t("a_second_organism_reverses_it", _predation)
     t("shrinking_does_not_delete_matter", _matter)
+    t("the_collapse_is_not_the_energy_balance", _fixed)
     return all(o[1] for o in out), out
 
 
 _C = {}
+
+
+def _fixed():
+    """MISSING_RULE, found by trying to derive what the run reports.
+
+    The intent was to replace a 4,000-generation search with the
+    closed form it was searching for. Intake goes as m^(2/3) and
+    cost as m^(3/4), so they cross at m = (a/b)^12 -- and that
+    number is 0.17 m, six orders away from the 0.1 microns the run
+    settles at. The derivation does not reproduce the run, which
+    means the collapse is NOT the energy balance.
+    """
+    m = break_even_mass()
+    r = collapses_to()
+    snaps = _r()
+    try:
+        last = snaps[-1]
+        got = last.get("median_r") or last.get("radius") or None
+    except Exception:
+        got = None
+    if 1e-7 < r < 1e-5:
+        raise ArithmeticError("the closed form now matches the run, so "
+                              "this MISSING_RULE has been closed")
+    return (f"MISSING_RULE. Intake m^(2/3) against cost m^(3/4) cross "
+            f"at {m:.2e} kg, a radius of {r:.3f} m. The run settles "
+            f"around 1e-7 m. Six orders apart, so THE COLLAPSE IS NOT "
+            f"THE ENERGY BALANCE -- above the crossing an organism "
+            f"starves, which makes it a ceiling and not a floor, and "
+            f"nothing derived here says why the lineage falls instead "
+            f"of rising to it. The search was going to be replaced by "
+            f"its closed form and the closed form answers a different "
+            f"question; that is worth more than the speed would have "
+            f"been")
 
 
 def _matter():
@@ -323,9 +381,45 @@ def _matter():
             f"forgotten")
 
 
+RUN_STORE = Path(__file__).resolve().parent.parent / "data" / "descent.json"
+
+
+def _run_fingerprint():
+    from engine.spine import fingerprint
+    try:
+        return fingerprint("descent", "run")
+    except Exception:
+        return None
+
+
 def _r():
-    if "r" not in _C:
-        _C["r"] = run()
+    """The trajectory, persisted on the fingerprint of run().
+
+    4,000 generations at 300 population cost 5.5 s and _C was
+    in-process only, so every fresh interpreter paid it again.
+    The result changes when run() or anything beneath it changes,
+    and not otherwise, which is what the fingerprint says.
+    """
+    import json
+    if "r" in _C:
+        return _C["r"]
+    fp = _run_fingerprint()
+    if fp and RUN_STORE.exists():
+        try:
+            d = json.loads(RUN_STORE.read_text())
+            if d.get("fingerprint") == fp:
+                _C["r"] = d["snapshots"]
+                return _C["r"]
+        except Exception:
+            pass
+    _C["r"] = run()
+    if fp:
+        try:
+            RUN_STORE.parent.mkdir(parents=True, exist_ok=True)
+            RUN_STORE.write_text(json.dumps(
+                {"fingerprint": fp, "snapshots": _C["r"]}))
+        except Exception:
+            pass
     return _C["r"]
 
 

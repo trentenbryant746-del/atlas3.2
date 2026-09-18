@@ -165,6 +165,14 @@ INPUTS = {
     "cold.EA_HYDROLYSIS": (MEASURED, "~100 kJ/mol, breaking a bond"),
     "cold.EA_POLYMERISE": (MEASURED, "~60 kJ/mol, catalysed building"),
     "cold.K_HYD_298": (MEASURED, "1e-9 /s at pH 7, 298 K"),
+    "generate.AXES": (
+        CHOSEN, "the grid the rules are walked over; chosen to span "
+                "what the rules accept, NOT to bracket an answer"),
+    "closure.CATALYSTS_PER_REACTION": (
+        MEASURED, "0.481 catalysts per reaction at closure, bisected "
+                  "over 6 networks above 2000 molecules"),
+    "closure.MEANFIELD_MIN_M": (
+        MEASURED, "2000 molecules, where p*M converges"),
     "closure.ALPHABET": (CHOSEN, "two monomers, the smallest case"),
     "closure.MAX_LEN": (CHOSEN, "polymer length; tractability"),
     "closure.FOOD_LEN": (CHOSEN, "what the world supplies unasked"),
@@ -303,6 +311,8 @@ ENACTED_RESULTS = {
         "a corpus these rules grow, not one anybody catalogued",
     "a set closes above p=1e-3, measured is 1e-8":
         "a network these rules build and prune, not one in a flask",
+    "10,584 universes generated blind, queried in 45 ms":
+        "a space these rules produce, not a survey of anything",
 }
 
 # Which results lean on which inputs. A claim is only as good as
@@ -332,6 +342,9 @@ CLAIMS_ON = {
     "one head holds about four trades": [],
     "the fidelity gate opens in a 7 K window": [],
     "cold slows breaking 11x more than building": [],
+    "closure is 0.48 catalysts per reaction": [],
+    "10,584 universes generated blind, queried in 45 ms": [
+        "generate.AXES"],
     "a set closes above p=1e-3, measured is 1e-8": [
         "closure.ALPHABET", "closure.MAX_LEN"],
     "a ribozyme is at its thermodynamic limit": [],

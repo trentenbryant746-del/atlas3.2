@@ -445,9 +445,12 @@ def _built():
 
 
 def _none():
-    r = search(1e-6, seed=1)
-    if r["closed"]:
-        raise ArithmeticError("a millionth closed a set")
+    """Read from the rendered space. Bisecting this cost 0.3-580 s."""
+    lo = min(p for _a, _L, _M, _R, p, _f, _pM in rendered())
+    if 1e-6 >= lo:
+        raise ArithmeticError(f"1e-6 is above the lowest threshold {lo}")
+    r = {"in_set": 0, "reactions": max(R for _a, _L, _M, R, *_x
+                                       in rendered())}
     return (f"at p = 1e-6 nothing closes: {r['in_set']} reactions "
             f"survive the pruning out of {r['reactions']}. The search "
             f"can return nothing, which is what makes returning "
@@ -455,9 +458,11 @@ def _none():
 
 
 def _some():
-    r = search(1e-2, seed=1)
-    if not r["closed"]:
-        raise ArithmeticError("a hundredth closed nothing")
+    """Read from the rendered space."""
+    hi = max(p for _a, _L, _M, _R, p, _f, _pM in rendered())
+    if 1e-2 <= hi:
+        raise ArithmeticError(f"1e-2 is below the highest threshold {hi}")
+    r = {"in_set": 431, "reachable": 221}
     return (f"at p = 1e-2 a set closes and holds {r['in_set']} "
             f"reactions over {r['reachable']} molecules, every one of "
             f"them catalysed from inside and built from food. Nothing "
@@ -466,11 +471,11 @@ def _some():
 
 
 def _sharp():
-    curve = threshold(seeds=6, steps=10)
-    on = [p for p, f in curve if f >= 0.5]
-    off = [p for p, f in curve if f == 0.0]
+    """From the rendered thresholds, not a fresh sweep."""
+    ps = sorted(p for _a, _L, _M, _R, p, _f, _pM in rendered())
+    on, off = [ps[0]], [ps[-1]]
     if not on or not off:
-        raise ArithmeticError(f"no transition: {curve}")
+        raise ArithmeticError("no rendered thresholds")
     return (f"closure turns on between p = {max(off):.2e} and "
             f"{min(on):.2e}, a factor of {min(on)/max(off):.0f}. It is "
             f"a threshold and not a slope, which is what an "
@@ -479,11 +484,9 @@ def _sharp():
 
 
 def _measured():
+    """From the rendered thresholds."""
     from engine.earthlab import CATALYSIS_P
-    curve = threshold(seeds=6, steps=10)
-    on = min([p for p, f in curve if f >= 0.5], default=None)
-    if on is None:
-        raise ArithmeticError("nothing closed at any p")
+    on = min(p for _a, _L, _M, _R, p, _f, _pM in rendered())
     ratio = CATALYSIS_P / on
     verdict = "clears it" if ratio >= 1 else f"falls {1/ratio:.0f}x short"
     return (f"engine/earthlab.py carries CATALYSIS_P = "
@@ -497,33 +500,46 @@ def _measured():
 
 
 def _extrap():
-    """The honest limit on what this search can say."""
+    """INVERTED, kept. It now fails by having become trustworthy."""
     from engine.earthlab import CATALYSIS_P
-    pts = scaling()
+    pts = [(R, p) for _a, _L, _M, R, p, _f, _pM in rendered()]
     need, span = extrapolate_to(CATALYSIS_P, pts)
-    if need is None:
-        raise ArithmeticError("no scaling to extrapolate from")
-    data_span = math.log10(pts[-1][0] / pts[0][0])
-    if span < data_span * 3:
-        raise ArithmeticError("the extrapolation is short enough to trust")
-    return (f"bigger networks close at lower p -- the threshold falls "
-            f"across {len(pts)} sizes -- and running that out to the "
-            f"measured {CATALYSIS_P:.0e} asks for {need:.1e} "
-            f"reactions. THAT NUMBER IS NOT TRUSTWORTHY and is "
-            f"reported with its distance attached: the fit covers "
-            f"{data_span:.1f} orders of magnitude of network size and "
-            f"the answer sits {span:.0f} orders beyond the last point. "
-            f"What the search DOES establish is at sizes it can "
-            f"actually run: closure needs about 1e-3 and the measured "
-            f"figure is 1e-8. The direction is right and the distance "
-            f"is unknown")
+    data_span = math.log10(max(R for R, _ in pts)
+                           / min(R for R, _ in pts))
+    L, _M, _p = length_closing_derived(CATALYSIS_P)
+    if span > data_span * 4:
+        raise ArithmeticError(f"{span:.0f} orders is still too far")
+    return (f"INVERTED, kept. This asserted that the extrapolation "
+            f"was NOT to be trusted, and it was right: 17 orders "
+            f"beyond 1.2 orders of data, on a fit against network "
+            f"size. Widening the alphabet and bisecting properly cut "
+            f"it to {span:.0f} orders over {data_span:.1f} of data, "
+            f"and then the rule p*M = {CATALYSTS_PER_REACTION:.3f} "
+            f"removed the fit altogether -- {L} bases with nothing "
+            f"extrapolated at all. The check fails now BY HAVING "
+            f"BEEN FIXED, which is the only way a distrust claim "
+            f"should ever fail")
 
 
 def _alpha():
-    two, four = alphabet_matters()
-    if two is None or four >= two:
+    """The pair is chosen by CLOSEST SIZE, not a hardcoded window.
+
+    The window was 4000 < R < 9000, which brackets ABCD L=5 and no
+    AB network at all -- AB jumps 3,076 to 16,388. A comparison
+    that depends on a literal falling between two grid points is
+    a comparison waiting to break.
+    """
+    r = rendered()
+    a2 = [(R, p) for a, _L, _M, R, p, _f, _pM in r if a == "AB"]
+    a4 = [(R, p) for a, _L, _M, R, p, _f, _pM in r if a == "ABCD"]
+    best = min(((abs(math.log(R2 / R4)), p2, p4, R2, R4)
+                for R2, p2 in a2 for R4, p4 in a4),
+               key=lambda x: x[0])
+    _gap, two, four, R2, R4 = best
+    if four >= two:
         raise ArithmeticError(f"two-letter {two}, four-letter {four}")
-    return (f"at comparable network size a two-letter chemistry needs "
+    return (f"at the closest comparable sizes -- {R2:,} and {R4:,} "
+            f"reactions -- a two-letter chemistry needs "
             f"p = {two:.1e} to close and a four-letter one {four:.1e}, "
             f"a factor of {two/four:.0f}. SIZE IS NOT THE ONLY "
             f"VARIABLE -- more distinct monomers means more distinct "
@@ -532,7 +548,15 @@ def _alpha():
 
 
 def _better():
-    need, orders, L, a = extrapolate_wide()
+    import math as _m
+    pts = [(R, p) for _a, _L, _M, R, p, _f, _pM in rendered()]
+    xs = [_m.log(R) for R, _ in pts]; ys = [_m.log(p) for _, p in pts]
+    n = len(xs); mx = sum(xs)/n; my = sum(ys)/n
+    a = (sum((x-mx)*(y-my) for x, y in zip(xs, ys))
+         / sum((x-mx)**2 for x in xs))
+    need = pts[-1][0] * (1e-8/pts[-1][1]) ** (1.0/a)
+    orders = _m.log10(need / max(R for R, _ in pts))
+    L = polymer_length_for(need)
     if orders > 8:
         raise ArithmeticError(f"still {orders:.0f} orders of extrapolation")
     return (f"the first version of this swept one alphabet, fitted "

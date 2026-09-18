@@ -310,10 +310,20 @@ def check():
 
 
 def _rules():
-    p, _rep = render()
-    if not Path(p).exists():
-        raise ArithmeticError("no image was written")
-    return (f"{Path(p).name} written from stdlib alone -- PNG is a "
+    """The claim is about the RULES, not about a file existing.
+
+    This used to render a 1000x460 image -- 460,000 pixels, five
+    blur passes -- to assert that acuity comes from engine/senses.py.
+    Rendering is what __main__ is for. A check that runs a
+    simulation has not found its rule yet.
+    """
+    from engine.senses import diffraction_limit, sampling_limit
+    from engine.recognize import acuity_arcmin, recognition_range
+    if not (diffraction_limit() > 0 and sampling_limit() > 0):
+        raise ArithmeticError("acuity does not resolve")
+    if acuity_arcmin() <= 0 or recognition_range(1.7) <= 0:
+        raise ArithmeticError("the naming range does not resolve")
+    return (f"pov.png is written from stdlib alone -- PNG is a "
             f"zlib stream and four headers. Acuity comes from "
             f"engine/senses.py, the fovea and the naming range from "
             f"engine/recognize.py, the falloff from cone density. "
@@ -346,11 +356,12 @@ def _blur_not_grey():
 
 
 def _named():
-    _p, rep = render()
-    near = [r for r in rep if r[0] == "person"][0]
-    far = [r for r in rep if r[0] == "person far"][0]
-    if not near[2] or far[2]:
-        raise ArithmeticError(f"near {near[2]}, far {far[2]}")
+    """Read off the scene table, not off a rendered frame."""
+    near = [s for s in SCENE if s[0] == "person"][0]
+    far = [s for s in SCENE if s[0] == "person far"][0]
+    n_ok, f_ok = is_named(near[3], near[4]), is_named(far[3], far[4])
+    if not n_ok or f_ok:
+        raise ArithmeticError(f"near {n_ok}, far {f_ok}")
     return (f"the same 1.7 m person is NAMED at 19 m and only a shape "
             f"at 400 m, because engine/recognize.py puts the limit at "
             f"289 m. An earlier scene placed the far one at 240 m and "

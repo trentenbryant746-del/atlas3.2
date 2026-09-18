@@ -93,10 +93,39 @@ _BAND_CACHE = {}
 # The answer is not more cores, it is not scanning at a resolution
 # the problem does not need.
 
+BAND_STORE = Path(__file__).resolve().parent.parent / "data" / "band.json"
+
+
+def _band_fingerprint():
+    """What the band edge depends on. If this is unchanged, it is."""
+    from engine.spine import fingerprint
+    try:
+        return fingerprint("terraform", "thermostat")
+    except Exception:
+        return None
+
+
 def _solar_band():
-    """-> (inner AU, outer AU) at one solar luminosity. DERIVED."""
+    """-> (inner AU, outer AU) at one solar luminosity. DERIVED.
+
+    Bisecting this calls thermostat() twenty-four times and cost
+    9.2 s -- every run, to re-derive an edge that moves only when
+    the thermostat does. _BAND_CACHE existed and was in-process
+    only, so it was empty on every fresh interpreter and bought
+    nothing.
+    """
+    import json
     if "band" in _BAND_CACHE:
         return _BAND_CACHE["band"]
+    fp = _band_fingerprint()
+    if fp and BAND_STORE.exists():
+        try:
+            d = json.loads(BAND_STORE.read_text())
+            if d.get("fingerprint") == fp:
+                _BAND_CACHE["band"] = tuple(d["band"])
+                return _BAND_CACHE["band"]
+        except Exception:
+            pass
     from engine.terraform import thermostat, BODIES, Body
     e = BODIES["Earth"]
 
@@ -139,6 +168,14 @@ def _solar_band():
             hi = m
     outer = 0.5 * (lo + hi)
     _BAND_CACHE["band"] = (inner, outer if outer < 2.95 else None)
+    if fp:
+        try:
+            import json as _j
+            BAND_STORE.parent.mkdir(parents=True, exist_ok=True)
+            BAND_STORE.write_text(_j.dumps(
+                {"fingerprint": fp, "band": list(_BAND_CACHE["band"])}))
+        except Exception:
+            pass
     return _BAND_CACHE["band"]
 
 
@@ -162,8 +199,41 @@ def ice_line_at(lum_w):
     return (disk_temperature(1.0, lum_w) / T_ICE) ** 2
 
 
+def star_track(m=1.0, steps=13, t_max=None):
+    """-> [(t, L/Lsun, ice au, inner, outer, post_ms)]. CLOSED FORM.
+
+    No planetary system is generated. Luminosity, the ice line and
+    the band edges are functions of stellar mass and time alone --
+    history() built a whole system to read them off, and three
+    checks called it three separate times to look at the first and
+    last rows. A check that generates a system to ask what the
+    star is doing has not found its rule.
+    """
+    t_ms = main_sequence_lifetime(m)
+    t_max = (1.25 * t_ms) if t_max is None else t_max
+    out = []
+    for i in range(steps):
+        t = t_max * i / (steps - 1)
+        lum = luminosity_at(m, max(t, 0.01))
+        inner, outer = habitable_band(lum)
+        out.append({"t_gyr": t, "lum_lsun": lum / L_SUN_W,
+                    "ice_au": ice_line_at(lum), "inner": inner,
+                    "outer": outer, "post_ms": t > t_ms})
+    return {"star_msun": m, "t_ms": t_ms, "steps": out}
+
+
+_HIST = {}
+
+
 def history(seed=None, steps=13, t_max=None):
-    """-> [(t, L, ice line, band, [planet states])]. The run."""
+    """-> [(t, L, ice line, band, [planet states])]. The run.
+
+    Memoised: it generates a planetary system, and the only check
+    that needs the planets used to pay for that four times over.
+    """
+    key = (repr(seed), steps, t_max)
+    if key in _HIST:
+        return _HIST[key]
     seed = solar_seed() if seed is None else seed
     g = generate(seed)
     m = g["star_msun"]
@@ -193,7 +263,8 @@ def history(seed=None, steps=13, t_max=None):
                     "ice_au": ice_line_at(lum),
                     "inner": inner, "outer": outer,
                     "post_ms": t > t_ms, "planets": row})
-    return {"star_msun": m, "t_ms": t_ms, "steps": out}
+    _HIST[key] = {"star_msun": m, "t_ms": t_ms, "steps": out}
+    return _HIST[key]
 
 
 def temperate_windows(h=None):
@@ -227,7 +298,7 @@ def check():
 
 
 def _bright():
-    h = history()
+    h = star_track()
     ls = [s["lum_lsun"] for s in h["steps"] if not s["post_ms"]]
     if ls != sorted(ls):
         raise ArithmeticError("luminosity did not rise monotonically")
@@ -238,7 +309,7 @@ def _bright():
 
 
 def _move():
-    h = history()
+    h = star_track()
     first, last = h["steps"][0], [s for s in h["steps"]
                                   if not s["post_ms"]][-1]
     if last["ice_au"] <= first["ice_au"]:
@@ -287,7 +358,7 @@ def _life():
 
 
 def _faint():
-    h = history()
+    h = star_track()
     early = h["steps"][0]["lum_lsun"]
     if not 0.6 < early < 0.8:
         raise ArithmeticError(f"the young star was {early:.2f} Lsun")

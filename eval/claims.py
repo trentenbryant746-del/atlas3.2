@@ -143,6 +143,16 @@ def _chainlen():
     return food_chain_length(), round(hydraulic_ceiling())
 
 
+def _generated():
+    from engine.generate import generate, ask, AXES, load
+    rows, _dt = generate()
+    n = 1
+    for v in AXES.values():
+        n *= len(v)
+    got = ask(in_band=True, brine_liquid=True, can_shed_heat=True)
+    return len(rows) == n, len(rows), len(got)
+
+
 def _pm():
     from engine.closure import (catalysts_per_reaction, MEANFIELD_MIN_M,
                                 length_closing_derived, threshold_derived)
@@ -438,6 +448,8 @@ def _save_ledger(d):
 
 # (section, claim, computation, expected, status)
 CLAIMS = [
+    ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
+     _generated, (True, 10584, 864), CURRENT),
     ("3.1.91", "closure is 0.48 catalysts per reaction, above 2000 molecules",
      _pm, (0.48, True, 13, True), CURRENT),
     ("3.1.90", "closure at measured catalysis needs a 13-mer, under 20",

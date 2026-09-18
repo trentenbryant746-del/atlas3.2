@@ -92,10 +92,26 @@ def held_by_band(k, band=BAND, e=TELEPHONE):
     return specialties(k, band) / (1.0 - r)
 
 
+_DEPTH = {}
+
+
 def best_depth(band=BAND, e=TELEPHONE):
-    """-> (k, s, held). Exhaustive over 1..band. DERIVED."""
-    best = max(range(1, band + 1), key=lambda k: held_by_band(k, band, e))
-    return best, specialties(best, band), held_by_band(best, band, e)
+    """-> (k, s, held). Exhaustive over 1..band. DERIVED.
+
+    Pure in (band, e) and scanned over every integer up to band,
+    so a village-scale call is 912 binomial tails and a network
+    one is 36,480. engine/intricacy.settle iterates a fixed point
+    that calls this forty times with the same arguments, which is
+    forty identical scans. Held.
+    """
+    key = (int(band), float(e))
+    if key in _DEPTH:
+        return _DEPTH[key]
+    best = max(range(1, int(band) + 1),
+               key=lambda k: held_by_band(k, band, e))
+    got = (best, specialties(best, band), held_by_band(best, band, e))
+    _DEPTH[key] = got
+    return got
 
 
 def band_for_specialties(s, e=TELEPHONE, cap=4000):

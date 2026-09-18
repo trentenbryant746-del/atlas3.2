@@ -111,6 +111,9 @@ def _binom_tail(m, k, e):
     return tot
 
 
+_GARBLE = {}
+
+
 def garbles(holders, e=TELEPHONE):
     """P(the consensus itself is wrong) per generation. DERIVED.
 
@@ -120,9 +123,13 @@ def garbles(holders, e=TELEPHONE):
     m = int(holders)
     if m <= 1:
         return e
+    key = (m, float(e))
+    if key in _GARBLE:
+        return _GARBLE[key]
     wrong = _binom_tail(m, m // 2 + 1, e)
     if m % 2 == 0:                        # a tie is settled by chance
         wrong += 0.5 * _binom_pmf(m, m // 2, e)
+    _GARBLE[key] = wrong
     return wrong
 
 

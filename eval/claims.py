@@ -791,8 +791,8 @@ CLAIMS = [
      _novelty, (0.8, 32, 21.5, 26.8, 99.7, 0.032), CURRENT),
     ("3.1.117", "two gates: heat stops at round 5, tolerance runs to 10",
      _artifact, (21, 10, 1750, 3, 5, 9, 10), CURRENT),
-    ("3.1.117", "7 of 10 derived numbers match the record within 3x",
-     _recorded, (7, 1, 2, 6), CURRENT),
+    ("3.1.120", "46 comparisons: 32 match, 24 of them free",
+     _recorded, (32, 5, 3, 24), CURRENT),
     ("3.1.119", "19 trillion tokens enumerated, from 1.6 MB of rules",
      _scale, (13.28, 1.6, 36, 10584, 864, 8.87), CURRENT),
     ("3.1.118", "an inference kit is indivisible: 17,300 people for one",
@@ -935,6 +935,15 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.117", "7 of 10 derived numbers match the record within 3x",
+     "ten comparisons was too few to distinguish a method that "
+     "finds real structure from one that propagates a single error "
+     "into several places that then agree. Expanded to 46 rows "
+     "spanning nucleosynthesis to lithography. Six rows carry a "
+     "baseline I chose rather than found and are shown WITHOUT "
+     "being scored -- three of those would have counted as matches, "
+     "which is why they do not. 40 scored: 32 match, 5 loose, 3 "
+     "miss, and 24 of the matches could have come out otherwise"),
     ("3.1.116", "every primitive is grounded in a rule that already exists",
      "13 of 21 pointed at NOTHING. tools.torque, eos.strain, "
      "carnot.efficiency, control.feedback, landauer.kT -- plausible "

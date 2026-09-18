@@ -56,7 +56,7 @@
 "ok": true
 },
 "3.1.109|oral capacity is 8,692 items; epigenetics holds 3.4a": {
-"fp": "d3394be839651b8d",
+"fp": "a215d18469221638",
 "ok": true
 },
 "3.1.109|oral tradition compounds (8692a), epigenetics cannot (3.4a)": {
@@ -68,11 +68,11 @@
 "ok": true
 },
 "3.1.110|a band walks at 0.707 adult pace and innovates 39x per km": {
-"fp": "88dfd192b0a793d4",
+"fp": "7638ef389d9cfe54",
 "ok": true
 },
 "3.1.110|a lone teller keeps 10 items; 28 voters keep 8,688": {
-"fp": "7e0047fe3a6795f5",
+"fp": "9243f9cefe89df87",
 "ok": true
 },
 "3.1.111|Big Bang to a head in 47 links: 39 derived, 7 forced, 0 gaps": {
@@ -88,7 +88,7 @@
 "ok": true
 },
 "3.1.111|one checked copy is worth 13 speakers; 5 scribes keep a script": {
-"fp": "bf0a4a45432a3e1e",
+"fp": "e0d9dbe5cd50189d",
 "ok": true
 },
 "3.1.112|Big Bang to a head in 50 links: 42 derived, 7 forced, 0 gaps": {
@@ -116,7 +116,7 @@
 "ok": true
 },
 "3.1.114|24% of possible specialists are priced out by their tools": {
-"fp": "2c03f2e7e4614bbe",
+"fp": "eccddf48a2085b14",
 "ok": true
 },
 "3.1.114|Big Bang to a head in 54 links: 46 derived, 7 forced, 0 gaps": {
@@ -124,11 +124,11 @@
 "ok": true
 },
 "3.1.114|ideas are non-rival: escape turns on a 0.372 land share": {
-"fp": "cd6544f962a9f770",
+"fp": "8060ff2ede60a955",
 "ok": true
 },
 "3.1.114|speech is a fixed point at 2 specialties; the loop settles at 23.5": {
-"fp": "611846875a1123f8",
+"fp": "4a8d0c72e54c2b82",
 "ok": true
 },
 "3.1.115|Big Bang to a head in 55 links: 47 derived, 7 forced, 0 gaps": {
@@ -144,7 +144,7 @@
 "ok": true
 },
 "3.1.116|a press is worth 6.6 parts; proofreading is worth nothing": {
-"fp": "c0f2b63a32451952",
+"fp": "ac25374791b54f00",
 "ok": true
 },
 "3.1.116|temperature gates the tech tree: copper at round 3, steel at 5": {
@@ -152,8 +152,8 @@
 "ok": true
 },
 "3.1.117|7 of 10 derived numbers match the record within 3x": {
-"fp": "9c6dbeb3092e75a0",
-"ok": true
+"fp": "b5e0c87336048a31",
+"ok": false
 },
 "3.1.117|Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps": {
 "fp": "d42c3fa45b7195a3",
@@ -168,11 +168,15 @@
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
-"fp": "be69b6f4c87b5097",
+"fp": "42dbeb83aaea2209",
 "ok": true
 },
 "3.1.119|19 trillion tokens enumerated, from 1.6 MB of rules": {
-"fp": "f0ce60c65db40bd6",
+"fp": "2dba510b64d64283",
+"ok": true
+},
+"3.1.120|46 comparisons: 32 match, 24 of them free": {
+"fp": "b5e0c87336048a31",
 "ok": true
 },
 "3.1.18|folding survival rate 0.573": {

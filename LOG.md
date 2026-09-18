@@ -320,3 +320,47 @@ STILL OPEN
   no measured distribution of craft depths. The skew is real, the
   14x is a shape assumption.
 - innovation.useful_fraction() = 1.1e-4 still unmeasured.
+
+## 3.1.115 — novelty, and transcription
+
+PROGRESS
+- novelty.py: design space is LINEAR in population (2^s with
+  s=log2(corpus) cancels), so it is used up and refilled at once.
+  Steady state depends on population GROWTH, not size: no growth
+  exhausts the space at any size.
+- the multiple: novelty per head 0.80, total 32x, going 912 ->
+  36,480. Each person invents 20% less, the world gets 32x more.
+- mechanism named honestly: exhaustion does NOT do it (99.7% of
+  trials still novel). The TEAM does -- p parts need p holders and
+  p is log(corpus).
+- tools/transcribe.py: the whole record as one readable document,
+  every sentence produced by the rule it describes. 5,429 lines.
+
+REGRESSION FOUND AND FIXED — by transcription, not by a claim
+- ecology.competition_prevents_the_collapse was TRUE WHEN WRITTEN
+  and false since descent.py's unbounded-fitness bug was fixed.
+  With the closure floor in place a solo lineage holds at 1.76 um;
+  there is no collapse. Competition takes the median DOWN to 0.64
+  and produces a RANGE. Restated, not patched.
+- power._claim demanded 5x reach, calibrated against an uncapped
+  literacy spread. The food ceiling dropped it to 3.4x. Headcount
+  was the wrong measure for a claim about outliving; now measured
+  across generations.
+
+GAP IN THE VERIFICATION ITSELF, NAMED
+- 550 module checks exist against 81 claims. The fingerprint gate
+  only recomputes CLAIMS, so a check no claim depends on can fail
+  silently for versions. Both bugs above were red and unobserved.
+- Transcription is the only full sweep. It is deliberate, not
+  automatic, because running 90 modules is exactly the CPU spike
+  that is not wanted on every change.
+
+CORRECTED IN PASSING
+- the novelty ratio is log2(corpus1)/log2(corpus2) = 0.80, not
+  log2(n1)/log2(n2) = 0.65. Using population overstates it 19%.
+
+STILL OPEN
+- TRIALS_PER_HEAD_YEAR 0.01, POP_GROWTH 0.001, SPECIALTIES_PER_HEAD
+  1.0 all CHOSEN. The 0.80 multiple depends only on the corpus
+  logarithms; the 99.7% novel fraction depends heavily on trials.
+- innovation.useful_fraction() = 1.1e-4 still unmeasured.

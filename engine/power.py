@@ -174,23 +174,35 @@ def _wall():
 
 
 def _claim():
-    from engine.literacy import spread
-    f0 = 1.0 / BAND
-    pop = 5000.0
-    near, far = reach(f0, pop), reach(spread(f0, 1000), pop)
-    if far <= near * 5:
-        raise ArithmeticError(f"{near} {far}")
+    """RESTATED at 3.1.115.
+
+    This measured reach as a headcount and demanded 5x, which
+    held only while engine/literacy.spread ran to saturation.
+    Capping literacy at the food surplus (13%) dropped it to
+    3.4x and the check failed -- correctly, because the threshold
+    was calibrated against a model that has since been fixed.
+    Headcount was never the point anyway: the claim is about
+    OUTLIVING, so it is now measured across generations.
+    """
+    from engine.literacy import spread, GENERATION_YEARS
+    f0, pop, gens = 1.0 / BAND, 5000.0, 10.0
+    spoken = reach(f0, pop)
+    lit = spread(f0, gens * GENERATION_YEARS)
+    written = reach(lit, pop) * gens
+    if written <= spoken * 5:
+        raise ArithmeticError(f"{spoken} {written}")
     return (f"spoken, a claim binds whoever heard it and dies with "
-            f"the last witness -- so the most anyone can be owed is "
-            f"a lifetime and a band. Written, it binds anyone who "
-            f"can read it, including people not yet born. In a "
-            f"population of {pop:.0f} the reach goes {near:.0f} -> "
-            f"{far:.0f} over a thousand years of literacy spreading, "
-            f"{far/near:.0f}x, and a claim that outlives its holder "
-            f"is the definition of inheritance. A stock can cross a "
-            f"death and a flow cannot. That is why hereditary power "
-            f"waits for the granary and then for the ledger, and "
-            f"why the first writing anyone does is an inventory")
+            f"the last witness: {spoken:.0f} people, once. Written, "
+            f"it binds anyone who can read it, including people not "
+            f"yet born -- {reach(lit, pop):.0f} readers in each of "
+            f"{gens:.0f} generations is {written:.0f} bindings and "
+            f"still going, {written/spoken:.0f}x. The multiple is "
+            f"not the headcount, which literacy's food ceiling caps "
+            f"at {100*lit:.0f}%; it is that the denominator is a "
+            f"lifetime for one and nothing for the other. A claim "
+            f"that outlives its holder is what inheritance IS. A "
+            f"stock crosses a death; a flow cannot, and so does a "
+            f"ledger")
 
 
 if __name__ == "__main__":

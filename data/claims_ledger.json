@@ -131,6 +131,14 @@
 "fp": "611846875a1123f8",
 "ok": true
 },
+"3.1.115|Big Bang to a head in 55 links: 47 derived, 7 forced, 0 gaps": {
+"fp": "28f9ac1766cfed82",
+"ok": true
+},
+"3.1.115|novelty per head falls to 0.80 while the total rises 32x": {
+"fp": "6a76ff61de72a67e",
+"ok": true
+},
 "3.1.18|folding survival rate 0.573": {
 "fp": "21579abf6579714b",
 "ok": true

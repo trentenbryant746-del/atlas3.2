@@ -7145,3 +7145,102 @@ and is not to be quoted alone.**
     capital 4/4   intricacy 7/7   lineage 7/7
     54 links, 46 derived, 7 forced, 1 crossing, 0 gaps
     80 claims reproduce, 79 skipped on fingerprint
+
+### 3.1.115 — the multiple, and the record made readable
+
+**`engine/novelty.py`.** Two facts that look contradictory and are
+not.
+
+A design space gets **used up** — a combination found once is not
+novel again. A design space also **grows**: designs are 2^s and s
+is log2(corpus), so the exponent and the logarithm cancel and the
+space is *linear in population*. It is emptied by being found and
+refilled by people arriving, and neither wins.
+
+That gives a steady state, and the steady state turns on the
+**growth rate**, not the size:
+
+    population growth 0.02/yr     100.0% of trials novel
+    population growth 0.001/yr     99.7%
+    no growth at all                0.032%
+
+**A population that has stopped growing exhausts its design space
+however large it is.** Size sets how many trials happen; growth
+sets whether there is anywhere left to put them.
+
+But — and this matters — **exhaustion is not what makes novelty per
+person fall here.** At 3,244 designs per head against 0.01 trials a
+year, 99.7% of trials still land on something new. Nobody is
+running out.
+
+The decline is the **team**. A design of p parts needs p people who
+between them hold p crafts, and p is a logarithm of what is already
+known:
+
+    village of 912      team 21.5
+    network of 36,480   team 26.8
+
+So the multiple you asked for:
+
+    novelty per head   0.80   (each person invents 20% less)
+    novel designs total  32x  (the world gets 32x more)
+
+Both at once, and the fall is only logarithmic — which is why it
+takes so long to notice and never reaches zero. **Novelty per head
+falls because knowing enough to add to it costs more, not because
+there is less left.**
+
+One correction inside that: the ratio is log2(corpus₁)/log2(corpus₂)
+= 21.5/26.8 = 0.80, **not** log2(n₁)/log2(n₂) = 0.65. The corpus is
+bigger than the population because literacy and recopying multiply
+it, and using population there would overstate the fall by 19%.
+
+**`tools/transcribe.py`.** The corpus is not much use if the only
+way to read it is to run Python. This walks the chain in order,
+then every module's checks, then the claims and the withdrawn
+record, and writes one document:
+
+```bash
+python3 -m tools.transcribe --html
+```
+
+    paper/history.md    231,907 chars, 5,429 lines
+    paper/history.html  257,376 bytes
+    550 of 550 rules hold across 90 modules
+
+Nothing in it is typed by hand. Every sentence came from the rule
+that produced it, so the document cannot drift from the system —
+it is not a copy of the system.
+
+**And transcribing it immediately found two rules nothing was
+watching.** Both were red; neither had a claim attached, and the
+fingerprint gate only recomputes claims, so they had been failing
+unobserved:
+
+`ecology.competition_prevents_the_collapse` was **true when
+written.** `descent.py` ran an unbounded fitness objective and a
+solo lineage walked down to 0.1 µm, so competition looked like the
+thing holding size up. That bug was fixed at source with the
+1.58 µm closure floor from `earthlab.py` — and a solo lineage now
+settles at 1.76 µm, so there is no collapse to prevent. Competition
+in fact takes the median *down* to 0.64. What it produces is a
+**range**, 5x+ across species, because the smallest niche is the
+most crowded. The rule is restated, not patched.
+
+`power.writing_is_what_makes_a_claim_outlive_its_witnesses`
+demanded a 5x reach multiple, which only held while literacy ran to
+saturation. Capping it at the food surplus dropped it to 3.4x and
+the check failed — correctly. Headcount was never the point: the
+claim is about *outliving*, so it now measures across generations.
+179 people once, against 377 readers in each of 10 generations.
+
+**That is a real gap in the verification, now named.** Fingerprint-
+gated claims cover claimed numbers. A module check that no claim
+depends on can rot silently, and 550 checks exist against 81
+claims. Transcription is the full sweep; it is run deliberately
+rather than on every change, and it is the only thing that looks at
+all of them.
+
+    novelty 4/4   ecology 5/5   power 5/5   lineage 7/7
+    55 links, 47 derived, 7 forced, 1 crossing, 0 gaps
+    81 claims reproduce; 550 of 550 rules hold across 90 modules

@@ -186,7 +186,7 @@ def check():
     t("every_death_cause_is_an_existing_rule", _causes)
     t("competition_is_the_only_compounding_cost", _compound)
     t("what_many_species_do_that_one_could_not", _many)
-    t("competition_prevents_the_collapse", _nocollapse)
+    t("competition_makes_a_range_not_a_size", _nocollapse)
     t("bodies_are_made_of_atoms_that_return", _matter)
     return all(o[1] for o in out), out
 
@@ -249,25 +249,43 @@ def _many():
 
 
 def _nocollapse():
-    """The direct comparison against one lineage."""
+    """Direct comparison against one lineage.
+
+    RESTATED at 3.1.115. This check used to assert that
+    competition PREVENTS a size collapse, and it was true when it
+    was written: engine/descent.py ran an unbounded fitness
+    objective and a solo lineage walked down to 0.1 micron.
+    That bug was fixed at its source by giving descent the
+    1.58-micron closure floor from engine/earthlab.py, and a solo
+    lineage now holds at 1.76. There is no collapse left to
+    prevent, so the old claim is false and is not patched -- it is
+    replaced by what the run actually shows, which is the
+    opposite direction and more interesting.
+    """
     from engine.descent import run as solo
     alone = solo(generations=600, population=150)[-1]["median_radius_m"]
     many = _r()[-1]["median_um"] * 1e-6
-    if many <= alone * 2:
-        raise ArithmeticError(f"competition did not prevent the "
-                              f"collapse: {alone*1e6:.2f} alone, "
-                              f"{many*1e6:.2f} with rivals")
     spread = _r()[-1]["spread"]
+    if many >= alone:
+        raise ArithmeticError(f"competition raised the median: "
+                              f"{alone*1e6:.2f} alone, "
+                              f"{many*1e6:.2f} with rivals")
+    if spread < 5:
+        raise ArithmeticError(f"no range to speak of: {spread:.1f}x")
     d = _r()[-1]["deaths"]
-    return (f"one lineage collapses to {alone*1e6:.2f} microns. With "
-            f"rivals the median holds at {many*1e6:.2f} -- "
-            f"{many/alone:.0f}x -- and species span {spread:.0f}x from "
-            f"smallest to largest. Competition does NOT drive size up; "
-            f"it stops the collapse and keeps a range alive, because "
-            f"the smallest niche is the most crowded. Almost every "
-            f"death is 'crowded out' ({d.get('crowded out', 0)}), "
-            f"which is the compounding cost doing the work that a "
-            f"bounded one could not")
+    return (f"one lineage on its own settles at {alone*1e6:.2f} "
+            f"microns, held there by the closure floor. Add rivals "
+            f"and the median goes DOWN to {many*1e6:.2f} -- "
+            f"competition does not drive size up and it does not "
+            f"hold it up either. What it produces is a RANGE: "
+            f"species span {spread:.0f}x smallest to largest, and "
+            f"the median sits low because the smallest niche is the "
+            f"most crowded and the cheapest to occupy. Almost every "
+            f"death is 'crowded out' ({d.get('crowded out', 0)}). "
+            f"The earlier version of this rule said competition "
+            f"prevented a collapse; the collapse was a bug in "
+            f"engine/descent.py and fixing it there left this rule "
+            f"asserting something no longer true")
 
 
 if __name__ == "__main__":

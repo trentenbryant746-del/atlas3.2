@@ -276,6 +276,16 @@ def _capital():
             round(mean / med, 2), round(ratio, 1))
 
 
+def _novelty():
+    from engine.novelty import (multiple, team_size, novel_fraction,
+                                VILLAGE)
+    per, tot = multiple(VILLAGE, 40 * VILLAGE)
+    return (round(per, 2), round(tot), round(team_size(VILLAGE), 1),
+            round(team_size(40 * VILLAGE), 1),
+            round(100 * novel_fraction(), 1),
+            round(100 * novel_fraction(1e-9), 3))
+
+
 def _bandsize():
     from engine.group import (best_size, contests_all_pairs,
                               contests_transitive, spare_per_head,
@@ -732,6 +742,8 @@ CLAIMS = [
      _malthus, (0.372, 0.072, -0.128, 0.372, 23.5, 29.4), CURRENT),
     ("3.1.114", "24% of possible specialists are priced out by their tools",
      _capital, (1177, 368, 24, 1.33, 14.0), CURRENT),
+    ("3.1.115", "novelty per head falls to 0.80 while the total rises 32x",
+     _novelty, (0.8, 32, 21.5, 26.8, 99.7, 0.032), CURRENT),
     ("3.1.107", "the derived group is 3; transitivity saves 10x on contests",
      _bandsize, (3, 10, 0.0, 0.02), CURRENT),
     ("3.1.106", "a microbe needs 6 to adapt yearly, a human 40,792",
@@ -758,8 +770,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.114", "Big Bang to a head in 54 links: 46 derived, 7 forced, 0 gaps",
-     _wholechain, (54, 46, 7, 0, 1), CURRENT),
+    ("3.1.115", "Big Bang to a head in 55 links: 47 derived, 7 forced, 0 gaps",
+     _wholechain, (55, 47, 7, 0, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -868,6 +880,17 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.1.68", "competition prevents the size collapse, 1.76 vs 0.64",
+     "TRUE WHEN WRITTEN and false now, through no fault of its own. "
+     "engine/descent.py ran an unbounded fitness objective and a "
+     "solo lineage walked down to 0.1 micron; competition looked "
+     "like the thing holding size up. That bug was fixed at source "
+     "with the 1.58-micron closure floor from engine/earthlab.py, "
+     "so a solo lineage now settles at 1.76 and there is no "
+     "collapse to prevent. Competition in fact takes the median "
+     "DOWN to 0.64 and what it produces is a RANGE, 5x+ across "
+     "species. Found by transcription, not by a claim -- nothing "
+     "was watching this rule"),
     ("3.1.113", "per-capita surplus scales as N^-0.628, the loop cannot escape",
      "WRONG, and wrong by my arithmetic rather than by the world. "
      "The exponent subtracted mouths at N^1 from two terms that "

@@ -538,7 +538,25 @@ def inside_the_head():
          "better off' is a sentence no individual satisfies -- a "
          "few are near 14x, most are at or below the median. Every "
          "per-head number on this chain is the first moment of a "
-         "skewed distribution and is not to be quoted alone")
+         "skewed distribution and is not to be quoted alone"),
+        ("more that is known", "less that is new, and more of it",
+         DERIVED, "novelty.multiple",
+         "designs are 2^s and s is log2(corpus), so the exponent "
+         "and the logarithm cancel and the space to be new in is "
+         "LINEAR in population -- used up by being found, added to "
+         "by people arriving, neither winning. The steady state "
+         "depends on the GROWTH rate and not the size: a "
+         "population that has stopped growing exhausts its design "
+         "space however large it is. But exhaustion is NOT what "
+         "makes novelty per head fall here -- at 3,244 designs a "
+         "head, 99.7% of trials still land on something new. The "
+         "fall is the TEAM. A design of p parts needs p people who "
+         "between them hold p crafts, and p is a logarithm of what "
+         "is already known, so 912 -> 36,480 takes novelty per "
+         "head to 0.80 while novel designs in total rise 32x. Each "
+         "person invents 20% less and the world gets 32x more, "
+         "both at once. It falls because knowing enough to add to "
+         "it costs more, not because there is less left")
     ]
 
 

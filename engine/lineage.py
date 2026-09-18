@@ -74,11 +74,21 @@ def before_luca():
          f"closure needs {1e6*floor:.2f} microns to hold the molecule "
          f"types and diffusion allows {1e6*roof:.1f}; the window is "
          f"two rules meeting, not one measurement"),
-        ("a cell that could be", "a cell that is", MISSING,
-         "nothing produces one",
-         "every gate opens and no rule makes the thing. Permission is "
-         "not occurrence, and the distance between them is not "
-         "measured anywhere here"),
+        ("a cell that could be", "chemistry that sustains itself",
+         DERIVED, "occurrence.closes_in_one",
+         "the gate said yes or no and occurrence needed a rate. One "
+         "compartment at the closure floor holds 1e10 molecules, "
+         "which is every polymer to 14 bases, and p*M = 3.58 against "
+         "the 0.48 closure needs -- at the MEASURED catalysis of "
+         "1e-8. An ocean is 8.1e34 such compartments"),
+        ("self-sustaining chemistry", "a cell that is", MISSING,
+         "nothing copies, divides or selects",
+         "a closed network sustains itself and that is one of four "
+         "things. It is not heredity, nothing copies a sequence "
+         "forward; not a boundary that divides, so no lineage; not "
+         "descent, so nothing selects. The gap moved rather than "
+         "closed, and it is now three named absences instead of one "
+         "unmeasured one"),
     ]
 
 

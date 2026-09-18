@@ -24,6 +24,7 @@ result. What is not allowed is leaving it.
 from __future__ import annotations
 
 import sys
+import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -151,6 +152,15 @@ def _generated():
         n *= len(v)
     got = ask(in_band=True, brine_liquid=True, can_shed_heat=True)
     return len(rows) == n, len(rows), len(got)
+
+
+def _occurs():
+    from engine.occurrence import closes_in_one, compartments, types_up_to
+    from engine.earthlab import CATALYSIS_P
+    ok, pm, L = closes_in_one()
+    cross = next(n for n in range(8, 20)
+                 if CATALYSIS_P * types_up_to(n) >= 0.481)
+    return ok, L, cross, round(math.log10(compartments()))
 
 
 def _wholechain():
@@ -474,8 +484,10 @@ def _save_ledger(d):
 CLAIMS = [
     ("3.1.92", "10,584 universes generated blind; 864 pass three filters",
      _generated, (True, 10584, 864), CURRENT),
-    ("3.1.95", "nebula to a head in 19 links: 9 derived, 2 gaps, 1 crossing",
-     _wholechain, (19, 9, 2, 1), CURRENT),
+    ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
+     _occurs, (True, 14, 13, 35), CURRENT),
+    ("3.1.95", "nebula to a head in 20 links: 10 derived, 2 gaps, 1 crossing",
+     _wholechain, (20, 10, 2, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

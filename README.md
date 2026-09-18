@@ -5898,3 +5898,46 @@ every body size. A field holds few large animals and many small ones,
 and nothing chose that; Kleiber did.
 
     lineage 6/6    53 claims reproduce
+
+### 3.1.96 — permission was not occurrence, and the distance was arithmetic
+
+`engine/lineage.py` marked one link MISSING: every gate opens and
+nothing makes a cell. The gap was real and also **unmeasured**, which
+is a different failing. A gate answers yes or no; occurrence needs a
+rate, and nobody had multiplied the three numbers that turn one into
+the other.
+
+**One word was carrying the whole question.** `p·M = 0.481` is about
+molecule **types**, and it had been read as molecules.
+
+    up to 12 bases    22,369,620 types    p*M = 0.224
+    up to 13 bases    89,478,484          p*M = 0.895   <- closes
+    up to 14 bases   357,913,940          p*M = 3.579
+
+A compartment at the closure floor — **1.58 µm**, which `earthlab`
+derives from how many molecule types must sit together to catalyse
+their own repair — holds **1.0×10¹⁰ molecules** at crowded
+concentration. Seeing every polymer up to 14 bases takes 7.1×10⁹
+draws by coupon collector, so **one compartment contains all of
+them.** That is p·M = **3.58** against the 0.48 closure needs — at the
+**measured** catalysis of 10⁻⁸, not an improved one.
+
+**And an ocean is 8.1×10³⁴ such compartments.** The gap does not close
+narrowly.
+
+### the gap moved rather than vanished
+
+    DERIVED  a cell that could be        -> chemistry that sustains itself
+    MISSING  self-sustaining chemistry   -> a cell that is
+
+A closed reaction network is **one of four things.** It is not
+heredity — nothing copies a sequence forward. It is not a boundary
+that divides, so there is no lineage. It is not descent, so nothing
+selects. Calling it *a cell* would be the same error as calling an
+open gate an occurrence.
+
+What closed is the first of four. The other three are now three named
+absences in place of one unmeasured one, which is the whole of the
+progress.
+
+    occurrence 5/5    lineage 20 links, 10 derived    54 claims

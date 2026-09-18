@@ -1,14 +1,19 @@
-Subject: Tests caught 6 of 25 faults. Is that known?
+Subject: The test code failed as often as the code it tested. Is that known?
 
 
 Dear Professor ——,
 
-I'm an independent developer with no university affiliation. I have a
-small dataset I can't evaluate alone.
+I have a number I can't interpret and no colleagues to ask.
 
-Building a scientific codebase under the rule that every result carries
-a check that would catch it being wrong, I ended up recording 25 faults,
-each annotated with the mechanism that caught it:
+I build a rule-based physical model — planetary formation, nuclear
+binding energies, atmospheric radiative transfer, prebiotic chemistry.
+107 modules, 406 self-checks, 47 published numeric results; it's the
+third iteration of the same system. The governing rule is that every
+result must carry a check that would catch it being wrong.
+
+Working that way produced something I didn't set out to make: 25
+faults, each annotated in source with its cause AND with the mechanism
+that caught it.
 
     deriving something previously asserted        7
     faults in the verification machinery itself   7
@@ -16,22 +21,32 @@ each annotated with the mechanism that caught it:
     comparison against an external known value    4
     cross-referencing an earlier release          1
 
-Tests caught 6 of 25. The largest category needed someone to re-derive
-a quantity that had been typed in — work no test performs, because the
-code was self-consistent and everything passed. And the checking
-apparatus failed at about the rate of the code it checks, 7 against 18.
+Two things in that distribution I can't account for.
 
-The data exists because of a convention, not a tool: when a check's
-premise turns out false, it is flipped and kept with its history rather
-than deleted. Deleting is normal, and would have erased nine data
-points.
+TESTS CAUGHT 6 OF 25. The largest category needed someone to re-derive
+a quantity that had been typed in by hand. No test finds those — the
+code was self-consistent and every check passed.
 
-Is a fault corpus annotated by catching-mechanism useful to anyone, or
-does this already exist? Defects4J and BugSwarm are mined from version
-control, which gives the fix but rarely what surfaced it.
+THE VERIFICATION CODE FAILED AT ABOUT THE RATE OF THE CODE IT
+VERIFIES, 7 against 18. I have not found that quantified anywhere, and
+I would not have guessed parity.
 
-Corpus and a six-page write-up attached; the corpus is the part worth
-your time. Happy to be told it's a solved problem.
+For texture, one entry: a rule forbidding duplicate constant
+definitions caught its own author twice, within minutes of being
+written.
+
+The data exists because of a convention rather than a tool. When a
+check's premise turns out false, the check is flipped and kept with
+its history instead of deleted — nine of those so far. Deleting is the
+normal move, and it would have erased nine data points.
+
+My question is simple: does a fault corpus annotated by
+catching-mechanism already exist? Defects4J and BugSwarm are mined
+from version control, which gives the fix but rarely what surfaced it.
+
+I'm an independent developer with no university affiliation. The
+corpus and a six-page write-up are attached — the corpus is the part
+worth your time, and I'd be glad to be told this is a solved problem.
 
 Trenten Bryant
 github.com/trentenbryant746-del/atlas3.1

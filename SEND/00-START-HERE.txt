@@ -27,8 +27,30 @@ targeting.txt      Who to send to, and what not to say.
 
 THE ONE-LINE VERSION
 --------------------
-"I recorded 25 faults from a scientific codebase with the mechanism
-that caught each one. Tests caught 6 of 25. Is that known?"
+"I recorded 25 faults from a physics codebase with the mechanism that
+caught each one. The test code failed about as often as the code it
+tested. Is that known?"
+
+
+WHY THE EMAIL SAYS WHAT IT SAYS
+-------------------------------
+The subject line is the hook: every person who has written test code
+has wondered whether their tests are as buggy as their code, and
+nobody has a number. That sentence is the reason to open the mail.
+
+The second paragraph says what the software IS -- planetary formation,
+nuclear binding, radiative transfer, prebiotic chemistry. An earlier
+draft said only "a scientific codebase," which could be anything, and
+a reader cannot judge whether 25 faults are representative of anything
+without knowing the domain.
+
+"Third iteration of the same system" is accurate and checkable: Atlas
+1 and Atlas 2 both exist, Atlas 2 with 51 engine modules against this
+one's 107. It conveys that the work has history WITHOUT claiming a
+duration. Do not add one.
+
+The duplicate-constant example is there because one concrete, slightly
+funny fault makes the corpus real in a way a table cannot.
 
 
 BEFORE YOU SEND — three checks

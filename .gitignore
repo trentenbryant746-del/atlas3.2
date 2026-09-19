@@ -22,3 +22,9 @@ data/qwen/route-events.jsonl
 fast/build/
 fast/*.so
 fast/*.c
+
+# Generated and enormous. tools/encyclopedia.py rebuilds both in
+# under two minutes; 88 MB of derived text does not belong in a
+# repository whose engine is 1.6 MB.
+paper/tools.md
+paper/tools.html

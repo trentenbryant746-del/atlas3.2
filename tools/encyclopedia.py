@@ -21,8 +21,19 @@ dropped: inferring it from what a band managed next is a
 spurious correlation, because a band that builds anything goes
 on to manage other things regardless.
 
-    python3 -m tools.encyclopedia            -> paper/tools.md
-    python3 -m tools.encyclopedia --html     -> and the html
+    python3 -m tools.encyclopedia              everything
+    python3 -m tools.encyclopedia --limit 400  a readable slice
+    python3 -m tools.encyclopedia --html       and the html
+
+A SIZE WARNING, learned the hard way. Uncapping compound length
+at 3.2.21 took the artifact count from 6,715 to 31,016, and
+adding build orders at 3.2.24 took each entry to about forty
+lines. The full file is 1.5 million lines and 88 MB, which was
+committed before anybody looked at it. It is generated, so it
+is no longer tracked; regenerate it in under two minutes.
+
+--limit takes the first N by the order the gates allowed them,
+which is the readable end.
 """
 
 import sys
@@ -34,7 +45,7 @@ OUT = ROOT / "paper" / "tools.md"
 YEARS = 14000.0
 
 
-def build():
+def build(limit=None):
     from engine.world import (run, describe, spec, their_entry,
                               words_for, drawing_table, render_spec,
                               build_order, motive_source)
@@ -44,20 +55,25 @@ def build():
     arts = sorted(w.artifacts(),
                   key=lambda c: (spec(c, w)["first built"] or (0, 0),
                                  len(c), sorted(c)))
+    total = len(arts)
+    if limit:
+        arts = arts[:limit]
     named = w.named()
 
     L = ["# The tools of one world", "",
          f"Generated {time.strftime('%Y-%m-%d')} from a run of "
          f"engine/world.py: {len(w.bands)} bands over "
          f"{w.year:.0f} years, {len(w.ledger):,} ledger entries, "
-         f"{len(arts):,} distinct things built.", "",
+         f"{total:,} distinct things built"
+         + (f", of which the first {len(arts):,} are shown."
+            if limit else "."), "",
          "Nobody in this world can read the rules. Bands hold "
          "crafts, try combinations of what they already have, and "
          "find out about the gates by failing at them. Three "
          "gates decide everything: how hot a fire they can raise, "
          "how cold they can get, and how finely they can place "
          "matter. None of the three is visible to them.", "",
-         f"Of the {len(arts):,} things here, {len(named)} have a "
+         f"Of the {total:,} things built, {len(named)} have a "
          f"name in our world and {len(arts) - len(named):,} do "
          f"not. The unnamed ones are not errors. They are "
          f"combinations this world's physics permits that ours "
@@ -204,7 +220,10 @@ def build():
 
 
 if __name__ == "__main__":
-    text = build()
+    lim = None
+    if "--limit" in sys.argv:
+        lim = int(sys.argv[sys.argv.index("--limit") + 1])
+    text = build(lim)
     OUT.write_text(text)
     print(f"  {OUT.relative_to(ROOT)}  {len(text):,} chars, "
           f"{len(text.splitlines()):,} lines")

@@ -481,7 +481,7 @@
 },
 "3.2.17|20 of 25 shapes are forced by what the part does": {
 "fp": "48eacb970f12d71c",
-"ok": false
+"ok": true
 },
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",

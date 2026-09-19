@@ -95,6 +95,36 @@ def sun_rgb(elevation_deg=50.0):
     return tuple(min(1.0, v / top) for v in out)
 
 
+SIGMA_SB = 5.670374419e-8        # W m^-2 K^-4, EXACT from the SI
+
+
+def sun_radius():
+    """m. DERIVED: L = 4 pi R^2 sigma T^4, solved for R.
+
+    Not looked up. The luminosity is in engine/constants.py and
+    the temperature comes out of engine/thermo.py, so the radius
+    is forced -- 6.957e8 m, which is the measured figure.
+    """
+    return math.sqrt(L_SUN_W
+                     / (4.0 * math.pi * SIGMA_SB * sun_temperature() ** 4))
+
+
+def sun_angular_diameter():
+    """rad. DERIVED: 2R/d. Comes out 0.533 degrees."""
+    return 2.0 * sun_radius() / AU_M
+
+
+def penumbra_width(distance_m):
+    """m. How soft a shadow edge is at that distance. DERIVED.
+
+    The Sun is not a point, so an edge does not cut sharply.
+    The half-shadow spreads by the angular diameter times the
+    distance from whatever cast it, which is why a shadow is
+    crisp at your feet and vague at the far end.
+    """
+    return distance_m * sun_angular_diameter()
+
+
 def shadow_length(height_m, elevation_deg):
     """How far the shadow reaches. DERIVED: h / tan(elevation)."""
     return height_m / math.tan(math.radians(max(elevation_deg, 0.5)))
@@ -129,6 +159,7 @@ def check():
     t("the_light_was_here_all_along", _light)
     t("the_sky_and_the_red_sun_are_one_mechanism", _sky)
     t("a_shadow_is_trigonometry_on_a_published_dimension", _shadow)
+    t("the_sun_is_not_a_point_so_no_edge_is_sharp", _penumbra)
     t("INVERTED_the_envelope_is_real_and_the_box_is_a_choice", _box)
     return all(x for _, x, _ in res), res
 
@@ -202,6 +233,25 @@ def _box():
             f"hidden in a renderer. This check fails if an "
             f"artifact ever acquires a geometry that was not "
             f"computed from its parts")
+
+
+def _penumbra():
+    r, a = sun_radius(), sun_angular_diameter()
+    if not (6.8e8 < r < 7.1e8):
+        raise ArithmeticError(f"{r}")
+    return (f"the Sun's radius is not looked up here. L = 4 pi "
+            f"R^2 sigma T^4 with the luminosity from "
+            f"engine/constants.py and the temperature from "
+            f"engine/thermo.py forces R = {r:.3e} m, which is the "
+            f"measured value, and 2R/d makes the disc "
+            f"{math.degrees(a):.3f} degrees across against a "
+            f"measured 0.533. So the Sun is NOT A POINT and no "
+            f"shadow edge is sharp: the half-shadow spreads "
+            f"{1000*penumbra_width(1.0):.1f} mm per metre from "
+            f"whatever cast it, which is {1000*penumbra_width(0.1):.1f} "
+            f"mm at your feet and {1000*penumbra_width(2.5):.0f} mm "
+            f"at the far end of a shadow. A render with hard edges "
+            f"is wrong about the Sun, not stylised")
 
 
 if __name__ == "__main__":

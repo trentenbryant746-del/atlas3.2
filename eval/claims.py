@@ -452,12 +452,16 @@ def _image():
 def _scene():
     from engine.scene import (solar_constant, peak_wavelength_nm,
                               sky_rgb, sun_rgb, shadow_length,
-                              contrast)
+                              contrast, sun_radius,
+                              sun_angular_diameter, penumbra_width)
     return (round(solar_constant()), round(peak_wavelength_nm()),
             round(sky_rgb(50)[2] / sky_rgb(50)[0], 1),
             round(sun_rgb(3)[0] / sun_rgb(3)[2], 1),
             round(shadow_length(0.2, 3) / shadow_length(0.2, 60), 1),
-            round(contrast(), 1))
+            round(contrast(), 1),
+            round(sun_radius() / 1e8, 3),
+            round(math.degrees(sun_angular_diameter()), 3),
+            round(1000 * penumbra_width(1.0), 1))
 
 
 def _levers():
@@ -931,8 +935,8 @@ CLAIMS = [
      _artifact, (25, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
-    ("3.2.15", "1361 W/m2 and 502 nm fall out; one law gives blue sky and red sun",
-     _scene, (1361, 502, 4.9, 45.8, 33.0, 6.1), CURRENT),
+    ("3.2.15", "1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T",
+     _scene, (1361, 502, 4.9, 45.8, 33.0, 6.1, 6.957, 0.533, 9.3), CURRENT),
     ("3.2.14", "a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x",
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",

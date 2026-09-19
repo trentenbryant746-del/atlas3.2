@@ -456,7 +456,7 @@
 "ok": true
 },
 "3.2.12|Big Bang to heat death in 74 links: 65 derived, 1 gap": {
-"fp": "c56c496511968bf3",
+"fp": "5fe4d752b8729d12",
 "ok": true
 },
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
@@ -469,6 +469,10 @@
 },
 "3.2.15|1361 W/m2 and 502 nm fall out; one law gives blue sky and red sun": {
 "fp": "82bd644f06086495",
+"ok": true
+},
+"3.2.15|1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T": {
+"fp": "0fe60d082fee96dd",
 "ok": true
 },
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {

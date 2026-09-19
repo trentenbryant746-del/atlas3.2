@@ -678,7 +678,15 @@ def inside_the_head():
          "sky. What remains underivable is the SHAPE of a thing: "
          "the envelope is real and published, a box is the "
          "simplest solid with those extents, and the choice is "
-         "stated rather than hidden in a renderer"),
+         "stated rather than hidden in a renderer. One more "
+         "thing falls out and it is not cosmetic: the Sun's "
+         "RADIUS is forced too, since L = 4 pi R^2 sigma T^4 "
+         "solves to 6.957e8 m, the measured figure, and 2R/d "
+         "makes the disc 0.533 degrees across. So the Sun is not "
+         "a point and NO SHADOW EDGE IS SHARP -- the half-shadow "
+         "spreads 9.3 mm per metre from whatever cast it. A "
+         "render with hard edges is not stylised, it is wrong "
+         "about the size of the Sun"),
         ("a surface that keeps light", "a reason to throw most of it away",
          DERIVED, "image.over_resolution",
          "their plate has a one-micron grain, so it holds 100,000 "

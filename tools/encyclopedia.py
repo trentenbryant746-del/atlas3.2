@@ -36,7 +36,7 @@ YEARS = 14000.0
 
 def build():
     from engine.world import (run, describe, spec, their_entry,
-                              words_for, drawing_table)
+                              words_for, drawing_table, render_spec)
     from engine.artifact import (PRIMITIVES, bootstrap, held_by_round,
                                  tolerance, coldness, bohr_radius)
     w = run(YEARS)
@@ -110,7 +110,17 @@ def build():
           "true to a quarter wavelength and nobody ever gauged "
           "one. A part marked *gauge* has a number somebody must "
           "hit, and those are the parts that need a drawing at "
-          "all.", ""]
+          "all.", "",
+          "Below each drawing is the RENDER block: the exact "
+          "specification that produced the picture of that "
+          "thing. Solids, radii, heights, stacking order, "
+          "camera, sun angle and colour, sky, ground albedo, "
+          "shadow length and penumbra. Nothing in it is a "
+          "preference -- the solids are forced by what each part "
+          "does, the order is forced by gravity, and the light "
+          "is derived from a 5772 K Sun at one astronomical "
+          "unit. Hand the block to any renderer and it makes the "
+          "same object under the same sun.", ""]
     for c in arts:
         sheet = spec(c, w)
         _y, who = sheet["first built"] or (0, 0)
@@ -137,6 +147,33 @@ def build():
                  f"   finest work {d['finest work m']:.1e} m")
         L.append(f"envelope between {lo:.0e} and {hi:.0e} m"
                  f"   |   {d['gauged parts']} part(s) need gauging")
+        L.append("```")
+        L.append("")
+        r = render_spec(c)
+        L.append("```")
+        L.append(f"RENDER  {r['image'][0]}x{r['image'][1]} "
+                 f"{r['image'][2]}, metres, gamma {r['gamma']}")
+        for sol in r["solids"]:
+            L.append(f"  {sol['part']:<15}{sol['solid']:<10}"
+                     f"r={sol['radius']:<8.4f}"
+                     f"h={2*sol['half_height']:<8.4f}"
+                     f"y={sol['centre_y']:.4f}")
+        cam, sun, sky = r["camera"], r["sun"], r["sky"]
+        L.append(f"  height {r['total_height']:.4f} m   "
+                 f"widest r {r['widest_radius']:.4f} m   "
+                 f"form forced {100*r['form_forced']:.0f}%")
+        L.append(f"  camera eye {cam['eye']} look {cam['look_at']} "
+                 f"fov {cam['fov_deg']} deg")
+        L.append(f"  sun  el {sun['elevation_deg']} az "
+                 f"{sun['azimuth_deg']} disc "
+                 f"{sun['angular_diameter_deg']} deg  rgb "
+                 f"{sun['rgb']}  {sun['irradiance_w_m2']} W/m2")
+        L.append(f"  sky  rgb {sky['rgb']} ambient "
+                 f"{sky['ambient_fraction']}   ground albedo "
+                 f"{r['ground']['albedo']}, plane {r['ground']['plane']}")
+        L.append(f"  shadow {r['shadow']['length_m']:.4f} m, "
+                 f"penumbra {1000*r['shadow']['penumbra_per_m']:.1f} "
+                 f"mm per metre")
         L.append("```")
         L.append("")
     return "\n".join(L).rstrip() + "\n"

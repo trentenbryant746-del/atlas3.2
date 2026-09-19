@@ -263,6 +263,54 @@ def drawing_table(combo):
     }
 
 
+def render_spec(combo, elevation_deg=24.0):
+    """Everything needed to render this thing, exactly. DERIVED.
+
+    A complete specification: the solids its parts force, where
+    gravity stacks them, the camera, and the light. Hand this to
+    any renderer -- or anything that takes a scene description --
+    and it produces the same object under the same sun, because
+    nothing in it is a preference.
+    """
+    import math as _m
+    from engine.form import assemble, height, forced_fraction
+    from engine.scene import (sky_rgb, sun_rgb, shadow_length,
+                              penumbra_width, sun_angular_diameter,
+                              solar_constant, lit_fraction)
+    import tools.render as R
+
+    parts = assemble(combo)
+    h = height(combo)
+    return {
+        "image": (R.W, R.H, f"{R.SS}x{R.SS} supersampled"),
+        "units": "metres",
+        "solids": [
+            {"part": p[4], "solid": p[0], "radius": round(p[1], 4),
+             "half_height": round(p[2], 4), "centre_y": round(p[3], 4)}
+            for p in parts],
+        "total_height": round(h, 4),
+        "widest_radius": round(max(p[1] for p in parts), 4),
+        "form_forced": round(forced_fraction(combo), 3),
+        "camera": {"eye": R.CAM, "look_at": R.LOOK,
+                   "fov_deg": R.FOV_DEG},
+        "sun": {"elevation_deg": elevation_deg,
+                "azimuth_deg": R.AZIMUTH_DEG,
+                "angular_diameter_deg":
+                    round(_m.degrees(sun_angular_diameter()), 4),
+                "rgb": tuple(round(v, 4) for v in
+                             sun_rgb(elevation_deg)),
+                "irradiance_w_m2":
+                    round(solar_constant() * lit_fraction(elevation_deg))},
+        "sky": {"rgb": tuple(round(v, 4) for v in
+                             sky_rgb(elevation_deg)),
+                "ambient_fraction": 0.17},
+        "ground": {"albedo": 0.25, "plane": "y = 0"},
+        "shadow": {"length_m": round(shadow_length(h, elevation_deg), 4),
+                   "penumbra_per_m": round(penumbra_width(1.0), 5)},
+        "gamma": 2.2,
+    }
+
+
 def their_entry(combo, band_id, world=None):
     """The entry as THEY would write it, in their words. DERIVED."""
     w = world or run()

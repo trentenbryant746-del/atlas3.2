@@ -116,6 +116,55 @@ COLD_NEEDED = {
     "placement": 4.0,
 }
 
+# A TOLERANCE HAS TO BE A TOLERANCE ON SOMETHING, and until now
+# these were relative numbers floating free of any dimension.
+# Giving each craft a characteristic size lets the tolerance be
+# checked against what the physics actually demands, and three
+# of them came out wrong when it was.
+#
+# The worst was optics. A lens surface must be true to about a
+# quarter wavelength -- 138 nm on a 50 mm lens, which is 2.7e-6
+# relative, not the 1e-2 that was here. Four orders out.
+#
+# The resolution is a real distinction that this file did not
+# have: some accuracy is MEASURED and some is PROCESSED. You
+# cannot machine a lens to a quarter wave, and nobody ever did.
+# You grind two surfaces against each other and they conform,
+# because a sphere is the only shape that slides on itself in
+# every orientation. The accuracy is produced by the method and
+# nobody gauges it. Three flats lapped in rotation give a plane
+# the same way, and a hobbed gear generates its own involute.
+#
+# So the ladder in TOL_NEEDED is what you must MEASURE. A craft
+# whose accuracy comes out of its process needs no drawing and
+# no instrument, which is why lenses precede micrometers.
+DIMENSION_M = {
+    "lever": 1.0, "cordage": 1.0, "edge": 0.1, "heat": 0.3,
+    "containment": 0.2, "rotation": 0.1, "mark": 0.01,
+    "breeding": 1.0, "smelting": 0.3, "gearing": 0.05,
+    "optics": 0.05, "spring": 0.1, "pressure": 0.3,
+    "steam": 0.5, "regulation": 0.05, "electricity": 0.1,
+    "vacuum": 0.2, "alloy": 0.05, "semiconductor": 1e-3,
+    "switching": 1e-5, "inference": 1e-6,
+    "superconduction": 0.01, "coherence": 1e-5, "placement": 1e-9,
+}
+
+# What the physics demands, in metres, where it is known. Set
+# against DIMENSION_M x TOL_NEEDED this says whether a craft can
+# be gauged or must be self-generated.
+ABSOLUTE_NEEDED_M = {
+    "gearing": 1e-4,        # tooth pitch must match to mesh
+    "optics": 1.4e-7,       # a quarter of 550 nm
+    "pressure": 1e-4,       # wall thickness, hoop stress
+    "switching": 1e-8,
+    "placement": 5.3e-11,   # the Bohr radius
+}
+
+# Crafts whose accuracy is produced by the method rather than
+# gauged: lapping, three-plate flats, hobbing. These are the
+# ones that arrive before the instrument that could measure them.
+SELF_FIGURING = {"optics", "gearing", "rotation"}
+
 BASE_TOL = 1e-1
 # These were wrong on the first pass and the bootstrap DEADLOCKED,
 # which is the right failure. Gearing was set at 1e-2 and the only
@@ -192,6 +241,30 @@ def temperature(held):
         if set(needs) <= set(held):
             t += gain
     return t
+
+
+def gauged_precision(primitive):
+    """Absolute precision you must MEASURE, in metres. DERIVED."""
+    return (DIMENSION_M.get(primitive, 0.1)
+            * TOL_NEEDED.get(primitive, BASE_TOL))
+
+
+def demanded_precision(primitive):
+    """What the physics needs, where that is known. RECORDED."""
+    return ABSOLUTE_NEEDED_M.get(primitive)
+
+
+def self_figuring(primitive):
+    """Does the process produce the accuracy? DERIVED-ish."""
+    return primitive in SELF_FIGURING
+
+
+def needs_gauging(primitive):
+    """Must somebody measure it to hit it? DERIVED."""
+    want = demanded_precision(primitive)
+    if want is None:
+        return False
+    return not self_figuring(primitive) and gauged_precision(primitive) > want
 
 
 def coldness(held):

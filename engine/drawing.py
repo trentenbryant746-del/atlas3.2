@@ -30,7 +30,10 @@ The constraint is somewhere else, and there are two of them.
 import math
 
 from engine.artifact import (PRIMITIVES, TOL_NEEDED, BASE_TOL,
-                             bootstrap, held_by_round, tolerance)
+                             bootstrap, held_by_round, tolerance,
+                             DIMENSION_M, gauged_precision,
+                             demanded_precision, self_figuring,
+                             needs_gauging)
 from engine.tradition import TELL_SECONDS
 from engine.civ import SPEECH_BITS_S
 
@@ -57,6 +60,41 @@ def parts_per_telling(tol):
     return telling_bits() / bits_per_part(tol)
 
 
+def drawing_of(primitive):
+    """A dimensioned specification. DERIVED.
+
+    This is what a drawing actually carries: a size, how true it
+    must be held, and whether anybody has to measure that or the
+    process delivers it. Their geometry is ours -- a length is a
+    length and a circle is a circle -- so a drawing they make is
+    a drawing we can read, and none of that required telling
+    them a rule.
+    """
+    size = DIMENSION_M.get(primitive, 0.1)
+    return {
+        "size m": size,
+        "held to": TOL_NEEDED.get(primitive, BASE_TOL),
+        "that is m": gauged_precision(primitive),
+        "physics wants m": demanded_precision(primitive),
+        "self figuring": self_figuring(primitive),
+        "needs a drawing": needs_gauging(primitive),
+        "bits": bits_per_part(TOL_NEEDED.get(primitive, BASE_TOL)),
+    }
+
+
+def gauged_before_measurable(primitive):
+    """Does it arrive before anything could check it? DERIVED."""
+    want = demanded_precision(primitive)
+    if want is None:
+        return None
+    size = DIMENSION_M.get(primitive, 0.1)
+    for i, _t, got in bootstrap():
+        if primitive in got:
+            have = tolerance(held_by_round(i)) * size
+            return have > want
+    return None
+
+
 def sample_suffices(tol):
     """Can a maker copy the original by eye? DERIVED.
 
@@ -67,7 +105,16 @@ def sample_suffices(tol):
 
 
 def needs_a_drawing(primitive):
-    """Does this craft need a numbered spec to travel? DERIVED."""
+    """Does this craft need a numbered spec to travel? DERIVED.
+
+    Two conditions, and the second was missing before. A sample
+    must stop being enough, AND the accuracy must be one
+    somebody has to measure -- a lapped lens is true to a
+    quarter wave and nobody ever gauged it, because the process
+    makes the surface conform.
+    """
+    if self_figuring(primitive):
+        return False
     return not sample_suffices(TOL_NEEDED.get(primitive, BASE_TOL))
 
 
@@ -101,6 +148,8 @@ def check():
     t("REFUTED_a_drawing_exists_because_a_shape_is_large", _bits)
     t("a_drawing_is_needed_when_a_sample_stops_being_enough", _sample)
     t("a_projection_is_a_second_literacy_and_starts_as_slowly", _conv)
+    t("a_lapped_surface_beats_the_instrument_that_could_check_it", _lap)
+    t("one_craft_arrives_undergauged_and_nothing_saves_it", _boiler)
     return all(x for _, x, _ in res), res
 
 
@@ -156,6 +205,56 @@ def _conv():
             f"by a fast one, with nothing about the technique "
             f"changing in between. A drawing is a second literacy "
             f"and it starts as slowly as the first")
+
+
+def _lap():
+    early = [p for p in PRIMITIVES if gauged_before_measurable(p)]
+    d = drawing_of("optics")
+    if "optics" not in early:
+        raise ArithmeticError(f"{early}")
+    return (f"a lens must be true to {d['physics wants m']:.1e} m, "
+            f"a quarter of a wavelength, and the best gauging "
+            f"available when it arrives is "
+            f"{d['that is m']:.1e} m -- three and a half orders "
+            f"short. Nobody ever machined a lens to a quarter "
+            f"wave. You grind two surfaces against each other "
+            f"and they conform, because a sphere is the only "
+            f"shape that slides on itself in every orientation, "
+            f"and the accuracy comes out of the METHOD with "
+            f"nobody measuring anything. Three flats lapped in "
+            f"rotation give a plane the same way and a hobbed "
+            f"gear generates its own involute. "
+            f"{len(early)} crafts here arrive before any "
+            f"instrument could check them: {sorted(early)}. That "
+            f"is why lenses precede micrometers rather than "
+            f"waiting for them, and it is why these need no "
+            f"drawing -- a drawing carries a number somebody has "
+            f"to hit, and there is no number here")
+
+
+def _boiler():
+    early = [p for p in PRIMITIVES if gauged_before_measurable(p)]
+    stuck = [p for p in early if not self_figuring(p)]
+    if not stuck:
+        raise ArithmeticError("every early craft is self-figuring")
+    p0 = stuck[0]
+    d = drawing_of(p0)
+    short = d["that is m"] / d["physics wants m"]
+    return (f"two crafts arrive before anything can check them "
+            f"and only one of them is rescued by its process. "
+            f"{sorted(early)} arrive early; {sorted(stuck)} is "
+            f"not self-figuring, so nothing makes up the "
+            f"difference. A vessel at {d['size m']:.1f} m gauged "
+            f"to {d['that is m']:.0e} m against a wall thickness "
+            f"the hoop stress wants held to "
+            f"{d['physics wants m']:.0e} -- {short:.0f}x too "
+            f"coarse, with no lapping trick available because a "
+            f"wall does not grind itself against anything. A "
+            f"craft in that position is not merely imprecise, it "
+            f"is DANGEROUS, and the model says so before anybody "
+            f"mentions that early boilers exploded. It is the "
+            f"one place in the tree where a thing can be built "
+            f"and cannot be verified")
 
 
 if __name__ == "__main__":

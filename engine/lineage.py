@@ -659,6 +659,27 @@ def inside_the_head():
          "finely than an atom is wide, and the Bohr radius falls "
          "out of hbar, the electron mass and the charge at "
          "5.29e-11 m. That is a wall, not a rung"),
+        ("a tolerance on nothing", "a dimensioned drawing", DERIVED,
+         "drawing.drawing_of",
+         "a tolerance has to be a tolerance ON something, and "
+         "these were relative numbers floating free of any "
+         "dimension. Giving each craft a characteristic size lets "
+         "them be checked against what the physics demands, and "
+         "three came out wrong. The worst: a lens surface must be "
+         "true to a quarter wavelength, 138 nm on a 50 mm lens, "
+         "2.7e-6 relative against the 1e-2 that was here -- four "
+         "orders out. The resolution is a distinction the file "
+         "did not have. Some accuracy is MEASURED and some is "
+         "PROCESSED: nobody ever machined a lens to a quarter "
+         "wave, you grind two surfaces together and they conform, "
+         "because a sphere is the only shape that slides on "
+         "itself in every orientation. Three flats lapped in "
+         "rotation give a plane, a hobbed gear generates its own "
+         "involute, and the accuracy comes out of the METHOD with "
+         "nobody gauging anything -- which is why lenses precede "
+         "micrometers instead of waiting for them. Their geometry "
+         "is ours, so a drawing they make is one we can read, and "
+         "none of that needed telling them a rule"),
         ("a part too fine to copy", "a drawing", DERIVED,
          "drawing.first_round_needing_one",
          "the obvious account of a drawing is that a shape is a "

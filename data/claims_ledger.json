@@ -172,7 +172,7 @@
 "ok": false
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "e37b1b200e5af01c",
+"fp": "93dd67fe9ed3bf88",
 "ok": true
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
@@ -481,6 +481,10 @@
 },
 "3.2.9|a nanometre spec is 90 bits: 130 fit in one telling": {
 "fp": "e74ac9f2379fb043",
+"ok": true
+},
+"3.2.9|a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders": {
+"fp": "7a327b5bbef1a15e",
 "ok": true
 }
 }

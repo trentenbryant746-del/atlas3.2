@@ -407,12 +407,16 @@ def _world():
 def _drawing():
     from engine.drawing import (bits_per_part, parts_per_telling,
                                 first_round_needing_one,
-                                needs_a_drawing)
+                                needs_a_drawing, drawing_of,
+                                gauged_before_measurable)
     from engine.artifact import PRIMITIVES
+    d = drawing_of("optics")
     return (round(bits_per_part(1e-9)),
             round(parts_per_telling(1e-9)),
             first_round_needing_one(),
-            sum(1 for p in PRIMITIVES if needs_a_drawing(p)))
+            sum(1 for p in PRIMITIVES if needs_a_drawing(p)),
+            round(math.log10(d["that is m"] / d["physics wants m"]), 1),
+            sum(1 for p in PRIMITIVES if gauged_before_measurable(p)))
 
 
 def _language():
@@ -898,8 +902,8 @@ CLAIMS = [
      _recorded, (37, 6, 3, 28), CURRENT),
     ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
      _language, (27, 39, 40, 2, 40), CURRENT),
-    ("3.2.9", "a nanometre spec is 90 bits: 130 fit in one telling",
-     _drawing, (90, 130, 5, 11), CURRENT),
+    ("3.2.9", "a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders",
+     _drawing, (90, 130, 5, 10, 3.6, 2), CURRENT),
     ("3.2.7", "a world that runs: 21 crafts by year 11,380, 4,334 unnamed things",
      _world, (40, 30319, 21, 21, 11380, 4352, 4334), CURRENT),
     ("3.2.5", "a name is worth 4,346 retrievals; audience explains what tellability did not",
@@ -949,7 +953,7 @@ CLAIMS = [
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
     ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (70, 61, 7, 1, 1), CURRENT),
+     _wholechain, (71, 62, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

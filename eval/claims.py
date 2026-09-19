@@ -908,7 +908,7 @@ CLAIMS = [
     ("3.1.115", "novelty per head falls to 0.80 while the total rises 32x",
      _novelty, (0.8, 32, 21.5, 26.8, 99.7, 0.032), CURRENT),
     ("3.1.117", "three gates: heat stops at 5, cold opens at 6, precision ends at the atom",
-     _artifact, (24, 11, 1750, 3, 5, 10, 10), CURRENT),
+     _artifact, (25, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
@@ -916,13 +916,13 @@ CLAIMS = [
     ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
      _language, (27, 39, 40, 2, 40), CURRENT),
     ("3.2.9", "a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders",
-     _drawing, (90, 130, 5, 10, 3.6, 2), CURRENT),
+     _drawing, (90, 130, 5, 11, 3.6, 2), CURRENT),
     ("3.2.7", "a world that runs: 21 crafts by year 11,380, 4,334 unnamed things",
      _world, (40, 30319, 21, 21, 11380, 4352, 4334), CURRENT),
     ("3.2.5", "a name is worth 4,346 retrievals; audience explains what tellability did not",
-     _naming, (4346, 5, 100, -0.4, 24, 50, 12.4), CURRENT),
-    ("3.2.4", "regulation tops the leverage ranking; a tool beats a fact 1.2e8:1",
-     _standing, ("regulation", 16, "mark", 10, 8.07, 2, 8), CURRENT),
+     _naming, (4346, 5, 100, -0.42, 25, 50, 12.4), CURRENT),
+    ("3.2.4", "regulation tops the ranking; optics takes second once depiction rests on it",
+     _standing, ("regulation", 16, "optics", 12, 8.07, 2, 8), CURRENT),
     ("3.2.2", "Aristarchus reproduced forward: 87 deg gives 19.1, no answer key",
      _exam, (19.1, 611, 6, 2, 6, 8, 8, 5, 415.6), CURRENT),
     ("3.2.1", "302 constants, 5 with two homes, 3 frozen copies tracked",
@@ -965,8 +965,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.1.118", "Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps",
-     _wholechain, (71, 62, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 72 links: 63 derived, 1 gap",
+     _wholechain, (72, 63, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -1075,6 +1075,11 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.2.4", "mark is second in the leverage ranking at 10",
+     "optics at 12, once engine/depiction.py added a craft that "
+     "rests on it. The ranking counts what depends on a thing, so "
+     "anything added downstream of optics moves it -- the ranking "
+     "working rather than drifting. regulation still tops it"),
     ("3.1.119", "the rules compress 36 million to one",
      "35 million, not 36. VILLAGE was the literal 912 in two "
      "modules and is 912.5 computed -- a rounding frozen into a "

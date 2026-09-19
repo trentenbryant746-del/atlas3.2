@@ -165,7 +165,7 @@
 },
 "3.1.117|three gates: heat stops at 5, cold opens at 6, precision ends at the atom": {
 "fp": "75aa3451a34bdb78",
-"ok": false
+"ok": true
 },
 "3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
 "fp": "48649c09f4b5292d",
@@ -447,6 +447,10 @@
 "fp": "89a093c15757c4d7",
 "ok": true
 },
+"3.2.12|Big Bang to heat death in 72 links: 63 derived, 1 gap": {
+"fp": "bd22b694a32ec0bc",
+"ok": true
+},
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
 "fp": "610ea55c1b92bb90",
 "ok": true
@@ -471,9 +475,13 @@
 "fp": "5b776d015d8c42a4",
 "ok": false
 },
+"3.2.4|regulation tops the ranking; optics takes second once depiction rests on it": {
+"fp": "5b776d015d8c42a4",
+"ok": true
+},
 "3.2.5|a name is worth 4,346 retrievals; audience explains what tellability did not": {
 "fp": "f30c506d7df5fac0",
-"ok": false
+"ok": true
 },
 "3.2.5|a name is worth 4,346 retrievals; tellability refuted at r=-0.20": {
 "fp": "f640f2d68eb90082",
@@ -489,6 +497,6 @@
 },
 "3.2.9|a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders": {
 "fp": "578f4f297df21121",
-"ok": false
+"ok": true
 }
 }

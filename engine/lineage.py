@@ -659,6 +659,26 @@ def inside_the_head():
          "finely than an atom is wide, and the Bohr radius falls "
          "out of hbar, the electron mass and the charge at "
          "5.29e-11 m. That is a wall, not a rung"),
+        ("a claim that there was no light", "the light that was here",
+         DERIVED, "scene.solar_constant",
+         "3.2.14 said the world has no scene, and that was wrong "
+         "about this repository's own contents. engine/thermo.py "
+         "already had the Sun at 5772 K and engine/constants.py "
+         "its luminosity and orbit, so the solar constant is "
+         "L/(4 pi d^2) = 1361 W/m2 against a measured 1361, and "
+         "Wien puts the peak at 502 nm against a measured 502. "
+         "Neither was put in. Rayleigh scattering goes as "
+         "lambda^-4, which gives BOTH the blue sky -- what "
+         "scattered out, blue 4.9x red -- and the red low sun, "
+         "what went straight through, red 46x blue. One "
+         "subtraction seen from two directions. A shadow is "
+         "h/tan(elevation) on a height engine/drawing.py already "
+         "publishes, and lit-to-shadowed contrast is 6.1 to one "
+         "rather than infinite, because a shadow still sees the "
+         "sky. What remains underivable is the SHAPE of a thing: "
+         "the envelope is real and published, a box is the "
+         "simplest solid with those extents, and the choice is "
+         "stated rather than hidden in a renderer"),
         ("a surface that keeps light", "a reason to throw most of it away",
          DERIVED, "image.over_resolution",
          "their plate has a one-micron grain, so it holds 100,000 "

@@ -449,6 +449,17 @@ def _image():
             round(entropy_share(), 1))
 
 
+def _scene():
+    from engine.scene import (solar_constant, peak_wavelength_nm,
+                              sky_rgb, sun_rgb, shadow_length,
+                              contrast)
+    return (round(solar_constant()), round(peak_wavelength_nm()),
+            round(sky_rgb(50)[2] / sky_rgb(50)[0], 1),
+            round(sun_rgb(3)[0] / sun_rgb(3)[2], 1),
+            round(shadow_length(0.2, 3) / shadow_length(0.2, 60), 1),
+            round(contrast(), 1))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -920,6 +931,8 @@ CLAIMS = [
      _artifact, (25, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.15", "1361 W/m2 and 502 nm fall out; one law gives blue sky and red sun",
+     _scene, (1361, 502, 4.9, 45.8, 33.0, 6.1), CURRENT),
     ("3.2.14", "a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x",
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
@@ -976,8 +989,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 73 links: 64 derived, 1 gap",
-     _wholechain, (73, 64, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 74 links: 65 derived, 1 gap",
+     _wholechain, (74, 65, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

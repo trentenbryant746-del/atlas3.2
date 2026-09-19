@@ -467,6 +467,10 @@
 "fp": "2e9d2689728b5e81",
 "ok": true
 },
+"3.2.12|Big Bang to heat death in 77 links: 68 derived, 1 gap": {
+"fp": "93c4235b7e62ff82",
+"ok": true
+},
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
 "fp": "610ea55c1b92bb90",
 "ok": true
@@ -505,6 +509,10 @@
 },
 "3.2.21|a grammar pays at 6 parts; this world crossed at year 600": {
 "fp": "71322bb1964b55ad",
+"ok": true
+},
+"3.2.24|a heat engine tops out at 88%; a motor is not one": {
+"fp": "8fe54d307a99498c",
 "ok": true
 },
 "3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {

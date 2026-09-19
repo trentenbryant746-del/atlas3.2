@@ -267,6 +267,50 @@ def drawing_table(combo):
     }
 
 
+def build_order(combo):
+    """-> [(step, craft, gates, why)]. How to make one. DERIVED.
+
+    Everything the thing rests on, in an order that never asks
+    for something you have not made yet. The order comes out of
+    the prerequisite graph and the gates come out of the
+    physics; neither is a recipe anybody wrote.
+    """
+    from engine.artifact import (PRIMITIVES, TOL_NEEDED, COLD_NEEDED,
+                                 BASE_TOL, BASE_COLD)
+    from engine.inference import closure
+    need = set()
+    for part in combo:
+        need |= closure(part)
+    need |= set(combo)
+    done, order = set(), []
+    while len(order) < len(need):
+        ready = sorted(p for p in need - done
+                       if set(PRIMITIVES[p][0]) <= done)
+        if not ready:
+            break
+        for p in ready:
+            gates = [f"{PRIMITIVES[p][1]} K"]
+            if p in TOL_NEEDED and TOL_NEEDED[p] < BASE_TOL:
+                gates.append(f"true to {TOL_NEEDED[p]:.0e}")
+            if p in COLD_NEEDED and COLD_NEEDED[p] < BASE_COLD:
+                gates.append(f"cold to {COLD_NEEDED[p]:.0f} K")
+            order.append((len(order) + 1, p, ", ".join(gates),
+                          PRIMITIVES[p][3]))
+        done |= set(ready)
+    return order
+
+
+def motive_source(combo):
+    """What turns it, and what that costs. DERIVED."""
+    from engine.motive import best_available, ceiling, realised
+    src = best_available(combo)
+    if src is None:
+        return None
+    top, kind = ceiling(src)
+    return {"source": src, "kind": kind,
+            "ceiling": top, "realised": realised(src)}
+
+
 def render_spec(combo, elevation_deg=24.0):
     """Everything needed to render this thing, exactly. DERIVED.
 

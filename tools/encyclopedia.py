@@ -36,7 +36,8 @@ YEARS = 14000.0
 
 def build():
     from engine.world import (run, describe, spec, their_entry,
-                              words_for, drawing_table, render_spec)
+                              words_for, drawing_table, render_spec,
+                              build_order, motive_source)
     from engine.artifact import (PRIMITIVES, bootstrap, held_by_round,
                                  tolerance, coldness, bohr_radius)
     w = run(YEARS)
@@ -111,7 +112,15 @@ def build():
           "one. A part marked *gauge* has a number somebody must "
           "hit, and those are the parts that need a drawing at "
           "all.", "",
-          "Below each drawing is the RENDER block: the exact "
+          "Under each entry is HOW TO BUILD: everything the "
+          "thing rests on, in an order that never asks for "
+          "something not yet made, with the fire, precision and "
+          "cold each step needs. The arrow marks a part of the "
+          "thing itself; the rest are what it stands on. Where "
+          "something turns, the motive source is named with its "
+          "Carnot ceiling -- or with the note that it has none, "
+          "because a motor is not a heat engine.", "",
+          "Below that is the RENDER block: the exact "
           "specification that produced the picture of that "
           "thing. Solids, radii, heights, stacking order, "
           "camera, sun angle and colour, sky, ground albedo, "
@@ -147,6 +156,21 @@ def build():
                  f"   finest work {d['finest work m']:.1e} m")
         L.append(f"envelope between {lo:.0e} and {hi:.0e} m"
                  f"   |   {d['gauged parts']} part(s) need gauging")
+        L.append("```")
+        L.append("")
+        steps = build_order(c)
+        L.append("```")
+        L.append(f"HOW TO BUILD  {len(steps)} steps, none asking "
+                 f"for what is not yet made")
+        for i, craft, gates, why in steps:
+            mark = "  <-" if craft in c else "    "
+            L.append(f"{mark}{i:>3}. {craft:<15}{gates:<34}{why}")
+        mot = motive_source(c)
+        if mot:
+            top = (f"{100*mot['ceiling']:.0f}% ceiling"
+                   if mot["ceiling"] else "no Carnot ceiling")
+            L.append(f"     turns on {mot['source']} -- {top}, "
+                     f"{100*mot['realised']:.0f}% realised")
         L.append("```")
         L.append("")
         r = render_spec(c)

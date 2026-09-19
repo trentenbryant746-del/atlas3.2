@@ -497,6 +497,15 @@ def _syntax():
             round(doubt_bits(6), 2), round(y), particle_syllables())
 
 
+def _motive():
+    from engine.motive import carnot, ceiling, realised, bounded_by_law
+    return (round(100 * carnot(450)), round(100 * carnot(800)),
+            round(100 * carnot(2500)),
+            round(100 * realised("an electric motor")),
+            ceiling("an electric motor")[0],
+            bounded_by_law("superheated steam"))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -976,6 +985,8 @@ CLAIMS = [
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
      _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
+    ("3.2.24", "a heat engine tops out at 88%; a motor is not one",
+     _motive, (33, 62, 88, 93, None, True), CURRENT),
     ("3.2.21", "a grammar pays at 6 parts; this world crossed at year 600",
      _syntax, (6, 4.75, 42, 5.39, 600, 1), CURRENT),
     ("3.2.20", "278 headwords, 182 spoken by one band, 657 borrowings",
@@ -1032,8 +1043,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 76 links: 67 derived, 1 gap",
-     _wholechain, (76, 67, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 77 links: 68 derived, 1 gap",
+     _wholechain, (77, 68, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

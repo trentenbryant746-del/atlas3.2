@@ -793,6 +793,26 @@ def inside_the_head():
          "so it needs a drawer AND a reader -- f squared, the "
          "same exponent as literacy, and slow for the same "
          "reason. A drawing is a second literacy"),
+        ("a thing that turns", "a ceiling it cannot pass", DERIVED,
+         "motive.carnot",
+         "most of what this world builds runs on steam, and "
+         "steam is not merely a poor engine -- it is in a CLASS "
+         "of engine with a ceiling nothing lifts. A heat engine "
+         "takes heat from hot and dumps it to cold, and no "
+         "arrangement of metal passes 1 - Tc/Th: 33% off a "
+         "wood-fired boiler, 63% superheated, 88% inside a "
+         "cylinder at 2500 K. That is the second law and not an "
+         "engineering target, which is why an engine's history "
+         "is a history of MATERIALS -- the ceiling moves only "
+         "when the cylinder survives more heat. An electric "
+         "motor is NOT a heat engine: no hot side, no cold side, "
+         "no Tc/Th to subtract, so Carnot does not apply at all. "
+         "Its losses are resistance and hysteresis, which are "
+         "facts about copper rather than laws about temperature, "
+         "and it runs 93% against a ceiling steam never reaches. "
+         "The two are not better and worse made, they are "
+         "bounded by a law and bounded by materials, and the "
+         "bounded one loses as soon as the other exists"),
         ("a constraint envelope", "a world that runs", DERIVED,
          "world.run",
          "everything before this computed what a human-like "

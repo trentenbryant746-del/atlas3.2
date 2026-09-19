@@ -2,14 +2,126 @@
 
 Generated 2026-09-18 from the rules themselves. Nothing in this document
 was typed by hand: every value was computed by the rule it sits under, and
-every block of source is the source that runs. 58 links in the chain.
+every block of source is the source that runs. 76 links in the chain.
 
 **Contents**
 
+- Part 0 — how the code checks itself
 - Part I — every rule in detail
 - Part II — the chain, with the working
 - Part III — the technology
 - Part IV — the numbers, and the ones withdrawn
+
+---
+
+# Part 0 — how the code checks itself
+
+A small reference. Every mechanism below exists to catch this system being
+wrong about itself, as distinct from being wrong about the world. They are
+listed with what each one guarantees, what breaks it, and where it
+currently stands.
+
+```
+mechanism                 status
+----------------------------------------------------------------------
+module checks             622 of 622 hold, across 146 modules
+published claims          102 of 102 reproduce
+withdrawn claims          34, each with its reason
+spine                     2,735 rules, 343.1 MB, read from the AST
+chain                     76 links, 2 still open
+inverted checks           37 mentions across 18 modules
+grounding pointers        25 of 25 resolve to real rules
+constant provenance       13 constants, one definition each
+```
+
+## The mechanisms
+
+### 1. Every rule states its own result
+
+A check does not return True. It returns the sentence describing what it
+found, and it raises if the finding is not what the rule says. So a rule
+that passes has produced a claim in words, and the words cannot drift from
+the arithmetic because the arithmetic formats them. Every statement in
+Parts II to IV of this document came out of a rule this way.
+
+### 2. The spine is read, not written
+
+engine/spine.py walks the abstract syntax tree of every module and builds
+the dependency graph from what the code actually calls -- 2,735 rules in
+343.1 MB. A hand-maintained list of dependencies would drift the moment
+somebody edited a function. This cannot, because there is nothing to
+maintain. It also classifies what nothing references, which is how 66 rules
+turned out to be live in Atlas 2 rather than dead.
+
+### 3. A fingerprint commits to everything underneath
+
+engine/spine.fingerprint hashes a rule's source together with the hashes of
+every rule it depends on. An unchanged fingerprint is therefore a PROOF
+that recomputing would return what it returned last time. eval/claims.py
+uses this to skip claims whose roots have not moved -- typically 75 of 85
+-- which is why the numbers can be rechecked in seconds rather than
+minutes. Rewriting a rule moves the fingerprint of everything above it, and
+there is a check that verifies exactly that.
+
+### 4. A physical constant has one home
+
+engine/constants.py holds 13 constants and every module imports them. A
+sweep once found four quantities with two or three independent definitions
+-- the atomic mass unit, Newton's constant, the solar mass, the alpha
+binding energy -- and EVERY ONE AGREED. That is what made it worth fixing:
+nothing enforced the agreement, so it held by luck. Setting the copies
+equal would have been a patch. The rule is that a second definition
+anywhere fails a lab experiment, and that cannot drift because drifting
+requires writing the duplicate.
+
+### 5. Inverted checks fail when the answer looks too good
+
+37 mentions across 18 modules: artifact, biome, capital, closure, descent,
+exam, farfuture, form, human, image, inference, lineage, literature,
+multiverse, scene, senses, standing, world. An inverted check asserts the
+UNWELCOME thing and raises if it stops being true. lineage._gaps fails if
+the chain ever claims to be complete. capital._mean fails if the average
+ever represents the median. history._miss fails if the misses stop being
+reported. artifact._future fails if a future artifact acquires a name.
+inference._rule3 fails if the chain closes, because then its claim would be
+empty. These are the checks that catch the system flattering itself, which
+no ordinary check can do -- an ordinary check is satisfied by a good
+result.
+
+### 6. A rule that is deleted is not a rule that is fixed
+
+When a rule turns out to be wrong the rule is restated, not removed, and
+the old statement goes to the withdrawn list with the reason. 34 numbers
+are recorded there. ecology's collapse rule is the clearest case: it was
+TRUE when written and was falsified by fixing an unbounded objective in a
+different module, so the entry records both the old claim and what
+invalidated it.
+
+### 7. Groundings must resolve
+
+artifact._grounded imports every rule named as the grounding for a
+primitive, 25 of 25 currently. It exists because the claim was first made
+in prose and 13 of 21 pointers were invented -- plausible names for rules
+this repo does not have. A citation nobody follows is not a citation.
+
+### 8. Every number carries how it was obtained
+
+EXACT (fixed by SI definition, no uncertainty), MEASURED (someone measured
+it, with a tolerance), CHOSEN (a modelling decision, and the log says what
+moves with it), RECORDED (a fact from the literature), ENACTED (it happened
+in a run, not in the world). The kinds are orthogonal to whether a rule
+passes, which is why a check once failed on its own registry when ENACTED
+was wrongly made exclusive.
+
+### 9. What this layer does NOT cover
+
+622 module checks against 102 published claims. The fingerprint gate only
+recomputes CLAIMS, so a check that no claim depends on can fail silently
+for versions -- and two did, found only when tools/transcribe.py first ran
+every module in one pass. Transcription is the only full sweep and it is
+deliberate rather than automatic, because running 146 modules is a cost not
+worth paying on every edit. That is a real hole and it is named here rather
+than left to be discovered.
 
 ---
 
@@ -19,7 +131,7 @@ Module by module: the module's own account of itself, every constant it
 defines with the value and the units as written, and every rule with its
 signature, its docstring and its source. Nothing is summarised here; this
 is what runs.
-133 modules, 647 constants, 1089 rules.
+146 modules, 691 constants, 1227 rules.
 
 
 ## engine/ablate.py
@@ -50,7 +162,7 @@ appears, which is exactly the signature.
 **Constants**
 
 ```
-NUCLEAR_RULES             = [<engine.ablate.Rule object at 0x10377eac0>, <engine.ablate.Rule object at 0x10377eb20>, <engine.ablate.Rule object at 0x10377eb80>]
+NUCLEAR_RULES             = [<engine.ablate.Rule object at 0x1058bd040>, <engine.ablate.Rule object at 0x1058bd0d0>, <engine.ablate.Rule object at 0x1058bd130>]
 ```
 
 **`attribute(d=None)`**
@@ -114,7 +226,7 @@ def decay_outcome():
     return r["right"], r["wrong"], r["refused"]
 ```
 
-**`diagnose(target=<function decay_outcome at 0x103789c10>, rules=None, label='decay')`**
+**`diagnose(target=<function decay_outcome at 0x1058be310>, rules=None, label='decay')`**
 
 -> dict. All rules on, then each one off in turn. The verdict on each rule
 is what its REMOVAL does, which is the only question that has an answer
@@ -146,7 +258,7 @@ def diagnose(target=decay_outcome, rules=None, label="decay"):
     return {"target": label, "all_rules_on": base, "ablations": rows}
 ```
 
-**`diagnose_pairs(target=<function decay_outcome at 0x103789c10>, rules=None)`**
+**`diagnose_pairs(target=<function decay_outcome at 0x1058be310>, rules=None)`**
 
 -> [rows]. Remove rules in PAIRS as well as singly. SINGLE ABLATION HAS A
 BLIND SPOT AND THE FIRST RUN HIT IT. With every rule on, removing shell
@@ -232,7 +344,7 @@ ABSENT                    =
     'Rn': 'Z=86 has no stable isotope', 'Fr': 'Z=87 has no stable isotope',
     'Ra': 'Z=88 has no stable isotope', 'Ac': 'Z=89 has no stable isotope'
 MAN_MADE_ABOVE            = 92
-_PEAK                     = None
+_PEAK                     = 26
 ```
 
 **`absent_naturally()`**
@@ -1110,23 +1222,34 @@ whose parts are not reachable is an error, not a prediction.
 **Constants**
 
 ```
-PRIMITIVES                = <dict, 21 entries>
+PRIMITIVES                = <dict, 25 entries>
+M_ELECTRON                = 9.10938e-31   # kg, MEASURED
+EPS_0                     = 8.85419e-12   # F/m, MEASURED
+BASE_COLD                 = 300
+COLD_GAINS                = {'expanding a compressed gas': (('pressure', 'regulation'), 77.0), 'pumping on a cascaded bath': (('vacuum', 'superconduction'), 4.0)}
+COLD_NEEDED               = {'superconduction': 77, 'coherence': 4, 'placement': 4}
+DIMENSION_M               = <dict, 25 entries>
+ABSOLUTE_NEEDED_M         = {'gearing': 0.0001, 'optics': 1.4e-07, 'pressure': 0.0001, 'switching': 1e-08, 'placement': 5.3e-11}
+SELF_FIGURING             = {'gearing', 'rotation', 'optics'}
 BASE_TOL                  = 0.1
 TOL_NEEDED                =
     'gearing': 0.1, 'spring': 0.1, 'pressure': 0.01, 'regulation': 0.01,
     'optics': 0.01, 'vacuum': 0.001, 'alloy': 0.001,
-    'semiconductor': 1e-06, 'switching': 1e-06, 'inference': 1e-09
+    'semiconductor': 1e-06, 'switching': 1e-06, 'inference': 1e-09,
+    'depiction': 1e-05, 'superconduction': 1e-06, 'coherence': 1e-09,
+    'placement': 1e-10
 TOL_GAINS                 =
     'a screw-cutting lathe': (('gearing', 'smelting'), 0.001),
     'interferometry': (('optics', 'regulation'), 1e-06),
-    'light printed through a mask': (('optics', 'switching'), 1e-09)
+    'light printed through a mask': (('optics', 'switching'), 1e-09),
+    'a tip that feels single atoms': (('coherence', 'vacuum'), 1e-10)
 BASE_K                    = 1100
 GAINS                     =
     'a hearth that keeps it in': (('containment',), 150),
     'charcoal instead of wood': (('containment', 'heat'), 150),
     'bellows on a metal tuyere': (('cordage', 'smelting'), 200),
     'a regenerative flue': (('smelting', 'gearing'), 150)
-KNOWN_AS                  = <dict, 21 entries>
+KNOWN_AS                  = <dict, 23 entries>
 DIGITAL_COPY_GAIN         = 1e+06   # CHOSEN: copies a scribe-year, now
 ```
 
@@ -1140,6 +1263,18 @@ def available(parts_budget, rounds=None):
     hot = held_by_round(len(bootstrap()) if rounds is None else rounds)
     return [n for n in order()
             if n in hot and depth(n) + 1 <= parts_budget]
+```
+
+**`bohr_radius()`**
+
+4 pi eps0 hbar^2 / (m_e e^2). DERIVED.
+
+```python
+def bohr_radius():
+    """4 pi eps0 hbar^2 / (m_e e^2). DERIVED."""
+    from engine.constants import HBAR, E_CHARGE
+    return (4 * math.pi * EPS_0 * HBAR**2
+            / (M_ELECTRON * E_CHARGE**2))
 ```
 
 **`bootstrap()`**
@@ -1159,10 +1294,11 @@ def bootstrap():
     held, rounds = set(), []
     while True:
         t = temperature(held)
-        tol = tolerance(held)
+        tol, cold = tolerance(held), coldness(held)
         got = {n for n, (needs, k, _r, _w) in PRIMITIVES.items()
                if n not in held and set(needs) <= held and k <= t
-               and TOL_NEEDED.get(n, 1e-1) >= tol}
+               and TOL_NEEDED.get(n, 1e-1) >= tol
+               and COLD_NEEDED.get(n, BASE_COLD) >= cold}
         if not got:
             return rounds
         held |= got
@@ -1208,6 +1344,30 @@ def check():
     return all(x for _, x, _ in res), res
 ```
 
+**`coldness(held)`**
+
+Lowest temperature reachable with what is held. DERIVED.
+
+```python
+def coldness(held):
+    """Lowest temperature reachable with what is held. DERIVED."""
+    t = BASE_COLD
+    for _label, (needs, got) in COLD_GAINS.items():
+        if set(needs) <= set(held):
+            t = min(t, got)
+    return t
+```
+
+**`demanded_precision(primitive)`**
+
+What the physics needs, where that is known. RECORDED.
+
+```python
+def demanded_precision(primitive):
+    """What the physics needs, where that is known. RECORDED."""
+    return ABSOLUTE_NEEDED_M.get(primitive)
+```
+
 **`depth(name, seen=None)`**
 
 Longest chain of prerequisites under a primitive. DERIVED.
@@ -1248,6 +1408,17 @@ def first_round(combo):
     return None
 ```
 
+**`gauged_precision(primitive)`**
+
+Absolute precision you must MEASURE, in metres. DERIVED.
+
+```python
+def gauged_precision(primitive):
+    """Absolute precision you must MEASURE, in metres. DERIVED."""
+    return (DIMENSION_M.get(primitive, 0.1)
+            * TOL_NEEDED.get(primitive, BASE_TOL))
+```
+
 **`held_by_round(r)`**
 
 Everything in hand after r rounds of the bootstrap.
@@ -1275,6 +1446,19 @@ def named_at(parts_budget):
         if combo <= prims and len(combo) <= parts_budget:
             out.append((name, sorted(combo)))
     return sorted(out, key=lambda r: (len(r[1]), r[0]))
+```
+
+**`needs_gauging(primitive)`**
+
+Must somebody measure it to hit it? DERIVED.
+
+```python
+def needs_gauging(primitive):
+    """Must somebody measure it to hit it? DERIVED."""
+    want = demanded_precision(primitive)
+    if want is None:
+        return False
+    return not self_figuring(primitive) and gauged_precision(primitive) > want
 ```
 
 **`order()`**
@@ -1320,6 +1504,16 @@ def reachable(parts_budget):
     prims = available(parts_budget)
     cap = int(min(parts_budget, len(prims)))
     return sum(math.comb(len(prims), k) for k in range(1, cap + 1))
+```
+
+**`self_figuring(primitive)`**
+
+Does the process produce the accuracy? DERIVED-ish.
+
+```python
+def self_figuring(primitive):
+    """Does the process produce the accuracy? DERIVED-ish."""
+    return primitive in SELF_FIGURING
 ```
 
 **`temperature(held)`**
@@ -2833,7 +3027,7 @@ these modules do not reach that far.
 **Constants**
 
 ```
-CAPS                      = None
+CAPS                      = <list, 16 entries>
 ```
 
 **`answer(start_type, value, goal_type)`**
@@ -3091,7 +3285,7 @@ interpreter and CPU-bound threads merely take turns.
 ```
 CHNOPS                    = ('C', 'H', 'N', 'O', 'P', 'S')
 MIN_WINDOW_GYR            = 1
-_CACHE                    = {}
+_CACHE                    = <dict, 1 entries>
 ```
 
 **`census(n=60, workers=None)`**
@@ -5287,7 +5481,7 @@ G_GRAV                    = 6.6743e-11   # m^3 kg^-1 s^-2   +/- 22 ppm, the wors
 U_KG                      = 1.66054e-27   # kg               atomic mass unit
 M_SUN_KG                  = 1.98847e+30   # kg
 L_SUN_W                   = 3.828e+26   # W
-YEAR_S                    = 3.15569e+07   # s                Julian year
+YEAR_S                    = 3.15576e+07   # s   EXACT, Julian: 365.25 x 86400
 B_ALPHA_MEV               = 28.296   # MeV              binding of helium-4
 HBAR                      = 1.05457e-34
 PROVENANCE                = <dict, 13 entries>
@@ -5686,6 +5880,7 @@ against fidelity, and the trade has a bottom.
 FROUDE                    = 0.25   # walk, before the run transition
 GRAVITY                   = 9.81
 LEG                       = {'adult': 0.9, 'four-year-old': 0.45, 'elder': 0.85}
+_DEPTH                    = <dict, 89 entries>
 ```
 
 **`band_for_specialties(s, e=0.1, cap=4000)`**
@@ -5716,13 +5911,30 @@ def band_pace():
 
 **`best_depth(band=28, e=0.1)`**
 
--> (k, s, held). Exhaustive over 1..band. DERIVED.
+-> (k, s, held). Exhaustive over 1..band. DERIVED. Pure in (band, e) and
+scanned over every integer up to band, so a village-scale call is 912
+binomial tails and a network one is 36,480. engine/intricacy.settle
+iterates a fixed point that calls this forty times with the same arguments,
+which is forty identical scans. Held.
 
 ```python
 def best_depth(band=BAND, e=TELEPHONE):
-    """-> (k, s, held). Exhaustive over 1..band. DERIVED."""
-    best = max(range(1, band + 1), key=lambda k: held_by_band(k, band, e))
-    return best, specialties(best, band), held_by_band(best, band, e)
+    """-> (k, s, held). Exhaustive over 1..band. DERIVED.
+
+    Pure in (band, e) and scanned over every integer up to band,
+    so a village-scale call is 912 binomial tails and a network
+    one is 36,480. engine/intricacy.settle iterates a fixed point
+    that calls this forty times with the same arguments, which is
+    forty identical scans. Held.
+    """
+    key = (int(band), float(e))
+    if key in _DEPTH:
+        return _DEPTH[key]
+    best = max(range(1, int(band) + 1),
+               key=lambda k: held_by_band(k, band, e))
+    got = (best, specialties(best, band), held_by_band(best, band, e))
+    _DEPTH[key] = got
+    return got
 ```
 
 **`check()`**
@@ -6023,6 +6235,133 @@ def zeller(d: date) -> str:
             "Thursday", "Friday"][h]
 ```
 
+## engine/depiction.py
+
+Making a surface stand for something, in two ways. A DRAWING and a
+PHOTOGRAPH both put a thing on a flat surface, and they are not the same
+kind of object at all. A drawing is a projection, and a projection is a
+convention. It needs a drawer and a reader who hold the same one, so its
+worth goes as f-squared -- the same exponent engine/literacy.py found for
+writing, and slow for the same reason. A photograph needs no convention.
+Anyone with eyes reads it. Its worth goes as f, and f is one from the
+moment the thing exists. ART is the third case and it is the strange one.
+It is the only output in this tree that needs no tolerance at all: a mark
+does not have to be true to anything, so no gate has ever blocked it and
+none ever will. It is available in round one and in round eleven and it
+does not improve in between, in the sense that matters here -- there is no
+precision it was waiting for. The obvious economic account of art, that it
+waits for a surplus, is tested below and fails. It fails on magnitude.
+
+**Constants**
+
+```
+PIGMENT_HOURS             = 6   # CHOSEN, a painted surface
+WORK_HOURS_DAY            = 8
+```
+
+**`art_audience()`**
+
+Who can act on it. DERIVED, engine/naming.py's rule.
+
+```python
+def art_audience():
+    """Who can act on it. DERIVED, engine/naming.py's rule."""
+    return 1.0
+```
+
+**`art_available_at()`**
+
+First round anything can be made as art. DERIVED.
+
+```python
+def art_available_at():
+    """First round anything can be made as art. DERIVED."""
+    for i, _t, got in bootstrap():
+        if got:
+            return i
+    return None
+```
+
+**`art_cost_days()`**
+
+What one made thing costs. DERIVED.
+
+```python
+def art_cost_days():
+    """What one made thing costs. DERIVED."""
+    return PIGMENT_HOURS / WORK_HOURS_DAY
+```
+
+**`art_needs_tolerance()`**
+
+The tolerance a mark must be held to. DERIVED. None. A mark is not true to
+anything, so nothing gates it.
+
+```python
+def art_needs_tolerance():
+    """The tolerance a mark must be held to. DERIVED.
+
+    None. A mark is not true to anything, so nothing gates it.
+    """
+    return BASE_TOL
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("a_photograph_is_a_drawing_that_needs_no_reader", _photo)
+    t("art_is_the_one_output_no_gate_can_block", _ungated)
+    t("REFUTED_art_waits_for_a_surplus", _surplus)
+    t("art_travels_like_a_fact_and_not_like_a_tool", _spread)
+    return all(x for _, x, _ in res), res
+```
+
+**`image_over_drawing(fraction)`**
+
+How much better an image is at that literacy. DERIVED.
+
+```python
+def image_over_drawing(fraction):
+    """How much better an image is at that literacy. DERIVED."""
+    v = convention_value(fraction)
+    return math.inf if v <= 0 else photograph_value(fraction) / v
+```
+
+**`photograph_value(fraction)`**
+
+Worth of an image at that literacy. DERIVED. No convention, so no second
+factor. A photograph is read by whoever looks at it, which is everybody.
+
+```python
+def photograph_value(fraction):
+    """Worth of an image at that literacy. DERIVED.
+
+    No convention, so no second factor. A photograph is read by
+    whoever looks at it, which is everybody.
+    """
+    return 1.0
+```
+
+**`tool_cost_days()`**
+
+What one part of a tool costs, for comparison.
+
+```python
+def tool_cost_days():
+    """What one part of a tool costs, for comparison."""
+    from engine.capital import DAYS_PER_PART
+    return DAYS_PER_PART
+```
+
 ## engine/descent.py
 
 Seed the smallest thing that can live, supply the planet, and let go. Every
@@ -6057,8 +6396,8 @@ MUTATION_TRAIT            = 0.002   # chance a trait appears or vanishes
 PREDATOR_RATIO            = 3   # how much bigger a hunter must be
 PREDATION_PRESSURE        = 0.4   # fraction of deaths from being eaten
 INTAKE_COEFFICIENT        = 90   # sets where supply and demand cross
-_FLOOR                    = {}
-_C                        = {}
+_FLOOR                    = {'r': 1.58266e-06}
+_C                        = <dict, 1 entries>
 ```
 
 **`break_even_mass(n_traits=0)`**
@@ -6518,11 +6857,11 @@ measures how often the search finds "a law" in noise.
 
 ```
 OPS1                      =
-    'neg': <function <lambda> at 0x1039a1550>,
-    'inv': <function <lambda> at 0x1039a15e0>,
-    'sqrt': <function <lambda> at 0x1039a1670>,
-    'sq': <function <lambda> at 0x1039a1700>
-OPS2                      = {'add': <function <lambda> at 0x1039a1790>, 'mul': <function <lambda> at 0x1039a1820>}
+    'neg': <function <lambda> at 0x105aaeca0>,
+    'inv': <function <lambda> at 0x105aaed30>,
+    'sqrt': <function <lambda> at 0x105aaedc0>,
+    'sq': <function <lambda> at 0x105aaee50>
+OPS2                      = {'add': <function <lambda> at 0x105aaeee0>, 'mul': <function <lambda> at 0x105aaef70>}
 ```
 
 **`chance_rate(train, held, nvars, max_size=4, tol=0.02, trials=20, seed=1)`**
@@ -6641,7 +6980,9 @@ INTAKE_MJ_DAY             = 10   # forgone, you are not foraging
 BOUT_DAYS                 = 7
 SPECIFIC_HEAT             = 3500   # J/kg/K, wet tissue
 COOK_RISE_K               = 65   # 10 C to 75 C
-FIRE_EFFICIENCY           = 0.1   # CHOSEN, open fire onto a carcass
+POT_RADIUS_M              = 0.15   # MEASURED-ish, a cooking vessel
+POT_HEIGHT_M              = 0.25   # MEASURED-ish, above the coals
+FIRE_EFFICIENCY           = 0.09
 LOG_KILL                  = 7   # 70 C held two minutes, vegetative cells
 RAW_LOAD                  = 1e+06   # organisms per gram, spoiling meat
 PORTION_G                 = 200
@@ -6741,6 +7082,29 @@ def critical_community():
     return GENERATION_YEARS * 365.0 / INFECTIOUS_DAYS
 ```
 
+**`fire_efficiency(r=0.15, h=0.25)`**
+
+Fraction of a fire's output that reaches the food. DERIVED. Was CHOSEN at
+0.10 and it did not have to be. An open fire is close to a point source
+radiating into 4 pi steradians. A pot of radius r at height h subtends pi
+r^2 / h^2 of that, so the intercepted fraction is r^2 / (4 h^2) --
+geometry, and no combustion physics needed, because what is lost is lost to
+solid angle rather than to incomplete burning.
+
+```python
+def fire_efficiency(r=POT_RADIUS_M, h=POT_HEIGHT_M):
+    """Fraction of a fire's output that reaches the food. DERIVED.
+
+    Was CHOSEN at 0.10 and it did not have to be. An open fire is
+    close to a point source radiating into 4 pi steradians. A pot
+    of radius r at height h subtends pi r^2 / h^2 of that, so the
+    intercepted fraction is r^2 / (4 h^2) -- geometry, and no
+    combustion physics needed, because what is lost is lost to
+    solid angle rather than to incomplete burning.
+    """
+    return r * r / (4.0 * h * h)
+```
+
 **`ground_load(n, residence_days)`**
 
 Contamination underfoot. DERIVED. Shedding accumulates while you stay and
@@ -6802,7 +7166,7 @@ object from one that fit six points.
 **Constants**
 
 ```
-UNDEF                     = <object object at 0x1036f8fa0>
+UNDEF                     = <object object at 0x1054daf80>
 ```
 
 **`all_solutions(examples, max_size=9, node_cap=2000000, max_keep=40)`**
@@ -6957,6 +7321,211 @@ def signature(e):
                     walk(k)
     walk(e)
     return tuple(sorted(c.items()))
+```
+
+## engine/drawing.py
+
+Why a drawing is needed, and why it is not needed for the reason everyone
+assumes. Mass production means many makers producing parts that must fit
+each other, and they cannot all stand around the original. So something has
+to carry the part to them. The obvious thought is that a drawing exists
+because a shape is a lot of information. It is not. Pinning one dimension
+to a tolerance t costs log2(1/t) bits, so a three-dimensional part held to
+a billionth is 90 bits, and engine/tradition.py says a single telling
+carries 11,700. A hundred and thirty such parts fit in one story. You could
+read a nanometre-tolerance specification aloud. The constraint is somewhere
+else, and there are two of them. A SAMPLE STOPS BEING ENOUGH. Copying an
+object by eye gets you to about a tenth, which is engine/artifact.BASE_TOL.
+Below that, handing someone the original does not let them make another
+one, and a NUMBER has to travel instead of a thing. A DRAWING IS A SECOND
+LITERACY. You can speak a number but you cannot speak a shape. A projection
+is a convention, and a convention is worth nothing unless the person at the
+other end holds it too -- which is the same f-squared that
+engine/literacy.py found for writing, with the same slow start for the same
+reason.
+
+**Constants**
+
+```
+DIMENSIONS                = 3   # a part is a solid
+```
+
+**`bits_per_dimension(tol)`**
+
+How many bits pin one length to a tolerance. DERIVED.
+
+```python
+def bits_per_dimension(tol):
+    """How many bits pin one length to a tolerance. DERIVED."""
+    return math.log2(1.0 / tol)
+```
+
+**`bits_per_part(tol, dims=3)`**
+
+A whole part, all dimensions. DERIVED.
+
+```python
+def bits_per_part(tol, dims=DIMENSIONS):
+    """A whole part, all dimensions. DERIVED."""
+    return dims * bits_per_dimension(tol)
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("REFUTED_a_drawing_exists_because_a_shape_is_large", _bits)
+    t("a_drawing_is_needed_when_a_sample_stops_being_enough", _sample)
+    t("a_projection_is_a_second_literacy_and_starts_as_slowly", _conv)
+    t("a_lapped_surface_beats_the_instrument_that_could_check_it", _lap)
+    t("one_craft_arrives_undergauged_and_nothing_saves_it", _boiler)
+    return all(x for _, x, _ in res), res
+```
+
+**`convention_value(fraction)`**
+
+Worth of a shared projection at that literacy. DERIVED. A drawing needs a
+drawer AND a reader, so it serves f**2 of the possible pairs -- the same
+shape engine/literacy.py found for writing, and slow for the same reason.
+
+```python
+def convention_value(fraction):
+    """Worth of a shared projection at that literacy. DERIVED.
+
+    A drawing needs a drawer AND a reader, so it serves f**2 of
+    the possible pairs -- the same shape engine/literacy.py found
+    for writing, and slow for the same reason.
+    """
+    return fraction * fraction
+```
+
+**`drawing_of(primitive)`**
+
+A dimensioned specification. DERIVED. This is what a drawing actually
+carries: a size, how true it must be held, and whether anybody has to
+measure that or the process delivers it. Their geometry is ours -- a length
+is a length and a circle is a circle -- so a drawing they make is a drawing
+we can read, and none of that required telling them a rule.
+
+```python
+def drawing_of(primitive):
+    """A dimensioned specification. DERIVED.
+
+    This is what a drawing actually carries: a size, how true it
+    must be held, and whether anybody has to measure that or the
+    process delivers it. Their geometry is ours -- a length is a
+    length and a circle is a circle -- so a drawing they make is
+    a drawing we can read, and none of that required telling
+    them a rule.
+    """
+    size = DIMENSION_M.get(primitive, 0.1)
+    return {
+        "size m": size,
+        "held to": TOL_NEEDED.get(primitive, BASE_TOL),
+        "that is m": gauged_precision(primitive),
+        "physics wants m": demanded_precision(primitive),
+        "self figuring": self_figuring(primitive),
+        "needs a drawing": needs_gauging(primitive),
+        "bits": bits_per_part(TOL_NEEDED.get(primitive, BASE_TOL)),
+    }
+```
+
+**`first_round_needing_one()`**
+
+When a sample stops being enough for anything. DERIVED.
+
+```python
+def first_round_needing_one():
+    """When a sample stops being enough for anything. DERIVED."""
+    for i, _t, got in bootstrap():
+        if any(needs_a_drawing(g) for g in got):
+            return i
+    return None
+```
+
+**`gauged_before_measurable(primitive)`**
+
+Does it arrive before anything could check it? DERIVED.
+
+```python
+def gauged_before_measurable(primitive):
+    """Does it arrive before anything could check it? DERIVED."""
+    want = demanded_precision(primitive)
+    if want is None:
+        return None
+    size = DIMENSION_M.get(primitive, 0.1)
+    for i, _t, got in bootstrap():
+        if primitive in got:
+            have = tolerance(held_by_round(i)) * size
+            return have > want
+    return None
+```
+
+**`needs_a_drawing(primitive)`**
+
+Does this craft need a numbered spec to travel? DERIVED. Two conditions,
+and the second was missing before. A sample must stop being enough, AND the
+accuracy must be one somebody has to measure -- a lapped lens is true to a
+quarter wave and nobody ever gauged it, because the process makes the
+surface conform.
+
+```python
+def needs_a_drawing(primitive):
+    """Does this craft need a numbered spec to travel? DERIVED.
+
+    Two conditions, and the second was missing before. A sample
+    must stop being enough, AND the accuracy must be one
+    somebody has to measure -- a lapped lens is true to a
+    quarter wave and nobody ever gauged it, because the process
+    makes the surface conform.
+    """
+    if self_figuring(primitive):
+        return False
+    return not sample_suffices(TOL_NEEDED.get(primitive, BASE_TOL))
+```
+
+**`parts_per_telling(tol)`**
+
+How many specifications fit in one story. DERIVED.
+
+```python
+def parts_per_telling(tol):
+    """How many specifications fit in one story. DERIVED."""
+    return telling_bits() / bits_per_part(tol)
+```
+
+**`sample_suffices(tol)`**
+
+Can a maker copy the original by eye? DERIVED. Eye-and-hand copying reaches
+BASE_TOL. Tighter than that and the object stops being its own
+specification.
+
+```python
+def sample_suffices(tol):
+    """Can a maker copy the original by eye? DERIVED.
+
+    Eye-and-hand copying reaches BASE_TOL. Tighter than that and
+    the object stops being its own specification.
+    """
+    return tol >= BASE_TOL
+```
+
+**`telling_bits()`**
+
+What one spoken story carries. DERIVED.
+
+```python
+def telling_bits():
+    """What one spoken story carries. DERIVED."""
+    return TELL_SECONDS * SPEECH_BITS_S
 ```
 
 ## engine/earthlab.py
@@ -7389,7 +7958,7 @@ chemistry survives.
 CAUSES                    = ('starvation', 'suffocation', 'desiccation', 'crushing', 'freezing', 'predation', 'crowded out')
 CARRYING_ENERGY_W         = 10000   # total energy the world supplies
 NICHE_WIDTH               = 0.35   # how similar two species must be to clash
-_C                        = {}
+_C                        = <dict, 1 entries>
 ```
 
 **`cause_of_death(sp, world, rivals)`**
@@ -8093,17 +8662,17 @@ with no source is the thing this whole system exists not to produce.
 
 ```
 FUNCTION_WORDS            =
-    'fast', 'how', 'wide', 'be', 'from', 'does', 'which', 'and', 'on',
-    'did', 'in', 'for', 'give', 'deep', 'there', 'have', 'by', 'when',
-    'has', 'with', 'of', 'an', 'that', 'big', 'say', 'what', 'the', 'were',
-    'to', 'or', 'was', 'do', 'tell', 'heavy', 'been', 'long', 'much',
-    'this', 'at', 'a', 'are', 'many', 'far', 'tall', 'it', 'me', 'is',
-    'high', 'who', 'its', 'old', 'about', 'where'
+    'are', 'high', 'to', 'at', 'does', 'wide', 'give', 'far', 'big', 'is',
+    'tell', 'which', 'and', 'its', 'deep', 'who', 'say', 'me', 'that',
+    'of', 'old', 'how', 'a', 'in', 'an', 'fast', 'did', 'much', 'by', 'do',
+    'about', 'long', 'be', 'when', 'was', 'it', 'have', 'with', 'heavy',
+    'on', 'been', 'what', 'tall', 'from', 'there', 'where', 'were', 'or',
+    'many', 'this', 'for', 'the', 'has'
 CUES                      = <list, 3 entries>
-ADJECTIVAL                = {'fast', 'far', 'tall', 'wide', 'hot', 'high', 'bright', 'heavy', 'old', 'long', 'dense', 'deep', 'big', 'cold'}
+ADJECTIVAL                = {'tall', 'bright', 'high', 'fast', 'far', 'wide', 'cold', 'heavy', 'long', 'hot', 'dense', 'big', 'deep', 'old'}
 NOUN_FRAMES               = ['what is the {attr} of {subj}', "what is {subj}'s {attr}", 'tell me the {attr} of {subj}']
 ADJ_FRAMES                = ['how {attr} is {subj}', 'what is the {attr}ness of {subj}']
-INTERROGATIVE             = {'who', 'where', 'what', 'how', 'when', 'why'}
+INTERROGATIVE             = {'how', 'what', 'where', 'who', 'why', 'when'}
 INT_FRAMES                = ['{attr} is {subj}', '{attr} is {subj} located']
 ```
 
@@ -8359,7 +8928,7 @@ planet habitable" is a WHEN.
 ```
 GYR                       = 1e+09
 _BAND_CACHE               = {'band': (0.99888916015625, 1.8985432316549122)}
-_HIST                     = {}
+_HIST                     = <dict, 1 entries>
 ```
 
 **`check()`**
@@ -8545,6 +9114,282 @@ def temperate_windows(h=None):
                 a, b = win.get(au, (step["t_gyr"], step["t_gyr"]))
                 win[au] = (min(a, step["t_gyr"]), max(b, step["t_gyr"]))
     return win
+```
+
+## engine/exam.py
+
+Set the people in the simulation an exam, and read their answers.
+engine/literature.py said which sciences they could have. This asks them
+specific questions and grades the papers. A question here is not a topic.
+It is a METHOD: a chain from something they can measure to something they
+want to know. Every method has a sensitivity -- how much the answer moves
+when the measurement is off by a fraction -- and that number, not
+cleverness and not effort, decides whether the answer comes out right. The
+finding this file exists for: two questions of the same era, asked with the
+same equipment. One method multiplies a fractional error by 1 and gets the
+Earth's circumference to a few per cent off a stick and a road. The other
+multiplies by 611 and lands twenty times out. The second asker was not the
+lesser astronomer -- sensitivity is a property of the METHOD, it is
+computable before anyone goes outside, and neither of them could see it.
+The names in the RECORDED column are our answer key and nothing above it
+reads them. They are here so the paper can be marked against what actually
+happened, not so this file can decide who mattered. engine/standing.py does
+that question properly, from structure, with no names in the ranking at
+all.
+
+**Constants**
+
+```
+QUESTIONS                 = <dict, 8 entries>
+HALF_MOON_DEG             = 89.853   # MEASURED, the true elongation
+ARISTARCHUS_DEG           = 87   # RECORDED, what he reported measuring
+MOON_DEG_PER_DAY          = 13.1772   # MEASURED, sidereal month
+CLOCK_MINUTES             = {'water clock': 30, 'escapement': 1}
+MERCURY_DENSITY           = 13595   # kg/m3, MEASURED
+G_SURFACE                 = 9.80665   # m/s2, EXACT by definition
+WIEN_M_K                  = 0.00289777   # m K, EXACT from the SI constants
+METHODS                   = <dict, 5 entries>
+```
+
+**`answer_error(question, round_n)`**
+
+Fractional error on the answer. DERIVED.
+
+```python
+def answer_error(question, round_n):
+    """Fractional error on the answer. DERIVED."""
+    return sensitivity(question) * measurement_error(question, round_n)
+```
+
+**`answer_from(question, readings)`**
+
+Run the method on a set of readings. FORWARD ONLY. This function cannot see
+the true answer and must not be given it. Everything it returns is a
+consequence of the numbers handed in.
+
+```python
+def answer_from(question, readings):
+    """Run the method on a set of readings. FORWARD ONLY.
+
+    This function cannot see the true answer and must not be
+    given it. Everything it returns is a consequence of the
+    numbers handed in.
+    """
+    _inputs, fn, _why = METHODS[question]
+    return fn(*readings.values())
+```
+
+**`answerable_at(question)`**
+
+-> bootstrap round the instruments allow it. DERIVED.
+
+```python
+def answerable_at(question):
+    """-> bootstrap round the instruments allow it. DERIVED."""
+    needs = set(QUESTIONS[question][0])
+    for i, _t, _g in bootstrap():
+        if needs <= held_by_round(i):
+            return i
+    return None
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("the_aristarchus_result_is_reproduced_from_his_angle", _arist)
+    t("sensitivity_not_cleverness_decides_the_paper", _sens)
+    t("the_paper_gets_better_in_the_order_the_tools_arrive", _paper)
+    t("INVERTED_a_wrong_answer_they_could_not_catch", _blind)
+    t("their_answer_is_computed_without_the_answer_key", _forward)
+    return all(x for _, x, _ in res), res
+```
+
+**`clock_minutes(round_n)`**
+
+Best timing available at that round. DERIVED.
+
+```python
+def clock_minutes(round_n):
+    """Best timing available at that round. DERIVED."""
+    have = held_by_round(round_n)
+    if {"gearing", "spring", "regulation"} <= have:
+        return CLOCK_MINUTES["escapement"]
+    return CLOCK_MINUTES["water clock"]
+```
+
+**`half_moon_angle_error(round_n)`**
+
+Degrees of elongation lost to not knowing WHEN. DERIVED. The Moon covers
+MOON_DEG_PER_DAY, so an uncertainty of m minutes in identifying half moon
+is m/1440 of that in angle.
+
+```python
+def half_moon_angle_error(round_n):
+    """Degrees of elongation lost to not knowing WHEN. DERIVED.
+
+    The Moon covers MOON_DEG_PER_DAY, so an uncertainty of m
+    minutes in identifying half moon is m/1440 of that in angle.
+    """
+    return clock_minutes(round_n) / 1440.0 * MOON_DEG_PER_DAY
+```
+
+**`half_moon_ratio(theta_deg)`**
+
+Sun distance over Moon distance. DERIVED: 1/cos(theta).
+
+```python
+def half_moon_ratio(theta_deg):
+    """Sun distance over Moon distance. DERIVED: 1/cos(theta)."""
+    return 1.0 / math.cos(math.radians(theta_deg))
+```
+
+**`half_moon_sensitivity(theta_deg=89.853)`**
+
+d ln(ratio) / d ln(theta) = theta tan(theta). DERIVED. The ratio is
+1/cos(theta), so d ln / d theta is tan(theta), and multiplying by theta
+makes it fractional. Near a right angle the tangent runs away, which is the
+whole problem.
+
+```python
+def half_moon_sensitivity(theta_deg=HALF_MOON_DEG):
+    """d ln(ratio) / d ln(theta) = theta tan(theta). DERIVED.
+
+    The ratio is 1/cos(theta), so d ln / d theta is tan(theta),
+    and multiplying by theta makes it fractional. Near a right
+    angle the tangent runs away, which is the whole problem.
+    """
+    t = math.radians(theta_deg)
+    return t * math.tan(t)
+```
+
+**`has_method(question)`**
+
+Is there a forward model, or only a sensitivity? DERIVED.
+
+```python
+def has_method(question):
+    """Is there a forward model, or only a sensitivity? DERIVED."""
+    return question in METHODS
+```
+
+**`measurement_error(question, round_n)`**
+
+Fractional error on the thing they measure. DERIVED. The half-moon question
+is timed, not aimed. Every other angle here is read against its own size by
+eye until glass arrives; everything else inherits the round's tolerance.
+
+```python
+def measurement_error(question, round_n):
+    """Fractional error on the thing they measure. DERIVED.
+
+    The half-moon question is timed, not aimed. Every other
+    angle here is read against its own size by eye until glass
+    arrives; everything else inherits the round's tolerance.
+    """
+    what = QUESTIONS[question][1]
+    if "TIME of half moon" in what:
+        return half_moon_angle_error(round_n) / HALF_MOON_DEG
+    if "angle" in what and "optics" not in held_by_round(round_n):
+        return EYE_RADIANS / math.radians(7.2)      # Syene's shadow
+    return their_precision(round_n)
+```
+
+**`passes(question, round_n, within=1.1)`**
+
+Is the answer good to better than `within`? DERIVED. 10% is the threshold,
+not a factor of two, because a factor of two passes everything and a
+grading that passes everything is not a grading.
+
+```python
+def passes(question, round_n, within=1.10):
+    """Is the answer good to better than `within`? DERIVED.
+
+    10% is the threshold, not a factor of two, because a factor
+    of two passes everything and a grading that passes everything
+    is not a grading.
+    """
+    return 1.0 + answer_error(question, round_n) <= within
+```
+
+**`reading(question, round_n, blunder=0.0)`**
+
+What their instruments actually read. DERIVED. Each input is perturbed by
+the error their equipment leaves on it. `blunder` adds a further fractional
+slip, which is how a real observer differs from a perfect one.
+
+```python
+def reading(question, round_n, blunder=0.0):
+    """What their instruments actually read. DERIVED.
+
+    Each input is perturbed by the error their equipment leaves
+    on it. `blunder` adds a further fractional slip, which is
+    how a real observer differs from a perfect one.
+    """
+    inputs, _fn, _why = METHODS[question]
+    e = measurement_error(question, round_n) + blunder
+    return {k: v * (1.0 + e) for k, v in inputs.items()}
+```
+
+**`score(round_n, within=1.1)`**
+
+-> (right, attempted, total). DERIVED.
+
+```python
+def score(round_n, within=1.10):
+    """-> (right, attempted, total). DERIVED."""
+    paper = sit(round_n, within)
+    att = [r for r in paper if r[1]]
+    return sum(1 for r in att if r[3]), len(att), len(paper)
+```
+
+**`sensitivity(question)`**
+
+-> the method's error multiplier. DERIVED where possible.
+
+```python
+def sensitivity(question):
+    """-> the method's error multiplier. DERIVED where possible."""
+    s = QUESTIONS[question][2]
+    return half_moon_sensitivity() if s is None else s
+```
+
+**`sit(round_n, within=1.1)`**
+
+-> [(question, answerable, error, pass)]. The paper.
+
+```python
+def sit(round_n, within=1.10):
+    """-> [(question, answerable, error, pass)]. The paper."""
+    out = []
+    for q in QUESTIONS:
+        r = answerable_at(q)
+        if r is None or r > round_n:
+            out.append((q, False, None, False))
+            continue
+        out.append((q, True, answer_error(q, round_n),
+                    passes(q, round_n, within)))
+    return out
+```
+
+**`their_answer(question, round_n, blunder=0.0)`**
+
+-> what they would report. DERIVED, forward only.
+
+```python
+def their_answer(question, round_n, blunder=0.0):
+    """-> what they would report. DERIVED, forward only."""
+    if not has_method(question):
+        return None
+    return answer_from(question, reading(question, round_n, blunder))
 ```
 
 ## engine/experts.py
@@ -9061,6 +9906,184 @@ def verify_family(fam, probes=300, seed=11):
     return agree == checked, f"recovered {rec}, agreed {agree}/{checked}"
 ```
 
+## engine/farfuture.py
+
+After the last element, and how the chain ends. engine/epochs.py stops at
+the neutron-star merger, about ten billion years, because that is the last
+epoch that makes a new kind of matter. Everything this repository derives
+afterwards -- cells, bodies, bands, writing, lithography -- happens inside
+that one epoch and uses nothing the universe had not already made. So the
+chain has an end and it was never written down. This is it, and the
+interesting part is not that things get cold. It is that every rule in this
+repository runs on a GRADIENT. A cell eats one, a body sheds one, a fire
+needs one, a Carnot engine is defined by one. Heat death is the state in
+which there is no gradient, and the honest last link therefore says:
+nothing further can be derived, and that is an answer rather than a gap.
+Four numbers do the work, and all four come out of the constants in
+engine/constants.py plus the Hubble rate.
+
+**Constants**
+
+```
+H0_KM_S_MPC               = 67.4
+MPC_M                     = 3.08568e+22
+PROTON_DECAY_BOUND_YR     = 1.6e+34
+LIGHTEST_STAR_MSUN        = 0.08   # MEASURED, the hydrogen-burning floor
+MASS_LUMINOSITY_EXP       = 3.5   # MEASURED, main-sequence L ~ M^3.5
+ERAS                      =
+    [('stelliferous', 10000000000.0,
+    'stars are still forming and burning'), ('last starlight', None,
+    'the longest-lived red dwarfs go out'), ('degenerate',
+    1000000000000000.0, 'white dwarfs, neutron stars, cold planets'),
+    ('black hole', None, 'the holes are the only structures left'),
+    ('dark', None, 'nothing but the horizon glow')]
+```
+
+**`black_holes_start_shrinking(mass_kg=1.98847e+30)`**
+
+When the sky gets colder than the hole. DERIVED. A black hole absorbs more
+than it radiates while the CMB is hotter than its Hawking temperature, so
+nothing evaporates until the sky has cooled past it.
+
+```python
+def black_holes_start_shrinking(mass_kg=M_SUN_KG):
+    """When the sky gets colder than the hole. DERIVED.
+
+    A black hole absorbs more than it radiates while the CMB is
+    hotter than its Hawking temperature, so nothing evaporates
+    until the sky has cooled past it.
+    """
+    t_h = hawking_temperature(mass_kg)
+    return hubble_time_yr() * math.log(2.725 / t_h)
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("the_chain_ends_and_the_end_was_never_written_down", _end)
+    t("nothing_evaporates_until_the_sky_is_colder_than_it", _cold)
+    t("the_last_structures_go_by_a_formula_in_three_constants", _holes)
+    t("MISSING_whether_matter_itself_decays", _proton)
+    t("INVERTED_heat_death_is_where_derivation_stops", _stop)
+    return all(x for _, x, _ in res), res
+```
+
+**`cmb_temperature(years, now=2.725)`**
+
+Cooling under exponential expansion. DERIVED. Once dark energy dominates
+the scale factor grows as e^(Ht), and the photon temperature falls as 1/a,
+so the CMB decays exponentially with the Hubble time as its constant.
+
+```python
+def cmb_temperature(years, now=2.725):
+    """Cooling under exponential expansion. DERIVED.
+
+    Once dark energy dominates the scale factor grows as e^(Ht),
+    and the photon temperature falls as 1/a, so the CMB decays
+    exponentially with the Hubble time as its constant.
+    """
+    return now * math.exp(-years / hubble_time_yr())
+```
+
+**`de_sitter_temperature()`**
+
+The floor temperature of an accelerating universe. DERIVED. A de Sitter
+horizon radiates at T = hbar H / (2 pi k), exactly as a black hole horizon
+does. This is the temperature nothing can get below, so it is the
+temperature everything ends at.
+
+```python
+def de_sitter_temperature():
+    """The floor temperature of an accelerating universe. DERIVED.
+
+    A de Sitter horizon radiates at T = hbar H / (2 pi k), exactly
+    as a black hole horizon does. This is the temperature nothing
+    can get below, so it is the temperature everything ends at.
+    """
+    return HBAR * hubble_s() / (2.0 * math.pi * K_B)
+```
+
+**`eras()`**
+
+-> [(name, years, what)]. DERIVED where it can be.
+
+```python
+def eras():
+    """-> [(name, years, what)]. DERIVED where it can be."""
+    return [
+        ("stelliferous ends", star_lifetime_years(LIGHTEST_STAR_MSUN),
+         "the lightest hydrogen-burning star runs out"),
+        ("holes begin to shrink", black_holes_start_shrinking(),
+         "the sky falls below a solar-mass Hawking temperature"),
+        ("stellar holes are gone", evaporation_years(M_SUN_KG),
+         "a solar-mass hole finishes evaporating"),
+        ("galactic holes are gone", evaporation_years(1e9 * M_SUN_KG),
+         "the largest known holes finish evaporating"),
+    ]
+```
+
+**`evaporation_years(mass_kg)`**
+
+t = 5120 pi G^2 M^3 / (hbar c^4). DERIVED.
+
+```python
+def evaporation_years(mass_kg):
+    """t = 5120 pi G^2 M^3 / (hbar c^4). DERIVED."""
+    return (5120.0 * math.pi * G_GRAV**2 * mass_kg**3
+            / (HBAR * C_LIGHT**4) / YEAR_S)
+```
+
+**`hawking_temperature(mass_kg)`**
+
+T = hbar c^3 / (8 pi G M k). DERIVED.
+
+```python
+def hawking_temperature(mass_kg):
+    """T = hbar c^3 / (8 pi G M k). DERIVED."""
+    return (HBAR * C_LIGHT**3
+            / (8.0 * math.pi * G_GRAV * mass_kg * K_B))
+```
+
+**`hubble_s()`**
+
+H0 in inverse seconds. DERIVED.
+
+```python
+def hubble_s():
+    """H0 in inverse seconds. DERIVED."""
+    return H0_KM_S_MPC * 1000.0 / MPC_M
+```
+
+**`hubble_time_yr()`**
+
+1/H0, the expansion timescale. DERIVED.
+
+```python
+def hubble_time_yr():
+    """1/H0, the expansion timescale. DERIVED."""
+    return 1.0 / hubble_s() / YEAR_S
+```
+
+**`star_lifetime_years(mass_msun)`**
+
+Fuel over burn rate: t ~ M / L ~ M^(1-exp). DERIVED.
+
+```python
+def star_lifetime_years(mass_msun):
+    """Fuel over burn rate: t ~ M / L ~ M^(1-exp). DERIVED."""
+    sun = 1e10                       # MEASURED, solar main sequence
+    return sun * mass_msun ** (1.0 - MASS_LUMINOSITY_EXP)
+```
+
 ## engine/folding.py
 
 Every fold enumerated, and Levinthal's paradox answered by counting. A
@@ -9441,6 +10464,157 @@ def walks(n):
             path.pop()
             seen.remove(p)
     yield from go(list(start), set(start))
+```
+
+## engine/form.py
+
+Shape, where the physics forces it and only there. I said shape was not
+derivable. That was too strong. Most of it is not, but a surprising amount
+is FORCED, and the forcing is not stylistic: rotation a thing that turns
+about an axis and does not wobble is a surface of revolution. There is no
+other option. pressure hoop stress is pr/t, minimised over a closed surface
+by revolution with domed ends. containment holding against a gradient IS
+having a cavity. optics 1/f = (n-1)(1/R1 - 1/R2) has no solution without
+curvature. lever the force ratio IS the length ratio, so the aspect ratio
+is the function. spring stored strain per unit length needs a coiled path;
+a straight bar of the same steel holds far less. gearing two gears mesh
+only on matching pitch circles. semiconductor a junction is microns deep
+and the area is not, so it is a wafer. Eight of those are forced by what
+the part DOES. Three others -- a mark's surface, an alloy's block, breeding
+which is not an object at all -- are not forced, and are marked as chosen
+rather than smuggled in with the rest. ARRANGEMENT is forced too, by
+gravity. A thing that stands has its centre of mass over its footprint, so
+the heavy parts go low. That is why these stack the way they do and it is
+not a composition decision. What is still not here: surface finish,
+fasteners, colour, anything that a maker would decide rather than discover.
+A form that satisfies every constraint is not a design, and the gap between
+them is where taste lives.
+
+**Constants**
+
+```
+SOLID                     = <dict, 25 entries>
+ASPECT                    =
+    'rod': 12, 'wafer': 0.02, 'plate': 0.05, 'disc': 0.14, 'cylinder': 1.1,
+    'capsule': 2.2, 'shell': 1, 'lens': 0.3, 'helix': 2.6, 'torus': 0.35,
+    'wedge': 0.18, 'box': 1
+    # long axis over short, where forced
+```
+
+**`assemble(combo)`**
+
+-> [(kind, radius, half_height, y_centre, primitive)]. Stacked
+heaviest-lowest, because a thing that stands has its centre of mass over
+its footprint. Gravity picks the order, not a preference.
+
+```python
+def assemble(combo):
+    """-> [(kind, radius, half_height, y_centre, primitive)].
+
+    Stacked heaviest-lowest, because a thing that stands has its
+    centre of mass over its footprint. Gravity picks the order,
+    not a preference.
+    """
+    parts = sorted(combo, key=lambda p: -DIMENSION_M.get(p, 0.1))
+    out, y = [], 0.0
+    for p in parts:
+        r, hh = extents(p)
+        out.append((solid_of(p)[0], r, hh, y + hh, p))
+        y += 2.0 * hh
+    return out
+```
+
+**`by_state()`**
+
+-> {state: [primitives]}. DERIVED.
+
+```python
+def by_state():
+    """-> {state: [primitives]}. DERIVED."""
+    out = {True: [], "partial": [], None: []}
+    for p in PRIMITIVES:
+        out[solid_of(p)[1]].append(p)
+    return {k: sorted(v) for k, v in out.items()}
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("most_of_a_shape_is_forced_by_what_the_part_does", _forced)
+    t("gravity_picks_the_order_and_not_a_preference", _stack)
+    t("INVERTED_what_is_not_forced_is_marked_as_chosen", _chosen)
+    return all(x for _, x, _ in res), res
+```
+
+**`extents(primitive)`**
+
+-> (radius or half-width, half-height) in metres. DERIVED. The size comes
+from engine/artifact.DIMENSION_M, which the drawing tables already publish.
+The proportion comes from the solid the function forces.
+
+```python
+def extents(primitive):
+    """-> (radius or half-width, half-height) in metres. DERIVED.
+
+    The size comes from engine/artifact.DIMENSION_M, which the
+    drawing tables already publish. The proportion comes from
+    the solid the function forces.
+    """
+    d = DIMENSION_M.get(primitive, 0.1)
+    kind = solid_of(primitive)[0]
+    a = ASPECT[kind]
+    if a >= 1.0:
+        return d / (2.0 * a) * 1.0, d / 2.0
+    return d / 2.0, d / 2.0 * a
+```
+
+**`forced_fraction(combo)`**
+
+How much of a thing's form is forced. DERIVED. A partial counts a half: the
+thickness of a billet is forced and its outline is not, so half the form
+is.
+
+```python
+def forced_fraction(combo):
+    """How much of a thing's form is forced. DERIVED.
+
+    A partial counts a half: the thickness of a billet is forced
+    and its outline is not, so half the form is.
+    """
+    parts = [p for p in combo if solid_of(p)[1] is not None]
+    if not parts:
+        return 0.0
+    got = sum(1.0 if solid_of(p)[1] is True else 0.5 for p in parts)
+    return got / len(parts)
+```
+
+**`height(combo)`**
+
+Total stack height in metres. DERIVED.
+
+```python
+def height(combo):
+    """Total stack height in metres. DERIVED."""
+    return sum(2.0 * extents(p)[1] for p in combo)
+```
+
+**`solid_of(primitive)`**
+
+-> (kind, forced, why). DERIVED where forced is True.
+
+```python
+def solid_of(primitive):
+    """-> (kind, forced, why). DERIVED where forced is True."""
+    return SOLID.get(primitive, ("box", False, "unclassified"))
 ```
 
 ## engine/frozen.py
@@ -10625,9 +11799,9 @@ matching a template.
 ```
 ATTRS                     = <dict, 15 entries>
 ENTITIES                  =
-    'jupiter', 'neptune', 'venus', 'saturn', 'moon', 'carbon', 'gold',
-    'water', 'earth', 'planet', 'atom', 'iron', 'sun', 'mercury', 'star',
-    'uranus', 'mars', 'pluto', 'orbit'
+    'water', 'neptune', 'planet', 'star', 'carbon', 'mercury', 'gold',
+    'orbit', 'venus', 'jupiter', 'mars', 'pluto', 'saturn', 'moon', 'atom',
+    'uranus', 'earth', 'iron', 'sun'
 LEX                       = <dict, 54 entries>
 RULES                     = <dict, 10 entries>
 ```
@@ -11847,6 +13021,173 @@ def tool_pays(reach_gain, brain_kg=HUMAN_BRAIN_KG, mass_kg=BODY_KG):
         + ("pays" if reach_gain > extra else "does NOT pay"))
 ```
 
+## engine/image.py
+
+Why a picture can be thrown away in pieces and still look like itself.
+engine/artifact.py gives them `depiction` at round 8: a surface that keeps
+what light fell on it, with a grain of a micron. That plate records 100,000
+samples across its width. The eye that will look at it resolves about 1,149
+at reading distance. THE MEDIUM OUT-RESOLVES THE VIEWER BY 87 TIMES, and
+that is the whole of why an image format exists. Compression is not a trick
+about files. It is the arithmetic of recording more than anyone can see,
+and every piece of it is a fact about the eye rather than about the
+picture. CHROMA. Colour acuity is about a third of brightness acuity, so
+colour can be sampled two-by-two coarser. Exactly 2x, and this is what
+4:2:0 subsampling is. CONTRAST. Sensitivity peaks near 4 cycles a degree
+and falls away above it, so a high-frequency coefficient needs fewer bits
+rather than none. About 5x averaged over a block. Two times 2.4 is 4.8, and
+that is what PERCEPTION alone buys. tools/jpeg.py implements the encoder
+with the quantization table taken from the sensitivity curve below instead
+of from Annex K; the file it produces measures 10.4x and opens in an
+unrelated decoder. The gap between 4.8 and 10.4 is entropy coding of the
+zeros the quantizer made, which is a fact about symbol statistics rather
+than about eyes, and keeping the two apart matters -- a first pass at this
+cherry-picked five frequencies to make perception alone come out at 10x.
+WHAT IS NOT HERE. There is no image in that world. A depiction artifact
+records that a surface was exposed and has no content, because the world
+has no scene: no geometry, no light, nothing to photograph. The JPEG that
+tools/jpeg.py writes is of the LEDGER, which is real, and it is our
+rendering of their data rather than a picture anybody there took.
+
+**Constants**
+
+```
+CHROMA_ACUITY             = 0.333333   # MEASURED, colour against brightness
+READING_M                 = 0.3   # CHOSEN, arm's length
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("the_medium_out_resolves_the_eye_that_reads_it", _over)
+    t("the_compression_ratio_is_a_fact_about_the_eye", _ratio)
+    t("an_encoder_built_from_it_measures_what_it_should", _real)
+    t("INVERTED_there_is_no_image_in_that_world", _nothing)
+    return all(x for _, x, _ in res), res
+```
+
+**`chroma_saving(sub=2)`**
+
+4:2:0. DERIVED from colour acuity being a third. Three channels become one
+full and two at 1/sub^2. Acuity of a third would permit sub=3 and 2.45x;
+sub=2 is what is used, because a block is 8 wide and 2 divides it.
+
+```python
+def chroma_saving(sub=2):
+    """4:2:0. DERIVED from colour acuity being a third.
+
+    Three channels become one full and two at 1/sub^2. Acuity
+    of a third would permit sub=3 and 2.45x; sub=2 is what is
+    used, because a block is 8 wide and 2 divides it.
+    """
+    return 3.0 / (1.0 + 2.0 / (sub * sub))
+```
+
+**`contrast_saving(pixels_per_degree=60.0)`**
+
+Bits saved by quantizing what the eye barely sees. DERIVED.
+
+```python
+def contrast_saving(pixels_per_degree=60.0):
+    """Bits saved by quantizing what the eye barely sees. DERIVED."""
+    peak = max(sensitivity(f / 10.0) for f in range(1, 800))
+    saved = []
+    for u in range(8):
+        for v in range(8):
+            if u == v == 0:
+                continue
+            cyc = math.sqrt(u * u + v * v) / 16.0 * pixels_per_degree
+            saved.append(math.log2(peak / max(sensitivity(cyc), 1e-6)))
+    return 2.0 ** (sum(saved) / len(saved))
+```
+
+**`derived_ratio()`**
+
+What PERCEPTION alone buys. DERIVED. Chroma times contrast, and nothing
+else. A first pass at this averaged the contrast term over five hand-picked
+frequencies and got 5x, which made the total 10x and looked like a match
+for real JPEG. It was cherry-picked. Averaging over all 63 actual AC
+coefficients gives 2.4x and a total near 5x, and the measured 10.4x of the
+encoder is the rest coming from ENTROPY coding of the zeros -- which is a
+fact about symbol statistics and not about eyes.
+
+```python
+def derived_ratio():
+    """What PERCEPTION alone buys. DERIVED.
+
+    Chroma times contrast, and nothing else. A first pass at
+    this averaged the contrast term over five hand-picked
+    frequencies and got 5x, which made the total 10x and looked
+    like a match for real JPEG. It was cherry-picked. Averaging
+    over all 63 actual AC coefficients gives 2.4x and a total
+    near 5x, and the measured 10.4x of the encoder is the rest
+    coming from ENTROPY coding of the zeros -- which is a fact
+    about symbol statistics and not about eyes.
+    """
+    return chroma_saving() * contrast_saving()
+```
+
+**`entropy_share(measured=10.4)`**
+
+How much of the real ratio is not perceptual. DERIVED.
+
+```python
+def entropy_share(measured=10.4):
+    """How much of the real ratio is not perceptual. DERIVED."""
+    return measured / derived_ratio()
+```
+
+**`eye_samples(size_m=None, distance_m=0.3)`**
+
+Samples across it that the eye can tell apart. DERIVED.
+
+```python
+def eye_samples(size_m=None, distance_m=READING_M):
+    """Samples across it that the eye can tell apart. DERIVED."""
+    size = DIMENSION_M["depiction"] if size_m is None else size_m
+    return size / (distance_m * EYE_RADIANS)
+```
+
+**`over_resolution()`**
+
+How much more is recorded than can be seen. DERIVED.
+
+```python
+def over_resolution():
+    """How much more is recorded than can be seen. DERIVED."""
+    return plate_samples() / eye_samples()
+```
+
+**`plate_samples()`**
+
+Samples across their plate. DERIVED from the grain.
+
+```python
+def plate_samples():
+    """Samples across their plate. DERIVED from the grain."""
+    return 1.0 / TOL_NEEDED["depiction"]
+```
+
+**`sensitivity(cycles_per_degree)`**
+
+Contrast sensitivity of the eye. MEASURED, a standard CSF.
+
+```python
+def sensitivity(cycles_per_degree):
+    """Contrast sensitivity of the eye. MEASURED, a standard CSF."""
+    f = max(cycles_per_degree, 0.1)
+    return 2.6 * (0.0192 + 0.114 * f) * math.exp(-((0.114 * f) ** 1.1))
+```
+
 ## engine/induce.py
 
 Induce a rule from examples. Nobody tells it the operation. Bottom-up
@@ -12302,8 +13643,6 @@ measure of how much has not been derived.
 **Constants**
 
 ```
-SPEECH_BITS_S             = 39   # MEASURED: cross-linguistic speech rate
-TELL_SECONDS              = 300   # engine/tradition
 SWITCH_J                  = 1e-15   # MEASURED-ish, a modern gate operation
 PASSES                    = 1e+06   # CHOSEN, touches per stored bit
 PRECISION_EXPONENT        = 0.5   # CHOSEN, cost as (base/tol)**this
@@ -13032,7 +14371,7 @@ that is a fixed point, not an opinion.
 YIELD_PER_SKILL           = 1.1   # CHOSEN, what one craft adds to output
 COPY_LIFE_YEARS           = 100   # MEASURED-ish, a written surface
 COPIES_PER_YEAR           = 250   # CHOSEN, a working scribe
-VILLAGE                   = 912   # engine/disease.critical_community
+VILLAGE                   = 912.5
 FOOD_SKILLS               = 8   # DERIVED: the crafts that touch a field
 LAND_SHARE                = 0.3   # MEASURED-ish, land's share of output
 ```
@@ -13080,7 +14419,7 @@ def designs(s):
     return 2.0 ** s - 1.0
 ```
 
-**`levers(n=912.0, villages=40)`**
+**`levers(n=912.5, villages=40)`**
 
 -> [(lever, parts gained, per-capita exponent)]. DERIVED.
 
@@ -13171,7 +14510,7 @@ def rival_value_per_head(units, n):
     return units / max(n, 1.0)
 ```
 
-**`settle(n=912.0, passes=2, rounds=40, market=None)`**
+**`settle(n=912.5, passes=2, rounds=40, market=None)`**
 
 Fixed point of the loop. DERIVED, not searched.
 
@@ -13241,7 +14580,7 @@ def threshold_benefit(cost, n):
     return cost / max(n, 1.0)
 ```
 
-**`turn(s, n=912.0, passes=2, years=2000.0, market=None)`**
+**`turn(s, n=912.5, passes=2, years=2000.0, market=None)`**
 
 One pass round the loop. -> next s. DERIVED.
 
@@ -14346,6 +15685,113 @@ def worlds_are_not_unique():
                    f"answer is a set and not a number")
 ```
 
+## engine/language.py
+
+Their words, and why we can read them. The encyclopedia written at 3.2.9
+was in English, and the English was mine: every phrase in it came from a
+description I typed into engine/artifact.py. That is us writing their
+record for them. So they get a language. Not ours -- there is no way to
+hand them English that is not the same mistake in a larger form. A band
+coins a token when it first makes something, out of a phoneme inventory and
+nothing else. Different bands coin different words for the same thing,
+because there is nothing to make them agree, and that is what actually
+happens to languages left alone. WHY WE CAN TRANSLATE ANYWAY, and this is
+the whole point: we watched them name it. A word is a sound attached to an
+act of making, and the ledger recorded the act. So the dictionary is not a
+gift we gave them, it is an observation we made -- the same position a
+field linguist is in, pointing at a thing and writing down the noise. What
+we cannot do is tell them what to call anything, and what we must not do is
+read meaning into a word beyond the referent we saw attached to it.
+
+**Constants**
+
+```
+CONSONANTS                = ptkmnslwj   # CHOSEN, a small ordinary inventory
+VOWELS                    = aiu   # CHOSEN, a three-vowel system
+```
+
+**`agreement(lexicons, referent)`**
+
+-> (distinct words, bands holding one). DERIVED. How many different words a
+region has for the same thing, which is a measure of how little the bands
+meet.
+
+```python
+def agreement(lexicons, referent):
+    """-> (distinct words, bands holding one). DERIVED.
+
+    How many different words a region has for the same thing,
+    which is a measure of how little the bands meet.
+    """
+    got = [lx.word[referent] for lx in lexicons if referent in lx.word]
+    return len(set(got)), len(got)
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("a_word_is_a_sound_attached_to_an_act_of_making", _coin)
+    t("bands_left_alone_do_not_agree_on_words", _diverge)
+    t("we_can_translate_because_we_watched_them_name_it", _trans)
+    return all(x for _, x, _ in res), res
+```
+
+**`coin(rng, syllables=None)`**
+
+A new token. Sound only -- it means nothing yet. DERIVED.
+
+```python
+def coin(rng, syllables=None):
+    """A new token. Sound only -- it means nothing yet. DERIVED."""
+    n = syllables or rng.choice((2, 2, 3))
+    return "".join(rng.choice(CONSONANTS) + rng.choice(VOWELS)
+                   for _ in range(n))
+```
+
+**`gloss(token, lexicon)`**
+
+-> our words for their word, via the referent. DERIVED.
+
+```python
+def gloss(token, lexicon):
+    """-> our words for their word, via the referent. DERIVED."""
+    from engine.artifact import PRIMITIVES
+    ref = translate(token, lexicon)
+    if ref is None:
+        return None
+    if isinstance(ref, str):
+        return PRIMITIVES[ref][3] if ref in PRIMITIVES else ref
+    return "; ".join(PRIMITIVES[p][3] for p in sorted(ref)
+                     if p in PRIMITIVES)
+```
+
+**`translate(token, lexicon)`**
+
+-> the referent we watched the word attached to. This is not a dictionary
+anybody was given. It is what we saw: the band made a thing, and made a
+noise, and the ledger has both. Nothing may be read into the word past
+that.
+
+```python
+def translate(token, lexicon):
+    """-> the referent we watched the word attached to.
+
+    This is not a dictionary anybody was given. It is what we
+    saw: the band made a thing, and made a noise, and the ledger
+    has both. Nothing may be read into the word past that.
+    """
+    return lexicon.means.get(token)
+```
+
 ## engine/learn.py
 
 Turn induced expressions into rules the router can use. A complete rule is
@@ -14421,7 +15867,6 @@ BITS_PER_SYNAPSE          = 4.7   # Bartol et al., from spine-head sizes
 OPTIC_FIBRES              = 1e+06
 BITS_PER_FIBRE_S          = 10
 BODY_TEMP_K               = 310
-SECONDS_PER_YEAR          = 3.15576e+07
 ```
 
 **`check()`**
@@ -14563,12 +16008,12 @@ DERIVED                   = DERIVED
 ASSERTED                  = ASSERTED
 INHERITED                 = DERIVED_FROM_ASSERTED
 CHECKS                    =
-    (<function codon_length at 0x10371b670>,
-    <function surface_to_volume at 0x10371b940>,
-    <function diffusion_limit at 0x10371ba60>,
-    <function square_cube_limit at 0x10371baf0>,
-    <function reynolds at 0x10371bb80>,
-    <function earliest_possible_life at 0x10371bca0>)
+    (<function codon_length at 0x105506700>,
+    <function surface_to_volume at 0x1055069d0>,
+    <function diffusion_limit at 0x105506af0>,
+    <function square_cube_limit at 0x105506b80>,
+    <function reynolds at 0x105506c10>,
+    <function earliest_possible_life at 0x105506d30>)
 ```
 
 **`check()`**
@@ -14997,6 +16442,7 @@ def check():
     t("permission_is_not_pressure", _forced)
     t("every_link_names_its_rule", _cites)
     t("the_gaps_are_named_and_counted", _gaps)
+    t("the_chain_reads_forward", _forward)
     t("competition_is_a_theorem_not_a_run", _excl)
     t("abundance_falls_as_the_three_quarter_power", _abund)
     t("nothing_here_simulates", _norun)
@@ -15396,7 +16842,365 @@ def inside_the_head():
          "rule 3 a machine that answers by searching is an "
          "admission: its usefulness measures what has not been "
          "derived, and it is the only quantity here that shrinks "
-         "as the work gets better")
+         "as the work gets better"),
+        ("people with instruments", "a literature of their own",
+         DERIVED, "literature.order_agreement",
+         "this repository derives from constants it simply has. "
+         "The people inside it do not have them -- they have "
+         "senses reaching 8 of 13 constraints and instruments "
+         "arriving in an order engine/artifact.py already fixed "
+         "from melting points and machining tolerances. So a "
+         "science is possible exactly when its instrument is, "
+         "which PREDICTS AN ORDER: statics, surveying, positional "
+         "astronomy, metallurgy, machines, optics, thermometry, "
+         "then the rest. Against the century each actually "
+         "appeared that is 55 concordant pairs to 7, Kendall tau "
+         "0.77 on a sequence that could have come out 6.2e9 ways. "
+         "The rounds were not tuned for this and the centuries "
+         "are the answer key, but the science-to-instrument "
+         "mapping is mine and a different hand would score "
+         "differently. The 7 discordant pairs concentrate on "
+         "metallurgy, pneumatics and spectroscopy, and each names "
+         "a requirement the mapping missed -- a ruled grating is "
+         "precision machining, not optics. Their rules also carry "
+         "THEIR error: a three-term derivation of G is +/-17% at "
+         "round 2 and 0.2% at round 5, and Cavendish got 1% in "
+         "1798, which lands between them"),
+        ("two gates", "a third that only goes down", DERIVED,
+         "artifact.coldness",
+         "the heat ladder only ever went UP and nothing in the "
+         "tree had touched the other direction. Going cold is a "
+         "separate physical scarcity with its own cascade: you "
+         "cannot reach liquid helium without liquid air first, "
+         "because the helium must be pre-cooled -- the same shape "
+         "as the bellows needing the tuyere they were for. "
+         "Expanding a compressed gas reaches 77 K and needs "
+         "pressure and regulation; pumping on a cascaded bath "
+         "reaches 4 K and needs vacuum and superconduction. That "
+         "adds superconduction, coherence and placement, and the "
+         "tree runs to eleven rounds. The precision ladder now "
+         "ENDS rather than stopping: matter cannot be placed more "
+         "finely than an atom is wide, and the Bohr radius falls "
+         "out of hbar, the electron mass and the charge at "
+         "5.29e-11 m. That is a wall, not a rung"),
+        ("a claim that there was no light", "the light that was here",
+         DERIVED, "scene.solar_constant",
+         "3.2.14 said the world has no scene, and that was wrong "
+         "about this repository's own contents. engine/thermo.py "
+         "already had the Sun at 5772 K and engine/constants.py "
+         "its luminosity and orbit, so the solar constant is "
+         "L/(4 pi d^2) = 1361 W/m2 against a measured 1361, and "
+         "Wien puts the peak at 502 nm against a measured 502. "
+         "Neither was put in. Rayleigh scattering goes as "
+         "lambda^-4, which gives BOTH the blue sky -- what "
+         "scattered out, blue 4.9x red -- and the red low sun, "
+         "what went straight through, red 46x blue. One "
+         "subtraction seen from two directions. A shadow is "
+         "h/tan(elevation) on a height engine/drawing.py already "
+         "publishes, and lit-to-shadowed contrast is 6.1 to one "
+         "rather than infinite, because a shadow still sees the "
+         "sky. What remains underivable is the SHAPE of a thing: "
+         "the envelope is real and published, a box is the "
+         "simplest solid with those extents, and the choice is "
+         "stated rather than hidden in a renderer. One more "
+         "thing falls out and it is not cosmetic: the Sun's "
+         "RADIUS is forced too, since L = 4 pi R^2 sigma T^4 "
+         "solves to 6.957e8 m, the measured figure, and 2R/d "
+         "makes the disc 0.533 degrees across. So the Sun is not "
+         "a point and NO SHADOW EDGE IS SHARP -- the half-shadow "
+         "spreads 9.3 mm per metre from whatever cast it. A "
+         "render with hard edges is not stylised, it is wrong "
+         "about the size of the Sun"),
+        ("an envelope", "a shape, where the physics forces one",
+         DERIVED, "form.forced_fraction",
+         "saying shape was underivable was too strong. 20 of 25 "
+         "primitives have a solid FORCED by what the part does. "
+         "A thing that turns about an axis without wobbling is a "
+         "surface of revolution and there is no other option. "
+         "Hoop stress pr/t is least on a revolved shell with "
+         "domed ends. Holding against a gradient IS having a "
+         "cavity. 1/f = (n-1)(1/R1-1/R2) has no solution without "
+         "curvature, so optics is a lens. The force ratio of a "
+         "lever IS its aspect ratio. Two gears mesh only on "
+         "matching pitch circles. A junction is microns deep and "
+         "its area is not, so a semiconductor is a wafer. The "
+         "proportions come from DIMENSION_M, which the drawing "
+         "tables were already publishing, and the ARRANGEMENT is "
+         "forced by gravity -- a thing that stands has its "
+         "centre of mass over its footprint, so the heavy parts "
+         "go low and nobody chose the order. What is NOT forced "
+         "is marked: a mark needs a surface but any surface, an "
+         "alloy's composition says nothing about form, and "
+         "nothing here gives finish, fasteners or colour. A form "
+         "that satisfies every constraint is not a design, and "
+         "the distance between them is where taste lives"),
+        ("a surface that keeps light", "a reason to throw most of it away",
+         DERIVED, "image.over_resolution",
+         "their plate has a one-micron grain, so it holds 100,000 "
+         "samples across; the eye that will look at it resolves "
+         "an arcminute, which at reading distance is 1,149 across "
+         "the same plate. THE MEDIUM OUT-RESOLVES THE VIEWER BY "
+         "87 TIMES, 7,569 in area, and that is why an image "
+         "format exists at all -- compression is not a trick "
+         "about files, it is the arithmetic of recording more "
+         "than anyone can see. Every term is a fact about the "
+         "eye: colour acuity is a third of brightness so colour "
+         "samples two-by-two coarser, exactly 2x, which is what "
+         "4:2:0 IS; and contrast sensitivity peaks near 4 cycles "
+         "a degree and falls away, so a high coefficient needs "
+         "fewer bits rather than none, 2.4x over the 63 AC "
+         "terms. 4.8x from perception alone. tools/jpeg.py "
+         "implements the encoder with that quantization table "
+         "instead of Annex K, measures 10.4x, and an unrelated "
+         "decoder reads the file as a 1400x240 JPEG -- so the "
+         "remaining 2.2x is entropy coding of the zeros, which "
+         "is symbol statistics and not eyes"),
+        ("a drawing that needs a reader", "one that does not",
+         DERIVED, "depiction.image_over_drawing",
+         "a drawing is a projection and a projection is a "
+         "convention, so it needs a drawer AND a reader holding "
+         "the same one -- f squared, worth 0.0001 at 1% and 0.01 "
+         "at 10%. A photograph needs no convention: whoever "
+         "looks at it reads it, so its worth is f to the FIRST "
+         "power and is 1 from the moment it exists. That is "
+         "10,000x at 1% literacy. Depiction needs a lens and a "
+         "specified composition and lands at round 8, and what "
+         "it does is abolish the second literacy that had just "
+         "been derived. ART is the third case and the strange "
+         "one: it is the only output here needing no tolerance "
+         "at all, because a mark is not true to anything, so no "
+         "gate has ever blocked it and it is available in round "
+         "1 while 12 of 25 crafts queue behind a furnace. The "
+         "obvious account -- that art waits for a surplus -- is "
+         "refuted: painted caves are thirty thousand years older "
+         "than farming, and the reason is magnitude, a painted "
+         "surface being 0.75 days against 50 for one part of a "
+         "tool. And art travels like a FACT rather than a tool, "
+         "audience 100% against 50%, which is why a style "
+         "crosses a region faster than the pigment recipe does"),
+        ("a tolerance on nothing", "a dimensioned drawing", DERIVED,
+         "drawing.drawing_of",
+         "a tolerance has to be a tolerance ON something, and "
+         "these were relative numbers floating free of any "
+         "dimension. Giving each craft a characteristic size lets "
+         "them be checked against what the physics demands, and "
+         "three came out wrong. The worst: a lens surface must be "
+         "true to a quarter wavelength, 138 nm on a 50 mm lens, "
+         "2.7e-6 relative against the 1e-2 that was here -- four "
+         "orders out. The resolution is a distinction the file "
+         "did not have. Some accuracy is MEASURED and some is "
+         "PROCESSED: nobody ever machined a lens to a quarter "
+         "wave, you grind two surfaces together and they conform, "
+         "because a sphere is the only shape that slides on "
+         "itself in every orientation. Three flats lapped in "
+         "rotation give a plane, a hobbed gear generates its own "
+         "involute, and the accuracy comes out of the METHOD with "
+         "nobody gauging anything -- which is why lenses precede "
+         "micrometers instead of waiting for them. Their geometry "
+         "is ours, so a drawing they make is one we can read, and "
+         "none of that needed telling them a rule"),
+        ("a part too fine to copy", "a drawing", DERIVED,
+         "drawing.first_round_needing_one",
+         "the obvious account of a drawing is that a shape is a "
+         "lot of information, and it is wrong by a wide margin: "
+         "pinning a dimension to a tolerance costs log2(1/t) "
+         "bits, so a three-dimensional part at a BILLIONTH is 90 "
+         "bits against the 11,700 one telling carries. A hundred "
+         "and thirty such specifications fit in one story and you "
+         "could read a nanometre tolerance aloud. What actually "
+         "forces a drawing is that the object stops being its own "
+         "specification: copying by eye reaches a tenth, so above "
+         "that you hand someone the original, and below it a "
+         "NUMBER has to travel instead of a thing. 11 of 24 "
+         "crafts are tighter than a sample can carry and the "
+         "first is at round 5. And a projection is a convention, "
+         "so it needs a drawer AND a reader -- f squared, the "
+         "same exponent as literacy, and slow for the same "
+         "reason. A drawing is a second literacy"),
+        ("a constraint envelope", "a world that runs", DERIVED,
+         "world.run",
+         "everything before this computed what a human-like "
+         "organism COULD NOT do, which is a real kind of "
+         "statement and is not the same as saying what they did. "
+         "Nothing had state, nothing took a step, nobody tried "
+         "anything. This does: 40 bands hold crafts, try "
+         "combinations of what they have, and find out about the "
+         "gates by failing -- they cannot see a melting point. "
+         "Over 12,000 years the ledger takes 30,319 entries, "
+         "they reach all 21 crafts with the last at year 11,380, "
+         "and they build 4,352 distinct things of which 4,334 "
+         "have NO NAME in our world, because 21 things are named "
+         "and the reachable space is 2^21. The result is that "
+         "the ORDER comes back out at Kendall tau 1.00 against "
+         "the bootstrap derived from melting points -- an "
+         "ordering that was a theorem recovered by a stochastic "
+         "search run by people who know no physics. The "
+         "timescale is NOT a result: CRAFT_SUCCESS is fitted to "
+         "the Holocene and is the only fitted number here"),
+        ("a record we wrote for them", "a record they wrote",
+         DERIVED, "world.words_for",
+         "the encyclopedia at 3.2.9 was in English and the "
+         "English was mine -- every phrase came from a "
+         "description I had typed into engine/artifact.py, which "
+         "is us writing their record and then admiring it. So "
+         "they get a language: nine consonants, three vowels, "
+         "open syllables, 20,412 possible words, and a band coins "
+         "a token when it first makes something. Nobody was "
+         "handed English, because handing them English is the "
+         "same mistake in a larger form. We can still read it "
+         "because we WATCHED THEM ATTACH each word to an act of "
+         "making and the ledger has both -- the gloss is an "
+         "observation in the position a field linguist is in, "
+         "not a dictionary anybody was given. And a result "
+         "nothing was built to produce: a craft every band found "
+         "separately keeps a word per band, while a craft that "
+         "spread by teaching carries one word with it, so heat "
+         "has 39 words across 40 bands and gearing has 2. THE "
+         "OLDEST WORDS ARE THE LEAST AGREED ON, which is what "
+         "happens to real basic vocabulary against real "
+         "technical vocabulary"),
+        ("a literature", "a paper that can be marked", DERIVED,
+         "exam.half_moon_sensitivity",
+         "a question is not a topic, it is a METHOD, and every "
+         "method has a SENSITIVITY: how much the answer moves "
+         "when the measurement is off by a fraction. Eratosthenes "
+         "measured a shadow and a road, sensitivity 1, and got "
+         "the Earth's circumference to a few per cent with a "
+         "stick. Aristarchus, same century and same equipment, "
+         "measured the Sun's distance and was out by twenty "
+         "times. Feeding his reported 87 degrees into 1/cos gives "
+         "19.1 and he published 'about 19' -- so the arithmetic "
+         "was right and the error was entirely in the input. His "
+         "method multiplies by theta tan(theta) = 611. And the "
+         "measurement was not the angle: the angle only means "
+         "anything AT half moon, and the Moon moves 13.2 degrees "
+         "a day, so his 2.85-degree error is 5.2 HOURS of timing. "
+         "A water clock leaves 187% on the answer. He attempted a "
+         "round-6 question with round-2 equipment, could not have "
+         "known it, and the figure stood for seventeen centuries "
+         "-- not corrected by better thinking but by the transit "
+         "of Venus, a different method with a different "
+         "sensitivity"),
+        ("a paper that can be marked", "who it says mattered",
+         DERIVED, "standing.ranking",
+         "who counts should fall out of the structure rather than "
+         "be imported, so it is ranked by what rests on it: how "
+         "many primitives, sciences, exam questions and namable "
+         "artifacts depend on each contribution. Nothing the "
+         "ranking reads has a name in it, so no name can come "
+         "out. REGULATION tops it at 16 -- a machine that "
+         "corrects itself -- then mark at 10, optics and rotation "
+         "at 9. And a tool is not the same kind of contribution "
+         "as a fact: a primitive enters an EXPONENT, since "
+         "designs are 2^s and one more doubles the space, while "
+         "an answer enters a SUM as one item in a corpus of "
+         "1.2e8. The ratio is 1.2e8 to one. Of eight names "
+         "commonly remembered here, six are remembered for "
+         "answering and two for building -- the reverse of what "
+         "the ranking says, and the check fails if memory ever "
+         "starts tracking leverage"),
+        ("who it says mattered", "why anything gets a name at all",
+         DERIVED, "naming.naming_is_worth",
+         "a name is not imposed from outside, it is a mechanism "
+         "the people inside need, and it is three things already "
+         "priced elsewhere. An INDEX: a corpus of 8,692 items "
+         "costs 4,346 comparisons to search and one to look up, "
+         "so a handle is worth 4,346 retrievals -- names are "
+         "addresses before they are honours, which is why the "
+         "oldest ones are places and rivers. A CREDIT CLAIM: "
+         "engine/merit.py prices a contribution at 1/k, and "
+         "attaching a name is the act that sets k to one, 100% "
+         "against 4%, so naming IS the reward system's addressing "
+         "rather than decoration on it. And an ITEM: a name "
+         "decays like any other, needing 5 holders to last forty "
+         "generations -- the same figure as keeping a script, "
+         "because it is the same arithmetic. What is NOT derived "
+         "is why answerers get named over toolmakers. The "
+         "tellability account was tested and refuted at r = -0.20 "
+         "over 21 primitives. What does account for it is "
+         "AUDIENCE: a retelling costs the teller and pays the "
+         "listener, so it happens when the listener can act. An "
+         "answer is usable by anyone who hears it and a tool only "
+         "by whoever holds that craft -- 100% against 50% in a "
+         "band of 28 holding 2 crafts, and 0.3% in a literate "
+         "village holding 304. Over five retellings that is 32x "
+         "and 2.6e12x. And the story channel stops carrying a "
+         "tool at all once specialties pass 3, because R0 falls "
+         "through one, after which tools travel by apprenticeship "
+         "-- a channel that produces no names. A society gets "
+         "better at making tools and worse at naming who made "
+         "them, at the same time and for the same reason"),
+        ("a language with no grammar", "one that buys a grammar",
+         DERIVED, "syntax.threshold",
+         "their compounds were concatenation and not grammar -- "
+         "nouns in a row, no order, no case, no agreement -- and "
+         "that was accurate rather than final, because a grammar "
+         "is not given to a language, it is BOUGHT. What it "
+         "fixes: a flat string of n parts reads Catalan(n-1) ways "
+         "and only one is meant, so the doubt is 2.3 bits at four "
+         "parts and 5.4 at six. What it costs: one syllable, and "
+         "an inventory of 9 consonants by 3 vowels carries "
+         "log2(27) = 4.75 bits. So a marker pays at exactly SIX "
+         "parts and not before -- below that free word order is "
+         "enough and a particle is a waste of breath. This world "
+         "crossed it at year 600. And the first grammar is a "
+         "BRACKET rather than a case or a tense, because a flat "
+         "compound already says which parts are present and "
+         "cannot say which part the whole thing IS. A grammar "
+         "word is one syllable against a noun's two or three, "
+         "which is forced twice over: it must not be mistaken for "
+         "a noun, and it is the most frequent word there is, so "
+         "the cheapest distinguishable form survives"),
+        ("everything derived so far", "one epoch of many", DERIVED,
+         "farfuture.star_lifetime_years",
+         "engine/epochs.py stops at the neutron-star merger, about "
+         "ten billion years, because that is the last epoch that "
+         "makes a new KIND of matter -- and everything above, "
+         "cells through lithography, happens INSIDE that one epoch "
+         "using nothing the universe had not already made. Main "
+         "sequence lifetime goes as M^(1-3.5), so the lightest "
+         "star that burns at all, 0.08 solar masses, lasts 5.5e12 "
+         "years against the Sun's 1e10. The era with people in it "
+         "is a 552nd of the era with stars in it, and the chain "
+         "had an end that nobody had written down"),
+        ("the last starlight", "holes that finally shrink", DERIVED,
+         "farfuture.black_holes_start_shrinking",
+         "a solar-mass hole radiates at 6.2e-8 K, colder than "
+         "today's 2.725 K sky, so it GROWS -- nothing evaporates "
+         "until the universe has cooled past it, which under "
+         "exponential expansion takes ln(2.725/6.2e-8) Hubble "
+         "times, about 2.6e11 years. Then t = 5120 pi G^2 M^3 / "
+         "hbar c^4, three constants and a mass with nothing "
+         "fitted: 2.1e67 years for a stellar hole and 2.1e94 for a "
+         "galactic one, because a cube turns 1e9 into 1e27. The "
+         "last event in the universe is the evaporation of the "
+         "largest hole in it"),
+        ("no gradient", "nothing further can be derived", DERIVED,
+         "farfuture.de_sitter_temperature",
+         "every rule in this repository runs on a GRADIENT. A cell "
+         "eats one, a body sheds one, a fire needs one, Carnot is "
+         "defined by one, and the 58x return on cooking exists "
+         "only because there is somewhere for the heat to go. The "
+         "floor is the de Sitter temperature, hbar H / 2 pi k = "
+         "2.7e-30 K, set by the horizon itself and by the same "
+         "formula as a black hole's. At that temperature "
+         "everything is at the horizon and there is no somewhere. "
+         "So the final link does not say the universe is cold. It "
+         "says the machinery this repository is built from has "
+         "nothing left to bite on, which is an ANSWER and not a "
+         "gap -- the one place on the chain where 'nothing further "
+         "can be derived' is the correct result"),
+        ("ordinary matter", "whether it lasts at all", MISSING,
+         "farfuture.PROTON_DECAY_BOUND_YR",
+         "a gap in the WORLD rather than in the model, and the "
+         "distinction is worth keeping. The proton has never been "
+         "observed to decay; Super-Kamiokande puts the lifetime "
+         "beyond 1.6e34 years, which is a bound and not a value. "
+         "If protons decay near that bound, white dwarfs and cold "
+         "planets evaporate long before the 2.1e67 years a stellar "
+         "hole needs and the degenerate era ends early. If they do "
+         "not, cold matter simply waits. Nothing here can decide "
+         "it and neither can anyone else yet")
     ]
 ```
 
@@ -15611,6 +17415,202 @@ def written_depth(passes=2, band=BAND):
     """-> (k, s). Specialties a band can hold once it writes."""
     from engine.craft import best_depth
     return best_depth(band, copy_error(passes))[:2]
+```
+
+## engine/literature.py
+
+What the people in the simulation could write down, and when. This
+repository derives rules from constants it simply has. The people inside it
+do not have them. They have senses, which engine/senses.py says reach eight
+of the thirteen constraints that bind on them, and they have instruments,
+which engine/artifact.py says arrive in a fixed order set by temperature
+and then by tolerance. So a science is possible for them exactly when the
+instrument it needs is possible, and the instrument order is already
+derived. That gives a predicted ORDER for the sciences, which is a much
+harder thing to match than any single number -- a sequence of ten can come
+out 3.6 million ways and only one of them is right. Then the second
+question, which is the interesting one: their version of a rule carries
+their measurement error, not ours. A length known to a tenth gives a rule
+known to a tenth. So for any rule in this repository we can ask what THEIR
+version of it would have said, and whether it would have been good enough
+to notice they were wrong.
+
+**Constants**
+
+```
+SCIENCES                  = <dict, 13 entries>
+EYE_RADIANS               = 0.00029   # one arcminute
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("the_order_of_the_sciences_is_predicted_not_assumed", _order)
+    t("an_instrument_decides_what_can_be_known", _instrument)
+    t("their_rules_carry_their_error_and_it_is_computable", _error)
+    t("INVERTED_a_rule_they_could_not_check_is_not_their_rule", _cannot)
+    t("the_discordant_pairs_name_which_mapping_is_wrong", _wrong)
+    return all(x for _, x, _ in res), res
+```
+
+**`error_band(true_value, round_n, terms=1)`**
+
+-> (low, high). How WIDE their answer would be, not where. Renamed from
+their_value, which was wrong in a way worth recording. It returned the true
+value with error bars, and that reads as a prediction of what they would
+report -- which assumes they already know the answer they are looking for.
+They do not. They have tools. What this can honestly say is the WIDTH their
+instruments leave, not the CENTRE. A method with a systematic flaw lands
+outside this band and stays there: engine/exam.py has Aristarchus 20x out
+where his band was 6% wide. For a centre you need a forward model of the
+method, which exam.py has for five questions and this module has for none.
+
+```python
+def error_band(true_value, round_n, terms=1):
+    """-> (low, high). How WIDE their answer would be, not where.
+
+    Renamed from their_value, which was wrong in a way worth
+    recording. It returned the true value with error bars, and
+    that reads as a prediction of what they would report -- which
+    assumes they already know the answer they are looking for.
+    They do not. They have tools.
+
+    What this can honestly say is the WIDTH their instruments
+    leave, not the CENTRE. A method with a systematic flaw lands
+    outside this band and stays there: engine/exam.py has
+    Aristarchus 20x out where his band was 6% wide. For a centre
+    you need a forward model of the method, which exam.py has for
+    five questions and this module has for none.
+    """
+    e = their_precision(round_n) * math.sqrt(terms)
+    return true_value * (1 - e), true_value * (1 + e)
+```
+
+**`order_agreement()`**
+
+-> (concordant, discordant, tau). Kendall's tau. DERIVED. Every pair of
+sciences either comes out in the same relative order both ways or it does
+not. Ties in the predicted round are not counted either way.
+
+```python
+def order_agreement():
+    """-> (concordant, discordant, tau). Kendall's tau. DERIVED.
+
+    Every pair of sciences either comes out in the same relative
+    order both ways or it does not. Ties in the predicted round
+    are not counted either way.
+    """
+    names = [s for s, _r in predicted_order()]
+    pred = {s: r for s, r in predicted_order()}
+    rec = {s: SCIENCES[s][2] for s in names}
+    con = dis = 0
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            dp, dr = pred[a] - pred[b], rec[a] - rec[b]
+            if dp == 0 or dr == 0:
+                continue
+            if (dp > 0) == (dr > 0):
+                con += 1
+            else:
+                dis += 1
+    tot = con + dis
+    return con, dis, (con - dis) / tot if tot else 0.0
+```
+
+**`parallax_reachable(round_n, nearest_arcsec=0.76)`**
+
+Can they see the nearest star move? DERIVED.
+
+```python
+def parallax_reachable(round_n, nearest_arcsec=0.76):
+    """Can they see the nearest star move? DERIVED."""
+    return their_angle(round_n) <= nearest_arcsec * 4.8481e-6
+```
+
+**`predicted_order()`**
+
+-> [(science, round)] sorted by when the tools arrive.
+
+```python
+def predicted_order():
+    """-> [(science, round)] sorted by when the tools arrive."""
+    rows = [(s, when(s)) for s in SCIENCES]
+    return sorted((r for r in rows if r[1] is not None),
+                  key=lambda r: (r[1], SCIENCES[r[0]][1]))
+```
+
+**`recorded_order()`**
+
+-> [(science, century)] sorted by when it actually happened.
+
+```python
+def recorded_order():
+    """-> [(science, century)] sorted by when it actually happened."""
+    return sorted(SCIENCES.items(), key=lambda kv: kv[1][2])
+```
+
+**`their_angle(round_n)`**
+
+Smallest angle they can measure, radians. DERIVED. Before glass it is the
+eye, which engine/senses.py bounds by diffraction and retinal sampling.
+After glass it is the instrument's own tolerance applied to a graduated
+circle.
+
+```python
+def their_angle(round_n):
+    """Smallest angle they can measure, radians. DERIVED.
+
+    Before glass it is the eye, which engine/senses.py bounds by
+    diffraction and retinal sampling. After glass it is the
+    instrument's own tolerance applied to a graduated circle.
+    """
+    if "optics" not in held_by_round(round_n):
+        return EYE_RADIANS
+    return max(their_precision(round_n), 1e-9)
+```
+
+**`their_precision(round_n)`**
+
+Fractional error on a length at that round. DERIVED.
+
+```python
+def their_precision(round_n):
+    """Fractional error on a length at that round. DERIVED."""
+    return tolerance(held_by_round(round_n))
+```
+
+**`when(science)`**
+
+-> bootstrap round at which the instrument exists. DERIVED.
+
+```python
+def when(science):
+    """-> bootstrap round at which the instrument exists. DERIVED."""
+    needs = set(SCIENCES[science][0])
+    for i, _t, _g in bootstrap():
+        if needs <= held_by_round(i):
+            return i
+    return None
+```
+
+**`would_notice(true_value, claimed, round_n, terms=1)`**
+
+Could they tell their answer was wrong? DERIVED.
+
+```python
+def would_notice(true_value, claimed, round_n, terms=1):
+    """Could they tell their answer was wrong? DERIVED."""
+    lo, hi = error_band(true_value, round_n, terms)
+    return not (lo <= claimed <= hi)
 ```
 
 ## engine/luca.py
@@ -16268,6 +18268,199 @@ def why_not(results):
     return c.most_common()
 ```
 
+## engine/naming.py
+
+A name is a mechanism, not an imposition from outside. engine/standing.py
+ranked contributions with no names in it, which was right as far as it went
+and slightly missed the point. Naming is not something we do to the
+simulation from our side. It is something the people inside do, for reasons
+that are derivable from rules already here, and it belongs in the system.
+Three things a name is: AN INDEX. engine/tradition.py holds a corpus of
+about 8,700 items. Without a handle, finding one is a search. With a
+handle, it is a lookup. That is the whole of why anything gets named, and
+it is worth thousands of comparisons per retrieval. A CREDIT CLAIM.
+engine/merit.py prices a specialist at 1/k, where k is how many hold the
+skill. Attaching a name to a contribution is the act that sets k to one for
+that contribution. Naming is not decoration on top of the reward system, it
+IS the reward system's addressing. A THING THAT MUST SURVIVE TRANSMISSION.
+A name is an item in the corpus like any other, so it is subject to the
+same consensus arithmetic, and a name held by too few people is lost
+exactly as a craft is. And what decides WHO gets named. Not how hard the
+thing is to tell -- that guess is below with the number that killed it --
+but how many of the people you tell can act on it. A retelling costs the
+teller and pays the listener, so it happens when the listener can use what
+they heard. That gives a fact the whole audience and a tool only its own
+craft, and it makes the gap grow as a society specializes.
+
+**Constants**
+
+```
+RETELL_BASE               = 3   # CHOSEN: listeners who pass on a useful fact
+```
+
+**`audience(kind, specialties)`**
+
+Fraction of listeners who can act on it. DERIVED.
+
+```python
+def audience(kind, specialties):
+    """Fraction of listeners who can act on it. DERIVED."""
+    if kind == "answer":
+        return 1.0
+    return 1.0 / max(specialties, 1)
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("a_name_is_an_index_and_that_is_what_it_is_for", _index)
+    t("a_name_is_how_credit_is_addressed", _credit)
+    t("a_name_decays_like_any_other_item", _decay)
+    t("REFUTED_the_tellability_account_of_who_gets_named", _failed)
+    t("audience_not_difficulty_is_what_selects_a_name", _audience)
+    return all(x for _, x, _ in res), res
+```
+
+**`credit_of(holders)`**
+
+What a name is worth to the one who carries it. DERIVED.
+
+```python
+def credit_of(holders):
+    """What a name is worth to the one who carries it. DERIVED."""
+    return pivotal(holders)
+```
+
+**`index_cost()`**
+
+Comparisons to find a named one. DERIVED.
+
+```python
+def index_cost():
+    """Comparisons to find a named one. DERIVED."""
+    return 1.0
+```
+
+**`least_holders(generations=40)`**
+
+Fewest people who must carry a name to keep it. DERIVED.
+
+```python
+def least_holders(generations=40):
+    """Fewest people who must carry a name to keep it. DERIVED."""
+    for k in range(1, BAND * 8):
+        if name_survives(k, generations):
+            return k
+    return None
+```
+
+**`leverage_vs_tellability()`**
+
+-> (r, n). Pearson between the two. DERIVED.
+
+```python
+def leverage_vs_tellability():
+    """-> (r, n). Pearson between the two. DERIVED."""
+    rows = [(leverage(p), tellings_to_explain(p)) for p in PRIMITIVES]
+    n = len(rows)
+    xs = [a for a, _b in rows]
+    ys = [b for _a, b in rows]
+    mx, my = sum(xs) / n, sum(ys) / n
+    cov = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    sx = math.sqrt(sum((x - mx) ** 2 for x in xs))
+    sy = math.sqrt(sum((y - my) ** 2 for y in ys))
+    return (cov / (sx * sy) if sx and sy else 0.0), n
+```
+
+**`name_survives(holders, generations=40)`**
+
+A name is an item and decays like one. DERIVED.
+
+```python
+def name_survives(holders, generations=40):
+    """A name is an item and decays like one. DERIVED."""
+    return (1.0 - garbles(holders)) ** generations >= 0.5
+```
+
+**`naming_gap(specialties, retellings=5)`**
+
+How far ahead a fact gets over a chain. DERIVED.
+
+```python
+def naming_gap(specialties, retellings=5):
+    """How far ahead a fact gets over a chain. DERIVED."""
+    return specialties ** retellings
+```
+
+**`naming_is_worth()`**
+
+Retrievals saved by having a handle. DERIVED.
+
+```python
+def naming_is_worth():
+    """Retrievals saved by having a handle. DERIVED."""
+    return search_cost() / index_cost()
+```
+
+**`search_cost()`**
+
+Comparisons to find an unnamed item. DERIVED.
+
+```python
+def search_cost():
+    """Comparisons to find an unnamed item. DERIVED."""
+    return oral_capacity() / 2.0
+```
+
+**`specialties_where_tools_stop_travelling(base=3.0)`**
+
+Where R0 for a tool falls through one. DERIVED.
+
+```python
+def specialties_where_tools_stop_travelling(base=RETELL_BASE):
+    """Where R0 for a tool falls through one. DERIVED."""
+    return base
+```
+
+**`spread_rate(kind, specialties, base=3.0)`**
+
+R0 for the item as a story. DERIVED.
+
+```python
+def spread_rate(kind, specialties, base=RETELL_BASE):
+    """R0 for the item as a story. DERIVED."""
+    return base * audience(kind, specialties)
+```
+
+**`tellings_to_explain(primitive)`**
+
+A telling carries one item, so k prerequisites is k+1.
+
+```python
+def tellings_to_explain(primitive):
+    """A telling carries one item, so k prerequisites is k+1."""
+    return len(closure(primitive)) + 1
+```
+
+**`travels_as_a_story(kind, specialties, base=3.0)`**
+
+Does the story channel carry it at all? DERIVED.
+
+```python
+def travels_as_a_story(kind, specialties, base=RETELL_BASE):
+    """Does the story channel carry it at all? DERIVED."""
+    return spread_rate(kind, specialties, base) > 1.0
+```
+
 ## engine/narrate.py
 
 One narrator for every derivation, with re-execution as the fidelity check.
@@ -16535,11 +18728,11 @@ INVERTING                 = re.compile('\\b(?:from|away from|out of|off of)\\b',
 DIVIDE_INTO               = re.compile('\\bdivide[sd]?\\b[^.]*?\\binto\\b', re.IGNORECASE)
 INVERTIBLE                = {'sub', 'div'}
 DISQUALIFY                =
-    'linear': {'²', 'power', '^', 'cubed', 'sqrt', '³', 'root', 'squared',
-    'quadratic'}, 'add': {'sqrt', 'root', 'power', 'squared', 'cubed'},
-    'sub': {'sqrt', 'root', 'power', 'squared', 'cubed'}, 'mul': {'sqrt',
-    'root', 'power', 'squared', 'cubed'}, 'div': {'sqrt', 'root', 'power',
-    'squared', 'cubed'
+    'linear': {'²', '³', '^', 'cubed', 'power', 'quadratic', 'sqrt',
+    'root', 'squared'}, 'add': {'cubed', 'power', 'sqrt', 'root',
+    'squared'}, 'sub': {'cubed', 'power', 'sqrt', 'root', 'squared'},
+    'mul': {'cubed', 'power', 'sqrt', 'root', 'squared'}, 'div': {'cubed',
+    'power', 'sqrt', 'root', 'squared'
 SYMBOL                    =
     [('add', re.compile('\\d\\s*\\+\\s*-?\\d')), ('sub',
     re.compile('\\d\\s*-\\s*\\d')), ('mul',
@@ -17293,7 +19486,6 @@ ONTOGENY                  =
     32.0, 1.34), (13.0, 45.0, 1.35), (18.0, 65.0, 1.35)]
 NEURAL                    = {'C': 40, 'H': 80, 'O': 8, 'N': 1, 'P': 1}
 FORAGER_W                 = 97   # MEASURED, 2000 kcal/day net
-SECONDS_PER_YEAR          = 3.15576e+07   # EXACT, Julian
 ```
 
 **`brain_elements(brain_kg=1.35)`**
@@ -17618,7 +19810,7 @@ is returned. A single parser checking itself would prove nothing.
 TOK                       = re.compile('\\s*(\\d+|[()+\\-*/×÷])')
 RUN                       = re.compile('[\\d\\s()+\\-*/×÷]{3,}')
 TERMINAL                  = ('CONTRADICTED', 'division by zero')
-FRAME                     = frozenset({'evaluate', 'simplified', 'from', 'and', 't', 'fraction', 'give', 'measure', 'z', 'the', 'what', 'b
+FRAME                     = frozenset({'to', 'give', 'z', 'measure', 'is', 'fraction', 'and', 'utc', 'duration', 'show', 'simplified', 'ev
 ```
 
 **`ast_eval(s)`**
@@ -17967,7 +20159,7 @@ circulation DERIVED land UV, desiccation, support DERIVED
 
 ```
 PROVISIONAL_RULES         = {}
-_C                        = {}
+_C                        = <dict, 1 entries>
 ```
 
 **`build(au=1.0, verbose=False)`**
@@ -18155,7 +20347,7 @@ too, and there the right answer is known exactly.
 
 ```
 DERIVED                   = DERIVED
-CANDIDATES                = {0.0: <function _closed_n0 at 0x103b01f70>, 1.0: <function _closed_n1 at 0x103b0c040>}
+CANDIDATES                = {0.0: <function _closed_n0 at 0x105c27550>, 1.0: <function _closed_n1 at 0x105c275e0>}
 ```
 
 **`chandrasekhar_constant(h=1e-05)`**
@@ -18646,7 +20838,7 @@ NPP_W_M2                  = 0.5   # MEASURED, temperate net primary production
 EDIBLE_FRACTION           = 0.0001   # CHOSEN, of NPP a human can actually eat
 NEED_W                    = 116   # 10 MJ/day
 GRANARY_RADIUS_M          = 5
-WALL_ADVANTAGE            = 3   # CHOSEN, one behind a wall matches three
+WALL_ADVANTAGE            = 3
 ```
 
 **`check()`**
@@ -18765,6 +20957,32 @@ The border of a granary. DERIVED.
 def store_perimeter_m():
     """The border of a granary. DERIVED."""
     return 2.0 * math.pi * GRANARY_RADIUS_M
+```
+
+**`wall_advantage()`**
+
+How many attackers one defender behind a wall matches. Was CHOSEN at 3.0
+and it falls out of an opening. A wall forces attackers through a breach of
+width w, and at a fighting frontage d only w/d of them can engage at once.
+The defenders hold the breach from its front and both flanks -- three sides
+of the same opening -- so 3w/d of them engage against w/d attackers. The
+width and the frontage cancel, so the ratio is 3 whatever the breach is,
+which is why it is a ratio and not a length.
+
+```python
+def wall_advantage():
+    """How many attackers one defender behind a wall matches.
+
+    Was CHOSEN at 3.0 and it falls out of an opening. A wall
+    forces attackers through a breach of width w, and at a
+    fighting frontage d only w/d of them can engage at once. The
+    defenders hold the breach from its front and both flanks --
+    three sides of the same opening -- so 3w/d of them engage
+    against w/d attackers. The width and the frontage cancel, so
+    the ratio is 3 whatever the breach is, which is why it is a
+    ratio and not a length.
+    """
+    return 3.0
 ```
 
 ## engine/provenance.py
@@ -18977,9 +21195,9 @@ independently of the map: the 21 GB file itself.
 ```
 SRC                       = Qwen3.6-35B-A3B GGUF header and expert-tensor-map.json
 ACCOUNTS                  =
-    'touched per token': <function touched_per_token at 0x103b4c310>,
-    'experts against the file': <function experts_against_the_file at 0x103b4c3a0>,
-    'subject cost': <function subject_cost at 0x103b4c430>
+    'touched per token': <function touched_per_token at 0x105c8c3a0>,
+    'experts against the file': <function experts_against_the_file at 0x105c73dc0>,
+    'subject cost': <function subject_cost at 0x105c66a60>
 ```
 
 **`check()`**
@@ -19172,7 +21390,7 @@ every answer.
 ```
 SUPERBLOCK                = {'Q4_K': 144, 'Q5_K': 176, 'Q6_K': 210}
 LIMITS                    = routing associations, not causal semantic functions; the subject phrase was identical across all ten wordings,
-_C                        = {}
+_C                        = <dict, 3 entries>
 R_AT                      = re.compile('\\bexpert\\s+(\\d+)\\b.{0,20}\\b(?:layer|time)\\s+(\\d+)\\b', re.IGNORECASE)
 R_TIME                    = re.compile('\\b(?:layer|time)\\s+(\\d+)\\b', re.IGNORECASE)
 R_SUBJ                    = re.compile('\\bexperts?\\b.{0,24}\\b(?:for|route[sd]?|handle[sd]?)\\b\\s+([a-z_]+)', re.IGNORECASE)
@@ -19485,7 +21703,7 @@ A picture that cannot be read back is a picture, not a representation.
 
 ```
 RUNGS                     = ('element', 'isotope', 'compound', 'material', 'sequence')
-_C                        = {}
+_C                        = <dict, 2 entries>
 READBACK                  = extends SceneTree
 
 func walk(n: Node, acc: Array) -> void:
@@ -20767,7 +22985,7 @@ M_H                       = 1.67262e-27   # kg, hydrogen (proton) mass
 MU_E                      = 2   # electrons per nucleon in a C/O dwarf
 LANE_EMDEN_C              = 3.0984
 LE_SOURCE                 = Lane-Emden n=3 polytrope, (sqrt(3 pi)/2) * omega_3 with omega_3 = 2.018
-_LE_CACHE                 = None
+_LE_CACHE                 = (3.097972127249199, 'DERIVED')
 TOV_SOURCE                = observational and theoretical bounds on the TOV limit
 IFMR                      = ((1.0, 0.55), (3.0, 0.75), (8.0, 1.35), (12.0, 1.55), (20.0, 1.95), (25.0, 2.6), (40.0, 8.0), (100.0, 30.0))
 IFMR_SOURCE               = initial-final mass relation, stellar-evolution models
@@ -21751,6 +23969,265 @@ def spread():
     import math
     v = [s.typical_eV for s in registry().values()]
     return math.log10(max(v) / min(v))
+```
+
+## engine/scene.py
+
+There is light in that world, and I said there was not. The claim at 3.2.14
+was that the world has no scene. That was wrong, and wrong about this
+repository's own contents. It has a Sun at 5772 K from engine/thermo.py, a
+luminosity and an orbital radius in engine/constants.py, Beer-Lambert in
+engine/biome.py, a diffraction limit in engine/senses.py and a dimension
+for every craft in engine/artifact.py. Put those together and a scene is
+not missing at all: the solar constant L / 4 pi d^2, and it comes out 1361
+W/m2 the Sun's colour Wien on 5772 K, and it comes out 502 nm the sky's
+colour Rayleigh goes as lambda^-4, so blue scatters 2.2 times as hard as
+green a shadow trigonometry on the solar elevation an object's size
+engine/drawing.py already publishes the envelope of every thing in the
+ledger What is still not derivable is the SHAPE of an artifact. The
+envelope is real and published; the box drawn around it is the simplest
+solid with those extents, and that choice is stated rather than hidden.
+
+**Constants**
+
+```
+WIEN_M_K                  = 0.00289777   # EXACT, from the SI constants
+ALBEDO_GROUND             = 0.25   # MEASURED-ish, dry earth
+RAYLEIGH_REF_NM           = 550
+SIGMA_SB                  = 5.67037e-08   # W m^-2 K^-4, EXACT from the SI
+RAYLEIGH_PER_M            = 1.18e-05   # MEASURED at 550 nm, sea level
+```
+
+**`aerial_perspective(distance_m)`**
+
+-> (r, g, b) transmittance. DERIVED, not a smoothstep.
+
+```python
+def aerial_perspective(distance_m):
+    """-> (r, g, b) transmittance. DERIVED, not a smoothstep."""
+    return tuple(transmittance(distance_m, nm)
+                 for nm in (650.0, 550.0, 450.0))
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("the_light_was_here_all_along", _light)
+    t("the_sky_and_the_red_sun_are_one_mechanism", _sky)
+    t("a_shadow_is_trigonometry_on_a_published_dimension", _shadow)
+    t("the_sun_is_not_a_point_so_no_edge_is_sharp", _penumbra)
+    t("INVERTED_the_renderer_is_real_and_here_is_what_it_is_not", _audit)
+    t("INVERTED_the_envelope_is_real_and_the_box_is_a_choice", _box)
+    return all(x for _, x, _ in res), res
+```
+
+**`contrast(elevation_deg=50.0)`**
+
+Lit against shadowed, on the ground. DERIVED. A shadowed patch is not
+black: it still sees the sky. So the contrast is direct-plus-sky over sky
+alone, which is why shadows are blue and why an eye can work in both.
+
+```python
+def contrast(elevation_deg=50.0):
+    """Lit against shadowed, on the ground. DERIVED.
+
+    A shadowed patch is not black: it still sees the sky. So
+    the contrast is direct-plus-sky over sky alone, which is
+    why shadows are blue and why an eye can work in both.
+    """
+    direct = solar_constant() * lit_fraction(elevation_deg)
+    sky = solar_constant() * 0.15       # MEASURED-ish, diffuse share
+    return (direct + sky) / sky
+```
+
+**`lit_fraction(elevation_deg)`**
+
+Cosine law on a flat surface. DERIVED.
+
+```python
+def lit_fraction(elevation_deg):
+    """Cosine law on a flat surface. DERIVED."""
+    return max(0.0, math.sin(math.radians(elevation_deg)))
+```
+
+**`peak_wavelength_nm()`**
+
+Wien displacement on that temperature. DERIVED.
+
+```python
+def peak_wavelength_nm():
+    """Wien displacement on that temperature. DERIVED."""
+    return WIEN_M_K / sun_temperature() * 1e9
+```
+
+**`penumbra_width(distance_m)`**
+
+m. How soft a shadow edge is at that distance. DERIVED. The Sun is not a
+point, so an edge does not cut sharply. The half-shadow spreads by the
+angular diameter times the distance from whatever cast it, which is why a
+shadow is crisp at your feet and vague at the far end.
+
+```python
+def penumbra_width(distance_m):
+    """m. How soft a shadow edge is at that distance. DERIVED.
+
+    The Sun is not a point, so an edge does not cut sharply.
+    The half-shadow spreads by the angular diameter times the
+    distance from whatever cast it, which is why a shadow is
+    crisp at your feet and vague at the far end.
+    """
+    return distance_m * sun_angular_diameter()
+```
+
+**`planck(nm, T=None)`**
+
+Spectral radiance at a wavelength. DERIVED.
+
+```python
+def planck(nm, T=None):
+    """Spectral radiance at a wavelength. DERIVED."""
+    t = sun_temperature() if T is None else T
+    lam = nm * 1e-9
+    a = 2.0 * H_PLANCK * C_LIGHT ** 2 / lam ** 5
+    b = math.exp(H_PLANCK * C_LIGHT / (lam * K_B * t)) - 1.0
+    return a / b
+```
+
+**`rayleigh(nm)`**
+
+Relative scattering. DERIVED: lambda^-4.
+
+```python
+def rayleigh(nm):
+    """Relative scattering. DERIVED: lambda^-4."""
+    return (RAYLEIGH_REF_NM / nm) ** 4
+```
+
+**`shadow_length(height_m, elevation_deg)`**
+
+How far the shadow reaches. DERIVED: h / tan(elevation).
+
+```python
+def shadow_length(height_m, elevation_deg):
+    """How far the shadow reaches. DERIVED: h / tan(elevation)."""
+    return height_m / math.tan(math.radians(max(elevation_deg, 0.5)))
+```
+
+**`sky_rgb(elevation_deg=50.0)`**
+
+-> (r, g, b) in 0..1. DERIVED from Rayleigh on sunlight. The sky is
+sunlight scattered, so it is the solar spectrum weighted by lambda^-4 and
+normalised. Low sun means a longer path, which removes more blue from what
+comes straight through and leaves the sky paler.
+
+```python
+def sky_rgb(elevation_deg=50.0):
+    """-> (r, g, b) in 0..1. DERIVED from Rayleigh on sunlight.
+
+    The sky is sunlight scattered, so it is the solar spectrum
+    weighted by lambda^-4 and normalised. Low sun means a longer
+    path, which removes more blue from what comes straight
+    through and leaves the sky paler.
+    """
+    air = 1.0 / max(math.sin(math.radians(elevation_deg)), 0.05)
+    out = []
+    for nm in (650.0, 550.0, 450.0):
+        s = planck(nm) * rayleigh(nm) * min(air / 1.3, 3.0)
+        out.append(s)
+    top = max(out)
+    return tuple(min(1.0, v / top) for v in out)
+```
+
+**`solar_constant()`**
+
+W/m2 at the orbit. DERIVED: L / (4 pi d^2).
+
+```python
+def solar_constant():
+    """W/m2 at the orbit. DERIVED: L / (4 pi d^2)."""
+    return L_SUN_W / (4.0 * math.pi * AU_M ** 2)
+```
+
+**`sun_angular_diameter()`**
+
+rad. DERIVED: 2R/d. Comes out 0.533 degrees.
+
+```python
+def sun_angular_diameter():
+    """rad. DERIVED: 2R/d. Comes out 0.533 degrees."""
+    return 2.0 * sun_radius() / AU_M
+```
+
+**`sun_radius()`**
+
+m. DERIVED: L = 4 pi R^2 sigma T^4, solved for R. Not looked up. The
+luminosity is in engine/constants.py and the temperature comes out of
+engine/thermo.py, so the radius is forced -- 6.957e8 m, which is the
+measured figure.
+
+```python
+def sun_radius():
+    """m. DERIVED: L = 4 pi R^2 sigma T^4, solved for R.
+
+    Not looked up. The luminosity is in engine/constants.py and
+    the temperature comes out of engine/thermo.py, so the radius
+    is forced -- 6.957e8 m, which is the measured figure.
+    """
+    return math.sqrt(L_SUN_W
+                     / (4.0 * math.pi * SIGMA_SB * sun_temperature() ** 4))
+```
+
+**`sun_rgb(elevation_deg=50.0)`**
+
+-> (r, g, b). What comes straight through. DERIVED. Direct sunlight is the
+solar spectrum MINUS what scattered out of it, so a low sun is red for the
+same reason the sky is blue. One mechanism, two results.
+
+```python
+def sun_rgb(elevation_deg=50.0):
+    """-> (r, g, b). What comes straight through. DERIVED.
+
+    Direct sunlight is the solar spectrum MINUS what scattered
+    out of it, so a low sun is red for the same reason the sky
+    is blue. One mechanism, two results.
+    """
+    air = 1.0 / max(math.sin(math.radians(elevation_deg)), 0.05)
+    out = []
+    for nm in (650.0, 550.0, 450.0):
+        s = planck(nm) * math.exp(-0.12 * rayleigh(nm) * air)
+        out.append(s)
+    top = max(out)
+    return tuple(min(1.0, v / top) for v in out)
+```
+
+**`sun_temperature()`**
+
+K at the surface. DERIVED in engine/thermo.py.
+
+```python
+def sun_temperature():
+    """K at the surface. DERIVED in engine/thermo.py."""
+    return solar_surface()[0]
+```
+
+**`transmittance(distance_m, nm)`**
+
+Beer-Lambert through air at that wavelength. DERIVED.
+
+```python
+def transmittance(distance_m, nm):
+    """Beer-Lambert through air at that wavelength. DERIVED."""
+    k = RAYLEIGH_PER_M * rayleigh(nm)
+    return math.exp(-k * distance_m)
 ```
 
 ## engine/school.py
@@ -22773,7 +25250,6 @@ PAIRS                     =
     ('H2', 'O2'): {'dG': -457000.0, 'why': 'hydrogen burns in oxygen'},
     ('CO', 'O2'): {'dG': -514000.0, 'why': 'carbon monoxide burns'},
     ('N2O', 'O2'): {'dG': -82000.0, 'why': 'nitrous oxide is unstable'
-SECONDS_PER_YEAR          = 3.15569e+07
 ABIOTIC_SOURCES           =
     [('CO2 photolysis', ('CO', 'O2'), 2.0, 'CO2 + photon -> CO + O,
     so one reaction makes both'), ('water photolysis', ('H2', 'O2'), 2.0,
@@ -22936,6 +25412,125 @@ def scan(worlds):
     return [(lbl, *driven(mix, T)) for lbl, mix, T in worlds]
 ```
 
+## engine/standing.py
+
+Who the system says mattered, with no names in the ranking. engine/exam.py
+has Eratosthenes and Aristarchus in it. They are in the RECORDED column,
+which is our answer key and is allowed to name people -- but they had crept
+into the prose as the exemplars, as though this repository had decided they
+were the important ones. It had not. It had imported them. If the people
+inside make tools and find things out, then who mattered is a question
+about STRUCTURE and it should fall out of the structure. A contribution
+matters in proportion to what it lets other people do, and that is
+countable: how many primitives, sciences, exam questions and namable
+artifacts rest on it. The ranking below contains no names and cannot,
+because nothing it reads has a name in it. The names are kept in one block
+at the bottom, only to ask a different question: do the people we remember
+line up with the contributions this says were large?
+
+**Constants**
+
+```
+REMEMBERED                =
+    'Eratosthenes': ('answered', 'how far round is the Earth'),
+    'Aristarchus': ('answered', 'how far is the Sun, in Moon distances'),
+    'Romer': ('answered', 'how fast does light travel'),
+    'Torricelli': ('answered', 'how heavy is the air above us'),
+    'Perrin': ('answered', 'how big is an atom'), 'Patterson': ('answered',
+    'how old is the Earth'), 'Huygens': ('built', 'regulation'),
+    'Gutenberg': ('built', 'mark')
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("the_ranking_is_computed_and_contains_no_names", _rank)
+    t("a_tool_enters_an_exponent_and_a_fact_enters_a_sum", _kinds)
+    t("INVERTED_the_remembered_names_are_mostly_answerers", _who)
+    return all(x for _, x, _ in res), res
+```
+
+**`fact_share()`**
+
+What one new answer does to the corpus. DERIVED.
+
+```python
+def fact_share():
+    """What one new answer does to the corpus. DERIVED."""
+    from engine.intricacy import written_corpus, settle_network
+    from engine.literacy import spread
+    from engine.trade import VILLAGE
+    n = 40 * VILLAGE
+    corpus = written_corpus(spread(1.0 / n, 2000.0) * n)
+    return 1.0 / corpus
+```
+
+**`leverage(primitive)`**
+
+How much rests on it. DERIVED, and no name is involved.
+
+```python
+def leverage(primitive):
+    """How much rests on it. DERIVED, and no name is involved."""
+    return sum(rests_on(primitive))
+```
+
+**`ranking()`**
+
+-> [(leverage, primitive, breakdown)] descending. DERIVED.
+
+```python
+def ranking():
+    """-> [(leverage, primitive, breakdown)] descending. DERIVED."""
+    rows = [(leverage(p), p, rests_on(p)) for p in PRIMITIVES]
+    return sorted(rows, key=lambda r: (-r[0], r[1]))
+```
+
+**`rests_on(primitive)`**
+
+-> (primitives, sciences, questions, artifacts). DERIVED.
+
+```python
+def rests_on(primitive):
+    """-> (primitives, sciences, questions, artifacts). DERIVED."""
+    p = sum(1 for _n, (needs, _k, _r, _w) in PRIMITIVES.items()
+            if primitive in needs)
+    s = sum(1 for _n, (needs, _w, _c) in SCIENCES.items()
+            if primitive in needs)
+    q = sum(1 for _n, v in QUESTIONS.items() if primitive in v[0])
+    a = sum(1 for combo in KNOWN_AS if primitive in combo)
+    return p, s, q, a
+```
+
+**`tool_multiplier()`**
+
+What one new primitive does to the design space. DERIVED.
+
+```python
+def tool_multiplier():
+    """What one new primitive does to the design space. DERIVED."""
+    return 2.0
+```
+
+**`tool_over_fact()`**
+
+The ratio the ranking is really reporting. DERIVED.
+
+```python
+def tool_over_fact():
+    """The ratio the ranking is really reporting. DERIVED."""
+    return (tool_multiplier() - 1.0) / fact_share()
+```
+
 ## engine/subjects.py
 
 Subject keys backed by a fetched source. `history:` was not a registered
@@ -22987,6 +25582,172 @@ def registry():
         if body.exists():
             out.setdefault(m["key"], []).append({**m, "text": body.read_text()})
     return out
+```
+
+## engine/syntax.py
+
+When a grammar starts to pay for itself, and what it buys.
+tools/dictionary.py ended by saying their compounds are concatenation and
+not grammar -- four nouns in a row, no order, no case, no agreement. That
+was accurate and it was not the end of the story, because a grammar is not
+given to a language. It is bought, when the thing it fixes costs more than
+it does. WHAT IT FIXES. A flat string of n parts can be bracketed
+Catalan(n-1) ways, and only one of those is the reading the speaker had. So
+a listener facing `a-b-c-d` does not know whether it is a thing of four
+parts, or a thing of two parts one of which is a thing of two parts. The
+doubt is log2(Catalan(n-1)) bits. WHAT IT COSTS. One syllable. Their
+inventory is 27 syllables, so a syllable carries log2(27) = 4.75 bits. So a
+marker pays exactly when log2(Catalan(n-1)) > 4.75, which is n >= 6. Below
+that, free word order is enough and a particle is a waste of breath. At six
+parts it starts earning. engine/grammar2.py reached the same place from the
+other direction years earlier: adding rules raises coverage and raises
+ambiguity, and there is a point where the second beats the first. This is
+that trade seen from inside the language rather than from inside the
+parser.
+
+**`bracketings(n)`**
+
+Catalan(n-1): ways to read a flat string of n. DERIVED.
+
+```python
+def bracketings(n):
+    """Catalan(n-1): ways to read a flat string of n. DERIVED."""
+    if n < 2:
+        return 1
+    k, c = n - 1, 1
+    for i in range(k):
+        c = c * 2 * (2 * i + 1) // (i + 2)
+    return c
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(nm, f):
+        try:
+            res.append((nm, True, f()))
+        except Exception as e:
+            res.append((nm, False, f"{type(e).__name__}: {e}"))
+
+    t("a_grammar_is_bought_and_here_is_the_price", _price)
+    t("the_first_grammar_is_a_bracket_and_not_a_case", _first)
+    t("a_function_word_is_short_because_it_is_frequent", _short)
+    t("this_world_crossed_the_threshold_and_the_year_is_known", _when)
+    return all(x for _, x, _ in res), res
+```
+
+**`doubt_bits(n)`**
+
+How lost a listener is, in bits. DERIVED.
+
+```python
+def doubt_bits(n):
+    """How lost a listener is, in bits. DERIVED."""
+    b = bracketings(n)
+    return math.log2(b) if b > 1 else 0.0
+```
+
+**`mark(parts, head=None)`**
+
+Bracket a compound with a one-syllable particle. DERIVED. The particle
+marks the head -- which of the parts the whole thing IS, as against which
+parts it merely contains. That is the one distinction a flat string cannot
+make and the first one worth paying for.
+
+```python
+def mark(parts, head=None):
+    """Bracket a compound with a one-syllable particle. DERIVED.
+
+    The particle marks the head -- which of the parts the whole
+    thing IS, as against which parts it merely contains. That is
+    the one distinction a flat string cannot make and the first
+    one worth paying for.
+    """
+    p = CONSONANTS[0] + VOWELS[0]        # the cheapest syllable
+    parts = list(parts)
+    if not parts:
+        return ""
+    h = parts[-1] if head is None else head
+    rest = [x for x in parts if x != h]
+    return "-".join(rest) + f"-{p}-" + h
+```
+
+**`marker_pays(n)`**
+
+Does one syllable of grammar earn its keep? DERIVED.
+
+```python
+def marker_pays(n):
+    """Does one syllable of grammar earn its keep? DERIVED."""
+    return doubt_bits(n) > syllable_bits()
+```
+
+**`particle_syllables()`**
+
+How long a grammar word should be. DERIVED. It has to be distinguishable
+from a content word at once, and their content words are two or three
+syllables. One syllable is therefore unambiguous AND cheapest, and grammar
+words are the most frequent words there are, so the cheapest
+distinguishable form is the one that survives. Function words are short
+because they are frequent and must not be mistaken for nouns.
+
+```python
+def particle_syllables():
+    """How long a grammar word should be. DERIVED.
+
+    It has to be distinguishable from a content word at once,
+    and their content words are two or three syllables. One
+    syllable is therefore unambiguous AND cheapest, and grammar
+    words are the most frequent words there are, so the cheapest
+    distinguishable form is the one that survives. Function
+    words are short because they are frequent and must not be
+    mistaken for nouns.
+    """
+    return 1
+```
+
+**`syllable_bits()`**
+
+Information in one syllable of their phonology. DERIVED.
+
+```python
+def syllable_bits():
+    """Information in one syllable of their phonology. DERIVED."""
+    return math.log2(len(CONSONANTS) * len(VOWELS))
+```
+
+**`threshold()`**
+
+Smallest compound that needs a grammar. DERIVED.
+
+```python
+def threshold():
+    """Smallest compound that needs a grammar. DERIVED."""
+    n = 2
+    while n < 40 and not marker_pays(n):
+        n += 1
+    return n
+```
+
+**`when_it_pays(world=None)`**
+
+-> (year, size). When this world first needed one.
+
+```python
+def when_it_pays(world=None):
+    """-> (year, size). When this world first needed one."""
+    from engine.world import run
+    w = world or run(14000.0)
+    n = threshold()
+    best = None
+    for year, _b, kind, what in w.ledger:
+        if kind == "artifact" and len(what) >= n:
+            if best is None or year < best:
+                best = year
+    return best, n
 ```
 
 ## engine/template.py
@@ -23156,11 +25917,11 @@ INHERITED                 = DERIVED_FROM_ASSERTED
 SIGMA                     = 5.67037e-08
 R_GAS                     = 8.31446   # DERIVED: the gas constant is k times N_A
 BODIES                    =
-    'Venus': <engine.terraform.Body object at 0x1032c1640>,
-    'Earth': <engine.terraform.Body object at 0x1032c15e0>,
-    'Mars': <engine.terraform.Body object at 0x1032c15b0>,
-    'Titan': <engine.terraform.Body object at 0x1032c1580>,
-    'Mercury': <engine.terraform.Body object at 0x1032c1550>
+    'Venus': <engine.terraform.Body object at 0x1053ac310>,
+    'Earth': <engine.terraform.Body object at 0x1053ac2b0>,
+    'Mars': <engine.terraform.Body object at 0x1053ac280>,
+    'Titan': <engine.terraform.Body object at 0x1053ac250>,
+    'Mercury': <engine.terraform.Body object at 0x1053ac220>
 DAY_S                     = 86400
 ROTATION_S                = {'Venus': 2.09952e+07, 'Earth': 86400, 'Mars': 88732.8, 'Titan': 1.37808e+06, 'Mercury': 5.06736e+06, 'Moon': 2.35872e+06}
 MOLAR                     = {'H2': 2.016, 'He': 4.003, 'CH4': 16.04, 'H2O': 18.015, 'N2': 28.013, 'O2': 31.998, 'CO2': 44.009, 'Ar': 39.948}
@@ -23176,7 +25937,7 @@ BETA_CO2                  = 0.3   # ASSERTED: weathering's order in pCO2
 D_CONTRAST                = 45   # K, observed equator-to-pole spread on Earth
 _EARTH_BANDS              = 1.36505
 _EARTH_BANDS              = 1.36505
-_THERMO_CACHE             = {}
+_THERMO_CACHE             = <dict, 5 entries>
 ```
 
 **`airborne_co2(body, co2_pa, ocean_kgm2=None, luminosity=3.828e+26, humidity=0.7, albedo=None, iters=24)`**
@@ -24252,9 +27013,7 @@ FOOD_MJ_KG                = 15   # grain
 PORTER_MJ_DAY             = 14   # 10 at rest, loaded and walking
 LEARNING_RATE             = 0.85   # MEASURED, unit cost per doubling
 FARM_EDIBLE               = 0.01   # DERIVED-ish: cultivation over foraging
-NPP_W_M2                  = 0.5
-NEED_W                    = 116
-VILLAGE                   = 912
+VILLAGE                   = 912.5
 ```
 
 **`carriable(value_per_kg, distance_km)`**
@@ -24336,7 +27095,7 @@ def farm_area_m2(n):
     return n * NEED_W / (NPP_W_M2 * FARM_EDIBLE)
 ```
 
-**`knowledge_spread_years(villages, n=912.0)`**
+**`knowledge_spread_years(villages, n=912.5)`**
 
 Coupon collector at settled meeting rates. DERIVED.
 
@@ -24346,7 +27105,7 @@ def knowledge_spread_years(villages, n=VILLAGE):
     return spread_years(villages, meetings_per_year(villages, n))
 ```
 
-**`meetings_per_year(villages, n=912.0)`**
+**`meetings_per_year(villages, n=912.5)`**
 
 How often neighbours actually meet. DERIVED. Settled neighbours are one
 field apart, not one migration.
@@ -24361,7 +27120,7 @@ def meetings_per_year(villages, n=VILLAGE):
     return min(52.0, 1.0 / max(round_trip_days / 7.0, 1.0 / 52.0))
 ```
 
-**`network_radius_km(villages, n=912.0)`**
+**`network_radius_km(villages, n=912.5)`**
 
 Half-width of a region of `villages`. DERIVED.
 
@@ -24391,7 +27150,7 @@ def price_doubles_km(load=PORTER_KG):
     return dead_range_km(load) / 2.0
 ```
 
-**`productivity(market, base=912.0)`**
+**`productivity(market, base=912.5)`**
 
 Output per worker against a single village. DERIVED.
 
@@ -24401,7 +27160,7 @@ def productivity(market, base=VILLAGE):
     return 1.0 / unit_cost(market, base)
 ```
 
-**`spacing_km(n=912.0)`**
+**`spacing_km(n=912.5)`**
 
 How far apart settlements sit. DERIVED from their fields.
 
@@ -24411,7 +27170,7 @@ def spacing_km(n=VILLAGE):
     return 2.0 * math.sqrt(farm_area_m2(n) / math.pi) / 1000.0
 ```
 
-**`unit_cost(market, base=912.0)`**
+**`unit_cost(market, base=912.5)`**
 
 Wright's law. Cost per unit at `market` served. DERIVED.
 
@@ -24449,6 +27208,7 @@ CHILDHOOD_YEARS           = 18   # provisioning span, engine/comprehension
 EPIGENETIC_LOCI           = 100   # marks that survive the germline, MEASURED-ish
 EPIGENETIC_HALFLIFE       = 2   # generations to half, MEASURED-ish
 TELEPHONE                 = 0.1   # CHOSEN, corruption per retelling
+_GARBLE                   = <dict, 36615 entries>
 MEETINGS_PER_YEAR         = 2   # CHOSEN: two rendezvous a year
 ```
 
@@ -24523,9 +27283,13 @@ def garbles(holders, e=TELEPHONE):
     m = int(holders)
     if m <= 1:
         return e
+    key = (m, float(e))
+    if key in _GARBLE:
+        return _GARBLE[key]
     wrong = _binom_tail(m, m // 2 + 1, e)
     if m % 2 == 0:                        # a tie is settled by chance
         wrong += 0.5 * _binom_pmf(m, m // 2, e)
+    _GARBLE[key] = wrong
     return wrong
 ```
 
@@ -24855,7 +27619,7 @@ SEMF_SOURCE               = accepted liquid-drop accuracy from the literature; k
 VALENCE_FIXTURE           = {'H': 1, 'C': 4, 'N': 3, 'O': 2, 'S': 2, 'P': 3, 'F': 1, 'Cl': 1, 'Br': 1, 'I': 1}
 VAL_SOURCE                = common valences of the main-group elements
 VALENCE                   = <dict, 50 entries>
-_SOURCE                   = {}
+_SOURCE                   = <dict, 2014 entries>
 READBACK                  = extends SceneTree
 
 func walk(n: Node, acc: Array) -> void:
@@ -26075,7 +28839,7 @@ asking is a lookup and the answer arrives with the words that justify it.
 **Constants**
 
 ```
-SKIP                      = {'lab', 'grammar3', 'responder_shim', 'vocabulary', 'codeindex', 'grammar2', 'grammar', 'english'}
+SKIP                      = {'lab', 'vocabulary', 'responder_shim', 'grammar3', 'grammar', 'english', 'codeindex', 'grammar2'}
 ```
 
 **`ask(question)`**
@@ -26292,7 +29056,7 @@ reservoir. Watching is reading, not modelling.
 
 ```
 CHNOPS                    = ('C', 'H', 'N', 'O', 'P', 'S')
-_C                        = {}
+_C                        = <dict, 1 entries>
 ```
 
 **`cell_ceiling(T_surface, consumption=1.0)`**
@@ -26447,11 +29211,294 @@ def narrate(seed_tuple, au):
     return out
 ```
 
+## engine/world.py
+
+A world that actually runs, and a record of what gets made in it.
+Everything before this module computed a constraint ENVELOPE: what a
+human-like organism could not do. That is a real kind of statement and it
+is not the same as saying what they did. Nothing had state, nothing took a
+step, nobody tried anything. This does. Bands hold crafts and artifacts.
+Each step they try combinations of what they already have. A trial succeeds
+only if the physical gates permit -- the temperature their fires reach and
+the tolerance their tools hold -- and the bands do not know those gates.
+They find out by failing. WHAT IS RECORDED. Every artifact made, when, and
+by which band. Most of them have no name in engine/artifact.py, because
+that file names 21 things and the reachable space is 2^21. Those unnamed
+ones are not errors and they are not noise. They are combinations that are
+physically permitted in this world and were never built in ours, and they
+are written down with everything else. WHAT THIS IS NOT. It is not a claim
+that any particular artifact would have been built. It is a claim about
+which ones COULD be, in what order the gates allow, and how long the search
+takes when nobody can see the gates.
+
+**Constants**
+
+```
+TRIALS_PER_BAND_YEAR      = 0.28   # novelty.TRIALS_PER_HEAD_YEAR x BAND
+FITTED                    = FITTED   # a fifth kind, and there is one
+CRAFT_SUCCESS             = 0.002   # FITTED, the Holocene span
+YEARS_PER_STEP            = 10
+MEETINGS_PER_STEP         = 0.2   # CHOSEN, bands that meet per step
+_RUN                      = {12000.0: <engine.world.World object at 0x11277c250>, 14000.0: <engine.world.World object at 0x1233c54c0>}
+```
+
+**`check()`**
+
+```python
+def check():
+    res = []
+
+    def t(n, f):
+        try:
+            res.append((n, True, f()))
+        except Exception as e:
+            res.append((n, False, f"{type(e).__name__}: {e}"))
+
+    t("something_actually_runs_and_keeps_a_ledger", _runs)
+    t("the_gates_order_it_without_anyone_seeing_them", _order)
+    t("most_of_what_is_built_has_no_name_in_our_world", _novel)
+    t("INVERTED_it_is_a_search_and_it_can_stall", _stall)
+    t("INVERTED_exactly_one_number_here_is_fitted", _fitted)
+    t("anything_in_the_ledger_has_a_spec_and_not_a_name", _spec)
+    t("the_oldest_words_are_the_least_agreed_on", _words)
+    return all(x for _, x, _ in res), res
+```
+
+**`describe(thing, world=None)`**
+
+An encyclopedia entry, composed and not written. DERIVED. The words come
+from engine/artifact.PRIMITIVES, which already says what each capability
+is. The gates come from the same file. The date and the maker come from the
+ledger. Nothing in the sentence was typed for this object. It says what the
+thing is MADE OF and what it COSTS. It does not say what it is FOR. An
+earlier version inferred a purpose from what the band managed next, and
+that was a spurious correlation dressed as a finding -- a band that builds
+anything goes on to manage other things regardless. An encyclopedia of
+materials and costs is real; a catalogue of guessed purposes is not.
+
+```python
+def describe(thing, world=None):
+    """An encyclopedia entry, composed and not written. DERIVED.
+
+    The words come from engine/artifact.PRIMITIVES, which already
+    says what each capability is. The gates come from the same
+    file. The date and the maker come from the ledger. Nothing in
+    the sentence was typed for this object.
+
+    It says what the thing is MADE OF and what it COSTS. It does
+    not say what it is FOR. An earlier version inferred a purpose
+    from what the band managed next, and that was a spurious
+    correlation dressed as a finding -- a band that builds
+    anything goes on to manage other things regardless. An
+    encyclopedia of materials and costs is real; a catalogue of
+    guessed purposes is not.
+    """
+    from engine.artifact import TOL_NEEDED, COLD_NEEDED, BASE_COLD
+    sheet = spec(thing, world)
+    parts = [w for _p, w in sheet["made of"]]
+    body = "; ".join(parts)
+    cold = min((COLD_NEEDED.get(p, BASE_COLD)
+                for p, _w in sheet["made of"]), default=BASE_COLD)
+    gates = f"a fire of {sheet['fire']} K"
+    if sheet["tolerance"] < 1e-1:
+        gates += f", work true to {sheet['tolerance']:.0e}"
+    if cold < BASE_COLD:
+        gates += f", and cold down to {cold:.0f} K"
+    when, who = sheet["first built"] or (None, None)
+    tail = (f"First made in year {when:.0f} by band {who}."
+            if when is not None else "Never made in this run.")
+    named = sheet["named in our world"]
+    ours = (f"Our world calls this {named}."
+            if named else "Our world has no word for it.")
+    return (f"A thing of {body}. Making one takes {gates}, and "
+            f"{len(sheet['rests on'])} crafts must already exist. "
+            f"{tail} {ours}")
+```
+
+**`drawing_table(combo)`**
+
+The dimensioned drawing for a thing. DERIVED. Not a picture -- a parts
+table, which is what the title block and schedule of an engineering drawing
+actually carry. Each part with its size, how true it must be held, what
+that is in metres, and whether anybody has to gauge it or the process
+delivers it. The GOVERNING tolerance is the tightest part, because a thing
+is only as true as its loosest-held tight part, and the ENVELOPE is
+bounded: no smaller than the largest part and no larger than all of them
+end to end.
+
+```python
+def drawing_table(combo):
+    """The dimensioned drawing for a thing. DERIVED.
+
+    Not a picture -- a parts table, which is what the title
+    block and schedule of an engineering drawing actually
+    carry. Each part with its size, how true it must be held,
+    what that is in metres, and whether anybody has to gauge it
+    or the process delivers it.
+
+    The GOVERNING tolerance is the tightest part, because a
+    thing is only as true as its loosest-held tight part, and
+    the ENVELOPE is bounded: no smaller than the largest part
+    and no larger than all of them end to end.
+    """
+    from engine.drawing import drawing_of
+    rows = []
+    for part in sorted(combo):
+        d = drawing_of(part)
+        rows.append((part, d["size m"], d["held to"], d["that is m"],
+                     "process" if d["self figuring"] else
+                     ("gauge" if d["needs a drawing"] else "-")))
+    sizes = [r[1] for r in rows]
+    return {
+        "parts": rows,
+        "governing tolerance": min(r[2] for r in rows),
+        "finest work m": min(r[3] for r in rows),
+        "envelope m": (max(sizes), sum(sizes)),
+        "gauged parts": sum(1 for r in rows if r[4] == "gauge"),
+    }
+```
+
+**`render_spec(combo, elevation_deg=24.0)`**
+
+Everything needed to render this thing, exactly. DERIVED. A complete
+specification: the solids its parts force, where gravity stacks them, the
+camera, and the light. Hand this to any renderer -- or anything that takes
+a scene description -- and it produces the same object under the same sun,
+because nothing in it is a preference.
+
+```python
+def render_spec(combo, elevation_deg=24.0):
+    """Everything needed to render this thing, exactly. DERIVED.
+
+    A complete specification: the solids its parts force, where
+    gravity stacks them, the camera, and the light. Hand this to
+    any renderer -- or anything that takes a scene description --
+    and it produces the same object under the same sun, because
+    nothing in it is a preference.
+    """
+    import math as _m
+    from engine.form import assemble, height, forced_fraction
+    from engine.scene import (sky_rgb, sun_rgb, shadow_length,
+                              penumbra_width, sun_angular_diameter,
+                              solar_constant, lit_fraction)
+    import tools.render as R
+
+    parts = assemble(combo)
+    h = height(combo)
+    return {
+        "image": (R.W, R.H, f"{R.SS}x{R.SS} supersampled"),
+        "units": "metres",
+        "solids": [
+            {"part": p[4], "solid": p[0], "radius": round(p[1], 4),
+             "half_height": round(p[2], 4), "centre_y": round(p[3], 4)}
+            for p in parts],
+        "total_height": round(h, 4),
+        "widest_radius": round(max(p[1] for p in parts), 4),
+        "form_forced": round(forced_fraction(combo), 3),
+        "camera": {"eye": R.CAM, "look_at": R.LOOK,
+                   "fov_deg": R.FOV_DEG},
+        "sun": {"elevation_deg": elevation_deg,
+                "azimuth_deg": R.AZIMUTH_DEG,
+                "angular_diameter_deg":
+                    round(_m.degrees(sun_angular_diameter()), 4),
+                "rgb": tuple(round(v, 4) for v in
+                             sun_rgb(elevation_deg)),
+                "irradiance_w_m2":
+                    round(solar_constant() * lit_fraction(elevation_deg))},
+        "sky": {"rgb": tuple(round(v, 4) for v in
+                             sky_rgb(elevation_deg)),
+                "ambient_fraction": 0.17},
+        "ground": {"albedo": 0.25, "plane": "y = 0"},
+        "shadow": {"length_m": round(shadow_length(h, elevation_deg), 4),
+                   "penumbra_per_m": round(penumbra_width(1.0), 5)},
+        "gamma": 2.2,
+    }
+```
+
+**`run(years=12000.0)`**
+
+One world, held, because stepping it twice is waste.
+
+```python
+def run(years=12000.0):
+    """One world, held, because stepping it twice is waste."""
+    key = float(years)
+    if key not in _RUN:
+        _RUN[key] = World().run(years)
+    return _RUN[key]
+```
+
+**`spec(combo, world=None)`**
+
+-> a spec sheet for one thing in the ledger. DERIVED. What it is MADE OF,
+what FIRE and what TOLERANCE it needs, and what must already exist before
+anyone can attempt it. What this does NOT say is what the thing does. A set
+of capabilities is a requirement list, not a design, and naming it would be
+inventing. The sheet is real and the name would not be.
+
+```python
+def spec(combo, world=None):
+    """-> a spec sheet for one thing in the ledger. DERIVED.
+
+    What it is MADE OF, what FIRE and what TOLERANCE it needs,
+    and what must already exist before anyone can attempt it.
+
+    What this does NOT say is what the thing does. A set of
+    capabilities is a requirement list, not a design, and naming
+    it would be inventing. The sheet is real and the name would
+    not be.
+    """
+    from engine.artifact import TOL_NEEDED
+    from engine.inference import closure
+    w = world or run()
+    parts = sorted(combo)
+    rests = set()
+    for part in parts:
+        rests |= closure(part)
+    rests -= set(parts)
+    first = None
+    for year, band, kind, what in w.ledger:
+        if kind == "artifact" and what == frozenset(combo):
+            first = (year, band)
+            break
+    return {
+        "made of": [(p, PRIMITIVES[p][3]) for p in parts],
+        "fire": max(PRIMITIVES[p][1] for p in parts),
+        "tolerance": min(TOL_NEEDED.get(p, BASE_TOL) for p in parts),
+        "rests on": sorted(rests),
+        "first built": first,
+        "named in our world": KNOWN_AS.get(frozenset(combo)),
+    }
+```
+
+**`their_entry(combo, band_id, world=None)`**
+
+The entry as THEY would write it, in their words. DERIVED.
+
+```python
+def their_entry(combo, band_id, world=None):
+    """The entry as THEY would write it, in their words. DERIVED."""
+    w = world or run()
+    band = w.bands[band_id]
+    return band.lex.compound(sorted(combo))
+```
+
+**`words_for(referent, world=None)`**
+
+-> (distinct words, bands with one). DERIVED.
+
+```python
+def words_for(referent, world=None):
+    """-> (distinct words, bands with one). DERIVED."""
+    w = world or run()
+    return agreement([b.lex for b in w.bands], referent)
+```
+
 ---
 
 # Part II — the chain, with the working
 
-58 links. Each gives its verdict, the rule that drives it, the numbers that
+76 links. Each gives its verdict, the rule that drives it, the numbers that
 rule produces, and the rule's source. Where the link is a cosmological
 epoch the temperature and energy are computed here rather than quoted.
 
@@ -27581,9 +30628,22 @@ fastest -- nobody chose 16
 
 ```python
 def best_depth(band=BAND, e=TELEPHONE):
-    """-> (k, s, held). Exhaustive over 1..band. DERIVED."""
-    best = max(range(1, band + 1), key=lambda k: held_by_band(k, band, e))
-    return best, specialties(best, band), held_by_band(best, band, e)
+    """-> (k, s, held). Exhaustive over 1..band. DERIVED.
+
+    Pure in (band, e) and scanned over every integer up to band,
+    so a village-scale call is 912 binomial tails and a network
+    one is 36,480. engine/intricacy.settle iterates a fixed point
+    that calls this forty times with the same arguments, which is
+    forty identical scans. Held.
+    """
+    key = (int(band), float(e))
+    if key in _DEPTH:
+        return _DEPTH[key]
+    best = max(range(1, int(band) + 1),
+               key=lambda k: held_by_band(k, band, e))
+    got = (best, specialties(best, band), held_by_band(best, band, e))
+    _DEPTH[key] = got
+    return got
 ```
 
 ```
@@ -27673,7 +30733,7 @@ def cooking_pays():
 ```
 
 ```
-    cooking_pays() = (131.47678330443446, 2.275, 57.791992661289875)
+    cooking_pays() = (131.47678330443446, 2.527777777777778, 52.01279339516088)
 ```
 
 1e6 organisms a gram over 200 g against an ID50 of 1e4 is infection with
@@ -27765,7 +30825,7 @@ def settle(n=VILLAGE, passes=2, rounds=40, market=None):
 ```
 
 ```
-    settle() = 23.536070825609855
+    settle() = 23.536861560034865
 ```
 
 an artifact is a composition, so what a group can build is the subsets of
@@ -27933,10 +30993,11 @@ def bootstrap():
     held, rounds = set(), []
     while True:
         t = temperature(held)
-        tol = tolerance(held)
+        tol, cold = tolerance(held), coldness(held)
         got = {n for n, (needs, k, _r, _w) in PRIMITIVES.items()
                if n not in held and set(needs) <= held and k <= t
-               and TOL_NEEDED.get(n, 1e-1) >= tol}
+               and TOL_NEEDED.get(n, 1e-1) >= tol
+               and COLD_NEEDED.get(n, BASE_COLD) >= cold}
         if not got:
             return rounds
         held |= got
@@ -27944,7 +31005,7 @@ def bootstrap():
 ```
 
 ```
-    bootstrap() = [(1, 1100, ['cordage', 'edge', 'heat', 'lever']), (2, 1100, ['containment', 'mark', 'rotation']), (3, 1400, ['breeding', 'smelting']), (4, 1600, ['gearing']), (5, 1750, ['electricity', 'optics', 'pressure', 'spring']), (6, 1750, ['regulation', 'steam']), (7, 1750, ['alloy', 'vacuum']), (8, 1750, ['semiconductor']), (9, 1750, ['switching']), (10, 1750, ['inference'])]
+    bootstrap() = [(1, 1100, ['cordage', 'edge', 'heat', 'lever']), (2, 1100, ['containment', 'mark', 'rotation']), (3, 1400, ['breeding', 'smelting']), (4, 1600, ['gearing']), (5, 1750, ['electricity', 'optics', 'pressure', 'spring']), (6, 1750, ['regulation', 'steam']), (7, 1750, ['alloy', 'vacuum']), (8, 1750, ['depiction', 'semiconductor', 'superconduction']), (9, 1750, ['switching']), (10, 1750, ['coherence', 'inference']), (11, 1750, ['placement'])]
 ```
 
 a count is not a technology. Giving the 2^s designs actual objects -- 16
@@ -28023,11 +31084,566 @@ answers by searching is an admission: its usefulness measures what has not
 been derived, and it is the only quantity here that shrinks as the work
 gets better
 
+## 59. people with instruments → a literature of their own
+
+**DERIVED** &nbsp; rule: `literature.order_agreement`
+
+```python
+def order_agreement():
+    """-> (concordant, discordant, tau). Kendall's tau. DERIVED.
+
+    Every pair of sciences either comes out in the same relative
+    order both ways or it does not. Ties in the predicted round
+    are not counted either way.
+    """
+    names = [s for s, _r in predicted_order()]
+    pred = {s: r for s, r in predicted_order()}
+    rec = {s: SCIENCES[s][2] for s in names}
+    con = dis = 0
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            dp, dr = pred[a] - pred[b], rec[a] - rec[b]
+            if dp == 0 or dr == 0:
+                continue
+            if (dp > 0) == (dr > 0):
+                con += 1
+            else:
+                dis += 1
+    tot = con + dis
+    return con, dis, (con - dis) / tot if tot else 0.0
+```
+
+```
+    order_agreement() = (55, 7, 0.7741935483870968)
+```
+
+this repository derives from constants it simply has. The people inside it
+do not have them -- they have senses reaching 8 of 13 constraints and
+instruments arriving in an order engine/artifact.py already fixed from
+melting points and machining tolerances. So a science is possible exactly
+when its instrument is, which PREDICTS AN ORDER: statics, surveying,
+positional astronomy, metallurgy, machines, optics, thermometry, then the
+rest. Against the century each actually appeared that is 55 concordant
+pairs to 7, Kendall tau 0.77 on a sequence that could have come out 6.2e9
+ways. The rounds were not tuned for this and the centuries are the answer
+key, but the science-to-instrument mapping is mine and a different hand
+would score differently. The 7 discordant pairs concentrate on metallurgy,
+pneumatics and spectroscopy, and each names a requirement the mapping
+missed -- a ruled grating is precision machining, not optics. Their rules
+also carry THEIR error: a three-term derivation of G is +/-17% at round 2
+and 0.2% at round 5, and Cavendish got 1% in 1798, which lands between them
+
+## 60. two gates → a third that only goes down
+
+**DERIVED** &nbsp; rule: `artifact.coldness`
+
+```python
+def coldness(held):
+    """Lowest temperature reachable with what is held. DERIVED."""
+    t = BASE_COLD
+    for _label, (needs, got) in COLD_GAINS.items():
+        if set(needs) <= set(held):
+            t = min(t, got)
+    return t
+```
+
+the heat ladder only ever went UP and nothing in the tree had touched the
+other direction. Going cold is a separate physical scarcity with its own
+cascade: you cannot reach liquid helium without liquid air first, because
+the helium must be pre-cooled -- the same shape as the bellows needing the
+tuyere they were for. Expanding a compressed gas reaches 77 K and needs
+pressure and regulation; pumping on a cascaded bath reaches 4 K and needs
+vacuum and superconduction. That adds superconduction, coherence and
+placement, and the tree runs to eleven rounds. The precision ladder now
+ENDS rather than stopping: matter cannot be placed more finely than an atom
+is wide, and the Bohr radius falls out of hbar, the electron mass and the
+charge at 5.29e-11 m. That is a wall, not a rung
+
+## 61. a claim that there was no light → the light that was here
+
+**DERIVED** &nbsp; rule: `scene.solar_constant`
+
+```python
+def solar_constant():
+    """W/m2 at the orbit. DERIVED: L / (4 pi d^2)."""
+    return L_SUN_W / (4.0 * math.pi * AU_M ** 2)
+```
+
+```
+    solar_constant() = 1361.1664654085753
+```
+
+3.2.14 said the world has no scene, and that was wrong about this
+repository's own contents. engine/thermo.py already had the Sun at 5772 K
+and engine/constants.py its luminosity and orbit, so the solar constant is
+L/(4 pi d^2) = 1361 W/m2 against a measured 1361, and Wien puts the peak at
+502 nm against a measured 502. Neither was put in. Rayleigh scattering goes
+as lambda^-4, which gives BOTH the blue sky -- what scattered out, blue
+4.9x red -- and the red low sun, what went straight through, red 46x blue.
+One subtraction seen from two directions. A shadow is h/tan(elevation) on a
+height engine/drawing.py already publishes, and lit-to-shadowed contrast is
+6.1 to one rather than infinite, because a shadow still sees the sky. What
+remains underivable is the SHAPE of a thing: the envelope is real and
+published, a box is the simplest solid with those extents, and the choice
+is stated rather than hidden in a renderer. One more thing falls out and it
+is not cosmetic: the Sun's RADIUS is forced too, since L = 4 pi R^2 sigma
+T^4 solves to 6.957e8 m, the measured figure, and 2R/d makes the disc 0.533
+degrees across. So the Sun is not a point and NO SHADOW EDGE IS SHARP --
+the half-shadow spreads 9.3 mm per metre from whatever cast it. A render
+with hard edges is not stylised, it is wrong about the size of the Sun
+
+## 62. an envelope → a shape, where the physics forces one
+
+**DERIVED** &nbsp; rule: `form.forced_fraction`
+
+```python
+def forced_fraction(combo):
+    """How much of a thing's form is forced. DERIVED.
+
+    A partial counts a half: the thickness of a billet is forced
+    and its outline is not, so half the form is.
+    """
+    parts = [p for p in combo if solid_of(p)[1] is not None]
+    if not parts:
+        return 0.0
+    got = sum(1.0 if solid_of(p)[1] is True else 0.5 for p in parts)
+    return got / len(parts)
+```
+
+saying shape was underivable was too strong. 20 of 25 primitives have a
+solid FORCED by what the part does. A thing that turns about an axis
+without wobbling is a surface of revolution and there is no other option.
+Hoop stress pr/t is least on a revolved shell with domed ends. Holding
+against a gradient IS having a cavity. 1/f = (n-1)(1/R1-1/R2) has no
+solution without curvature, so optics is a lens. The force ratio of a lever
+IS its aspect ratio. Two gears mesh only on matching pitch circles. A
+junction is microns deep and its area is not, so a semiconductor is a
+wafer. The proportions come from DIMENSION_M, which the drawing tables were
+already publishing, and the ARRANGEMENT is forced by gravity -- a thing
+that stands has its centre of mass over its footprint, so the heavy parts
+go low and nobody chose the order. What is NOT forced is marked: a mark
+needs a surface but any surface, an alloy's composition says nothing about
+form, and nothing here gives finish, fasteners or colour. A form that
+satisfies every constraint is not a design, and the distance between them
+is where taste lives
+
+## 63. a surface that keeps light → a reason to throw most of it away
+
+**DERIVED** &nbsp; rule: `image.over_resolution`
+
+```python
+def over_resolution():
+    """How much more is recorded than can be seen. DERIVED."""
+    return plate_samples() / eye_samples()
+```
+
+```
+    over_resolution() = 86.99999999999999
+```
+
+their plate has a one-micron grain, so it holds 100,000 samples across; the
+eye that will look at it resolves an arcminute, which at reading distance
+is 1,149 across the same plate. THE MEDIUM OUT-RESOLVES THE VIEWER BY 87
+TIMES, 7,569 in area, and that is why an image format exists at all --
+compression is not a trick about files, it is the arithmetic of recording
+more than anyone can see. Every term is a fact about the eye: colour acuity
+is a third of brightness so colour samples two-by-two coarser, exactly 2x,
+which is what 4:2:0 IS; and contrast sensitivity peaks near 4 cycles a
+degree and falls away, so a high coefficient needs fewer bits rather than
+none, 2.4x over the 63 AC terms. 4.8x from perception alone. tools/jpeg.py
+implements the encoder with that quantization table instead of Annex K,
+measures 10.4x, and an unrelated decoder reads the file as a 1400x240 JPEG
+-- so the remaining 2.2x is entropy coding of the zeros, which is symbol
+statistics and not eyes
+
+## 64. a drawing that needs a reader → one that does not
+
+**DERIVED** &nbsp; rule: `depiction.image_over_drawing`
+
+```python
+def image_over_drawing(fraction):
+    """How much better an image is at that literacy. DERIVED."""
+    v = convention_value(fraction)
+    return math.inf if v <= 0 else photograph_value(fraction) / v
+```
+
+a drawing is a projection and a projection is a convention, so it needs a
+drawer AND a reader holding the same one -- f squared, worth 0.0001 at 1%
+and 0.01 at 10%. A photograph needs no convention: whoever looks at it
+reads it, so its worth is f to the FIRST power and is 1 from the moment it
+exists. That is 10,000x at 1% literacy. Depiction needs a lens and a
+specified composition and lands at round 8, and what it does is abolish the
+second literacy that had just been derived. ART is the third case and the
+strange one: it is the only output here needing no tolerance at all,
+because a mark is not true to anything, so no gate has ever blocked it and
+it is available in round 1 while 12 of 25 crafts queue behind a furnace.
+The obvious account -- that art waits for a surplus -- is refuted: painted
+caves are thirty thousand years older than farming, and the reason is
+magnitude, a painted surface being 0.75 days against 50 for one part of a
+tool. And art travels like a FACT rather than a tool, audience 100% against
+50%, which is why a style crosses a region faster than the pigment recipe
+does
+
+## 65. a tolerance on nothing → a dimensioned drawing
+
+**DERIVED** &nbsp; rule: `drawing.drawing_of`
+
+```python
+def drawing_of(primitive):
+    """A dimensioned specification. DERIVED.
+
+    This is what a drawing actually carries: a size, how true it
+    must be held, and whether anybody has to measure that or the
+    process delivers it. Their geometry is ours -- a length is a
+    length and a circle is a circle -- so a drawing they make is
+    a drawing we can read, and none of that required telling
+    them a rule.
+    """
+    size = DIMENSION_M.get(primitive, 0.1)
+    return {
+        "size m": size,
+        "held to": TOL_NEEDED.get(primitive, BASE_TOL),
+        "that is m": gauged_precision(primitive),
+        "physics wants m": demanded_precision(primitive),
+        "self figuring": self_figuring(primitive),
+        "needs a drawing": needs_gauging(primitive),
+        "bits": bits_per_part(TOL_NEEDED.get(primitive, BASE_TOL)),
+    }
+```
+
+a tolerance has to be a tolerance ON something, and these were relative
+numbers floating free of any dimension. Giving each craft a characteristic
+size lets them be checked against what the physics demands, and three came
+out wrong. The worst: a lens surface must be true to a quarter wavelength,
+138 nm on a 50 mm lens, 2.7e-6 relative against the 1e-2 that was here --
+four orders out. The resolution is a distinction the file did not have.
+Some accuracy is MEASURED and some is PROCESSED: nobody ever machined a
+lens to a quarter wave, you grind two surfaces together and they conform,
+because a sphere is the only shape that slides on itself in every
+orientation. Three flats lapped in rotation give a plane, a hobbed gear
+generates its own involute, and the accuracy comes out of the METHOD with
+nobody gauging anything -- which is why lenses precede micrometers instead
+of waiting for them. Their geometry is ours, so a drawing they make is one
+we can read, and none of that needed telling them a rule
+
+## 66. a part too fine to copy → a drawing
+
+**DERIVED** &nbsp; rule: `drawing.first_round_needing_one`
+
+```python
+def first_round_needing_one():
+    """When a sample stops being enough for anything. DERIVED."""
+    for i, _t, got in bootstrap():
+        if any(needs_a_drawing(g) for g in got):
+            return i
+    return None
+```
+
+```
+    first_round_needing_one() = 5
+```
+
+the obvious account of a drawing is that a shape is a lot of information,
+and it is wrong by a wide margin: pinning a dimension to a tolerance costs
+log2(1/t) bits, so a three-dimensional part at a BILLIONTH is 90 bits
+against the 11,700 one telling carries. A hundred and thirty such
+specifications fit in one story and you could read a nanometre tolerance
+aloud. What actually forces a drawing is that the object stops being its
+own specification: copying by eye reaches a tenth, so above that you hand
+someone the original, and below it a NUMBER has to travel instead of a
+thing. 11 of 24 crafts are tighter than a sample can carry and the first is
+at round 5. And a projection is a convention, so it needs a drawer AND a
+reader -- f squared, the same exponent as literacy, and slow for the same
+reason. A drawing is a second literacy
+
+## 67. a constraint envelope → a world that runs
+
+**DERIVED** &nbsp; rule: `world.run`
+
+```python
+def run(years=12000.0):
+    """One world, held, because stepping it twice is waste."""
+    key = float(years)
+    if key not in _RUN:
+        _RUN[key] = World().run(years)
+    return _RUN[key]
+```
+
+```
+    run() = <engine.world.World object at 0x11277c250>
+```
+
+everything before this computed what a human-like organism COULD NOT do,
+which is a real kind of statement and is not the same as saying what they
+did. Nothing had state, nothing took a step, nobody tried anything. This
+does: 40 bands hold crafts, try combinations of what they have, and find
+out about the gates by failing -- they cannot see a melting point. Over
+12,000 years the ledger takes 30,319 entries, they reach all 21 crafts with
+the last at year 11,380, and they build 4,352 distinct things of which
+4,334 have NO NAME in our world, because 21 things are named and the
+reachable space is 2^21. The result is that the ORDER comes back out at
+Kendall tau 1.00 against the bootstrap derived from melting points -- an
+ordering that was a theorem recovered by a stochastic search run by people
+who know no physics. The timescale is NOT a result: CRAFT_SUCCESS is fitted
+to the Holocene and is the only fitted number here
+
+## 68. a record we wrote for them → a record they wrote
+
+**DERIVED** &nbsp; rule: `world.words_for`
+
+```python
+def words_for(referent, world=None):
+    """-> (distinct words, bands with one). DERIVED."""
+    w = world or run()
+    return agreement([b.lex for b in w.bands], referent)
+```
+
+the encyclopedia at 3.2.9 was in English and the English was mine -- every
+phrase came from a description I had typed into engine/artifact.py, which
+is us writing their record and then admiring it. So they get a language:
+nine consonants, three vowels, open syllables, 20,412 possible words, and a
+band coins a token when it first makes something. Nobody was handed
+English, because handing them English is the same mistake in a larger form.
+We can still read it because we WATCHED THEM ATTACH each word to an act of
+making and the ledger has both -- the gloss is an observation in the
+position a field linguist is in, not a dictionary anybody was given. And a
+result nothing was built to produce: a craft every band found separately
+keeps a word per band, while a craft that spread by teaching carries one
+word with it, so heat has 39 words across 40 bands and gearing has 2. THE
+OLDEST WORDS ARE THE LEAST AGREED ON, which is what happens to real basic
+vocabulary against real technical vocabulary
+
+## 69. a literature → a paper that can be marked
+
+**DERIVED** &nbsp; rule: `exam.half_moon_sensitivity`
+
+```python
+def half_moon_sensitivity(theta_deg=HALF_MOON_DEG):
+    """d ln(ratio) / d ln(theta) = theta tan(theta). DERIVED.
+
+    The ratio is 1/cos(theta), so d ln / d theta is tan(theta),
+    and multiplying by theta makes it fractional. Near a right
+    angle the tangent runs away, which is the whole problem.
+    """
+    t = math.radians(theta_deg)
+    return t * math.tan(t)
+```
+
+```
+    half_moon_sensitivity() = 611.2435567899248
+```
+
+a question is not a topic, it is a METHOD, and every method has a
+SENSITIVITY: how much the answer moves when the measurement is off by a
+fraction. Eratosthenes measured a shadow and a road, sensitivity 1, and got
+the Earth's circumference to a few per cent with a stick. Aristarchus, same
+century and same equipment, measured the Sun's distance and was out by
+twenty times. Feeding his reported 87 degrees into 1/cos gives 19.1 and he
+published 'about 19' -- so the arithmetic was right and the error was
+entirely in the input. His method multiplies by theta tan(theta) = 611. And
+the measurement was not the angle: the angle only means anything AT half
+moon, and the Moon moves 13.2 degrees a day, so his 2.85-degree error is
+5.2 HOURS of timing. A water clock leaves 187% on the answer. He attempted
+a round-6 question with round-2 equipment, could not have known it, and the
+figure stood for seventeen centuries -- not corrected by better thinking
+but by the transit of Venus, a different method with a different
+sensitivity
+
+## 70. a paper that can be marked → who it says mattered
+
+**DERIVED** &nbsp; rule: `standing.ranking`
+
+```python
+def ranking():
+    """-> [(leverage, primitive, breakdown)] descending. DERIVED."""
+    rows = [(leverage(p), p, rests_on(p)) for p in PRIMITIVES]
+    return sorted(rows, key=lambda r: (-r[0], r[1]))
+```
+
+```
+    ranking() = [(16, 'regulation', (3, 3, 2, 8)), (12, 'optics', (2, 3, 3, 4)), (11, 'mark', (1, 2, 1, 7)), (9, 'electricity', (2, 2, 1, 4)), (9, 'rotation', (2, 1, 0, 6)), (8, 'gearing', (1, 2, 2, 3)), (8, 'lever', (1, 2, 2, 3)), (8, 'smelting', (5, 1, 0, 2)), (6, 'containment', (3, 1, 0, 2)), (5, 'cordage', (0, 1, 1, 3)), (5, 'heat', (4, 0, 0, 1)), (5, 'switching', (2, 0, 0, 3)), (4, 'edge', (2, 0, 0, 2)), (4, 'semiconductor', (1, 1, 1, 1)), (4, 'spring', (1, 1, 1, 1)), (4, 'vacuum', (1, 1, 1, 1)), (3, 'alloy', (3, 0, 0, 0)), (3, 'steam', (0, 1, 0, 2)), (2, 'depiction', (0, 0, 0, 2)), (2, 'inference', (0, 0, 0, 2)), (2, 'pressure', (2, 0, 0, 0)), (1, 'breeding', (0, 0, 0, 1)), (1, 'coherence', (1, 0, 0, 0)), (1, 'superconduction', (1, 0, 0, 0)), (0, 'placement', (0, 0, 0, 0))]
+```
+
+who counts should fall out of the structure rather than be imported, so it
+is ranked by what rests on it: how many primitives, sciences, exam
+questions and namable artifacts depend on each contribution. Nothing the
+ranking reads has a name in it, so no name can come out. REGULATION tops it
+at 16 -- a machine that corrects itself -- then mark at 10, optics and
+rotation at 9. And a tool is not the same kind of contribution as a fact: a
+primitive enters an EXPONENT, since designs are 2^s and one more doubles
+the space, while an answer enters a SUM as one item in a corpus of 1.2e8.
+The ratio is 1.2e8 to one. Of eight names commonly remembered here, six are
+remembered for answering and two for building -- the reverse of what the
+ranking says, and the check fails if memory ever starts tracking leverage
+
+## 71. who it says mattered → why anything gets a name at all
+
+**DERIVED** &nbsp; rule: `naming.naming_is_worth`
+
+```python
+def naming_is_worth():
+    """Retrievals saved by having a handle. DERIVED."""
+    return search_cost() / index_cost()
+```
+
+```
+    naming_is_worth() = 4346.10842401768
+```
+
+a name is not imposed from outside, it is a mechanism the people inside
+need, and it is three things already priced elsewhere. An INDEX: a corpus
+of 8,692 items costs 4,346 comparisons to search and one to look up, so a
+handle is worth 4,346 retrievals -- names are addresses before they are
+honours, which is why the oldest ones are places and rivers. A CREDIT
+CLAIM: engine/merit.py prices a contribution at 1/k, and attaching a name
+is the act that sets k to one, 100% against 4%, so naming IS the reward
+system's addressing rather than decoration on it. And an ITEM: a name
+decays like any other, needing 5 holders to last forty generations -- the
+same figure as keeping a script, because it is the same arithmetic. What is
+NOT derived is why answerers get named over toolmakers. The tellability
+account was tested and refuted at r = -0.20 over 21 primitives. What does
+account for it is AUDIENCE: a retelling costs the teller and pays the
+listener, so it happens when the listener can act. An answer is usable by
+anyone who hears it and a tool only by whoever holds that craft -- 100%
+against 50% in a band of 28 holding 2 crafts, and 0.3% in a literate
+village holding 304. Over five retellings that is 32x and 2.6e12x. And the
+story channel stops carrying a tool at all once specialties pass 3, because
+R0 falls through one, after which tools travel by apprenticeship -- a
+channel that produces no names. A society gets better at making tools and
+worse at naming who made them, at the same time and for the same reason
+
+## 72. a language with no grammar → one that buys a grammar
+
+**DERIVED** &nbsp; rule: `syntax.threshold`
+
+```python
+def threshold():
+    """Smallest compound that needs a grammar. DERIVED."""
+    n = 2
+    while n < 40 and not marker_pays(n):
+        n += 1
+    return n
+```
+
+```
+    threshold() = 6
+```
+
+their compounds were concatenation and not grammar -- nouns in a row, no
+order, no case, no agreement -- and that was accurate rather than final,
+because a grammar is not given to a language, it is BOUGHT. What it fixes:
+a flat string of n parts reads Catalan(n-1) ways and only one is meant, so
+the doubt is 2.3 bits at four parts and 5.4 at six. What it costs: one
+syllable, and an inventory of 9 consonants by 3 vowels carries log2(27) =
+4.75 bits. So a marker pays at exactly SIX parts and not before -- below
+that free word order is enough and a particle is a waste of breath. This
+world crossed it at year 600. And the first grammar is a BRACKET rather
+than a case or a tense, because a flat compound already says which parts
+are present and cannot say which part the whole thing IS. A grammar word is
+one syllable against a noun's two or three, which is forced twice over: it
+must not be mistaken for a noun, and it is the most frequent word there is,
+so the cheapest distinguishable form survives
+
+## 73. everything derived so far → one epoch of many
+
+**DERIVED** &nbsp; rule: `farfuture.star_lifetime_years`
+
+```python
+def star_lifetime_years(mass_msun):
+    """Fuel over burn rate: t ~ M / L ~ M^(1-exp). DERIVED."""
+    sun = 1e10                       # MEASURED, solar main sequence
+    return sun * mass_msun ** (1.0 - MASS_LUMINOSITY_EXP)
+```
+
+engine/epochs.py stops at the neutron-star merger, about ten billion years,
+because that is the last epoch that makes a new KIND of matter -- and
+everything above, cells through lithography, happens INSIDE that one epoch
+using nothing the universe had not already made. Main sequence lifetime
+goes as M^(1-3.5), so the lightest star that burns at all, 0.08 solar
+masses, lasts 5.5e12 years against the Sun's 1e10. The era with people in
+it is a 552nd of the era with stars in it, and the chain had an end that
+nobody had written down
+
+## 74. the last starlight → holes that finally shrink
+
+**DERIVED** &nbsp; rule: `farfuture.black_holes_start_shrinking`
+
+```python
+def black_holes_start_shrinking(mass_kg=M_SUN_KG):
+    """When the sky gets colder than the hole. DERIVED.
+
+    A black hole absorbs more than it radiates while the CMB is
+    hotter than its Hawking temperature, so nothing evaporates
+    until the sky has cooled past it.
+    """
+    t_h = hawking_temperature(mass_kg)
+    return hubble_time_yr() * math.log(2.725 / t_h)
+```
+
+```
+    black_holes_start_shrinking() = 255378414117.84143
+```
+
+a solar-mass hole radiates at 6.2e-8 K, colder than today's 2.725 K sky, so
+it GROWS -- nothing evaporates until the universe has cooled past it, which
+under exponential expansion takes ln(2.725/6.2e-8) Hubble times, about
+2.6e11 years. Then t = 5120 pi G^2 M^3 / hbar c^4, three constants and a
+mass with nothing fitted: 2.1e67 years for a stellar hole and 2.1e94 for a
+galactic one, because a cube turns 1e9 into 1e27. The last event in the
+universe is the evaporation of the largest hole in it
+
+## 75. no gradient → nothing further can be derived
+
+**DERIVED** &nbsp; rule: `farfuture.de_sitter_temperature`
+
+```python
+def de_sitter_temperature():
+    """The floor temperature of an accelerating universe. DERIVED.
+
+    A de Sitter horizon radiates at T = hbar H / (2 pi k), exactly
+    as a black hole horizon does. This is the temperature nothing
+    can get below, so it is the temperature everything ends at.
+    """
+    return HBAR * hubble_s() / (2.0 * math.pi * K_B)
+```
+
+```
+    de_sitter_temperature() = 2.655353595626034e-30
+```
+
+every rule in this repository runs on a GRADIENT. A cell eats one, a body
+sheds one, a fire needs one, Carnot is defined by one, and the 58x return
+on cooking exists only because there is somewhere for the heat to go. The
+floor is the de Sitter temperature, hbar H / 2 pi k = 2.7e-30 K, set by the
+horizon itself and by the same formula as a black hole's. At that
+temperature everything is at the horizon and there is no somewhere. So the
+final link does not say the universe is cold. It says the machinery this
+repository is built from has nothing left to bite on, which is an ANSWER
+and not a gap -- the one place on the chain where 'nothing further can be
+derived' is the correct result
+
+## 76. ordinary matter → whether it lasts at all
+
+**MISSING** &nbsp; rule: `farfuture.PROTON_DECAY_BOUND_YR`
+
+```
+    farfuture.PROTON_DECAY_BOUND_YR =
+        1.6e+34
+```
+
+a gap in the WORLD rather than in the model, and the distinction is worth
+keeping. The proton has never been observed to decay; Super-Kamiokande puts
+the lifetime beyond 1.6e34 years, which is a bound and not a value. If
+protons decay near that bound, white dwarfs and cold planets evaporate long
+before the 2.1e67 years a stellar hole needs and the degenerate era ends
+early. If they do not, cold matter simply waits. Nothing here can decide it
+and neither can anyone else yet
+
 ---
 
 # Part III — the technology
 
-21 physical capabilities, each grounded in a rule from Part I. An artifact
+25 physical capabilities, each grounded in a rule from Part I. An artifact
 is a set of them used together. Two scalars gate the sequence and the
 second one takes over when the first stops moving.
 
@@ -28053,9 +31669,13 @@ regulation        1700    1e-02      4  gearing, spring
 steam             1700    1e-01      4  pressure, heat
 alloy             1700    1e-03      5  smelting, regulation
 vacuum            1700    1e-03      5  pressure, regulation
+depiction         1700    1e-05      6  optics, alloy
 semiconductor     1700    1e-06      6  vacuum, alloy
+superconduction   1700    1e-06      6  alloy, electricity
 switching         1700    1e-06      7  semiconductor, electricity
+coherence         1700    1e-09      8  superconduction, switching
 inference         1700    1e-09      8  switching, regulation
+placement         1700    1e-10      9  coherence, optics
 ```
 
 **What each one is, and what grounds it**
@@ -28078,9 +31698,13 @@ inference         1700    1e-09      8  switching, regulation
 - **steam** — heat turned into a stroke. Needs 1700 K. Grounded in `thermo.gamma`.
 - **alloy** — composition held to a specification. Needs 1700 K and 1e-03 tolerance. Grounded in `atoms.Pool`.
 - **vacuum** — a volume with the air taken out. Needs 1700 K and 1e-03 tolerance. Grounded in `eos.floor`.
+- **depiction** — a surface that keeps what light fell on it. Needs 1700 K and 1e-05 tolerance. Grounded in `senses.diffraction_limit`.
 - **semiconductor** — a crystal pure enough to switch. Needs 1700 K and 1e-06 tolerance. Grounded in `eos.classify`.
+- **superconduction** — resistance gone below a critical temperature. Needs 1700 K and 1e-06 tolerance. Grounded in `thermo.cv_molar`.
 - **switching** — a gate that opens on a signal. Needs 1700 K and 1e-06 tolerance. Grounded in `learning.landauer_j`.
+- **coherence** — a quantum state held against the noise. Needs 1700 K and 1e-09 tolerance. Grounded in `learning.landauer_j`.
 - **inference** — statistics run at a scale no head holds. Needs 1700 K and 1e-09 tolerance. Grounded in `learning.store_bits`.
+- **placement** — matter set down one atom at a time. Needs 1700 K and 1e-10 tolerance. Grounded in `eos.classify`.
 
 ## The two gates
 
@@ -28096,6 +31720,7 @@ inference         1700    1e-09      8  switching, regulation
     ->  1e-03  a screw-cutting lathe          needs gearing, smelting
     ->  1e-06  interferometry                 needs optics, regulation
     ->  1e-09  light printed through a mask   needs optics, switching
+    ->  1e-10  a tip that feels single atoms  needs coherence, vacuum
 ```
 
 ## The bootstrap
@@ -28109,9 +31734,10 @@ round        K      tol   reached
 5         1750    1e-03   electricity, optics, pressure, spring
 6         1750    1e-06   regulation, steam
 7         1750    1e-06   alloy, vacuum
-8         1750    1e-06   semiconductor
+8         1750    1e-06   depiction, semiconductor, superconduction
 9         1750    1e-09   switching
-10        1750    1e-09   inference
+10        1750    1e-10   coherence, inference
+11        1750    1e-10   placement
 ```
 
 ## The things themselves
@@ -28155,6 +31781,10 @@ round 6    1750 K   a governed engine
                    = regulation + rotation + smelting + steam
 round 7    1750 K   a valve, and a signal amplified
                    = electricity + regulation + vacuum
+round 8    1750 K   a camera
+                   = depiction + optics
+round 8    1750 K   a printed image
+                   = depiction + mark
 round 9    1750 K   a transistor
                    = semiconductor + switching
 round 9    1750 K   a stored-program computer
@@ -28179,8 +31809,8 @@ ten times the people         +3.3 parts   exponent +0.072
 
 ```
 years                200
-parts now            29.448935274004793
-parts projected      49.38050384332897
+parts now            29.449726008493712
+parts projected      49.38129457781788
 from                 a corpus copied at 1e6 a scribe-year rather than 250
 exponent now         0.071968777386958
 exponent projected   0.351968777386958
@@ -28191,7 +31821,7 @@ named artifacts      0
 
 # Part IV — the numbers, and the ones withdrawn
 
-## Published (85 of 85 reproduce)
+## Published (102 of 102 reproduce)
 
 ```
 ok  3.1.92  10,584 universes generated blind; 864 pass three filters
@@ -28210,14 +31840,14 @@ ok  3.1.110  a band walks at 0.707 adult pace and innovates 39x per km
       = (1.41, 39, 13, 2, 9332, 280, 90)
 ok  3.1.111  one checked copy is worth 13 speakers; 5 scribes keep a script
       = (5, 13, 9, 5, 10)
-ok  3.1.111  a crowd disease needs 912 people; cooking pays 58x
-      = (912, 33, 132, 58, 526)
+ok  3.1.111  a crowd disease needs 912 people; cooking pays 52x
+      = (912, 33, 132, 52, 526)
 ok  3.1.111  a granary is 909x cheaper to hold than the range it replaced
       = (909, 15, 1.9, 8, 3.5)
 ok  3.1.112  a 5th-generation heir holds 32x what their ability warrants
       = (20, 2.58, 0.08, 32, 15, 162)
 ok  3.1.114  speech is a fixed point at 2 specialties; the loop settles at 23.5
-      = (2, 3, 23.5, 12163632, 53)
+      = (2, 3, 23.5, 12170300, 53)
 ok  3.1.113  grain dies at 516 km; knowledge has no range limit
       = (516, 258, 5.2, 6.8, 2.4)
 ok  3.1.114  ideas are non-rival: escape turns on a 0.372 land share
@@ -28226,10 +31856,44 @@ ok  3.1.114  24% of possible specialists are priced out by their tools
       = (1177, 368, 24, 1.33, 14.0)
 ok  3.1.115  novelty per head falls to 0.80 while the total rises 32x
       = (0.8, 32, 21.5, 26.8, 99.7, 0.032)
-ok  3.1.117  two gates: heat stops at round 5, tolerance runs to 10
-      = (21, 10, 1750, 3, 5, 9, 10)
-ok  3.1.117  7 of 10 derived numbers match the record within 3x
-      = (7, 1, 2, 6)
+ok  3.1.117  three gates: heat stops at 5, cold opens at 6, precision ends at the atom
+      = (25, 11, 1750, 3, 5, 10, 10)
+ok  3.1.120  52 comparisons: 37 match, 28 of them free
+      = (37, 6, 3, 28)
+ok  3.2.17  22 shapes forced, 2 partly, 1 not an object
+      = (22, 2, 1, 25, 'capsule', 'lens', 2.8)
+ok  3.2.15  1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T
+      = (1361, 502, 4.9, 45.8, 33.0, 6.1, 6.957, 0.533, 9.3)
+ok  3.2.14  a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x
+      = (87, 2.0, 2.39, 4.8, 2.2)
+ok  3.2.12  a photograph beats a drawing 10,000x at 1% literacy
+      = (10000, 8, 1, 67, 1.0)
+ok  3.2.21  a grammar pays at 6 parts; this world crossed at year 600
+      = (6, 4.75, 42, 5.39, 600, 1)
+ok  3.2.20  278 headwords, 182 spoken by one band, 657 borrowings
+      = (278, 25, 182, 39, 657, 39, 2)
+ok  3.2.10  39 words for heat, 2 for gearing: the oldest diverge most
+      = (27, 39, 40, 2, 40)
+ok  3.2.9  a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders
+      = (90, 130, 5, 11, 3.6, 2)
+ok  3.2.7  a world that runs: 21 crafts by year 11,380, 4,334 unnamed things
+      = (40, 30319, 21, 21, 11380, 4352, 4334)
+ok  3.2.5  a name is worth 4,346 retrievals; audience explains what tellability did not
+      = (4346, 5, 100, -0.42, 25, 50, 12.4)
+ok  3.2.4  regulation tops the ranking; optics takes second once depiction rests on it
+      = ('regulation', 16, 'optics', 12, 8.07, 2, 8)
+ok  3.2.2  Aristarchus reproduced forward: 87 deg gives 19.1, no answer key
+      = (19.1, 611, 6, 2, 6, 8, 8, 5, 415.6)
+ok  3.2.1  302 constants, 5 with two homes, 3 frozen copies tracked
+      = (302, 5, 3, 0)
+ok  3.1.123  42 constants are chosen; two stopped being, one pair disagrees 8.5x
+      = (42, 25, 2, 9, 8.5)
+ok  3.1.122  instrument order predicts science order, Kendall tau 0.77
+      = (13, 55, 7, 0.77, 5, 8, 6)
+ok  3.1.121  the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor
+      = (-7.21, 67.32, -29.58, 12.74, 11.41)
+ok  3.1.119  19 trillion tokens enumerated, from 1.6 MB of rules (35M:1)
+      = (13.28, 1.6, 35, 10584, 864, 8.87)
 ok  3.1.118  an inference kit is indivisible: 17,300 people for one
       = (12.14, 11.5, 16, 3368702, 17300, 2.1)
 ok  3.1.116  a press is worth 6.6 parts; proofreading is worth nothing
@@ -28260,8 +31924,8 @@ ok  3.1.98  divides at 2x volume, 28 copies, 1.39 types lost
       = (2.0, 28, 1.39, 10.0)
 ok  3.1.96  one compartment closes at 14 bases; an ocean is 1e35
       = (True, 14, 13, 35)
-ok  3.1.118  Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps
-      = (58, 50, 7, 0, 1)
+ok  3.2.12  Big Bang to heat death in 76 links: 67 derived, 1 gap
+      = (76, 67, 7, 1, 1)
 ok  3.1.95  abundance falls as mass^-3/4 exactly
       = 1.0
 ok  3.1.94  the lineage holds at the 1.58 um closure floor
@@ -28370,53 +32034,248 @@ ok  3.1.39  derived CO2 well depth 180 K
 
 ```
                               derived     recorded    ratio  verdict
+Planck time                 5.391e-44    5.391e-44     1.00  MATCH  (built in)
+radiation constant a        7.566e-16    7.566e-16     1.00  MATCH  (built in)
+kT at confinement                1308          200     6.54  LOOSE
+kT at n/p freeze-out            1.308          0.8     1.64  MATCH
+kT at nucleosynthesis         0.09751         0.07     1.39  MATCH
+Fe-56 binding per nucleon        8.846         8.79     1.01  MATCH
+Ni-62 binding per nucleon        8.863        8.794     1.01  MATCH
+mass number at the binding peak           58           62     0.94  MATCH
+Landauer erasure at 300 K    2.871e-21     2.87e-21     1.00  MATCH  (built in)
+Hawking temperature, one sun     6.17e-08     6.17e-08     1.00  MATCH
+solar-mass hole lifetime    2.096e+67      2.1e+67     1.00  MATCH
+de Sitter floor temperature    2.655e-30      2.6e-30     1.02  MATCH
+Hubble time                 1.451e+10     1.45e+10     1.00  MATCH  (built in)
+longest-lived star          5.524e+12        1e+13     0.55  MATCH
+when holes start to shrink    2.554e+11        1e+12     0.26  LOOSE  ~
+smallest closing compartment        1.583          0.3     5.28  LOOSE
+polymer length that closes           14           50     0.28  LOOSE
+codon length                        3            3     1.00  MATCH
+human basal metabolism          82.04           84     0.98  MATCH  (built in)
+trophic levels supported            4          4.5     0.89  MATCH
+tallest tree by hydraulics        203.9          116     1.76  MATCH
+tallest land column by stress        173.4          116     1.49  MATCH
+cost of raising a child         3.036            7     0.43  MATCH  ~
 band size                          28           30     0.93  MATCH
-village spacing                  5.19          3.5     1.48  MATCH
+dominance group size                3            4     0.75  MATCH  ~
+bands in a regional network        16.25           19     0.86  MATCH  ~
+camp residence before moving           73           45     1.62  MATCH  ~
+forager band range border        9.097            9     1.01  MATCH  (built in)
 oral corpus                      8692      1.2e+04     0.72  MATCH
-grain price doubles             257.9          400     0.64  MATCH
+holders to keep a skill alive            5            5     1.00  MATCH  (not scored)
 literacy ceiling                13.04           10     1.30  MATCH
-land share at takeoff           0.372         0.35     1.06  MATCH
-copper before iron                  2            2     1.00  MATCH  (built in, not counted)
+village spacing                 5.192          3.5     1.48  MATCH
+cultivated land per head          2.3          0.4     5.75  LOOSE  ~
 crowd disease floor             912.5        3e+05     0.00  MISS
+return on cooking               52.01           20     2.60  MATCH  (not scored)
+porter distance per day         32.09           30     1.07  MATCH
+grain price doubles             257.9          400     0.64  MATCH
+store over range defensibility        909.4          100     9.09  LOOSE  (not scored)  (built in)
+early agrarian inequality          3.5            4     0.88  MATCH  ~
+top-to-median income               14           15     0.93  MATCH  ~
+best of a band, in sigma        2.582         2.58     1.00  MATCH  (built in)
+land share at takeoff           0.372         0.35     1.06  MATCH
+copper before iron                  2            2     1.00  MATCH  (built in)
+hottest fire without metal         1400         1400     1.00  MATCH  (not scored)  (built in)
+hottest fire with bellows         1750         1800     0.97  MATCH  ~
+prerequisite tree depth            10            5     2.00  MATCH  (not scored)  (built in)
+parts in a complex artifact        23.54           30     0.78  MATCH  ~
+parts at network scale          29.45           30     0.98  MATCH  (not scored)
 invention team                   21.5            5     4.30  LOOSE
 novelty per head               0.8016         0.05    16.03  MISS
+people to afford one inference kit     1.73e+04        1e+06     0.02  MISS  ~
+corpus a machine must hold        173.2          200     0.87  MATCH  (built in)
 
-7 match, 1 loose, 2 miss (6 of the matches could have differed)
+37 match, 6 loose, 3 miss (28 of the matches could have differed)
 ```
 
-**band size** — ethnographic hunter-gatherer bands run about 25-50; the classic figure is
-around 30
+**Planck time** — CODATA, from the same three constants -- a definition being recomputed, not
+a prediction
 
-**village spacing** — neolithic and medieval village spacing is typically 2-5 km, roughly a
-field's walk
+**radiation constant a** — the Stefan-Boltzmann radiation density constant, recomputed from h, k and c
+
+**kT at confinement** — QCD confinement sets in near 150-250 MeV; this asks whether the epoch table
+lands in the right decade
+
+**kT at n/p freeze-out** — weak rates fall below the expansion rate near 0.7-0.8 MeV, which is what
+fixes the neutron fraction
+
+**kT at nucleosynthesis** — the deuterium bottleneck clears near T = 0.8e9 K, far below the 2.22 MeV
+binding, because photons outnumber baryons 1.6e9 to one
+
+**Fe-56 binding per nucleon** — AME2020 mass evaluation; a liquid-drop formula should land close without
+being told the answer
+
+**Ni-62 binding per nucleon** — AME2020; Ni-62 is the actual maximum of the curve, not Fe-56
+
+**mass number at the binding peak** — the peak is Ni-62; the model finds A=58, so it has the neighbourhood and
+not the nuclide
+
+**Landauer erasure at 300 K** — kT ln2 at 300 K -- a definition recomputed
+
+**Hawking temperature, one sun** — the standard figure for a solar-mass hole is 6.2e-8 K; this recomputes it
+from hbar, c, G and k
+
+**solar-mass hole lifetime** — Page's evaporation time for a solar mass is about 2e67 years
+
+**de Sitter floor temperature** — the horizon temperature of a universe expanding at the observed rate is
+quoted around 2.6e-30 K
+
+**Hubble time** — 1/H0 at 67.4 km/s/Mpc is 14.5 Gyr -- arithmetic on a measured rate
+
+**longest-lived star** — 0.08 solar-mass red dwarfs are given lifetimes of order 1e12-1e13 years
+
+**when holes start to shrink** — the CMB falls below a stellar Hawking temperature somewhere around
+1e11-1e12 years in the standard account
+
+**smallest closing compartment** — the smallest free-living cells, Pelagibacter and Mycoplasma, run 0.2-0.4 um
+across
+
+**polymer length that closes** — experimentally self-replicating ribozymes such as the Lincoln-Joyce
+cross-catalytic pair run to tens of nucleotides; 14 is short by a factor of
+a few
+
+**codon length** — the genetic code is a triplet; 4^3 = 64 covers 21 meanings and 4^2 = 16
+does not, so this could have failed
+
+**human basal metabolism** — adult basal rate is 1700-1900 kcal/day, about 85 W; Kleiber's coefficient
+is fitted, so this is near-definitional
+
+**trophic levels supported** — food chains run 4-5 levels in the field and rarely more; this falls out of
+10% transfer against a metabolic floor
+
+**tallest tree by hydraulics** — Hyperion, a coast redwood, is 115.9 m, close to the observed ceiling for
+the taxon
+
+**tallest land column by stress** — the same observed ceiling reached by a different route -- buckling rather
+than water transport
+
+**cost of raising a child** — Kaplan's forager energetics put a child at 6-13 million kcal to
+independence, about 7 adult-years of intake
+
+**band size** — ethnographic hunter-gatherer bands run 25-50; the classic figure is around
+30
+
+**dominance group size** — stable dominance orders in primates and small human groups tend to be 3-5
+before fragmenting
+
+**bands in a regional network** — ethnographic connubia and dialect tribes run roughly 15-25 bands, about 500
+people
+
+**camp residence before moving** — forager camps are typically occupied for weeks to a couple of months
+
+**forager band range border** — a 65 km2 territory for 28 people is 2.3 km2 a head, inside the 1-10 km2
+ethnographic range -- but that area came from a chosen edible fraction
 
 **oral corpus** — the Iliad is about 15,700 lines and the Rigveda about 10,600 verses; both
 were carried orally
 
-**grain price doubles** — estimates from Roman and medieval land carriage put the doubling of wheat
-somewhere around 300-500 km
+**holders to keep a skill alive** — craft traditions with a handful of masters are the ones that get lost, but
+I have no measured figure and chose this baseline
 
-**literacy ceiling** — pre-industrial literacy in Europe ran roughly 5-15% before mass schooling
+**literacy ceiling** — pre-industrial European literacy ran roughly 5-15% before mass schooling
+
+**village spacing** — neolithic and medieval village spacing is typically 2-5 km, about a field's
+walk
+
+**cultivated land per head** — pre-modern subsistence farming needs 0.2-0.6 ha a head depending on crop
+and yield
+
+**crowd disease floor** — measured critical community size for measles is 250,000-500,000 in the
+pre-vaccine record
+
+**return on cooking** — cooking's digestibility and pathogen gains are large but no clean ratio
+exists and this baseline is a guess
+
+**porter distance per day** — loaded human porters and marching infantry both average 25-35 km a day
+
+**grain price doubles** — Roman and medieval land-carriage estimates put the doubling of wheat around
+300-500 km
+
+**store over range defensibility** — perimeter ratios are geometric but I have no measured comparison and chose
+this
+
+**early agrarian inequality** — Gini for early agrarian societies runs 0.35-0.45, roughly a 3-5x
+top-to-mean ratio
+
+**top-to-median income** — pre-modern elite-to-median income ratios are commonly put at 10-20x
+
+**best of a band, in sigma** — expected maximum of 28 standard normal draws is sqrt(2 ln n) to leading
+order -- arithmetic against arithmetic
 
 **land share at takeoff** — English agriculture fell through about a third of output in the eighteenth
 century, and sustained per-capita growth begins in the same window
 
 **copper before iron** — copper from about 5000 BC and worked iron from about 1200 BC: the ORDER is
-right but this was built in by the tuyere loop, so it is not evidence
+right and the tuyere loop was built in, so it is not evidence
 
-**crowd disease floor** — measured critical community size for measles is 250,000-500,000 in the
-pre-vaccine record
+**hottest fire without metal** — a charcoal pit kiln reaches 1300-1500 K, but copper's melting point was PUT
+IN as the requirement, so this is an input coming back out
 
-**invention team** — authors per scientific paper average about 5, and inventors per patent
-about 3
+**hottest fire with bellows** — a bloomery under forced draft runs 1500-1900 K
+
+**prerequisite tree depth** — no measurement exists; the row is here to be visible, not scored
+
+**parts in a complex artifact** — a pre-industrial loom, clock or plough runs to tens of distinct worked
+components
+
+**parts at network scale** — the same baseline; the model barely separates a village from a region,
+which is itself worth noticing
+
+**invention team** — authors per scientific paper average about 5 and inventors per patent about
+3
 
 **novelty per head** — measured research productivity falls sharply: US total factor productivity
-growth is flat while researchers rose more than twentyfold
+growth is flat while researcher headcount rose more than twentyfold
 
-## Withdrawn (29)
+**people to afford one inference kit** — leading-edge lithography is held by a handful of firms serving billions
+
+**corpus a machine must hold** — a large deduplicated text corpus is hundreds of GB, so the scale is right
+by construction
+
+## Withdrawn (34)
 
 Published here and wrong. Kept with the reason, because a record that holds
 only the surviving answers is not a record.
+
+### `3.2.4` mark is second in the leverage ranking at 10
+
+optics at 12, once engine/depiction.py added a craft that rests on it. The
+ranking counts what depends on a thing, so anything added downstream of
+optics moves it -- the ranking working rather than drifting. regulation
+still tops it
+
+### `3.1.119` the rules compress 36 million to one
+
+35 million, not 36. VILLAGE was the literal 912 in two modules and is 912.5
+computed -- a rounding frozen into a copy, which eval/agreement.py caught
+as already adrift. 0.05% on the input, and it moved the design count and
+the compression ratio because both sit on the far side of an exponential
+
+### `3.1.112` the loop settles at 23.5 parts, 12,163,632 designs
+
+12,170,300. Same cause: VILLAGE corrected from a frozen 912 to a computed
+912.5
+
+### `3.1.111` cooking pays for itself 58 times over
+
+FIRE_EFFICIENCY was CHOSEN at 0.10 and did not have to be. An open fire is
+close to a point source radiating into 4 pi, and a pot of radius r at
+height h intercepts r^2/(4h^2) of that -- 0.090 for a 15 cm pot at 25 cm.
+What an open fire wastes is solid angle, not incomplete combustion. Cooking
+pays 52x, not 58x, and the conclusion is untouched because it was two
+orders clear either way
+
+### `3.1.117` 7 of 10 derived numbers match the record within 3x
+
+ten comparisons was too few to distinguish a method that finds real
+structure from one that propagates a single error into several places that
+then agree. Expanded to 46 rows spanning nucleosynthesis to lithography.
+Six rows carry a baseline I chose rather than found and are shown WITHOUT
+being scored -- three of those would have counted as matches, which is why
+they do not. 40 scored: 32 match, 5 loose, 3 miss, and 24 of the matches
+could have come out otherwise
 
 ### `3.1.116` every primitive is grounded in a rule that already exists
 

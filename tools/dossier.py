@@ -527,13 +527,15 @@ def claims_part():
     lines += ["```", "", "## Against the recorded record", "", "```",
               f"{'':<24}{'derived':>13}{'recorded':>13}{'ratio':>9}"
               f"  verdict"]
-    for lab, d, rec, u, ratio, v, free, _n in table():
-        tail = "  (built in, not counted)" if not free else ""
+    for lab, d, rec, u, ratio, v, free, _n, basis in table():
+        tag = {"measured": "", "estimated": "  ~",
+               "none": "  (not scored)"}[basis]
+        tail = "  (built in)" if not free else ""
         lines.append(f"{lab:<24}{d:>13.4g}{rec:>13.4g}{ratio:>9.2f}"
-                     f"  {v}{tail}")
+                     f"  {v}{tag}{tail}")
     lines += [f"\n{m} match, {l} loose, {x} miss "
               f"({fm} of the matches could have differed)", "```", ""]
-    for lab, d, rec, u, ratio, v, free, note in table():
+    for lab, d, rec, u, ratio, v, free, note, basis in table():
         lines += [f"**{lab}** — {_wrap(note)}", ""]
     lines += [f"## Withdrawn ({len(SUPERSEDED)})", "",
               _wrap("Published here and wrong. Kept with the reason, "

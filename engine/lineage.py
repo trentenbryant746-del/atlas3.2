@@ -835,27 +835,46 @@ def inside_the_head():
          "OLDEST WORDS ARE THE LEAST AGREED ON, which is what "
          "happens to real basic vocabulary against real "
          "technical vocabulary"),
-        ("a language with no grammar", "one that buys a grammar",
-         DERIVED, "syntax.threshold",
-         "their compounds were concatenation and not grammar -- "
-         "nouns in a row, no order, no case, no agreement -- and "
-         "that was accurate rather than final, because a grammar "
-         "is not given to a language, it is BOUGHT. What it "
-         "fixes: a flat string of n parts reads Catalan(n-1) ways "
-         "and only one is meant, so the doubt is 2.3 bits at four "
-         "parts and 5.4 at six. What it costs: one syllable, and "
-         "an inventory of 9 consonants by 3 vowels carries "
-         "log2(27) = 4.75 bits. So a marker pays at exactly SIX "
-         "parts and not before -- below that free word order is "
-         "enough and a particle is a waste of breath. This world "
-         "crossed it at year 600. And the first grammar is a "
-         "BRACKET rather than a case or a tense, because a flat "
-         "compound already says which parts are present and "
-         "cannot say which part the whole thing IS. A grammar "
-         "word is one syllable against a noun's two or three, "
-         "which is forced twice over: it must not be mistaken for "
-         "a noun, and it is the most frequent word there is, so "
-         "the cheapest distinguishable form survives"),
+        ("a literature", "a paper that can be marked", DERIVED,
+         "exam.half_moon_sensitivity",
+         "a question is not a topic, it is a METHOD, and every "
+         "method has a SENSITIVITY: how much the answer moves "
+         "when the measurement is off by a fraction. Eratosthenes "
+         "measured a shadow and a road, sensitivity 1, and got "
+         "the Earth's circumference to a few per cent with a "
+         "stick. Aristarchus, same century and same equipment, "
+         "measured the Sun's distance and was out by twenty "
+         "times. Feeding his reported 87 degrees into 1/cos gives "
+         "19.1 and he published 'about 19' -- so the arithmetic "
+         "was right and the error was entirely in the input. His "
+         "method multiplies by theta tan(theta) = 611. And the "
+         "measurement was not the angle: the angle only means "
+         "anything AT half moon, and the Moon moves 13.2 degrees "
+         "a day, so his 2.85-degree error is 5.2 HOURS of timing. "
+         "A water clock leaves 187% on the answer. He attempted a "
+         "round-6 question with round-2 equipment, could not have "
+         "known it, and the figure stood for seventeen centuries "
+         "-- not corrected by better thinking but by the transit "
+         "of Venus, a different method with a different "
+         "sensitivity"),
+        ("a paper that can be marked", "who it says mattered",
+         DERIVED, "standing.ranking",
+         "who counts should fall out of the structure rather than "
+         "be imported, so it is ranked by what rests on it: how "
+         "many primitives, sciences, exam questions and namable "
+         "artifacts depend on each contribution. Nothing the "
+         "ranking reads has a name in it, so no name can come "
+         "out. REGULATION tops it at 16 -- a machine that "
+         "corrects itself -- then mark at 10, optics and rotation "
+         "at 9. And a tool is not the same kind of contribution "
+         "as a fact: a primitive enters an EXPONENT, since "
+         "designs are 2^s and one more doubles the space, while "
+         "an answer enters a SUM as one item in a corpus of "
+         "1.2e8. The ratio is 1.2e8 to one. Of eight names "
+         "commonly remembered here, six are remembered for "
+         "answering and two for building -- the reverse of what "
+         "the ranking says, and the check fails if memory ever "
+         "starts tracking leverage"),
         ("who it says mattered", "why anything gets a name at all",
          DERIVED, "naming.naming_is_worth",
          "a name is not imposed from outside, it is a mechanism "
@@ -887,46 +906,27 @@ def inside_the_head():
          "-- a channel that produces no names. A society gets "
          "better at making tools and worse at naming who made "
          "them, at the same time and for the same reason"),
-        ("a paper that can be marked", "who it says mattered",
-         DERIVED, "standing.ranking",
-         "who counts should fall out of the structure rather than "
-         "be imported, so it is ranked by what rests on it: how "
-         "many primitives, sciences, exam questions and namable "
-         "artifacts depend on each contribution. Nothing the "
-         "ranking reads has a name in it, so no name can come "
-         "out. REGULATION tops it at 16 -- a machine that "
-         "corrects itself -- then mark at 10, optics and rotation "
-         "at 9. And a tool is not the same kind of contribution "
-         "as a fact: a primitive enters an EXPONENT, since "
-         "designs are 2^s and one more doubles the space, while "
-         "an answer enters a SUM as one item in a corpus of "
-         "1.2e8. The ratio is 1.2e8 to one. Of eight names "
-         "commonly remembered here, six are remembered for "
-         "answering and two for building -- the reverse of what "
-         "the ranking says, and the check fails if memory ever "
-         "starts tracking leverage"),
-        ("a literature", "a paper that can be marked", DERIVED,
-         "exam.half_moon_sensitivity",
-         "a question is not a topic, it is a METHOD, and every "
-         "method has a SENSITIVITY: how much the answer moves "
-         "when the measurement is off by a fraction. Eratosthenes "
-         "measured a shadow and a road, sensitivity 1, and got "
-         "the Earth's circumference to a few per cent with a "
-         "stick. Aristarchus, same century and same equipment, "
-         "measured the Sun's distance and was out by twenty "
-         "times. Feeding his reported 87 degrees into 1/cos gives "
-         "19.1 and he published 'about 19' -- so the arithmetic "
-         "was right and the error was entirely in the input. His "
-         "method multiplies by theta tan(theta) = 611. And the "
-         "measurement was not the angle: the angle only means "
-         "anything AT half moon, and the Moon moves 13.2 degrees "
-         "a day, so his 2.85-degree error is 5.2 HOURS of timing. "
-         "A water clock leaves 187% on the answer. He attempted a "
-         "round-6 question with round-2 equipment, could not have "
-         "known it, and the figure stood for seventeen centuries "
-         "-- not corrected by better thinking but by the transit "
-         "of Venus, a different method with a different "
-         "sensitivity"),
+        ("a language with no grammar", "one that buys a grammar",
+         DERIVED, "syntax.threshold",
+         "their compounds were concatenation and not grammar -- "
+         "nouns in a row, no order, no case, no agreement -- and "
+         "that was accurate rather than final, because a grammar "
+         "is not given to a language, it is BOUGHT. What it "
+         "fixes: a flat string of n parts reads Catalan(n-1) ways "
+         "and only one is meant, so the doubt is 2.3 bits at four "
+         "parts and 5.4 at six. What it costs: one syllable, and "
+         "an inventory of 9 consonants by 3 vowels carries "
+         "log2(27) = 4.75 bits. So a marker pays at exactly SIX "
+         "parts and not before -- below that free word order is "
+         "enough and a particle is a waste of breath. This world "
+         "crossed it at year 600. And the first grammar is a "
+         "BRACKET rather than a case or a tense, because a flat "
+         "compound already says which parts are present and "
+         "cannot say which part the whole thing IS. A grammar "
+         "word is one syllable against a noun's two or three, "
+         "which is forced twice over: it must not be mistaken for "
+         "a noun, and it is the most frequent word there is, so "
+         "the cheapest distinguishable form survives"),
         ("everything derived so far", "one epoch of many", DERIVED,
          "farfuture.star_lifetime_years",
          "engine/epochs.py stops at the neutron-star merger, about "
@@ -1036,6 +1036,7 @@ def check():
     t("permission_is_not_pressure", _forced)
     t("every_link_names_its_rule", _cites)
     t("the_gaps_are_named_and_counted", _gaps)
+    t("the_chain_reads_forward", _forward)
     t("competition_is_a_theorem_not_a_run", _excl)
     t("abundance_falls_as_the_three_quarter_power", _abund)
     t("nothing_here_simulates", _norun)
@@ -1114,6 +1115,38 @@ def _gaps():
                    "permission is not occurrence and the distance "
                    "between them is not measured anywhere here")
     return body
+
+
+def _forward():
+    """No link may start from something produced later.
+
+    Added after three links were found reading backwards: the
+    naming link came before the ranking it referred to, which
+    came before the paper that produced it. Each was correct on
+    its own and the sequence was nonsense, and nothing noticed
+    because every check here tested links rather than order.
+    """
+    c = chain()
+    first = {}
+    for i, (_a, b, _v, _r, _w) in enumerate(c):
+        first.setdefault(b.lower(), i)
+    back = [(i + 1, a, first[a.lower()] + 1)
+            for i, (a, _b, _v, _r, _w) in enumerate(c)
+            if first.get(a.lower()) is not None
+            and first[a.lower()] > i]
+    if back:
+        raise ArithmeticError(
+            "links start from something produced later: "
+            + "; ".join(f"link {i} from {a!r}, made at {j}"
+                        for i, a, j in back))
+    return (f"all {len(c)} links read forward: no link begins "
+            f"from something a later link produces. This was not "
+            f"true until 3.2.23 -- three links about naming, "
+            f"ranking and marking a paper had been appended in "
+            f"the reverse of their order, each correct alone and "
+            f"the sequence nonsense. Nothing caught it because "
+            f"every other check here tests a LINK and this is "
+            f"the only one that tests the ORDER")
 
 
 def _excl():

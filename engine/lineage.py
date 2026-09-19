@@ -659,6 +659,27 @@ def inside_the_head():
          "finely than an atom is wide, and the Bohr radius falls "
          "out of hbar, the electron mass and the charge at "
          "5.29e-11 m. That is a wall, not a rung"),
+        ("a surface that keeps light", "a reason to throw most of it away",
+         DERIVED, "image.over_resolution",
+         "their plate has a one-micron grain, so it holds 100,000 "
+         "samples across; the eye that will look at it resolves "
+         "an arcminute, which at reading distance is 1,149 across "
+         "the same plate. THE MEDIUM OUT-RESOLVES THE VIEWER BY "
+         "87 TIMES, 7,569 in area, and that is why an image "
+         "format exists at all -- compression is not a trick "
+         "about files, it is the arithmetic of recording more "
+         "than anyone can see. Every term is a fact about the "
+         "eye: colour acuity is a third of brightness so colour "
+         "samples two-by-two coarser, exactly 2x, which is what "
+         "4:2:0 IS; and contrast sensitivity peaks near 4 cycles "
+         "a degree and falls away, so a high coefficient needs "
+         "fewer bits rather than none, 2.4x over the 63 AC "
+         "terms. 4.8x from perception alone. tools/jpeg.py "
+         "implements the encoder with that quantization table "
+         "instead of Annex K, measures 10.4x, and an unrelated "
+         "decoder reads the file as a 1400x240 JPEG -- so the "
+         "remaining 2.2x is entropy coding of the zeros, which "
+         "is symbol statistics and not eyes"),
         ("a drawing that needs a reader", "one that does not",
          DERIVED, "depiction.image_over_drawing",
          "a drawing is a projection and a projection is a "

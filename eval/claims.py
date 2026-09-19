@@ -440,6 +440,15 @@ def _depiction():
             round(art_audience(), 1))
 
 
+def _image():
+    from engine.image import (over_resolution, chroma_saving,
+                              contrast_saving, derived_ratio,
+                              entropy_share)
+    return (round(over_resolution()), round(chroma_saving(), 2),
+            round(contrast_saving(), 2), round(derived_ratio(), 1),
+            round(entropy_share(), 1))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -911,6 +920,8 @@ CLAIMS = [
      _artifact, (25, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.14", "a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x",
+     _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
      _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
     ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
@@ -965,8 +976,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 72 links: 63 derived, 1 gap",
-     _wholechain, (72, 63, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 73 links: 64 derived, 1 gap",
+     _wholechain, (73, 64, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

@@ -478,6 +478,16 @@ def _form():
             solid_of("optics")[0], round(height(c), 2))
 
 
+def _lexicon():
+    from tools.dictionary import collect
+    w, theirs, ours, _p = collect()
+    sole = sum(1 for e in theirs.values() if len(e["bands"]) == 1)
+    wide = sum(1 for e in theirs.values() if len(e["bands"]) >= 6)
+    borrowed = sum(len(b.lex.borrowed) for b in w.bands)
+    return (len(theirs), len(ours), sole, wide, borrowed,
+            len(ours["heat"]), len(ours.get("gearing", {})))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -957,6 +967,8 @@ CLAIMS = [
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
      _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
+    ("3.2.20", "278 headwords, 182 spoken by one band, 657 borrowings",
+     _lexicon, (278, 25, 182, 39, 657, 39, 2), CURRENT),
     ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
      _language, (27, 39, 40, 2, 40), CURRENT),
     ("3.2.9", "a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders",

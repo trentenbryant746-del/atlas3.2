@@ -232,6 +232,37 @@ def words_for(referent, world=None):
     return agreement([b.lex for b in w.bands], referent)
 
 
+def drawing_table(combo):
+    """The dimensioned drawing for a thing. DERIVED.
+
+    Not a picture -- a parts table, which is what the title
+    block and schedule of an engineering drawing actually
+    carry. Each part with its size, how true it must be held,
+    what that is in metres, and whether anybody has to gauge it
+    or the process delivers it.
+
+    The GOVERNING tolerance is the tightest part, because a
+    thing is only as true as its loosest-held tight part, and
+    the ENVELOPE is bounded: no smaller than the largest part
+    and no larger than all of them end to end.
+    """
+    from engine.drawing import drawing_of
+    rows = []
+    for part in sorted(combo):
+        d = drawing_of(part)
+        rows.append((part, d["size m"], d["held to"], d["that is m"],
+                     "process" if d["self figuring"] else
+                     ("gauge" if d["needs a drawing"] else "-")))
+    sizes = [r[1] for r in rows]
+    return {
+        "parts": rows,
+        "governing tolerance": min(r[2] for r in rows),
+        "finest work m": min(r[3] for r in rows),
+        "envelope m": (max(sizes), sum(sizes)),
+        "gauged parts": sum(1 for r in rows if r[4] == "gauge"),
+    }
+
+
 def their_entry(combo, band_id, world=None):
     """The entry as THEY would write it, in their words. DERIVED."""
     w = world or run()

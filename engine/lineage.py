@@ -659,6 +659,29 @@ def inside_the_head():
          "finely than an atom is wide, and the Bohr radius falls "
          "out of hbar, the electron mass and the charge at "
          "5.29e-11 m. That is a wall, not a rung"),
+        ("a drawing that needs a reader", "one that does not",
+         DERIVED, "depiction.image_over_drawing",
+         "a drawing is a projection and a projection is a "
+         "convention, so it needs a drawer AND a reader holding "
+         "the same one -- f squared, worth 0.0001 at 1% and 0.01 "
+         "at 10%. A photograph needs no convention: whoever "
+         "looks at it reads it, so its worth is f to the FIRST "
+         "power and is 1 from the moment it exists. That is "
+         "10,000x at 1% literacy. Depiction needs a lens and a "
+         "specified composition and lands at round 8, and what "
+         "it does is abolish the second literacy that had just "
+         "been derived. ART is the third case and the strange "
+         "one: it is the only output here needing no tolerance "
+         "at all, because a mark is not true to anything, so no "
+         "gate has ever blocked it and it is available in round "
+         "1 while 12 of 25 crafts queue behind a furnace. The "
+         "obvious account -- that art waits for a surplus -- is "
+         "refuted: painted caves are thirty thousand years older "
+         "than farming, and the reason is magnitude, a painted "
+         "surface being 0.75 days against 50 for one part of a "
+         "tool. And art travels like a FACT rather than a tool, "
+         "audience 100% against 50%, which is why a style "
+         "crosses a region faster than the pigment recipe does"),
         ("a tolerance on nothing", "a dimensioned drawing", DERIVED,
          "drawing.drawing_of",
          "a tolerance has to be a tolerance ON something, and "

@@ -74,6 +74,7 @@ PRIMITIVES = {
     # with its own floor -- thermal noise kT against the energy
     # you are trying to hold -- and nothing in this tree had
     # touched it. These are gated by cold, not by fire.
+    "depiction":   (("optics", "alloy"), 1700, "senses.diffraction_limit", "a surface that keeps what light fell on it"),
     "superconduction": (("alloy", "electricity"), 1700, "thermo.cv_molar", "resistance gone below a critical temperature"),
     "coherence":   (("superconduction", "switching"), 1700, "learning.landauer_j", "a quantum state held against the noise"),
     "placement":   (("coherence", "optics"), 1700, "eos.classify", "matter set down one atom at a time"),
@@ -143,6 +144,7 @@ DIMENSION_M = {
     "containment": 0.2, "rotation": 0.1, "mark": 0.01,
     "breeding": 1.0, "smelting": 0.3, "gearing": 0.05,
     "optics": 0.05, "spring": 0.1, "pressure": 0.3,
+    "depiction": 0.1,
     "steam": 0.5, "regulation": 0.05, "electricity": 0.1,
     "vacuum": 0.2, "alloy": 0.05, "semiconductor": 1e-3,
     "switching": 1e-5, "inference": 1e-6,
@@ -181,6 +183,7 @@ TOL_NEEDED = {
     "optics": 1e-2, "vacuum": 1e-3, "alloy": 1e-3,
     "semiconductor": 1e-6, "switching": 1e-6,   # point contact
     "inference": 1e-9,                          # printed, at scale
+    "depiction": 1e-5,      # emulsion grain
     "superconduction": 1e-6, "coherence": 1e-9,
     "placement": 1e-10,                         # the atomic wall
 }
@@ -231,6 +234,8 @@ KNOWN_AS = {
     frozenset({"switching", "regulation", "mark"}): "a stored-program computer",
     frozenset({"inference", "mark"}): "statistics run over a written corpus",
     frozenset({"inference", "switching", "regulation"}): "a system that answers in sentences",
+    frozenset({"depiction", "optics"}): "a camera",
+    frozenset({"depiction", "mark"}): "a printed image",
 }
 
 

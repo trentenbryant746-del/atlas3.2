@@ -36,7 +36,7 @@ YEARS = 14000.0
 
 def build():
     from engine.world import (run, describe, spec, their_entry,
-                              words_for)
+                              words_for, drawing_table)
     from engine.artifact import (PRIMITIVES, bootstrap, held_by_round,
                                  tolerance, coldness, bohr_radius)
     w = run(YEARS)
@@ -98,9 +98,19 @@ def build():
         L.append(f"{p:<16}{d:>7}{h:>7}   {mine}")
     L += ["```", "", "## The things, in the order they were made",
           "",
-          "Each entry is headed by what a band that made it calls "
-          "it, in its own words. The gloss under it is ours, and "
-          "it is a translation rather than the original.", ""]
+          "Each entry is headed by what a band that made it "
+          "calls it, in its own words. The gloss under it is "
+          "ours, a translation rather than the original. Under "
+          "that is the drawing: not a picture but a parts "
+          "table, which is what an engineering drawing's title "
+          "block and schedule actually carry. Their geometry is "
+          "ours, so the numbers read straight across.", "",
+          "A part marked *process* reaches its accuracy by the "
+          "method rather than by measurement -- a lapped lens is "
+          "true to a quarter wavelength and nobody ever gauged "
+          "one. A part marked *gauge* has a number somebody must "
+          "hit, and those are the parts that need a drawing at "
+          "all.", ""]
     for c in arts:
         sheet = spec(c, w)
         _y, who = sheet["first built"] or (0, 0)
@@ -113,6 +123,21 @@ def build():
             L.append(f"*Our world calls this {named}.*")
             L.append("")
         L.append(describe(c, w))
+        L.append("")
+        d = drawing_table(c)
+        L.append("```")
+        L.append(f"{'part':<16}{'size m':>10}{'held to':>10}"
+                 f"{'metres':>11}   how")
+        for part, size, tol, absol, how in d["parts"]:
+            L.append(f"{part:<16}{size:>10.0e}{tol:>10.0e}"
+                     f"{absol:>11.1e}   {how}")
+        lo, hi = d["envelope m"]
+        L.append(f"{'':16}")
+        L.append(f"governing tolerance {d['governing tolerance']:.0e}"
+                 f"   finest work {d['finest work m']:.1e} m")
+        L.append(f"envelope between {lo:.0e} and {hi:.0e} m"
+                 f"   |   {d['gauged parts']} part(s) need gauging")
+        L.append("```")
         L.append("")
     return "\n".join(L).rstrip() + "\n"
 

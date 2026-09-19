@@ -164,19 +164,19 @@
 "ok": true
 },
 "3.1.117|three gates: heat stops at 5, cold opens at 6, precision ends at the atom": {
-"fp": "48649c09f4b5292d",
-"ok": true
+"fp": "75aa3451a34bdb78",
+"ok": false
 },
 "3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
 "fp": "48649c09f4b5292d",
 "ok": false
 },
 "3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "93dd67fe9ed3bf88",
-"ok": true
+"fp": "bd22b694a32ec0bc",
+"ok": false
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
-"fp": "835c5cd558c8a4e5",
+"fp": "f1829ac0be9f6281",
 "ok": true
 },
 "3.1.119|19 trillion tokens enumerated, from 1.6 MB of rules": {
@@ -192,7 +192,7 @@
 "ok": true
 },
 "3.1.120|52 comparisons: 37 match, 28 of them free": {
-"fp": "582860aa57e63362",
+"fp": "9d092ae022375c6d",
 "ok": true
 },
 "3.1.121|the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor": {
@@ -200,7 +200,7 @@
 "ok": true
 },
 "3.1.122|instrument order predicts science order, Kendall tau 0.77": {
-"fp": "0bbe19dd87465f4e",
+"fp": "85ce7793a58d0008",
 "ok": true
 },
 "3.1.123|42 constants are chosen; two stopped being, one pair disagrees 8.5x": {
@@ -447,6 +447,10 @@
 "fp": "89a093c15757c4d7",
 "ok": true
 },
+"3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
+"fp": "610ea55c1b92bb90",
+"ok": true
+},
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",
 "ok": true
@@ -456,7 +460,7 @@
 "ok": false
 },
 "3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {
-"fp": "39761bc2bfe67db3",
+"fp": "618d1b6c112c669a",
 "ok": true
 },
 "3.2.2|Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611": {
@@ -464,12 +468,12 @@
 "ok": true
 },
 "3.2.4|regulation tops the leverage ranking; a tool beats a fact 1.2e8:1": {
-"fp": "34143de0fa64767d",
-"ok": true
+"fp": "5b776d015d8c42a4",
+"ok": false
 },
 "3.2.5|a name is worth 4,346 retrievals; audience explains what tellability did not": {
-"fp": "2587046c30a7d0ca",
-"ok": true
+"fp": "f30c506d7df5fac0",
+"ok": false
 },
 "3.2.5|a name is worth 4,346 retrievals; tellability refuted at r=-0.20": {
 "fp": "f640f2d68eb90082",
@@ -484,7 +488,7 @@
 "ok": true
 },
 "3.2.9|a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders": {
-"fp": "7a327b5bbef1a15e",
-"ok": true
+"fp": "578f4f297df21121",
+"ok": false
 }
 }

@@ -429,6 +429,17 @@ def _language():
             new[0], new[1])
 
 
+def _depiction():
+    from engine.depiction import (image_over_drawing, art_cost_days,
+                                  tool_cost_days, art_available_at,
+                                  art_audience)
+    from engine.artifact import bootstrap
+    r = next(i for i, _t, g in bootstrap() if "depiction" in g)
+    return (round(image_over_drawing(0.01)), r, art_available_at(),
+            round(tool_cost_days() / art_cost_days()),
+            round(art_audience(), 1))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -900,6 +911,8 @@ CLAIMS = [
      _artifact, (24, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
+     _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
     ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
      _language, (27, 39, 40, 2, 40), CURRENT),
     ("3.2.9", "a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders",

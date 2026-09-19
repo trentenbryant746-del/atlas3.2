@@ -65,11 +65,34 @@ SOLID = {
     "placement": ("rod", True, "a tip is the end of a shaft"),
     "inference": ("wafer", True, "an array of switches is planar"),
     "depiction": ("wafer", True, "an emulsion is a coated plane"),
-    "regulation": ("box", False, "a mechanism, and no shape is forced"),
-    "mark": ("plate", False, "a surface, but any surface"),
-    "alloy": ("box", False, "composition says nothing about form"),
-    "heat": ("shell", False, "a hearth is a cavity by convention here"),
-    "breeding": ("plate", False, "not an object at all"),
+    # Two of these were listed as unforced and should not have
+    # been. Pushing on each found a real constraint.
+    "mark": ("plate", True,
+             "a mark must hold constant angular size to a reading "
+             "eye, and a curved page does not -- at 0.3 m the eye "
+             "resolves 87 um, so a sag of that across the sheet is "
+             "already a legibility error. Flatness is readability"),
+    "heat": ("shell", True,
+             "to HOLD a temperature is to limit loss, loss goes as "
+             "area, and least area for a volume is a sphere. A "
+             "hearth is that minus the opening you reach through"),
+    # And two where only a dimension is forced, not the class.
+    "alloy": ("box", "partial",
+              "homogeneity after melting needs uniform cooling, so "
+              "no section thicker than sqrt(D t) -- 17 mm at a "
+              "minute's freeze. THICKNESS is forced; the other two "
+              "dimensions are not"),
+    "regulation": ("box", "partial",
+                   "the feedback path adds lag and the lag must "
+                   "beat the time constant, so the body is bounded "
+                   "at signal speed times that. SIZE is forced; "
+                   "the class is not"),
+    # And one that is not an object.
+    "breeding": ("plate", None,
+                 "not an object at all -- a record, whose form is "
+                 "the form of engine/form.py's mark. Listing it as "
+                 "an unforced shape confused 'I chose this' with "
+                 "'there is nothing here to choose'"),
 }
 
 ASPECT = {                       # long axis over short, where forced
@@ -100,11 +123,24 @@ def extents(primitive):
 
 
 def forced_fraction(combo):
-    """How much of a thing's form is forced. DERIVED."""
-    parts = list(combo)
+    """How much of a thing's form is forced. DERIVED.
+
+    A partial counts a half: the thickness of a billet is forced
+    and its outline is not, so half the form is.
+    """
+    parts = [p for p in combo if solid_of(p)[1] is not None]
     if not parts:
         return 0.0
-    return sum(1 for p in parts if solid_of(p)[1]) / len(parts)
+    got = sum(1.0 if solid_of(p)[1] is True else 0.5 for p in parts)
+    return got / len(parts)
+
+
+def by_state():
+    """-> {state: [primitives]}. DERIVED."""
+    out = {True: [], "partial": [], None: []}
+    for p in PRIMITIVES:
+        out[solid_of(p)[1]].append(p)
+    return {k: sorted(v) for k, v in out.items()}
 
 
 def assemble(combo):
@@ -144,7 +180,7 @@ def check():
 
 
 def _forced():
-    forced = [p for p in PRIMITIVES if solid_of(p)[1]]
+    forced = [p for p in PRIMITIVES if solid_of(p)[1] is True]
     if len(forced) < len(PRIMITIVES) // 2:
         raise ArithmeticError(f"only {len(forced)}")
     ex = solid_of("pressure")
@@ -180,23 +216,26 @@ def _stack():
 
 
 def _chosen():
-    """INVERTED. Fails if everything is claimed as forced."""
-    chosen = [(p, solid_of(p)[2]) for p in PRIMITIVES
-              if not solid_of(p)[1]]
-    if not chosen:
+    """INVERTED. Fails if every shape is claimed fully forced."""
+    st = by_state()
+    full, part, none = st[True], st["partial"], st[None]
+    if not part and not none:
         raise ArithmeticError(
-            "every shape is claimed forced, which for a mark on "
-            "a surface or a block of alloy is not credible")
-    return (f"{len(chosen)} of {len(PRIMITIVES)} are NOT forced "
-            f"and say so: "
-            + "; ".join(f"{p} ({why})" for p, why in chosen)
-            + f". And beyond those, nothing here gives surface "
-              f"finish, fasteners, colour, or any of what a maker "
-              f"decides rather than discovers. A form that "
-              f"satisfies every constraint is not a design, and "
-              f"the distance between the two is exactly where "
-              f"taste lives. This check fails the moment "
-              f"everything is claimed as forced")
+            "every shape is claimed fully forced, which for a "
+            "billet whose outline nothing fixes is not credible")
+    return (f"{len(full)} of {len(PRIMITIVES)} shapes are fully "
+            f"forced, {len(part)} partly, and {len(none)} is not "
+            f"an object. The two partials are honest about which "
+            f"HALF is forced: {part} -- an alloy's thickness is "
+            f"fixed by uniform cooling and its outline is not, a "
+            f"regulator's size is bounded by feedback lag and its "
+            f"class is not. And {none} is a record rather than a "
+            f"thing, which is a different category from an "
+            f"unforced shape and was previously confused with "
+            f"one. Beyond all of it, nothing here gives surface "
+            f"finish, fasteners or colour: a form satisfying "
+            f"every constraint is not a design, and the distance "
+            f"between them is where taste lives")
 
 
 if __name__ == "__main__":

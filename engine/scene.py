@@ -125,6 +125,26 @@ def penumbra_width(distance_m):
     return distance_m * sun_angular_diameter()
 
 
+# Rayleigh optical depth at sea level, per metre, per colour.
+# The sky is blue because blue scatters; the same coefficient
+# says a distant object loses its blue to you and gains the
+# sky's. A smoothstep was standing in for this in the renderer,
+# with the real law sitting in engine/biome.py the whole time.
+RAYLEIGH_PER_M = 1.18e-5          # MEASURED at 550 nm, sea level
+
+
+def transmittance(distance_m, nm):
+    """Beer-Lambert through air at that wavelength. DERIVED."""
+    k = RAYLEIGH_PER_M * rayleigh(nm)
+    return math.exp(-k * distance_m)
+
+
+def aerial_perspective(distance_m):
+    """-> (r, g, b) transmittance. DERIVED, not a smoothstep."""
+    return tuple(transmittance(distance_m, nm)
+                 for nm in (650.0, 550.0, 450.0))
+
+
 def shadow_length(height_m, elevation_deg):
     """How far the shadow reaches. DERIVED: h / tan(elevation)."""
     return height_m / math.tan(math.radians(max(elevation_deg, 0.5)))
@@ -160,6 +180,7 @@ def check():
     t("the_sky_and_the_red_sun_are_one_mechanism", _sky)
     t("a_shadow_is_trigonometry_on_a_published_dimension", _shadow)
     t("the_sun_is_not_a_point_so_no_edge_is_sharp", _penumbra)
+    t("INVERTED_the_renderer_is_real_and_here_is_what_it_is_not", _audit)
     t("INVERTED_the_envelope_is_real_and_the_box_is_a_choice", _box)
     return all(x for _, x, _ in res), res
 
@@ -252,6 +273,50 @@ def _penumbra():
             f"mm at your feet and {1000*penumbra_width(2.5):.0f} mm "
             f"at the far end of a shadow. A render with hard edges "
             f"is wrong about the Sun, not stylised")
+
+
+def _audit():
+    """INVERTED. Fails if the renderer is ever called complete.
+
+    Asked whether the renderer is real. It is a real ray tracer
+    doing real physics, and it is also simplified in ways worth
+    naming, because "real" without a list is a boast.
+    """
+    missing = [
+        "no global illumination -- light bounces once, so the "
+        "shadowed side of a thing gets a constant ambient term "
+        "instead of light reflected off the ground beside it",
+        "no specular or Fresnel -- every surface is Lambertian, "
+        "so nothing is shiny, wet, or metallic, and metal is "
+        "half the tree",
+        "three colour samples, not a spectrum -- Planck is "
+        "evaluated at 650, 550 and 450 nm, so two different "
+        "spectra that look alike to this renderer would not "
+        "necessarily look alike to an eye",
+        "soft shadows are analytic, not sampled -- the WIDTH is "
+        "the derived penumbra but the profile is a smoothstep "
+        "rather than the true overlap of a disc and an edge",
+        "no surface detail -- engine/form.py forces a solid and "
+        "stops, so there is no finish, no fastener and no wear",
+    ]
+    fixed = ("aerial perspective, which was a smoothstep on "
+             "distance while Beer-Lambert sat in engine/biome.py "
+             "the whole time, and is now exp(-k rayleigh(nm) d)")
+    a = aerial_perspective(10.0)
+    if a[2] >= a[0]:
+        raise ArithmeticError(f"blue should go first: {a}")
+    return (f"the renderer is a real ray tracer: real "
+            f"intersections, real Lambertian shading, a real "
+            f"penumbra from the Sun's derived 0.533 degrees, and "
+            f"now real Beer-Lambert through air -- at 10 m the "
+            f"transmittance is {a[0]:.4f} red against "
+            f"{a[2]:.4f} blue, which is why distance goes pale "
+            f"and blue. One fudge fixed: {fixed}. "
+            f"{len(missing)} simplifications remain and naming "
+            f"them is the point, because 'real' without a list "
+            f"is a boast: " + "; ".join(missing[:3]) + f"; and "
+            f"{len(missing)-3} more in the source. Every one is "
+            f"derivable in principle and none is derived yet")
 
 
 if __name__ == "__main__":

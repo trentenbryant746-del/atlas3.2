@@ -483,6 +483,10 @@
 "fp": "48eacb970f12d71c",
 "ok": true
 },
+"3.2.17|22 shapes forced, 2 partly, 1 not an object": {
+"fp": "1a87a5bed0693e43",
+"ok": true
+},
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",
 "ok": true

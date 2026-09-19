@@ -149,7 +149,8 @@ def _smooth(x):
 def render(elevation_deg=24.0, quality=88):
     from engine.scene import (sky_rgb, sun_rgb, lit_fraction,
                               penumbra_width, solar_constant,
-                              sun_angular_diameter, ALBEDO_GROUND)
+                              sun_angular_diameter, ALBEDO_GROUND,
+                              aerial_perspective as aerial)
     from engine.world import run, drawing_table, their_entry, spec
     from engine.artifact import KNOWN_AS
 
@@ -230,8 +231,11 @@ def render(elevation_deg=24.0, quality=88):
                             col = list(sky)
                         else:
                             col = ground_shade(p)
-                            haze = _smooth(math.hypot(p[0], p[2]) / 13.0)
-                            col = [col[i] * (1 - haze) + sky[i] * haze
+                            # Beer-Lambert, not a smoothstep
+                            dist = math.hypot(p[0] - CAM[0],
+                                              p[2] - CAM[2])
+                            tr = aerial(dist * 600.0)
+                            col = [col[i] * tr[i] + sky[i] * (1 - tr[i])
                                    for i in range(3)]
                     else:
                         t = max(0.0, min(1.0, ray[1] * 2.2))

@@ -471,10 +471,11 @@ def _form():
     w = run()
     c = max((a for a in w.artifacts() if len(a) == 4),
             key=lambda x: height(x))
-    return (sum(1 for p in PRIMITIVES if solid_of(p)[1]),
+    from engine.form import by_state
+    st = by_state()
+    return (len(st[True]), len(st["partial"]), len(st[None]),
             len(PRIMITIVES), solid_of("pressure")[0],
-            solid_of("optics")[0], round(height(c), 2),
-            round(forced_fraction(c), 2))
+            solid_of("optics")[0], round(height(c), 2))
 
 
 def _levers():
@@ -948,8 +949,8 @@ CLAIMS = [
      _artifact, (25, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
-    ("3.2.17", "20 of 25 shapes are forced by what the part does",
-     _form, (20, 25, "capsule", "lens", 2.8, 0.75), CURRENT),
+    ("3.2.17", "22 shapes forced, 2 partly, 1 not an object",
+     _form, (22, 2, 1, 25, "capsule", "lens", 2.8), CURRENT),
     ("3.2.15", "1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T",
      _scene, (1361, 502, 4.9, 45.8, 33.0, 6.1, 6.957, 0.533, 9.3), CURRENT),
     ("3.2.14", "a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x",

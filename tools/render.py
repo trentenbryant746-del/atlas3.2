@@ -33,8 +33,8 @@ OUT = ROOT / "paper" / "scene.jpg"
 
 W, H = 900, 560
 SS = 2                      # supersamples per axis: a sensor integrates
-CAM = (0.0, 1.15, -3.6)
-LOOK = (0.0, 0.45, 0.0)
+CAM = (0.0, 1.6, -4.2)
+LOOK = (0.0, 0.85, 0.0)
 FOV_DEG = 40.0
 AZIMUTH_DEG = 38.0
 
@@ -46,6 +46,74 @@ def _norm(v):
 
 def _sub(a, b):
     return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+
+def _sphere_hit(o, d, c, r, sy=1.0):
+    """Ray against a sphere, optionally squashed in y (a lens)."""
+    oo = (o[0] - c[0], (o[1] - c[1]) / sy, o[2] - c[2])
+    dd = (d[0], d[1] / sy, d[2])
+    a = sum(x * x for x in dd)
+    b = 2 * sum(oo[i] * dd[i] for i in range(3))
+    cc = sum(x * x for x in oo) - r * r
+    disc = b * b - 4 * a * cc
+    if disc < 0:
+        return None, None
+    t = (-b - math.sqrt(disc)) / (2 * a)
+    if t < 1e-4:
+        t = (-b + math.sqrt(disc)) / (2 * a)
+        if t < 1e-4:
+            return None, None
+    p = tuple(o[i] + d[i] * t for i in range(3))
+    n = _norm((p[0] - c[0], (p[1] - c[1]) / (sy * sy), p[2] - c[2]))
+    return t, n
+
+
+def _cyl_hit(o, d, c, r, hh):
+    """Ray against a y-axis cylinder with flat caps."""
+    a = d[0] * d[0] + d[2] * d[2]
+    best, bn = None, None
+    if a > 1e-12:
+        ox, oz = o[0] - c[0], o[2] - c[2]
+        b = 2 * (ox * d[0] + oz * d[2])
+        cc = ox * ox + oz * oz - r * r
+        disc = b * b - 4 * a * cc
+        if disc >= 0:
+            sq = math.sqrt(disc)
+            for t in ((-b - sq) / (2 * a), (-b + sq) / (2 * a)):
+                if t < 1e-4:
+                    continue
+                y = o[1] + d[1] * t
+                if abs(y - c[1]) <= hh:
+                    if best is None or t < best:
+                        px = o[0] + d[0] * t - c[0]
+                        pz = o[2] + d[2] * t - c[2]
+                        best, bn = t, _norm((px, 0.0, pz))
+                    break
+    for cap in (c[1] - hh, c[1] + hh):
+        if abs(d[1]) < 1e-12:
+            continue
+        t = (cap - o[1]) / d[1]
+        if t < 1e-4 or (best is not None and t >= best):
+            continue
+        px = o[0] + d[0] * t - c[0]
+        pz = o[2] + d[2] * t - c[2]
+        if px * px + pz * pz <= r * r:
+            best = t
+            bn = (0.0, 1.0 if cap > c[1] else -1.0, 0.0)
+    return best, bn
+
+
+def _solid_hit(o, d, part):
+    """Dispatch on the solid engine/form.py forced."""
+    kind, r, hh, y, _p = part
+    c = (0.0, y, 0.0)
+    if kind in ("shell",):
+        return _sphere_hit(o, d, c, max(r, hh))
+    if kind == "lens":
+        return _sphere_hit(o, d, c, r, sy=max(hh / max(r, 1e-6), 0.12))
+    if kind in ("wafer", "plate", "wedge", "box"):
+        return _box_hit(o, d, (-r, y - hh, -r), (r, y + hh, r))
+    return _cyl_hit(o, d, c, r, hh)
 
 
 def _box_hit(o, d, lo, hi):
@@ -85,13 +153,15 @@ def render(elevation_deg=24.0, quality=88):
     from engine.world import run, drawing_table, their_entry, spec
     from engine.artifact import KNOWN_AS
 
+    from engine.form import assemble, height, forced_fraction
     w = run(14000.0)
     pick = max((a for a in w.artifacts() if len(a) == 4),
-               key=lambda c: drawing_table(c)["envelope m"][0])
+               key=lambda c: height(c))
     d = drawing_table(pick)
     lo_m, hi_m = d["envelope m"]
-    hx = hz = lo_m * 0.30
-    hy = lo_m
+    parts = assemble(pick)
+    hy = height(pick)
+    hx = hz = max(p[1] for p in parts)
 
     el = math.radians(elevation_deg)
     az = math.radians(AZIMUTH_DEG)
@@ -113,7 +183,7 @@ def render(elevation_deg=24.0, quality=88):
     scale = math.tan(math.radians(FOV_DEG) / 2)
     aspect = W / H
 
-    blo, bhi = (-hx, 0.0, -hz), (hx, hy, hz)
+
 
     def ground_shade(p):
         """Soft shadow from the Sun's real angular size. DERIVED."""
@@ -143,7 +213,11 @@ def render(elevation_deg=24.0, quality=88):
                     v = (1 - (y + (sy + 0.5) / SS) / H * 2) * scale
                     ray = _norm(tuple(fwd[i] + right[i] * u + up[i] * v
                                       for i in range(3)))
-                    tb, nb = _box_hit(CAM, ray, blo, bhi)
+                    tb, nb = None, None
+                    for part in parts:
+                        t, n = _solid_hit(CAM, ray, part)
+                        if t is not None and (tb is None or t < tb):
+                            tb, nb = t, n
                     tg = (-CAM[1] / ray[1]) if ray[1] < -1e-6 else None
                     if tb is not None and (tg is None or tb < tg):
                         lam = max(0.0, sum(nb[i] * sun[i] for i in range(3)))
@@ -179,6 +253,9 @@ def render(elevation_deg=24.0, quality=88):
         "thing": name,
         "parts": sorted(pick),
         "envelope m": (round(lo_m, 3), round(hi_m, 3)),
+        "solids": [(p[4], p[0]) for p in parts],
+        "height m": round(hy, 3),
+        "form forced": f"{100*forced_fraction(pick):.0f}%",
         "sun elevation": elevation_deg,
         "sun disc deg": round(math.degrees(sun_angular_diameter()), 3),
         "penumbra at 1 m": f"{1000*penumbra_width(1.0):.1f} mm",

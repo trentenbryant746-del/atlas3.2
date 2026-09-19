@@ -464,6 +464,19 @@ def _scene():
             round(1000 * penumbra_width(1.0), 1))
 
 
+def _form():
+    from engine.form import solid_of, forced_fraction, height
+    from engine.artifact import PRIMITIVES
+    from engine.world import run
+    w = run()
+    c = max((a for a in w.artifacts() if len(a) == 4),
+            key=lambda x: height(x))
+    return (sum(1 for p in PRIMITIVES if solid_of(p)[1]),
+            len(PRIMITIVES), solid_of("pressure")[0],
+            solid_of("optics")[0], round(height(c), 2),
+            round(forced_fraction(c), 2))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -935,6 +948,8 @@ CLAIMS = [
      _artifact, (25, 11, 1750, 3, 5, 10, 10), CURRENT),
     ("3.1.120", "52 comparisons: 37 match, 28 of them free",
      _recorded, (37, 6, 3, 28), CURRENT),
+    ("3.2.17", "20 of 25 shapes are forced by what the part does",
+     _form, (20, 25, "capsule", "lens", 2.8, 0.75), CURRENT),
     ("3.2.15", "1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T",
      _scene, (1361, 502, 4.9, 45.8, 33.0, 6.1, 6.957, 0.533, 9.3), CURRENT),
     ("3.2.14", "a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x",
@@ -993,8 +1008,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 74 links: 65 derived, 1 gap",
-     _wholechain, (74, 65, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 75 links: 66 derived, 1 gap",
+     _wholechain, (75, 66, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

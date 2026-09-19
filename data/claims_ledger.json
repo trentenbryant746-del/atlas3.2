@@ -459,6 +459,10 @@
 "fp": "5fe4d752b8729d12",
 "ok": true
 },
+"3.2.12|Big Bang to heat death in 75 links: 66 derived, 1 gap": {
+"fp": "9767c3dde71e4a3f",
+"ok": true
+},
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
 "fp": "610ea55c1b92bb90",
 "ok": true
@@ -474,6 +478,10 @@
 "3.2.15|1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T": {
 "fp": "0fe60d082fee96dd",
 "ok": true
+},
+"3.2.17|20 of 25 shapes are forced by what the part does": {
+"fp": "48eacb970f12d71c",
+"ok": false
 },
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",

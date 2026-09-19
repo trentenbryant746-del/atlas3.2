@@ -687,6 +687,29 @@ def inside_the_head():
          "spreads 9.3 mm per metre from whatever cast it. A "
          "render with hard edges is not stylised, it is wrong "
          "about the size of the Sun"),
+        ("an envelope", "a shape, where the physics forces one",
+         DERIVED, "form.forced_fraction",
+         "saying shape was underivable was too strong. 20 of 25 "
+         "primitives have a solid FORCED by what the part does. "
+         "A thing that turns about an axis without wobbling is a "
+         "surface of revolution and there is no other option. "
+         "Hoop stress pr/t is least on a revolved shell with "
+         "domed ends. Holding against a gradient IS having a "
+         "cavity. 1/f = (n-1)(1/R1-1/R2) has no solution without "
+         "curvature, so optics is a lens. The force ratio of a "
+         "lever IS its aspect ratio. Two gears mesh only on "
+         "matching pitch circles. A junction is microns deep and "
+         "its area is not, so a semiconductor is a wafer. The "
+         "proportions come from DIMENSION_M, which the drawing "
+         "tables were already publishing, and the ARRANGEMENT is "
+         "forced by gravity -- a thing that stands has its "
+         "centre of mass over its footprint, so the heavy parts "
+         "go low and nobody chose the order. What is NOT forced "
+         "is marked: a mark needs a surface but any surface, an "
+         "alloy's composition says nothing about form, and "
+         "nothing here gives finish, fasteners or colour. A form "
+         "that satisfies every constraint is not a design, and "
+         "the distance between them is where taste lives"),
         ("a surface that keeps light", "a reason to throw most of it away",
          DERIVED, "image.over_resolution",
          "their plate has a one-micron grain, so it holds 100,000 "

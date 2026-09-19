@@ -143,21 +143,77 @@ def build():
         L.append(", ".join(f"**{t}** ({len(theirs[t]['bands'])})"
                            for t in forms))
         L.append("")
-    L += ["## Compounds", "",
+    # --- grammar -------------------------------------------------
+    from engine.syntax import (threshold, syllable_bits, bracketings,
+                               doubt_bits, mark, when_it_pays,
+                               particle_syllables)
+    from collections import Counter
+    sizes = Counter(len(a) for a in w.artifacts())
+    n = threshold()
+    needs = sum(v for k, v in sizes.items() if k >= n)
+    tot = sum(sizes.values())
+    year, _n = when_it_pays(w)
+
+    L += ["## Grammar", "",
           "A thing of several crafts is named by running the "
-          "part-words together. That is concatenation and not "
-          "grammar: nothing in this world has given anybody a "
-          "grammar, and a compound carries no order, no case and "
-          "no agreement.", "", "```"]
+          "part-words together. For short compounds that is "
+          "concatenation and nothing more. It stops being enough "
+          "at a size that can be calculated.", "",
+          f"A flat string of k parts can be bracketed "
+          f"Catalan(k-1) ways and only one is meant, so a "
+          f"listener is short log2(Catalan(k-1)) bits. One "
+          f"syllable of this phonology carries "
+          f"{syllable_bits():.2f} bits. A marker therefore earns "
+          f"its keep at exactly {n} parts:", "", "```",
+          f"{'parts':>6}{'readings':>11}{'bits of doubt':>15}"
+          f"   worth a syllable?"]
+    for k in range(2, 10):
+        L.append(f"{k:>6}{bracketings(k):>11}{doubt_bits(k):>15.2f}"
+                 f"   {'yes' if k >= n else 'no'}")
+    L += ["```", "",
+          f"This world crossed it at **year {year:.0f}**. "
+          f"{needs:,} of {tot:,} things built since then are "
+          f"{n} parts or more -- {100*needs/tot:.0f}% of "
+          f"everything -- and each one said flat is costing its "
+          f"listener {doubt_bits(n):.1f} bits.", "",
+          f"The particle is **-{CONSONANTS[0]+VOWELS[0]}-** and it "
+          f"marks the HEAD: which part the whole thing IS, as "
+          f"against which parts it merely contains. That is the "
+          f"one distinction concatenation cannot make, so it is "
+          f"the first worth paying for -- not number, because a "
+          f"thing of six parts is not plural, and not tense, "
+          f"because a made object has none.", "",
+          f"It is {particle_syllables()} syllable where a content "
+          f"word is two or three, and that is forced twice: it "
+          f"must not be mistaken for a noun, and it is the most "
+          f"frequent word in the language, so the cheapest "
+          f"distinguishable form is the one that survives.", "",
+          "### Unmarked, below the threshold", "", "```"]
     from engine.world import their_entry, spec
     arts = sorted(w.artifacts(), key=lambda c: (len(c), sorted(c)))
-    for c in arts[:12] + arts[len(arts) // 2:len(arts) // 2 + 6]:
+    short = [c for c in arts if len(c) < n]
+    long_ = [c for c in arts if len(c) >= n]
+    for c in short[:6] + short[len(short) // 2:len(short) // 2 + 4]:
         who = (spec(c, w)["first built"] or (0, 0))[1]
         t = their_entry(c, who, w)
         if t:
-            L.append(f"{t:<44}{' + '.join(sorted(c))}")
-    L += ["```", ""]
+            L.append(f"{t:<46}{' + '.join(sorted(c))}")
+    L += ["```", "", f"### Marked, at {n} parts and above", "", "```"]
+    for c in long_[:5] + long_[len(long_) // 2:len(long_) // 2 + 5]:
+        who = (spec(c, w)["first built"] or (0, 0))[1]
+        t = their_entry(c, who, w)
+        if not t:
+            continue
+        toks = t.split("-")
+        L.append(f"{mark(toks):<58}{len(c)} parts")
+    L += ["```", "",
+          "The head is the token after the particle. Everything "
+          "before it modifies.", ""]
     return "\n".join(L).rstrip() + "\n"
+
+
+
+
 
 
 if __name__ == "__main__":

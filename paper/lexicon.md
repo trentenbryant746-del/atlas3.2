@@ -723,27 +723,58 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 **lipi** (17), **wiwi** (17), **juji** (3), **jatasu** (2), **tusi** (1), **jiwaku** (1)
 
-## Compounds
+## Grammar
 
-A thing of several crafts is named by running the part-words together. That is concatenation and not grammar: nothing in this world has given anybody a grammar, and a compound carries no order, no case and no agreement.
+A thing of several crafts is named by running the part-words together. For short compounds that is concatenation and nothing more. It stops being enough at a size that can be calculated.
+
+A flat string of k parts can be bracketed Catalan(k-1) ways and only one is meant, so a listener is short log2(Catalan(k-1)) bits. One syllable of this phonology carries 4.75 bits. A marker therefore earns its keep at exactly 6 parts:
 
 ```
-sajaku-wapa                                 alloy + breeding
-mumika-wala                                 alloy + coherence
-sajaku-tala                                 alloy + containment
-sajaku-puwi                                 alloy + cordage
-tana-kusi                                   alloy + depiction
-mumika-pupu                                 alloy + edge
-sajaku-sawutu                               alloy + electricity
-kapu-taku                                   alloy + gearing
-sajaku-kanu                                 alloy + heat
-nikuma-lupuwa                               alloy + inference
-sajaku-kapa                                 alloy + lever
-sajaku-miji                                 alloy + mark
-tuku-mununa-wimi-sisima-kaki-jajani         containment + edge + heat + lever + rotation + smelting
-tala-wasu-sawuni-puwa-nusu-nuta             containment + edge + heat + lever + rotation + spring
-jamanu-pusi-nimu-nupa-nusu-wiwi             containment + edge + heat + lever + rotation + vacuum
-tala-punaki-lipaka-tumi-niliki-nuta         containment + edge + heat + lever + semiconductor + spring
-tala-susi-mima-wiji-jili-nuta               containment + edge + heat + lever + smelting + spring
-tuku-jula-silama-mumaja-laja-mita           containment + edge + heat + mark + optics + pressure
+ parts   readings  bits of doubt   worth a syllable?
+     2          1           0.00   no
+     3          2           1.00   no
+     4          5           2.32   no
+     5         14           3.81   no
+     6         42           5.39   yes
+     7        132           7.04   yes
+     8        429           8.74   yes
+     9       1430          10.48   yes
 ```
+
+This world crossed it at **year 600**. 19,373 of 31,016 things built since then are 6 parts or more -- 62% of everything -- and each one said flat is costing its listener 5.4 bits.
+
+The particle is **-pa-** and it marks the HEAD: which part the whole thing IS, as against which parts it merely contains. That is the one distinction concatenation cannot make, so it is the first worth paying for -- not number, because a thing of six parts is not plural, and not tense, because a made object has none.
+
+It is 1 syllable where a content word is two or three, and that is forced twice: it must not be mistaken for a noun, and it is the most frequent word in the language, so the cheapest distinguishable form is the one that survives.
+
+### Unmarked, below the threshold
+
+```
+sajaku-wapa                                   alloy + breeding
+mumika-wala                                   alloy + coherence
+sajaku-tala                                   alloy + containment
+sajaku-puwi                                   alloy + cordage
+tana-kusi                                     alloy + depiction
+mumika-pupu                                   alloy + edge
+kapa-lalu-salu-pita                           lever + mark + semiconductor + superconduction
+lilu-miji-kupi-kunu                           lever + mark + semiconductor + switching
+naki-lalu-jili-nuta                           lever + mark + smelting + spring
+satu-lalu-junu-nita                           lever + mark + smelting + steam
+```
+
+### Marked, at 6 parts and above
+
+```
+sajaku-wapa-nilana-jujanu-saja-pa-lula                    6 parts
+mumika-wapa-lalu-tuku-taku-pa-mitila                      6 parts
+tana-wapa-wala-nulana-lana-pa-salu                        6 parts
+tana-wapa-wala-nulana-sasa-pa-nuta                        6 parts
+sajaku-nini-wala-mapusu-sasunu-pa-waka                    6 parts
+wapa-taku-salu-lawi-suwi-nija-pa-junu                     7 parts
+wapa-taku-pamima-lalu-wala-tunu-pa-nuta                   7 parts
+nini-sasa-kupu-lalu-suwi-kaki-pa-pina                     7 parts
+wapa-taku-wasi-lalu-limuni-luwa-pa-nuta                   7 parts
+wapa-taku-nina-lalu-sasumi-nusu-pa-junu                   7 parts
+```
+
+The head is the token after the particle. Everything before it modifies.

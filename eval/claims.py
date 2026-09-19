@@ -488,6 +488,15 @@ def _lexicon():
             len(ours["heat"]), len(ours.get("gearing", {})))
 
 
+def _syntax():
+    from engine.syntax import (threshold, syllable_bits, doubt_bits,
+                               bracketings, when_it_pays,
+                               particle_syllables)
+    y, n = when_it_pays()
+    return (n, round(syllable_bits(), 2), bracketings(6),
+            round(doubt_bits(6), 2), round(y), particle_syllables())
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -967,6 +976,8 @@ CLAIMS = [
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
      _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
+    ("3.2.21", "a grammar pays at 6 parts; this world crossed at year 600",
+     _syntax, (6, 4.75, 42, 5.39, 600, 1), CURRENT),
     ("3.2.20", "278 headwords, 182 spoken by one band, 657 borrowings",
      _lexicon, (278, 25, 182, 39, 657, 39, 2), CURRENT),
     ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
@@ -1021,8 +1032,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 75 links: 66 derived, 1 gap",
-     _wholechain, (75, 66, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 76 links: 67 derived, 1 gap",
+     _wholechain, (76, 67, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

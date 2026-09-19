@@ -158,7 +158,11 @@ class World:
         """Put two things together and see. Anything held composes."""
         if len(band.prims) < 2:
             return
-        k = self.rng.randint(2, min(4, len(band.prims)))
+        # A band can only combine what it holds, so compounds
+        # grow as the craft count does. The cap was 4 and that
+        # was arbitrary; nothing about holding twelve crafts
+        # stops you putting six of them together.
+        k = self.rng.randint(2, min(8, len(band.prims)))
         combo = frozenset(self.rng.sample(sorted(band.prims), k))
         if combo in band.made:
             return

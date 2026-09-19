@@ -835,6 +835,27 @@ def inside_the_head():
          "OLDEST WORDS ARE THE LEAST AGREED ON, which is what "
          "happens to real basic vocabulary against real "
          "technical vocabulary"),
+        ("a language with no grammar", "one that buys a grammar",
+         DERIVED, "syntax.threshold",
+         "their compounds were concatenation and not grammar -- "
+         "nouns in a row, no order, no case, no agreement -- and "
+         "that was accurate rather than final, because a grammar "
+         "is not given to a language, it is BOUGHT. What it "
+         "fixes: a flat string of n parts reads Catalan(n-1) ways "
+         "and only one is meant, so the doubt is 2.3 bits at four "
+         "parts and 5.4 at six. What it costs: one syllable, and "
+         "an inventory of 9 consonants by 3 vowels carries "
+         "log2(27) = 4.75 bits. So a marker pays at exactly SIX "
+         "parts and not before -- below that free word order is "
+         "enough and a particle is a waste of breath. This world "
+         "crossed it at year 600. And the first grammar is a "
+         "BRACKET rather than a case or a tense, because a flat "
+         "compound already says which parts are present and "
+         "cannot say which part the whole thing IS. A grammar "
+         "word is one syllable against a noun's two or three, "
+         "which is forced twice over: it must not be mistaken for "
+         "a noun, and it is the most frequent word there is, so "
+         "the cheapest distinguishable form survives"),
         ("who it says mattered", "why anything gets a name at all",
          DERIVED, "naming.naming_is_worth",
          "a name is not imposed from outside, it is a mechanism "

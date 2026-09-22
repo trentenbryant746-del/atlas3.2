@@ -167,6 +167,81 @@ halt
 """
 
 
+# --- what a machine of theirs would actually be -------------------
+#
+# The word width comes from the opcode field plus an operand. The
+# MEMORY comes from how small a feature can be printed, and that
+# is not a machining tolerance -- a first attempt derived it from
+# the relative tolerance ladder and got features smaller than an
+# atom, which is nonsense. A printed feature is bounded by
+# DIFFRACTION: the Rayleigh criterion on whatever wavelength you
+# print with, which engine/senses.py already had.
+
+BIT_CELL_TRANSISTORS = 6.0        # MEASURED, a static cell
+DIE_M = 1e-3                      # engine/artifact.DIMENSION_M
+
+
+def feature_m(wavelength_nm=550.0, na=0.3):
+    """Smallest printable feature. DERIVED: lambda / (2 NA)."""
+    return wavelength_nm * 1e-9 / (2.0 * na)
+
+
+def sites(wavelength_nm=550.0, na=0.3, die_m=DIE_M):
+    """Transistor sites on a die. DERIVED."""
+    return (die_m / feature_m(wavelength_nm, na)) ** 2
+
+
+def word_bits():
+    """Opcode field plus operand. DERIVED."""
+    return opcode_bits() + OPERAND_BITS
+
+
+def memory_words(wavelength_nm=550.0, na=0.3, die_m=DIE_M):
+    """How much memory that die holds. DERIVED."""
+    return sites(wavelength_nm, na, die_m) / (
+        BIT_CELL_TRANSISTORS * word_bits())
+
+
+# THE FIRST PROGRAM. Not chosen: engine/power.py derived that the
+# earliest writing anywhere is an inventory, because a store
+# needs an account and that is worth something whoever else can
+# read. The same argument applies one layer up -- the first thing
+# worth computing is the same thing that was first worth writing.
+TALLY = """
+load 31        # 0  count remaining
+jz 13          # 1  nothing left, finish
+loadi 30       # 2  acc <- the value pointed at
+add 32         # 3  add the running total
+store 32       # 4  keep it
+load 30        # 5  advance the pointer
+addi 1         # 6
+store 30       # 7
+load 31        # 8  decrement the count
+addi 65535     # 9
+store 31       # 10
+jmp 0          # 11
+halt           # 12
+load 32        # 13 the answer
+out            # 14
+halt           # 15
+"""
+
+
+def tally(values):
+    """Run their tally program over real values. -> (sum, steps)."""
+    words = assemble(TALLY)
+    base = 40
+    # Size the memory to the job. A machine with 8,624 words has
+    # room; the first version allocated a fixed 64 and overflowed
+    # the moment a band had more than 24 things to count.
+    mem = list(words) + [0] * (base + len(values) + 8 - len(words))
+    mem[30], mem[31], mem[32] = base, len(values), 0
+    for i, v in enumerate(values):
+        mem[base + i] = v & 0xFFFF
+    out, steps = run(words, mem)
+    return (out[0] if out else None), steps
+
+
 def check():
     res = []
 
@@ -181,6 +256,8 @@ def check():
     t("a_frequent_opcode_is_short_for_the_same_reason_a_particle_is",
       _short)
     t("the_machine_runs_and_we_can_read_both_directions", _runs)
+    t("its_memory_comes_from_diffraction_not_machining", _mem)
+    t("the_first_program_is_the_first_thing_worth_writing", _tally)
     return all(x for _, x, _ in res), res
 
 
@@ -248,6 +325,51 @@ def _runs():
             f"is NOT here: nobody in engine/world.py has built "
             f"one. This is what their constraints would force, "
             f"implemented so it can be checked")
+
+
+def _mem():
+    f = feature_m()
+    w = memory_words()
+    if not 1e3 < w < 1e6:
+        raise ArithmeticError(f"{w}")
+    fine = memory_words(193.0, 1.35)
+    return (f"a word is {word_bits()} bits -- "
+            f"{opcode_bits()} of opcode and {OPERAND_BITS} of "
+            f"operand -- and the memory comes from how small a "
+            f"feature can be PRINTED. A first attempt took that "
+            f"from the relative tolerance ladder and got features "
+            f"smaller than an atom, which is nonsense: a printed "
+            f"feature is bounded by DIFFRACTION, the Rayleigh "
+            f"criterion on the wavelength you print with, which "
+            f"engine/senses.py already had. At 550 nm through a "
+            f"simple lens that is {f*1e9:.0f} nm, "
+            f"{sites():.2e} sites on a millimetre die and "
+            f"{w:,.0f} words. At 193 nm under immersion it is "
+            f"{fine:,.0f}. Real integrated memory went 1 kbit in "
+            f"1970 to 64 kbit by 1979, so the order is right and "
+            f"the growth comes from the wavelength")
+
+
+def _tally():
+    from engine.world import run as world_run
+    w = world_run()
+    counts = [len(a) for a in sorted(w.artifacts(), key=sorted)[:12]]
+    got, steps = tally(counts)
+    want = sum(counts) & 0xFFFF
+    if got != want:
+        raise ArithmeticError(f"{got} != {want}")
+    return (f"the first program is not chosen either. "
+            f"engine/power.py derived that the earliest writing "
+            f"anywhere is an INVENTORY, because a store needs an "
+            f"account and that is worth something whoever else "
+            f"can read -- and the same argument applies one layer "
+            f"up: the first thing worth computing is the first "
+            f"thing that was worth writing. So the program is a "
+            f"tally. Over {len(counts)} real values from the "
+            f"ledger it returns {got} in {steps} steps against "
+            f"{want} summed directly. Sixteen instructions, a "
+            f"loop, an indirect load and a countdown, and it is "
+            f"the same arithmetic a granary needed")
 
 
 if __name__ == "__main__":

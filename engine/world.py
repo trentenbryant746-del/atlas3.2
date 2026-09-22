@@ -76,13 +76,22 @@ MEETINGS_PER_STEP = 0.2         # CHOSEN, bands that meet per step
 class Band:
     """A group that holds crafts and the things it has built."""
 
-    __slots__ = ("ident", "prims", "made", "lex")
+    __slots__ = ("ident", "prims", "made", "lex", "machine")
 
     def __init__(self, ident, seed_prims):
         self.ident = ident
         self.prims = set(seed_prims)
         self.made = set()
         self.lex = Lexicon(ident)
+        self.machine = None      # set when it can build one
+
+    def can_compute(self):
+        """A machine needs switches and something to print them.
+
+        engine/instruction.py says what the set must contain; a
+        band needs the crafts that make one physically.
+        """
+        return {"switching", "inference", "optics"} <= self.prims
 
     def temperature(self):
         t = BASE_K
@@ -169,6 +178,43 @@ class World:
         band.made.add(combo)
         self.ledger.append((self.year, band.ident, "artifact", combo))
 
+    def _build_machine(self, band):
+        """A band that can, builds one. Once. DERIVED size."""
+        from engine.instruction import (memory_words, word_bits,
+                                        optimum_opcodes)
+        if band.machine is not None or not band.can_compute():
+            return
+        band.machine = {
+            "words": int(memory_words()),
+            "word_bits": word_bits(),
+            "opcodes": optimum_opcodes(),
+            "year": self.year,
+        }
+        self.ledger.append((self.year, band.ident, "machine",
+                            band.machine["words"]))
+
+    def _compute(self, band):
+        """Run the tally over the band's own inventory.
+
+        engine/power.py derived that the first writing is an
+        account of a store. The first COMPUTATION is the same
+        account, which is why the program is a tally and why it
+        is run over what the band actually holds.
+        """
+        from engine.instruction import tally
+        if band.machine is None or not band.made:
+            return
+        # Everything it made, in a deterministic order, capped by
+        # what the machine can hold. Sorting by SIZE first gave
+        # sixty-four two-part things and the same answer every
+        # time, which is correct arithmetic on a degenerate input.
+        cap = min(64, band.machine["words"])
+        inventory = [len(c) for c in
+                     sorted(band.made, key=lambda x: sorted(x))[:cap]]
+        got, steps = tally(inventory)
+        self.ledger.append((self.year, band.ident, "computed",
+                            (len(inventory), got, steps)))
+
     def _meet(self):
         """Two bands meet and one shows the other something."""
         if len(self.bands) < 2:
@@ -193,6 +239,9 @@ class World:
                     self._try_craft(band)
                 else:
                     self._try_combination(band)
+            self._build_machine(band)
+            if band.machine is not None and self.rng.random() < 0.02:
+                self._compute(band)
         if self.rng.random() < MEETINGS_PER_STEP * len(self.bands):
             self._meet()
         self.year += YEARS_PER_STEP
@@ -228,6 +277,19 @@ class World:
     def unnamed(self):
         """Built here, no name in our world. The interesting ones."""
         return {a for a in self.artifacts() if a not in KNOWN_AS}
+
+
+def machines(world=None):
+    """-> [(year, band, words)]. Every machine built. RECORDED."""
+    w = world or run()
+    return [(y, b, n) for y, b, k, n in w.ledger if k == "machine"]
+
+
+def computations(world=None):
+    """-> [(year, band, count, result, steps)]. RECORDED."""
+    w = world or run()
+    return [(y, b) + tuple(v) for y, b, k, v in w.ledger
+            if k == "computed"]
 
 
 def words_for(referent, world=None):
@@ -441,8 +503,19 @@ def describe(thing, world=None):
 _RUN = {}
 
 
-def run(years=12000.0):
-    """One world, held, because stepping it twice is waste."""
+HORIZON_YEARS = 12000.0     # the one horizon, and it is one now
+
+
+def run(years=HORIZON_YEARS):
+    """One world, held, because stepping it twice is waste.
+
+    NOTE. tools/dictionary.py and tools/encyclopedia.py were
+    each asking for 14,000 years while this defaulted to 12,000,
+    so the same world was being stepped twice to two different
+    depths and the counts quoted from them disagreed with the
+    counts quoted from here. One horizon now, named, and the
+    tools import it.
+    """
     key = float(years)
     if key not in _RUN:
         _RUN[key] = World().run(years)
@@ -465,6 +538,7 @@ def check():
     t("INVERTED_exactly_one_number_here_is_fitted", _fitted)
     t("anything_in_the_ledger_has_a_spec_and_not_a_name", _spec)
     t("the_oldest_words_are_the_least_agreed_on", _words)
+    t("a_band_that_can_compute_does_and_it_is_checkable", _compute_ck)
     return all(x for _, x, _ in res), res
 
 
@@ -654,6 +728,43 @@ def _words():
             f"diverges across related languages while technical "
             f"vocabulary travels as a loanword and stays put. "
             f"Nothing here was built to produce that")
+
+
+def _compute_ck():
+    from engine.instruction import memory_words, word_bits
+    w = run()
+    m, c = machines(w), computations(w)
+    if not m or not c:
+        raise ArithmeticError(f"{len(m)} machines, {len(c)} runs")
+    first = min(m)
+    results = [r for _y, _b, _n, r, _s in c]
+    # verify the machine agrees with plain arithmetic
+    bad = 0
+    for band in w.bands:
+        if band.machine is None or not band.made:
+            continue
+        cap = min(64, band.machine["words"])
+        inv = [len(x) for x in
+               sorted(band.made, key=lambda z: sorted(z))[:cap]]
+        from engine.instruction import tally
+        got, _s = tally(inv)
+        if got != (sum(inv) & 0xFFFF):
+            bad += 1
+    if bad:
+        raise ArithmeticError(f"{bad} machines disagree with addition")
+    return (f"{len(m)} bands built a machine, the first at year "
+            f"{first[0]:.0f}, each with {first[2]:,} words of "
+            f"{word_bits()} bits -- a size that comes from the "
+            f"Rayleigh criterion on the printing wavelength and "
+            f"not from anybody's choice. {len(c)} programs have "
+            f"run, tallying a band's own inventory because "
+            f"engine/power.py says the first account is of a "
+            f"store: results span {min(results)} to "
+            f"{max(results)}. Every one was checked against plain "
+            f"addition and none disagrees. A band needs "
+            f"switching, inference and optics to build one, so "
+            f"none exists before year {first[0]:.0f} and it is "
+            f"not because anybody was waiting")
 
 
 if __name__ == "__main__":

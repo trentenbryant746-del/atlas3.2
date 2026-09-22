@@ -1,6 +1,6 @@
 # A lexicon of the world in engine/world.py
 
-Compiled 2026-09-18 from a run of 40 bands over 14000 years. 282 headwords for 25 concepts.
+Compiled 2026-09-22 from a run of 40 bands over 12000 years. 287 headwords for 25 concepts.
 
 Every word here was coined by a band at the moment it first made the thing. Nothing was given to them and nothing was invented for this file. We can translate because we watched each word get attached to an act of making, which is the position a field linguist is in -- point at the object, write down the noise. Beyond that referent, nothing may be read into a word.
 
@@ -13,22 +13,22 @@ syllable     CV, open, no codas
 inventory    9x3 = 27 syllables
 word shape   two or three syllables
 possible     20,412 words
-attested     282
+attested     287
 ```
 
 ## Dialect
 
-192 of 282 words are spoken by a single band and 39 by six or more. 684 borrowings are recorded -- a band that is taught a craft learns the word with it, so teaching spreads vocabulary and independent invention does not.
+194 of 287 words are spoken by a single band and 36 by six or more. 614 borrowings are recorded -- a band that is taught a craft learns the word with it, so teaching spreads vocabulary and independent invention does not.
 
 ```
 concept           forms  bands   most widespread
 heat                 39     40   salu (5 bands)
 edge                 40     40   salu (5 bands)
 cordage              40     40   muku (6 bands)
-lever                39     40   sinu (3 bands)
+lever                39     40   sinu (2 bands)
 containment           7     40   tuku (19 bands)
 rotation              7     40   nusu (15 bands)
-mark                  9     40   lalu (24 bands)
+mark                  9     40   lalu (17 bands)
 smelting              5     40   jili (17 bands)
 breeding              5     40   wapa (31 bands)
 gearing               5     40   taku (30 bands)
@@ -36,17 +36,17 @@ electricity           5     40   sawutu (33 bands)
 pressure              7     40   sasumi (22 bands)
 optics                4     40   wala (34 bands)
 spring                4     40   nuta (37 bands)
-regulation           10     40   kaki (14 bands)
-steam                 4     40   pina (19 bands)
+regulation           10     39   kaki (14 bands)
+steam                 4     40   pina (18 bands)
 alloy                 7     40   sajaku (25 bands)
 vacuum                6     40   lipi (17 bands)
-superconduction      12     40   pita (19 bands)
-depiction             9     40   kusi (19 bands)
-semiconductor        13     40   niliki (11 bands)
-switching             5     40   litala (33 bands)
-coherence             6     39   wala (34 bands)
-inference             7     40   lupuwa (18 bands)
-placement             4     36   lipu (33 bands)
+superconduction      11     34   pita (17 bands)
+depiction            10     36   kusi (17 bands)
+semiconductor        14     39   liju (8 bands)
+switching             8     31   litala (20 bands)
+coherence             8     26   wala (34 bands)
+inference             6     29   lupuwa (18 bands)
+placement             5     11   suwa (5 bands)
 ```
 
 The oldest concepts carry the most forms. That is not noise: a craft every band found separately keeps a word per band, and a craft that spread by teaching carried one word with it. Basic vocabulary diverges and technical vocabulary travels, which is what happens to real languages.
@@ -61,13 +61,13 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **jaki** *ja-ki* — a surface that keeps what light fell on it. (depiction; band 6; first year 8410)
 
-**jama** *ja-ma* — statistics run at a scale no head holds. (inference; band 23; first year 10720)
-
 **jamanu** *ja-ma-nu* — fired clay that holds against a gradient. (containment; band 12, 30, borrowed by 1; first year 1710)
 
-**jami** *ja-mi* — resistance gone below a critical temperature. (superconduction; band 3, 26, borrowed by 1; first year 9780)
+**jami** *ja-mi* — resistance gone below a critical temperature. (superconduction; band 3; first year 9780)
 
 **janusi** *ja-nu-si* — a length trading force for distance. (lever; band 35; first year 0)
+
+**jasa** *ja-sa* — resistance gone below a critical temperature. (superconduction; band 17; first year 11000)
 
 **jatasu** *ja-ta-su* — a volume with the air taken out. (vacuum; band 11, 34, borrowed by 1; first year 8550)
 
@@ -91,17 +91,21 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **jiwaku** *ji-wa-ku* — a volume with the air taken out. (vacuum; band 36; first year 7900)
 
-**jiwi** *ji-wi* — resistance gone below a critical temperature. (superconduction; band 5, 34, 35, borrowed by 2; first year 8000)
+**jiwi** *ji-wi* — resistance gone below a critical temperature. (superconduction; band 35; first year 8000)
 
 **jiwu** *ji-wu* — fire held at a temperature. (heat; band 12; first year 0)
 
+**juja** *ju-ja* — a gate that opens on a signal. (switching; band 3; first year 10880)
+
 **jujanu** *ju-ja-nu* — fired clay that holds against a gradient. (containment; band 11, 25, borrowed by 1; first year 1730)
 
-**juji** *ju-ji* — a volume with the air taken out. (vacuum; band 8, 32, 37, borrowed by 1; first year 8390)
+**juji** *ju-ji* — a volume with the air taken out. (vacuum; 7 bands, borrowed by 4; first year 8390)
 
 **jula** *ju-la* — a worked face that cuts. (edge; band 15; first year 0)
 
 **juma** *ju-ma* — a worked face that cuts. (edge; band 2; first year 0)
+
+**jumalu** *ju-ma-lu* — a gate that opens on a signal. (switching; band 25; first year 10570)
 
 **jumiku** *ju-mi-ku* — a worked face that cuts. (edge; band 10; first year 0)
 
@@ -111,9 +115,9 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **junu** *ju-nu* — ore reduced past its melting point. (smelting; 11 bands, borrowed by 10; first year 1940)
 
-**jupali** *ju-pa-li* — a quantum state held against the noise. (coherence; band 14; first year 13170)
-
 **juti** *ju-ti* — a vessel that holds against itself. (pressure; band 8; first year 6110)
+
+**juwa** *ju-wa* — statistics run at a scale no head holds. (inference; band 4; first year 10490)
 
 **juwata** *ju-wa-ta* — fibre twisted until it holds. (cordage; band 4; first year 0)
 
@@ -125,7 +129,7 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **kali** *ka-li* — a worked face that cuts. (edge; band 24; first year 0)
 
-**kamu** *ka-mu* — a crystal pure enough to switch. (semiconductor; band 30, 35, borrowed by 1; first year 10580)
+**kamu** *ka-mu* — a crystal pure enough to switch. (semiconductor; band 3; first year 10590)
 
 **kanu** *ka-nu* — fire held at a temperature. (heat; band 10; first year 0)
 
@@ -135,15 +139,17 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **kasu** *ka-su* — fire held at a temperature. (heat; band 33; first year 0)
 
-**katupi** *ka-tu-pi* — a crystal pure enough to switch. (semiconductor; 5 bands, borrowed by 4; first year 9070)
+**katupi** *ka-tu-pi* — a crystal pure enough to switch. (semiconductor; 4 bands, borrowed by 3; first year 9070)
 
 **kawinu** *ka-wi-nu* — resistance gone below a critical temperature. (superconduction; band 15, 20, 29, borrowed by 2; first year 8700)
 
 **kiju** *ki-ju* — fibre twisted until it holds. (cordage; band 38; first year 0)
 
-**kila** *ki-la* — fibre twisted until it holds. (cordage; band 31; first year 0)
+**kila** *ki-la* — a gate that opens on a signal. (switching; band 1, 31; first year 0)
 
 **kili** *ki-li* — fire held at a temperature. (heat; band 24; first year 0)
+
+**kimana** *ki-ma-na* — statistics run at a scale no head holds. (inference; 4 bands, borrowed by 3; first year 10660)
 
 **kinupi** *ki-nu-pi* — a crystal pure enough to switch. (semiconductor; band 36; first year 8320)
 
@@ -151,25 +157,25 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **kuja** *ku-ja* — a length trading force for distance. (lever; band 26; first year 0)
 
-**kuju** *ku-ju* — a surface that keeps what light fell on it. (depiction; 4 bands, borrowed by 3; first year 9270)
+**kuju** *ku-ju* — a surface that keeps what light fell on it. (depiction; band 35, 36, 38, borrowed by 2; first year 9270)
 
 **kumi** *ku-mi* — steel: stored strain released on demand. (spring; band 0; first year 5520)
 
 **kuna** *ku-na* — fire held at a temperature. (heat; band 1; first year 0)
 
-**kunu** *ku-nu* — a gate that opens on a signal. (switching; band 3, 19; first year 0)
+**kunu** *ku-nu* — a length trading force for distance. (lever; band 19; first year 0)
 
-**kupi** *ku-pi* — a crystal pure enough to switch. (semiconductor; 4 bands, borrowed by 3; first year 9790)
+**kupi** *ku-pi* — a crystal pure enough to switch. (semiconductor; 6 bands, borrowed by 5; first year 9790)
 
 **kupu** *ku-pu* — fire held at a temperature. (heat; band 0; first year 0)
 
-**kusi** *ku-si* — a surface that keeps what light fell on it. (depiction; 19 bands, borrowed by 18; first year 8920)
+**kusi** *ku-si* — a surface that keeps what light fell on it. (depiction; 17 bands, borrowed by 16; first year 8920)
 
 **laja** *la-ja* — glass shaped to bend light. (optics; band 15; first year 5130)
 
 **laku** *la-ku* — a length trading force for distance. (lever; band 13; first year 0)
 
-**lalu** *la-lu* — a durable trace standing for a sound. (mark; 24 bands, borrowed by 22; first year 530)
+**lalu** *la-lu* — a durable trace standing for a sound. (mark; 17 bands, borrowed by 15; first year 530)
 
 **lama** *la-ma* — a worked face that cuts. (edge; band 16; first year 0)
 
@@ -185,11 +191,9 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **lijipu** *li-ji-pu* — fibre twisted until it holds. (cordage; band 37; first year 0)
 
-**liju** *li-ju* — a crystal pure enough to switch. (semiconductor; 6 bands, borrowed by 5; first year 8930)
+**liju** *li-ju* — a crystal pure enough to switch. (semiconductor; 8 bands, borrowed by 7; first year 8930)
 
 **lika** *li-ka* — steel: stored strain released on demand. (spring; band 12; first year 5630)
-
-**likuja** *li-ku-ja* — a crystal pure enough to switch. (semiconductor; band 18; first year 11040)
 
 **lilu** *li-lu* — a length trading force for distance. (lever; band 3; first year 0)
 
@@ -199,27 +203,23 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **lipi** *li-pi* — a volume with the air taken out. (vacuum; 17 bands, borrowed by 16; first year 7180)
 
-**lipu** *li-pu* — matter set down one atom at a time. (placement; 33 bands, borrowed by 32; first year 10600)
-
 **lisija** *li-si-ja* — fire held at a temperature. (heat; band 32; first year 0)
 
-**litala** *li-ta-la* — a gate that opens on a signal. (switching; 33 bands, borrowed by 32; first year 9550)
+**litala** *li-ta-la* — a gate that opens on a signal. (switching; 20 bands, borrowed by 19; first year 9550)
 
-**liwa** *li-wa* — a surface that keeps what light fell on it. (depiction; 7 bands, borrowed by 6; first year 8190)
+**liwa** *li-wa* — a surface that keeps what light fell on it. (depiction; 5 bands, borrowed by 4; first year 8190)
 
 **luju** *lu-ju* — a worked face that cuts. (edge; band 36; first year 0)
 
 **lula** *lu-la* — a gate that opens on a signal. (switching; band 11; first year 9940)
 
-**lulapi** *lu-la-pi* — heat turned into a stroke. (steam; band 2, 6, 13, borrowed by 2; first year 7220)
+**lulapi** *lu-la-pi* — heat turned into a stroke. (steam; 4 bands, borrowed by 3; first year 7220)
 
 **lumu** *lu-mu* — a vessel that holds against itself. (pressure; band 31; first year 5590)
 
 **lunu** *lu-nu* — a length trading force for distance. (lever; band 28; first year 0)
 
 **lunupi** *lu-nu-pi* — a length trading force for distance. (lever; band 25; first year 0)
-
-**lupu** *lu-pu* — statistics run at a scale no head holds. (inference; 4 bands, borrowed by 3; first year 11260)
 
 **lupuwa** *lu-pu-wa* — statistics run at a scale no head holds. (inference; 18 bands, borrowed by 17; first year 10300)
 
@@ -233,9 +233,11 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **luwi** *lu-wi* — a length trading force for distance. (lever; band 29; first year 0)
 
-**maka** *ma-ka* — a crystal pure enough to switch. (semiconductor; band 19; first year 10170)
+**maka** *ma-ka* — a crystal pure enough to switch. (semiconductor; 4 bands, borrowed by 3; first year 10170)
 
-**mami** *ma-mi* — a surface that keeps what light fell on it. (depiction; 4 bands, borrowed by 3; first year 9800)
+**malu** *ma-lu* — statistics run at a scale no head holds. (inference; band 9, 12, borrowed by 1; first year 10780)
+
+**mami** *ma-mi* — a surface that keeps what light fell on it. (depiction; 5 bands, borrowed by 4; first year 9800)
 
 **mapa** *ma-pa* — a length trading force for distance. (lever; band 36; first year 0)
 
@@ -261,17 +263,13 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **mima** *mi-ma* — fire held at a temperature. (heat; band 4; first year 0)
 
-**mini** *mi-ni* — a crystal pure enough to switch. (semiconductor; band 22; first year 9980)
+**mini** *mi-ni* — a crystal pure enough to switch. (semiconductor; band 22, 33, borrowed by 1; first year 9980)
 
-**misasa** *mi-sa-sa* — a surface that keeps what light fell on it. (depiction; band 14; first year 11340)
-
-**misisi** *mi-si-si* — a machine that corrects itself. (regulation; 7 bands, borrowed by 6; first year 6610)
+**misisi** *mi-si-si* — a machine that corrects itself. (regulation; 6 bands, borrowed by 5; first year 6610)
 
 **mita** *mi-ta* — a vessel that holds against itself. (pressure; band 15, 17; first year 0)
 
 **mitila** *mi-ti-la* — a gate that opens on a signal. (switching; 4 bands, borrowed by 3; first year 10040)
-
-**mitu** *mi-tu* — resistance gone below a critical temperature. (superconduction; band 14; first year 11870)
 
 **mujuji** *mu-ju-ji* — a durable trace standing for a sound. (mark; band 20, 35, borrowed by 1; first year 1030)
 
@@ -281,15 +279,15 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **mulami** *mu-la-mi* — fire held at a temperature. (heat; band 9; first year 0)
 
-**muma** *mu-ma* — resistance gone below a critical temperature. (superconduction; band 31, 39; first year 0)
+**muma** *mu-ma* — a length trading force for distance. (lever; band 39; first year 0)
 
 **mumaja** *mu-ma-ja* — a durable trace standing for a sound. (mark; band 15, 22, 25, borrowed by 2; first year 350)
 
-**mumi** *mu-mi* — charge moved on purpose. (electricity; band 13, 37, borrowed by 1; first year 5630)
+**mumi** *mu-mi* — a quantum state held against the noise. (coherence; band 4, 13, 37, borrowed by 1; first year 5630)
 
 **mumika** *mu-mi-ka* — composition held to a specification. (alloy; 4 bands, borrowed by 3; first year 6710)
 
-**mumu** *mu-mu* — resistance gone below a critical temperature. (superconduction; band 25; first year 9050)
+**mumu** *mu-mu* — resistance gone below a critical temperature. (superconduction; band 1, 25, borrowed by 1; first year 9050)
 
 **mununa** *mu-nu-na* — a worked face that cuts. (edge; band 5; first year 0)
 
@@ -297,17 +295,21 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **mutipi** *mu-ti-pi* — fibre twisted until it holds. (cordage; band 18; first year 0)
 
+**muwa** *mu-wa* — a quantum state held against the noise. (coherence; band 1, 2, borrowed by 1; first year 10920)
+
+**muwita** *mu-wi-ta* — a quantum state held against the noise. (coherence; band 12; first year 11620)
+
 **naki** *na-ki* — a length trading force for distance. (lever; band 8; first year 0)
 
 **nalu** *na-lu* — a bearing and a round thing on it. (rotation; band 3, 18, 35, borrowed by 2; first year 1010)
+
+**nami** *na-mi* — matter set down one atom at a time. (placement; band 3, 9, borrowed by 1; first year 11720)
 
 **nasija** *na-si-ja* — fibre twisted until it holds. (cordage; band 12; first year 0)
 
 **nasuma** *na-su-ma* — a worked face that cuts. (edge; band 39; first year 0)
 
-**nata** *na-ta* — resistance gone below a critical temperature. (superconduction; band 36; first year 8480)
-
-**nawiku** *na-wi-ku* — a surface that keeps what light fell on it. (depiction; band 1, 8, borrowed by 1; first year 11340)
+**nata** *na-ta* — resistance gone below a critical temperature. (superconduction; band 36, 39, borrowed by 1; first year 8480)
 
 **nija** *ni-ja* — a bearing and a round thing on it. (rotation; band 17; first year 1730)
 
@@ -315,9 +317,9 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **nikuma** *ni-ku-ma* — composition held to a specification. (alloy; band 13, 14, 28, borrowed by 2; first year 8000)
 
-**nilana** *ni-la-na* — a quantum state held against the noise. (coherence; band 11; first year 10470)
+**nilana** *ni-la-na* — statistics run at a scale no head holds. (inference; band 2, 15, borrowed by 1; first year 10470)
 
-**niliki** *ni-li-ki* — a crystal pure enough to switch. (semiconductor; 11 bands, borrowed by 10; first year 8870)
+**niliki** *ni-li-ki* — a crystal pure enough to switch. (semiconductor; 5 bands, borrowed by 4; first year 8870)
 
 **nimu** *ni-mu* — fire held at a temperature. (heat; band 30; first year 0)
 
@@ -329,11 +331,9 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **nipi** *ni-pi* — fibre twisted until it holds. (cordage; band 9; first year 0)
 
-**nipu** *ni-pu* — matter set down one atom at a time. (placement; band 11; first year 11470)
+**nipu** *ni-pu* — matter set down one atom at a time. (placement; band 35; first year 11460)
 
 **nisa** *ni-sa* — kept records of who bred with whom. (breeding; band 1; first year 1940)
-
-**nisu** *ni-su* — matter set down one atom at a time. (placement; band 39; first year 13440)
 
 **nita** *ni-ta* — heat turned into a stroke. (steam; 11 bands, borrowed by 10; first year 6330)
 
@@ -342,6 +342,8 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 **niwa** *ni-wa* — fibre twisted until it holds. (cordage; band 29; first year 0)
 
 **nujaja** *nu-ja-ja* — fibre twisted until it holds. (cordage; band 14; first year 0)
+
+**nula** *nu-la* — matter set down one atom at a time. (placement; band 0, 15, 36, borrowed by 2; first year 10720)
 
 **nulana** *nu-la-na* — fibre twisted until it holds. (cordage; band 34; first year 0)
 
@@ -361,6 +363,8 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **nuwu** *nu-wu* — fire held at a temperature. (heat; band 26; first year 0)
 
+**paji** *pa-ji* — a gate that opens on a signal. (switching; band 26; first year 11960)
+
 **pakati** *pa-ka-ti* — a length trading force for distance. (lever; band 17; first year 0)
 
 **palasu** *pa-la-su* — fire held at a temperature. (heat; band 3; first year 0)
@@ -375,27 +379,21 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **pana** *pa-na* — fibre twisted until it holds. (cordage; band 21; first year 0)
 
-**pasi** *pa-si* — a quantum state held against the noise. (coherence; 14 bands, borrowed by 13; first year 10550)
-
-**pawa** *pa-wa* — matter set down one atom at a time. (placement; band 1; first year 12900)
-
 **pawini** *pa-wi-ni* — a bearing and a round thing on it. (rotation; band 25; first year 1890)
 
 **pawuwu** *pa-wu-wu* — fire held at a temperature. (heat; band 35; first year 0)
-
-**pijamu** *pi-ja-mu* — a surface that keeps what light fell on it. (depiction; band 30; first year 13260)
 
 **piju** *pi-ju* — charge moved on purpose. (electricity; band 17, 25, 28, borrowed by 2; first year 5420)
 
 **pikiwa** *pi-ki-wa* — fire held at a temperature. (heat; band 29; first year 0)
 
-**pina** *pi-na* — heat turned into a stroke. (steam; 19 bands, borrowed by 18; first year 5490)
+**pina** *pi-na* — heat turned into a stroke. (steam; 18 bands, borrowed by 16; first year 5490)
 
 **pinita** *pi-ni-ta* — fire held at a temperature. (heat; band 39; first year 0)
 
 **pisi** *pi-si* — fibre twisted until it holds. (cordage; band 28; first year 0)
 
-**pita** *pi-ta* — resistance gone below a critical temperature. (superconduction; 19 bands, borrowed by 18; first year 8760)
+**pita** *pi-ta* — resistance gone below a critical temperature. (superconduction; 17 bands, borrowed by 16; first year 8760)
 
 **piti** *pi-ti* — fire held at a temperature. (heat; band 21; first year 0)
 
@@ -403,7 +401,7 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **pujati** *pu-ja-ti* — resistance gone below a critical temperature. (superconduction; band 18; first year 9720)
 
-**pulu** *pu-lu* — a crystal pure enough to switch. (semiconductor; band 12, 21, 28, borrowed by 2; first year 10250)
+**pulu** *pu-lu* — a crystal pure enough to switch. (semiconductor; band 28; first year 10250)
 
 **punaki** *pu-na-ki* — a worked face that cuts. (edge; band 31; first year 0)
 
@@ -423,7 +421,11 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **saji** *sa-ji* — a length trading force for distance. (lever; band 23; first year 0)
 
+**saka** *sa-ka* — a quantum state held against the noise. (coherence; band 8, 11, borrowed by 1; first year 10370)
+
 **saki** *sa-ki* — fire held at a temperature. (heat; band 22; first year 0)
+
+**sakiji** *sa-ki-ji* — a surface that keeps what light fell on it. (depiction; band 13; first year 11550)
 
 **salu** *sa-lu* — a crystal pure enough to switch. (semiconductor; 5 bands, borrowed by 2; first year 0)
 
@@ -447,8 +449,6 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **sawi** *sa-wi* — steel: stored strain released on demand. (spring; band 11; first year 6930)
 
-**sawina** *sa-wi-na* — statistics run at a scale no head holds. (inference; band 39; first year 12340)
-
 **sawuni** *sa-wu-ni* — fire held at a temperature. (heat; band 14; first year 0)
 
 **sawutu** *sa-wu-tu* — charge moved on purpose. (electricity; 33 bands, borrowed by 32; first year 2940)
@@ -457,9 +457,7 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **silama** *si-la-ma* — fire held at a temperature. (heat; band 15; first year 0)
 
-**sinu** *si-nu* — resistance gone below a critical temperature. (superconduction; band 1, 7, 11; first year 0)
-
-**sisi** *si-si* — a quantum state held against the noise. (coherence; band 23; first year 10870)
+**sinu** *si-nu* — a length trading force for distance. (lever; band 7, 11; first year 0)
 
 **sisima** *si-si-ma* — a length trading force for distance. (lever; band 5; first year 0)
 
@@ -487,7 +485,7 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **sutu** *su-tu* — fibre twisted until it holds. (cordage; band 0; first year 0)
 
-**suwa** *su-wa* — fibre twisted until it holds. (cordage; band 3; first year 0)
+**suwa** *su-wa* — matter set down one atom at a time. (placement; 5 bands, borrowed by 3; first year 0)
 
 **suwi** *su-wi* — glass shaped to bend light. (optics; 18 bands, borrowed by 17; first year 3240)
 
@@ -498,6 +496,8 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 **taku** *ta-ku* — teeth that carry a ratio. (gearing; 30 bands, borrowed by 29; first year 2640)
 
 **tala** *ta-la* — fired clay that holds against a gradient. (containment; 9 bands, borrowed by 8; first year 390)
+
+**taliju** *ta-li-ju* — a surface that keeps what light fell on it. (depiction; band 3; first year 10820)
 
 **talu** *ta-lu* — a worked face that cuts. (edge; band 6; first year 0)
 
@@ -519,6 +519,10 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **tapu** *ta-pu* — a worked face that cuts. (edge; band 28; first year 0)
 
+**tasu** *ta-su* — a surface that keeps what light fell on it. (depiction; band 1; first year 10460)
+
+**tata** *ta-ta* — a quantum state held against the noise. (coherence; band 10; first year 11600)
+
 **tatu** *ta-tu* — a machine that corrects itself. (regulation; 5 bands, borrowed by 4; first year 6920)
 
 **tilala** *ti-la-la* — fire held at a temperature. (heat; band 38; first year 0)
@@ -533,13 +537,17 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **titu** *ti-tu* — composition held to a specification. (alloy; band 3; first year 8740)
 
-**tujani** *tu-ja-ni* — resistance gone below a critical temperature. (superconduction; band 12, 27, 28, borrowed by 2; first year 8850)
+**tiwa** *ti-wa* — matter set down one atom at a time. (placement; band 27; first year 10940)
+
+**tujani** *tu-ja-ni* — resistance gone below a critical temperature. (superconduction; band 0, 12, borrowed by 1; first year 8850)
 
 **tuji** *tu-ji* — a worked face that cuts. (edge; band 12, 27; first year 0)
 
 **tuju** *tu-ju* — fibre twisted until it holds. (cordage; band 24; first year 0)
 
 **tuku** *tu-ku* — fired clay that holds against a gradient. (containment; 19 bands, borrowed by 18; first year 90)
+
+**tuli** *tu-li* — a crystal pure enough to switch. (semiconductor; band 34; first year 11620)
 
 **tumi** *tu-mi* — a length trading force for distance. (lever; band 31; first year 0)
 
@@ -549,9 +557,11 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **tusu** *tu-su* — a length trading force for distance. (lever; band 16; first year 0)
 
+**tuti** *tu-ti* — a crystal pure enough to switch. (semiconductor; band 35; first year 10940)
+
 **waji** *wa-ji* — a worked face that cuts. (edge; band 19; first year 0)
 
-**waka** *wa-ka* — a gate that opens on a signal. (switching; band 36; first year 9400)
+**waka** *wa-ka* — a gate that opens on a signal. (switching; band 5, 36, borrowed by 1; first year 9400)
 
 **waki** *wa-ki* — fire held at a temperature. (heat; band 16; first year 0)
 
@@ -563,8 +573,6 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **wani** *wa-ni* — fire held at a temperature. (heat; band 18; first year 0)
 
-**wanu** *wa-nu* — statistics run at a scale no head holds. (inference; 13 bands, borrowed by 12; first year 10690)
-
 **wapa** *wa-pa* — kept records of who bred with whom. (breeding; 31 bands, borrowed by 30; first year 1150)
 
 **wapapi** *wa-pa-pi* — fire held at a temperature. (heat; band 7; first year 0)
@@ -574,8 +582,6 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 **wasi** *wa-si* — fire held at a temperature. (heat; band 27; first year 0)
 
 **wasu** *wa-su* — a worked face that cuts. (edge; band 14; first year 0)
-
-**wasusa** *wa-su-sa* — statistics run at a scale no head holds. (inference; band 30; first year 11150)
 
 **watu** *wa-tu* — a worked face that cuts. (edge; band 3; first year 0)
 
@@ -591,19 +597,21 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **winu** *wi-nu* — heat turned into a stroke. (steam; 8 bands, borrowed by 7; first year 6150)
 
-**wisa** *wi-sa* — resistance gone below a critical temperature. (superconduction; 4 bands, borrowed by 3; first year 9020)
+**wisa** *wi-sa* — resistance gone below a critical temperature. (superconduction; band 6, 14, 38, borrowed by 2; first year 9020)
 
 **wiwalu** *wi-wa-lu* — fibre twisted until it holds. (cordage; band 11; first year 0)
 
 **wiwi** *wi-wi* — a volume with the air taken out. (vacuum; 17 bands, borrowed by 16; first year 7510)
 
-**wiwu** *wi-wu* — statistics run at a scale no head holds. (inference; band 2, 21, borrowed by 1; first year 12500)
-
 **wuji** *wu-ji* — a length trading force for distance. (lever; band 24; first year 0)
+
+**wujipu** *wu-ji-pu* — a quantum state held against the noise. (coherence; band 23; first year 11570)
 
 **wulalu** *wu-la-lu* — fire held at a temperature. (heat; band 34; first year 0)
 
 **wumi** *wu-mi* — fire held at a temperature. (heat; band 13; first year 0)
+
+**wumisa** *wu-mi-sa* — resistance gone below a critical temperature. (superconduction; band 34; first year 11320)
 
 **wumu** *wu-mu* — a worked face that cuts. (edge; band 23; first year 0)
 
@@ -619,6 +627,8 @@ Headword, syllabified, then what it names, who says it and when it is first atte
 
 **wutuka** *wu-tu-ka* — fibre twisted until it holds. (cordage; band 1; first year 0)
 
+**wuwuki** *wu-wu-ki* — statistics run at a scale no head holds. (inference; band 28, 30, borrowed by 1; first year 10590)
+
 ## Ours to theirs
 
 Concept, our gloss, then every attested form with the number of bands that use it.
@@ -633,7 +643,7 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### coherence — a quantum state held against the noise
 
-**wala** (34), **lalu** (24), **pasi** (14), **nilana** (1), **jupali** (1), **sisi** (1)
+**wala** (34), **juji** (7), **mumi** (3), **muwa** (2), **saka** (2), **tata** (1), **muwita** (1), **wujipu** (1)
 
 ### containment — fired clay that holds against a gradient
 
@@ -641,11 +651,11 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### cordage — fibre twisted until it holds
 
-**muku** (6), **lasa** (3), **siwaji** (2), **sutu** (1), **wutuka** (1), **puja** (1), **suwa** (1), **juwata** (1), **wiku** (1), **tita** (1), **mapi** (1), **tami** (1), **nipi** (1), **taki** (1), **wiwalu** (1), **nasija** (1), **wutuja** (1), **nujaja** (1), **tama** (1), **nituti** (1), **kisawi** (1), **mutipi** (1), **tisi** (1), **lanuju** (1), **pana** (1), **wama** (1), **tuju** (1), **puwi** (1), **taniku** (1), **pisi** (1), **niwa** (1), **jiju** (1), **kila** (1), **tapi** (1), **nulana** (1), **miki** (1), **mapusu** (1), **lijipu** (1), **kiju** (1), **tapa** (1)
+**muku** (6), **suwa** (5), **lasa** (3), **kila** (2), **siwaji** (2), **sutu** (1), **wutuka** (1), **puja** (1), **juwata** (1), **wiku** (1), **tita** (1), **mapi** (1), **tami** (1), **nipi** (1), **taki** (1), **wiwalu** (1), **nasija** (1), **wutuja** (1), **nujaja** (1), **tama** (1), **nituti** (1), **kisawi** (1), **mutipi** (1), **tisi** (1), **lanuju** (1), **pana** (1), **wama** (1), **tuju** (1), **puwi** (1), **taniku** (1), **pisi** (1), **niwa** (1), **jiju** (1), **tapi** (1), **nulana** (1), **miki** (1), **mapusu** (1), **lijipu** (1), **kiju** (1), **tapa** (1)
 
 ### depiction — a surface that keeps what light fell on it
 
-**kusi** (19), **liwa** (7), **mami** (4), **kuju** (4), **nawiku** (2), **jaki** (1), **tipi** (1), **misasa** (1), **pijamu** (1)
+**kusi** (17), **lalu** (17), **mami** (5), **liwa** (5), **kuju** (3), **tasu** (1), **taliju** (1), **jaki** (1), **tipi** (1), **sakiji** (1)
 
 ### edge — a worked face that cuts
 
@@ -653,7 +663,7 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### electricity — charge moved on purpose
 
-**sawutu** (33), **piju** (3), **mumi** (2), **tuji** (2), **susa** (1)
+**sawutu** (33), **mumi** (3), **piju** (3), **tuji** (2), **susa** (1)
 
 ### gearing — teeth that carry a ratio
 
@@ -665,15 +675,15 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### inference — statistics run at a scale no head holds
 
-**lupuwa** (18), **wanu** (13), **lupu** (4), **wiwu** (2), **jama** (1), **wasusa** (1), **sawina** (1)
+**lupuwa** (18), **kimana** (4), **nilana** (2), **malu** (2), **wuwuki** (2), **juwa** (1)
 
 ### lever — a length trading force for distance
 
-**sinu** (3), **kunu** (2), **muma** (2), **satama** (1), **muka** (1), **kapa** (1), **lilu** (1), **wiji** (1), **sisima** (1), **nupu** (1), **naki** (1), **jumu** (1), **taju** (1), **wiki** (1), **laku** (1), **puwa** (1), **lutila** (1), **tusu** (1), **pakati** (1), **jikipu** (1), **lawa** (1), **pama** (1), **luti** (1), **saji** (1), **wuji** (1), **lunupi** (1), **kuja** (1), **niju** (1), **lunu** (1), **luwi** (1), **nupa** (1), **tumi** (1), **satu** (1), **nipa** (1), **jipu** (1), **janusi** (1), **mapa** (1), **waliwa** (1), **kajapi** (1)
+**sinu** (2), **satama** (1), **muka** (1), **kapa** (1), **lilu** (1), **wiji** (1), **sisima** (1), **nupu** (1), **naki** (1), **jumu** (1), **taju** (1), **wiki** (1), **laku** (1), **puwa** (1), **lutila** (1), **tusu** (1), **pakati** (1), **jikipu** (1), **kunu** (1), **lawa** (1), **pama** (1), **luti** (1), **saji** (1), **wuji** (1), **lunupi** (1), **kuja** (1), **niju** (1), **lunu** (1), **luwi** (1), **nupa** (1), **tumi** (1), **satu** (1), **nipa** (1), **jipu** (1), **janusi** (1), **mapa** (1), **waliwa** (1), **kajapi** (1), **muma** (1)
 
 ### mark — a durable trace standing for a sound
 
-**lalu** (24), **miji** (6), **sapali** (5), **sata** (3), **mumaja** (3), **nusi** (2), **lawi** (2), **muta** (2), **mujuji** (2)
+**lalu** (17), **miji** (6), **sapali** (5), **sata** (3), **mumaja** (3), **nusi** (2), **lawi** (2), **muta** (2), **mujuji** (2)
 
 ### optics — glass shaped to bend light
 
@@ -681,15 +691,15 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### placement — matter set down one atom at a time
 
-**lipu** (33), **pawa** (1), **nipu** (1), **nisu** (1)
+**suwa** (5), **nula** (3), **nami** (2), **tiwa** (1), **nipu** (1)
 
 ### pressure — a vessel that holds against itself
 
-**sasumi** (22), **pina** (19), **limuni** (13), **mita** (2), **juti** (1), **lusata** (1), **lumu** (1)
+**sasumi** (22), **pina** (18), **limuni** (13), **mita** (2), **juti** (1), **lusata** (1), **lumu** (1)
 
 ### regulation — a machine that corrects itself
 
-**kaki** (14), **wupi** (9), **misisi** (7), **mili** (5), **tatu** (5), **lasa** (3), **luwa** (3), **supa** (3), **siwaji** (2), **supaki** (1)
+**kaki** (14), **wupi** (9), **misisi** (6), **mili** (5), **tatu** (5), **lasa** (3), **luwa** (3), **supa** (3), **siwaji** (2), **supaki** (1)
 
 ### rotation — a bearing and a round thing on it
 
@@ -697,7 +707,7 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### semiconductor — a crystal pure enough to switch
 
-**niliki** (11), **liju** (6), **salu** (5), **katupi** (5), **kupi** (4), **pulu** (3), **juji** (3), **kamu** (2), **likuja** (1), **maka** (1), **wapusa** (1), **mini** (1), **kinupi** (1)
+**liju** (8), **juji** (7), **kupi** (6), **niliki** (5), **salu** (5), **maka** (4), **katupi** (4), **mini** (2), **kamu** (1), **wapusa** (1), **pulu** (1), **tuli** (1), **tuti** (1), **kinupi** (1)
 
 ### smelting — ore reduced past its melting point
 
@@ -709,19 +719,19 @@ Concept, our gloss, then every attested form with the number of bands that use i
 
 ### steam — heat turned into a stroke
 
-**pina** (19), **nita** (11), **winu** (8), **lulapi** (3)
+**pina** (18), **nita** (11), **winu** (8), **lulapi** (4)
 
 ### superconduction — resistance gone below a critical temperature
 
-**pita** (19), **wisa** (4), **sinu** (3), **jiwi** (3), **tujani** (3), **kawinu** (3), **jami** (2), **muma** (2), **mitu** (1), **pujati** (1), **mumu** (1), **nata** (1)
+**pita** (17), **wisa** (3), **kawinu** (3), **tujani** (2), **mumu** (2), **nata** (2), **jami** (1), **jasa** (1), **pujati** (1), **wumisa** (1), **jiwi** (1)
 
 ### switching — a gate that opens on a signal
 
-**litala** (33), **mitila** (4), **kunu** (2), **lula** (1), **waka** (1)
+**litala** (20), **mitila** (4), **kila** (2), **waka** (2), **juja** (1), **lula** (1), **jumalu** (1), **paji** (1)
 
 ### vacuum — a volume with the air taken out
 
-**lipi** (17), **wiwi** (17), **juji** (3), **jatasu** (2), **tusi** (1), **jiwaku** (1)
+**lipi** (17), **wiwi** (17), **juji** (7), **jatasu** (2), **tusi** (1), **jiwaku** (1)
 
 ## Grammar
 
@@ -741,7 +751,7 @@ A flat string of k parts can be bracketed Catalan(k-1) ways and only one is mean
      9       1430          10.48   yes
 ```
 
-This world crossed it at **year 600**. 19,373 of 31,016 things built since then are 6 parts or more -- 62% of everything -- and each one said flat is costing its listener 5.4 bits.
+This world crossed it at **year 600**. 14,654 of 23,226 things built since then are 6 parts or more -- 63% of everything -- and each one said flat is costing its listener 5.4 bits.
 
 The particle is **-pa-** and it marks the HEAD: which part the whole thing IS, as against which parts it merely contains. That is the one distinction concatenation cannot make, so it is the first worth paying for -- not number, because a thing of six parts is not plural, and not tense, because a made object has none.
 
@@ -751,30 +761,30 @@ It is 1 syllable where a content word is two or three, and that is forced twice:
 
 ```
 sajaku-wapa                                   alloy + breeding
-mumika-wala                                   alloy + coherence
+sajaku-juji                                   alloy + coherence
 sajaku-tala                                   alloy + containment
 sajaku-puwi                                   alloy + cordage
 tana-kusi                                     alloy + depiction
 mumika-pupu                                   alloy + edge
-kapa-lalu-salu-pita                           lever + mark + semiconductor + superconduction
-lilu-miji-kupi-kunu                           lever + mark + semiconductor + switching
-naki-lalu-jili-nuta                           lever + mark + smelting + spring
-satu-lalu-junu-nita                           lever + mark + smelting + steam
+pama-miji-kaki-junu                           lever + mark + rotation + smelting
+satama-lalu-kaki-kumi                         lever + mark + rotation + spring
+wuji-lalu-nusu-winu                           lever + mark + rotation + steam
+tumi-sata-nusu-litala                         lever + mark + rotation + switching
 ```
 
 ### Marked, at 6 parts and above
 
 ```
-sajaku-wapa-nilana-jujanu-saja-pa-lula                    6 parts
-mumika-wapa-lalu-tuku-taku-pa-mitila                      6 parts
-tana-wapa-wala-nulana-lana-pa-salu                        6 parts
-tana-wapa-wala-nulana-sasa-pa-nuta                        6 parts
-sajaku-nini-wala-mapusu-sasunu-pa-waka                    6 parts
-wapa-taku-salu-lawi-suwi-nija-pa-junu                     7 parts
-wapa-taku-pamima-lalu-wala-tunu-pa-nuta                   7 parts
-nini-sasa-kupu-lalu-suwi-kaki-pa-pina                     7 parts
-wapa-taku-wasi-lalu-limuni-luwa-pa-nuta                   7 parts
-wapa-taku-nina-lalu-sasumi-nusu-pa-junu                   7 parts
+sajaku-wapa-wala-tita-wuni-pa-limuni                      6 parts
+sajaku-nini-wala-luju-mapa-pa-tunu                        6 parts
+kapu-wapa-wala-timupi-niju-pa-nuta                        6 parts
+sajaku-wapa-juji-piju-taku-pa-miliwa                      6 parts
+tana-wapa-wala-wulalu-litala-pa-jatasu                    6 parts
+nisa-taku-muka-miji-suwi-nusu-pa-jajani                   7 parts
+wapa-miji-nipa-lalu-suwi-kaki-pa-pina                     7 parts
+wapa-sasa-lunu-nusi-wala-jili-pa-nuta                     7 parts
+wapa-taku-taju-sapali-sasumi-luwa-pa-nusu                 7 parts
+wapa-taku-sinu-sata-limuni-tatu-pa-jili                   7 parts
 ```
 
 The head is the token after the particle. Everything before it modifies.

@@ -506,6 +506,16 @@ def _motive():
             bounded_by_law("superheated steam"))
 
 
+def _machine():
+    from engine.world import run, machines, computations
+    from engine.instruction import (memory_words, feature_m,
+                                    word_bits)
+    w = run()
+    m, c = machines(w), computations(w)
+    return (len(m), round(min(m)[0]), min(m)[2], word_bits(),
+            len(c), round(feature_m() * 1e9))
+
+
 def _instruction():
     from engine.instruction import (optimum_opcodes, opcode_bits,
                                     assemble, run, disassemble,
@@ -997,6 +1007,8 @@ CLAIMS = [
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
      _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
+    ("3.2.27", "25 bands build machines of 8,623 words and run 54 programs",
+     _machine, (25, 10300, 8623, 23, 54, 917), CURRENT),
     ("3.2.26", "an instruction set optima at 128 opcodes; the machine runs",
      _instruction, (4, 128, 7, 10, 9, 32, (5, 4, 3, 2, 1)), CURRENT),
     ("3.2.24", "a heat engine tops out at 88%; a motor is not one",
@@ -1005,12 +1017,12 @@ CLAIMS = [
      _syntax, (6, 4.75, 42, 5.39, 600, 1), CURRENT),
     ("3.2.20", "278 headwords, 182 spoken by one band, 657 borrowings",
      _lexicon, (278, 25, 182, 39, 657, 39, 2), CURRENT),
-    ("3.2.10", "39 words for heat, 2 for gearing: the oldest diverge most",
-     _language, (27, 39, 40, 2, 40), CURRENT),
+    ("3.2.10", "39 words for heat, 5 for gearing: the oldest diverge most",
+     _language, (27, 39, 40, 5, 40), CURRENT),
     ("3.2.9", "a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders",
      _drawing, (90, 130, 5, 11, 3.6, 2), CURRENT),
-    ("3.2.7", "a world that runs: 21 crafts by year 11,380, 4,334 unnamed things",
-     _world, (40, 30319, 21, 21, 11380, 4352, 4334), CURRENT),
+    ("3.2.7", "a world that runs: 25 crafts by year 10,720, 23,205 unnamed things",
+     _world, (40, 47112, 25, 25, 10720, 23226, 23205), CURRENT),
     ("3.2.5", "a name is worth 4,346 retrievals; audience explains what tellability did not",
      _naming, (4346, 5, 100, -0.42, 25, 50, 12.4), CURRENT),
     ("3.2.4", "regulation tops the ranking; optics takes second once depiction rests on it",
@@ -1057,8 +1069,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 78 links: 69 derived, 1 gap",
-     _wholechain, (78, 69, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 79 links: 70 derived, 1 gap",
+     _wholechain, (79, 70, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",
@@ -1167,6 +1179,24 @@ CLAIMS = [
 # Numbers that WERE published and no longer reproduce. Kept as
 # history, named, so nobody mistakes them for present-tense claims.
 SUPERSEDED = [
+    ("3.2.7", "a world that runs: 21 crafts by year 11,380, 4,334 unnamed",
+     "three things moved it and all three were intended. The "
+     "tree grew from 21 primitives to 25 (cold gate, depiction). "
+     "Compound length was uncapped at 3.2.21, since nothing about "
+     "holding twelve crafts stops you combining six. And the "
+     "simulation horizon was unified at 3.2.27 -- dictionary and "
+     "encyclopedia had been asking for 14,000 years while "
+     "engine/world.run defaulted to 12,000, so the same world was "
+     "being stepped to two depths and the counts quoted from the "
+     "tools disagreed with the counts quoted from the engine. Now "
+     "47,112 things, 25 crafts, last at year 10,720, 23,205 with "
+     "no name in our world"),
+    ("3.2.10", "gearing has 2 words across 40 bands",
+     "5, at the unified horizon. The finding is unchanged and is "
+     "about the ratio rather than the number: heat still carries "
+     "39 forms against gearing's 5, because a craft every band "
+     "found separately keeps a word per band and a craft that "
+     "spread by teaching carried one word with it"),
     ("3.2.4", "mark is second in the leverage ranking at 10",
      "optics at 12, once engine/depiction.py added a craft that "
      "rests on it. The ranking counts what depends on a thing, so "

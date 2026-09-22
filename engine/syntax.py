@@ -100,7 +100,7 @@ def mark(parts, head=None):
 def when_it_pays(world=None):
     """-> (year, size). When this world first needed one."""
     from engine.world import run
-    w = world or run(14000.0)
+    w = world or run()
     n = threshold()
     best = None
     for year, _b, kind, what in w.ledger:

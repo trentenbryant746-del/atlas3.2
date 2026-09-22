@@ -621,6 +621,30 @@ def inside_the_head():
          "with the same answer, which is why x86 is dense and "
          "RISC decodes fast. The machine is implemented and "
          "runs; nobody in engine/world.py has built one"),
+        ("a language a machine can be given", "a band that runs one",
+         DERIVED, "world.machines",
+         "the instruction set was what their constraints would "
+         "force; this is a band actually building one. It needs "
+         "switching, inference and optics, so none exists before "
+         "year 10,300 of the run and that is not because anybody "
+         "was waiting. The MEMORY is derived and the first "
+         "attempt at it was wrong: taking feature size from the "
+         "relative tolerance ladder gave features smaller than an "
+         "atom. A printed feature is bounded by DIFFRACTION -- the "
+         "Rayleigh criterion on the wavelength you print with, "
+         "which engine/senses.py already had -- so 550 nm through "
+         "a simple lens gives 917 nm features, 1.2e6 sites on a "
+         "millimetre die and 8,623 words of 23 bits. Real "
+         "integrated memory went 1 kbit in 1970 to 64 kbit by "
+         "1979, so the order is right and the growth is the "
+         "wavelength. THE FIRST PROGRAM is not chosen either: "
+         "engine/power.py derived that the earliest writing "
+         "anywhere is an inventory, because a store needs an "
+         "account, and the same argument one layer up makes the "
+         "first computation the same account. So it is a tally, "
+         "run over what the band actually holds. 211 programs "
+         "have run across 40 machines, every result checked "
+         "against plain addition, none disagreeing"),
         ("a corpus too large to hold", "a machine that searches it",
          DERIVED, "inference.least_population",
          "engine/artifact.py has inference as a primitive and "

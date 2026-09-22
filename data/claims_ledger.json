@@ -444,7 +444,11 @@
 "ok": true
 },
 "3.2.10|39 words for heat, 2 for gearing: the oldest diverge most": {
-"fp": "89a093c15757c4d7",
+"fp": "84a18a3df62edf38",
+"ok": false
+},
+"3.2.10|39 words for heat, 5 for gearing: the oldest diverge most": {
+"fp": "84a18a3df62edf38",
 "ok": true
 },
 "3.2.12|Big Bang to heat death in 72 links: 63 derived, 1 gap": {
@@ -475,6 +479,10 @@
 "fp": "c1b08cd8d43b3e17",
 "ok": true
 },
+"3.2.12|Big Bang to heat death in 79 links: 70 derived, 1 gap": {
+"fp": "bf1f8eeec875c921",
+"ok": true
+},
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
 "fp": "610ea55c1b92bb90",
 "ok": true
@@ -496,7 +504,7 @@
 "ok": true
 },
 "3.2.17|22 shapes forced, 2 partly, 1 not an object": {
-"fp": "1a87a5bed0693e43",
+"fp": "e89a4e9c2abe03a4",
 "ok": true
 },
 "3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {
@@ -512,7 +520,7 @@
 "ok": true
 },
 "3.2.21|a grammar pays at 6 parts; this world crossed at year 600": {
-"fp": "71322bb1964b55ad",
+"fp": "5066f4afaff87c15",
 "ok": true
 },
 "3.2.24|a heat engine tops out at 88%; a motor is not one": {
@@ -522,6 +530,14 @@
 "3.2.26|an instruction set optima at 128 opcodes; the machine runs": {
 "fp": "44bf524e24f099e3",
 "ok": true
+},
+"3.2.27|25 bands build machines of 8,623 words and run 54 programs": {
+"fp": "f6767e32f9e68bc2",
+"ok": true
+},
+"3.2.27|40 bands build machines of 8,623 words and run 211 programs": {
+"fp": "8df0b6af4faaee85",
+"ok": false
 },
 "3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {
 "fp": "618d1b6c112c669a",
@@ -548,7 +564,11 @@
 "ok": true
 },
 "3.2.7|a world that runs: 21 crafts by year 11,380, 4,334 unnamed things": {
-"fp": "a2d9359fe88c80da",
+"fp": "1af68be8ee9259df",
+"ok": false
+},
+"3.2.7|a world that runs: 25 crafts by year 10,720, 23,205 unnamed things": {
+"fp": "1af68be8ee9259df",
 "ok": true
 },
 "3.2.9|a nanometre spec is 90 bits: 130 fit in one telling": {

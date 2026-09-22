@@ -31,7 +31,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "paper" / "lexicon.md"
-YEARS = 14000.0
+from engine.world import HORIZON_YEARS as YEARS
 
 
 def collect():

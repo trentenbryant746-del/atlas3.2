@@ -596,6 +596,31 @@ def inside_the_head():
          "and an exponent, and refuses to name anything, because "
          "a name for a primitive nobody has made is a word with no "
          "rule under it"),
+        ("switching", "a language a machine can be given",
+         DERIVED, "instruction.optimum_opcodes",
+         "a computer needs an instruction set and most of it is "
+         "forced. A computation must change state or it does "
+         "nothing; must branch on data or it is a fixed "
+         "function; must be able to go back or it cannot run "
+         "longer than its own text; must address indirectly or "
+         "it cannot touch data it did not name when written. "
+         "Those four are not optional -- and ONE instruction can "
+         "carry all of them, since subtract-and-branch-if-zero "
+         "is Turing complete alone, so the minimum set is one "
+         "and the real question is cost. More opcodes shorten "
+         "programs (each instruction says more) and enlarge the "
+         "decoder (more cases to tell apart): program bits fall "
+         "as 1/log2(k) while gates rise as k, so the sum has a "
+         "floor near 128 for a two-thousand-step program. RISC-V "
+         "base is 47 and ARM about 50, so the order is right and "
+         "nobody chose it. The ENCODING repeats a result already "
+         "derived: frequent operations get short codes, exactly "
+         "as engine/syntax.py found a grammar particle is one "
+         "syllable against a noun's two -- a machine's encoding "
+         "and a language's function words are the same problem "
+         "with the same answer, which is why x86 is dense and "
+         "RISC decodes fast. The machine is implemented and "
+         "runs; nobody in engine/world.py has built one"),
         ("a corpus too large to hold", "a machine that searches it",
          DERIVED, "inference.least_population",
          "engine/artifact.py has inference as a primitive and "

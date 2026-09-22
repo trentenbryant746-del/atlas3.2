@@ -471,6 +471,10 @@
 "fp": "93c4235b7e62ff82",
 "ok": true
 },
+"3.2.12|Big Bang to heat death in 78 links: 69 derived, 1 gap": {
+"fp": "c1b08cd8d43b3e17",
+"ok": true
+},
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
 "fp": "610ea55c1b92bb90",
 "ok": true
@@ -513,6 +517,10 @@
 },
 "3.2.24|a heat engine tops out at 88%; a motor is not one": {
 "fp": "8fe54d307a99498c",
+"ok": true
+},
+"3.2.26|an instruction set optima at 128 opcodes; the machine runs": {
+"fp": "44bf524e24f099e3",
 "ok": true
 },
 "3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {

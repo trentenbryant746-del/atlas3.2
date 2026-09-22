@@ -506,6 +506,18 @@ def _motive():
             bounded_by_law("superheated steam"))
 
 
+def _instruction():
+    from engine.instruction import (optimum_opcodes, opcode_bits,
+                                    assemble, run, disassemble,
+                                    FORCED, COUNTDOWN, ISA)
+    words = assemble(COUNTDOWN)
+    mem = list(words) + [0] * 32
+    mem[20] = 5
+    out, steps = run(words, mem)
+    return (len(FORCED), optimum_opcodes(), opcode_bits(),
+            len(ISA), len(words), steps, tuple(out))
+
+
 def _levers():
     from engine.intricacy import levers
     rows = {nm: (dp, e) for nm, dp, e in levers()}
@@ -985,6 +997,8 @@ CLAIMS = [
      _image, (87, 2.0, 2.39, 4.8, 2.2), CURRENT),
     ("3.2.12", "a photograph beats a drawing 10,000x at 1% literacy",
      _depiction, (10000, 8, 1, 67, 1.0), CURRENT),
+    ("3.2.26", "an instruction set optima at 128 opcodes; the machine runs",
+     _instruction, (4, 128, 7, 10, 9, 32, (5, 4, 3, 2, 1)), CURRENT),
     ("3.2.24", "a heat engine tops out at 88%; a motor is not one",
      _motive, (33, 62, 88, 93, None, True), CURRENT),
     ("3.2.21", "a grammar pays at 6 parts; this world crossed at year 600",
@@ -1043,8 +1057,8 @@ CLAIMS = [
      _heredity, (2.0, 28, 1.39, 10.0), CURRENT),
     ("3.1.96", "one compartment closes at 14 bases; an ocean is 1e35",
      _occurs, (True, 14, 13, 35), CURRENT),
-    ("3.2.12", "Big Bang to heat death in 77 links: 68 derived, 1 gap",
-     _wholechain, (77, 68, 7, 1, 1), CURRENT),
+    ("3.2.12", "Big Bang to heat death in 78 links: 69 derived, 1 gap",
+     _wholechain, (78, 69, 7, 1, 1), CURRENT),
     ("3.1.95", "abundance falls as mass^-3/4 exactly",
      _damuth, 1.0, CURRENT),
     ("3.1.94", "the lineage holds at the 1.58 um closure floor",

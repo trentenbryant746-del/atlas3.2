@@ -28,3 +28,7 @@ fast/*.c
 # repository whose engine is 1.6 MB.
 paper/tools.md
 paper/tools.html
+
+# macOS noise
+.DS_Store
+**/.DS_Store

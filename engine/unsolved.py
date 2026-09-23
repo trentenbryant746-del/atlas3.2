@@ -97,6 +97,17 @@ CLOSED_BY_US = (
 
 
 OPEN_TO_US = (
+    ("how long a human generation is",
+     "engine/adapt.GENERATIONS['human'] is 20 years and "
+     "engine/literacy.GENERATION_YEARS is 25. The same quantity with "
+     "two values under two NAMES, so eval/agreement.py -- which "
+     "matches identical names -- cannot see it. Found by "
+     "Genesis Unresearched's ablation, not by any check here",
+     "a decision about which is right, and then either one home or "
+     "a synonym map in eval/agreement.py so the next one is caught "
+     "by a rule instead of by accident. Both published numbers move "
+     "when it is settled, which is why it is recorded rather than "
+     "quietly unified"),
     ("Kleiber exponent", "engine/life.py; asserted 0.75, and life.kleiber() carries check=NONE rather than a fake one",
      "a fractal-transport derivation, carried out here"),
     ("cosmos dilution factor", "engine/cosmos.py; FITTED to solar data",

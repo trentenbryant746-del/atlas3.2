@@ -25,7 +25,11 @@ from engine.tradition import BAND
 
 # --- the pathogen has to be able to persist -------------------------
 INFECTIOUS_DAYS = 10.0      # MEASURED-ish, acute crowd infection
-GENERATION_YEARS = 25.0
+# One home. literacy.py had it first and carries the
+# CHOSEN tag; this file had its own copy at the same
+# value, which eval/agreement.py counted as a second
+# home rather than a disagreement.
+from engine.literacy import GENERATION_YEARS
 
 # --- what a bout costs ----------------------------------------------
 BMR_MJ_DAY = 7.0            # engine/ontogeny scale, adult at rest

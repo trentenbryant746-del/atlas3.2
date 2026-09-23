@@ -135,12 +135,19 @@ def frozen_copies():
 # the finished work depends on is not a workshop -- an
 # UNRESEARCHED number reaching a claim in this repository would
 # defeat the only thing this repository is for.
-FORBIDDEN_IMPORTS = ("atlas_unresearched", "atlas-unresearched",
-                     "unresearched", "lab.")
+# Top-level package names belonging to the workshop repository. The
+# match is on the FIRST dotted component of an import and nowhere
+# else, which matters: this file briefly forbade the substring "lab."
+# and engine/lab.py is a module of this repository that eval/claims.py
+# is entitled to import. A guard that fires on the work it protects
+# gets switched off, so it has to be exact.
+FORBIDDEN_ROOTS = frozenset(("attempts", "atlas_unresearched"))
+
+_IMPORT = re.compile(r"^\s*(?:from|import)\s+([\w.]+)")
 
 
 def leaks_from_the_workshop():
-    """-> [(module, line)]. Imports that must not exist. DERIVED."""
+    """-> [(module, line, text)]. Imports that must not exist."""
     bad = []
     for folder in ("engine", "eval", "tools"):
         d = ROOT / folder
@@ -148,12 +155,10 @@ def leaks_from_the_workshop():
             continue
         for path in sorted(d.glob("*.py")):
             for i, line in enumerate(path.read_text().splitlines(), 1):
-                t = line.strip()
-                if not (t.startswith("import ") or
-                        t.startswith("from ")):
-                    continue
-                if any(f in t for f in FORBIDDEN_IMPORTS):
-                    bad.append((f"{folder}/{path.name}", i, t))
+                m = _IMPORT.match(line)
+                if m and m.group(1).split(".")[0] in FORBIDDEN_ROOTS:
+                    bad.append((f"{folder}/{path.name}", i,
+                                line.strip()))
     return bad
 
 

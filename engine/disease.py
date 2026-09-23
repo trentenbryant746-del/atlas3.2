@@ -69,13 +69,80 @@ PERSISTENCE_DAYS = 365.0    # helminth eggs, MEASURED-ish
 
 
 def critical_community():
-    """Smallest population a crowd disease can live in. DERIVED.
+    """A LOWER BOUND on the population a crowd disease needs.
 
-    The pathogen must find one fresh susceptible per infectious
-    period or its chain breaks. Births arrive at N/GENERATION a
-    year, so N/GENERATION >= 365/INFECTIOUS.
+    Not the critical community size. The pathogen must find one
+    fresh susceptible per infectious period or its chain breaks,
+    and births arrive at N/GENERATION a year, so
+    N/GENERATION >= 365/INFECTIOUS. That is necessary and
+    nowhere near sufficient: the measured figure for measles is
+    250,000-500,000, which this misses by 329x.
+
+    The miss was recorded at 3.1.117 as a missing 'stochastic
+    margin'. That diagnosis was too vague and is now narrowed by
+    trying it -- see sir_trough() below, which brackets the real
+    answer from both sides and shows why no mean-field model can
+    reach it.
     """
     return GENERATION_YEARS * 365.0 / INFECTIOUS_DAYS
+
+
+# --- what the real answer needs, established by trying ------------
+#
+# An SIR model with births, integrated to its periodic state, has
+# a TROUGH: the fewest infectives between epidemics. A disease
+# survives if somebody is still infectious at the trough.
+#
+# Unforced, that trough scales linearly with N and reaches one
+# infective at about 2,000 people -- 100x below the measured CCS.
+# Add the seasonal forcing that school terms actually impose
+# (amplitude 0.2-0.5, measured) and the trough collapses to 1e-9
+# of a person and stays proportional to N, so the model predicts
+# extinction at EVERY population.
+#
+# So the two mean-field limits bracket the measured 250,000 and
+# neither reaches it, and the reason is structural rather than a
+# matter of tuning: whether the LAST CASE dies out is a question
+# about an integer hitting zero, and a differential equation has
+# no integers in it. What is needed is a discrete stochastic
+# process -- individuals, events, a real probability of the last
+# infective recovering before infecting anybody -- run over many
+# epidemic cycles at many population sizes.
+#
+# That is a genuine derivation and it is not cheap: at 250,000
+# people it is order 1e7 events per run and a bisection needs
+# tens of runs. It is named here with the two brackets rather
+# than attempted badly.
+
+R0_MEASLES = 15.0            # MEASURED
+LIFE_YEARS = 50.0            # MEASURED-ish, pre-modern
+SEASONAL_AMPLITUDE = 0.25    # MEASURED, term-time forcing
+
+
+def sir_trough(population, amplitude=0.0, years=90.0, dt=0.1):
+    """Fewest infectives between epidemics. DERIVED, mean-field.
+
+    Returned as a real number on purpose: the point is that it
+    is not an integer, and the question CCS asks is about an
+    integer reaching zero.
+    """
+    gamma = 1.0 / INFECTIOUS_DAYS
+    beta0 = R0_MEASLES * gamma
+    mu = 1.0 / (LIFE_YEARS * 365.0)
+    N = float(population)
+    S, I = N / R0_MEASLES, N * 1e-4
+    low, t = float("inf"), 0.0
+    while t < years * 365.0:
+        beta = beta0 * (1.0 + amplitude * math.cos(
+            2.0 * math.pi * t / 365.0))
+        new = beta * S * I / N
+        S += (mu * N - new - mu * S) * dt
+        I += (new - gamma * I - mu * I) * dt
+        I = max(I, 1e-300)
+        t += dt
+        if t > 40.0 * 365.0:
+            low = min(low, I)
+    return low
 
 
 def bands_needed():
@@ -138,6 +205,7 @@ def check():
 
     t("a_band_is_too_small_to_hold_a_crowd_disease", _small)
     t("settling_is_what_invents_the_disease", _settle)
+    t("the_crowd_disease_floor_is_a_bound_and_not_the_answer", _ccs2)
     t("cooking_pays_for_itself_fifty_times_over", _cook)
     t("a_wall_pays_before_anyone_mentions_disease", _house)
     t("every_answer_to_it_is_a_skill_and_the_band_is_full", _full)
@@ -231,6 +299,37 @@ def _full():
             f"grain; it puts the load on the channel, and the "
             f"channel was already at its ceiling. That is a "
             f"pressure, not a gap")
+
+
+def _ccs2():
+    """The bound, the two brackets, and what is actually missing."""
+    lo = critical_community()
+    unforced = sir_trough(1e4, 0.0)
+    forced = sir_trough(1e6, SEASONAL_AMPLITUDE)
+    if unforced < 1.0 or forced > 1e-3:
+        raise ArithmeticError(f"{unforced} {forced}")
+    return (f"the {lo:.0f} above is a LOWER BOUND and not the "
+            f"critical community size, which is measured at "
+            f"250,000-500,000 for measles -- a 329x miss recorded "
+            f"since 3.1.117 as a missing 'stochastic margin'. That "
+            f"diagnosis was too vague, and trying it narrows it. "
+            f"An SIR model with births has a TROUGH, the fewest "
+            f"infectives between epidemics, and a disease survives "
+            f"if somebody is still infectious there. Unforced, the "
+            f"trough is {unforced:.1f} infectives at ten thousand "
+            f"people and scales linearly with N, reaching one at "
+            f"about 2,000 -- a hundred times too low. Add the "
+            f"seasonal forcing school terms actually impose "
+            f"(amplitude {SEASONAL_AMPLITUDE}, measured) and it "
+            f"collapses to {forced:.1e} of a person at a MILLION, "
+            f"so the model predicts extinction everywhere. The two "
+            f"mean-field limits bracket the answer and neither "
+            f"reaches it, and the reason is structural: whether "
+            f"the LAST CASE dies out is a question about an "
+            f"integer hitting zero, and a differential equation "
+            f"has no integers in it. The missing rule is a "
+            f"discrete stochastic process, which is nameable now "
+            f"rather than vague")
 
 
 if __name__ == "__main__":

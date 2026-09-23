@@ -209,6 +209,26 @@ def everyone_eventually(b, p, years):
     return settle_years(b, p) <= years
 
 
+def accident_rate():
+    """Discoveries a band makes in a year. DERIVED, not chosen.
+
+    This was the literal 1/500 inside two checks below, and
+    eval/chosen.py caught it: engine/novelty.py computes the same
+    quantity from trials, novel fraction and team size, and the
+    two disagreed by 8.5x. Two free numbers for one thing, with
+    nothing comparing them, because the fingerprint gate
+    recomputes claims and a consistency relation between
+    parameters is not a claim.
+
+    There is one number now and it lives in novelty, because that
+    is where it is built out of parts rather than picked. Imported
+    late to avoid a cycle -- novelty rests on intricacy, which
+    rests on craft, which rests on this module.
+    """
+    from engine.novelty import novel_total
+    return novel_total(float(BAND))
+
+
 def check():
     res = []
 
@@ -292,23 +312,33 @@ def _compound():
 
 
 def _diffuse():
-    p, b = 1.0 / 500, 40          # one band, one chance in 500 years
+    p = accident_rate()
+    b = best_band_count(p)
     alone, many = first_discovery_years(1, p), settle_years(b, p)
+    forty = settle_years(40, p)
     if many >= alone:
         raise ArithmeticError(f"{many} vs {alone}")
     return (f"one band waits {alone:.0f} years for a one-in-"
-            f"{1/p:.0f} accident. {b} bands: the first hits at "
-            f"{first_discovery_years(b, p):.0f} years and it travels "
-            f"to the rest in {spread_years(b):.0f} more, so everyone "
-            f"holds it by year {many:.0f} -- {alone/many:.0f}x sooner "
-            f"than any one band could manage. Some bands get it "
-            f"first; the coupon-collector tail is why the last one "
-            f"waits so much longer than the median, and why it still "
-            f"arrives")
+            f"{1/p:.0f} accident -- a rate DERIVED in "
+            f"engine/novelty.py rather than picked here, which is "
+            f"the fix for the 8.5x disagreement eval/chosen.py "
+            f"found between two numbers for one quantity. At the "
+            f"derived rate {b:.0f} bands settle it in "
+            f"{many:.0f} years, {alone/many:.1f}x sooner. And the "
+            f"number of bands MATTERS in both directions: at 40 "
+            f"it takes {forty:.0f} years, which is WORSE than one "
+            f"band managing alone, because spread has overtaken "
+            f"discovery. The earlier version of this check "
+            f"compared 40 against 1 and passed only because the "
+            f"picked rate was 8x too slow -- deriving it flipped "
+            f"the answer, which is what a derived number is for"
+
+
+)
 
 
 def _best():
-    p = 1.0 / 500
+    p = accident_rate()
     b = best_band_count(p)
     here, fewer, more = settle_years(b, p), settle_years(b/4, p), settle_years(b*4, p)
     if here > fewer or here > more:

@@ -86,8 +86,16 @@ def novelty_rate_per_band():
 
 
 def diffusion_rate_per_band():
-    """The accident rate tradition.py's diffusion result assumes."""
-    return 1.0 / 500.0
+    """The accident rate tradition.py's diffusion result uses.
+
+    It used to be the literal 1/500 written inside two checks.
+    That was the other half of the 8.5x disagreement this file
+    found, and engine/tradition.accident_rate now DERIVES it from
+    engine/novelty.py instead. There is one number where there
+    were two.
+    """
+    from engine.tradition import accident_rate
+    return accident_rate()
 
 
 def rate_disagreement():
@@ -148,28 +156,35 @@ def _derived():
 
 
 def _rates():
-    """INVERTED. Fails if the two rates ever quietly agree."""
+    """The disagreement this file was built to find, now closed.
+
+    It stays as a check rather than being deleted, because the
+    thing worth verifying is that there is ONE SOURCE -- not that
+    two numbers happen to match.
+    """
     a, b, r = (novelty_rate_per_band(), diffusion_rate_per_band(),
                rate_disagreement())
-    if 0.9 < r < 1.1:
+    if abs(r - 1.0) > 1e-9:
         raise ArithmeticError(
-            "the two rates now agree exactly, which would mean one "
-            "was fitted to the other rather than derived")
-    return (f"engine/novelty.py says a band of 28 produces "
-            f"{a:.2e} new designs a year, built up from "
-            f"0.01 trials a head. engine/tradition.py's diffusion "
-            f"result assumes an accident arrives at {b:.4f} per "
-            f"band-year. Those are the SAME QUANTITY reached from "
-            f"two directions and they disagree by {r:.1f}x. "
-            f"Neither is anchored in anything: one is trials times "
-            f"a novel fraction over a team size, the other is a "
-            f"round number inside a check. Nothing was comparing "
-            f"them, because the fingerprint gate recomputes CLAIMS "
-            f"and a consistency relation between two free "
-            f"parameters is not a claim anybody had written down. "
-            f"This is a new KIND of check for this repository: not "
-            f"a rule against the world, but two of its own "
-            f"judgement calls against each other")
+            f"{a:.3e} against {b:.3e}, {r:.2f}x apart -- two "
+            f"numbers for one quantity again")
+    return (f"this file was built to find a disagreement and it "
+            f"found one: engine/novelty.py had a band of 28 making "
+            f"{a:.2e} new designs a year, built from trials times "
+            f"a novel fraction over a team size, while "
+            f"engine/tradition.py assumed {1/500:.4f} per "
+            f"band-year as a round number inside two checks. The "
+            f"SAME QUANTITY from two directions, 8.5x apart, with "
+            f"nothing comparing them because the fingerprint gate "
+            f"recomputes claims and a consistency relation between "
+            f"two free parameters is not a claim anybody wrote. It "
+            f"is closed by DERIVATION and not by tuning: "
+            f"tradition.accident_rate now calls novelty, so there "
+            f"is one source where there were two. The check "
+            f"remains and now fails if a second source ever "
+            f"reappears -- and deriving it flipped a result, "
+            f"because at the true rate a 40-band network settles a "
+            f"discovery SLOWER than one band alone")
 
 
 def _load():

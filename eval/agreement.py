@@ -141,7 +141,8 @@ def frozen_copies():
 # and engine/lab.py is a module of this repository that eval/claims.py
 # is entitled to import. A guard that fires on the work it protects
 # gets switched off, so it has to be exact.
-FORBIDDEN_ROOTS = frozenset(("attempts", "atlas_unresearched"))
+FORBIDDEN_ROOTS = frozenset(("attempts", "genesis",
+                             "genesis_unresearched"))
 
 _IMPORT = re.compile(r"^\s*(?:from|import)\s+([\w.]+)")
 
@@ -248,17 +249,24 @@ def _oneway():
             + "; ".join(f"{m}:{i} {t}" for m, i, t in bad))
     n = sum(1 for f in ("engine", "eval", "tools")
             for _p in (ROOT / f).glob("*.py"))
-    return (f"a sibling repository, atlas-unresearched, holds "
+    return (f"a separate repository, Genesis Unresearched, holds "
             f"derivations checked against nothing -- a sixth kind, "
             f"UNRESEARCHED, meaning it has an argument and no "
             f"evidence. It imports from here and nothing here "
             f"imports from it, across all {n} modules of engine, "
-            f"eval and tools. That direction is the whole point: "
-            f"an UNRESEARCHED number reaching a claim in this "
-            f"repository would defeat the only thing this "
-            f"repository is for, and a workshop the finished work "
-            f"depends on is not a workshop. This check fails the "
-            f"moment one import appears")
+            f"eval and tools. That direction is the whole point. "
+            f"THIS repository's entire claim is that a published "
+            f"number carries something underneath it that would "
+            f"catch the number being wrong, so an UNRESEARCHED one "
+            f"reaching a claim here would not weaken the claim, it "
+            f"would void the STANDARD -- a reader could no longer "
+            f"tell which of the two kinds any given figure was. "
+            f"That is why the separation is a repository boundary "
+            f"and a scan rather than a tag and a promise. Genesis "
+            f"runs the same scan from its side, because a rule "
+            f"enforced only by the party it constrains is worth "
+            f"having twice, and this check fails the moment one "
+            f"import appears")
 
 
 if __name__ == "__main__":

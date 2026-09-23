@@ -129,6 +129,34 @@ def frozen_copies():
     return out
 
 
+# The one-way rule. A sibling repository, atlas-unresearched,
+# holds derivations that are checked against nothing. It imports
+# from here. Nothing here may import from it, because a workshop
+# the finished work depends on is not a workshop -- an
+# UNRESEARCHED number reaching a claim in this repository would
+# defeat the only thing this repository is for.
+FORBIDDEN_IMPORTS = ("atlas_unresearched", "atlas-unresearched",
+                     "unresearched", "lab.")
+
+
+def leaks_from_the_workshop():
+    """-> [(module, line)]. Imports that must not exist. DERIVED."""
+    bad = []
+    for folder in ("engine", "eval", "tools"):
+        d = ROOT / folder
+        if not d.is_dir():
+            continue
+        for path in sorted(d.glob("*.py")):
+            for i, line in enumerate(path.read_text().splitlines(), 1):
+                t = line.strip()
+                if not (t.startswith("import ") or
+                        t.startswith("from ")):
+                    continue
+                if any(f in t for f in FORBIDDEN_IMPORTS):
+                    bad.append((f"{folder}/{path.name}", i, t))
+    return bad
+
+
 def check():
     res = []
 
@@ -141,6 +169,7 @@ def check():
     t("no_two_modules_disagree_about_the_same_name", _disagree)
     t("INVERTED_some_names_still_have_two_homes", _dupes)
     t("a_literal_that_copies_a_computed_value_is_found", _frozen)
+    t("nothing_here_imports_from_the_workshop", _oneway)
     return all(x for _, x, _ in res), res
 
 
@@ -204,6 +233,27 @@ def _frozen():
             f"carried from a village to a billionth of a metre "
             f"unchanged and gave 3,739 holders of an inference kit "
             f"before it was caught")
+
+
+def _oneway():
+    bad = leaks_from_the_workshop()
+    if bad:
+        raise ArithmeticError(
+            "the workshop has leaked in: "
+            + "; ".join(f"{m}:{i} {t}" for m, i, t in bad))
+    n = sum(1 for f in ("engine", "eval", "tools")
+            for _p in (ROOT / f).glob("*.py"))
+    return (f"a sibling repository, atlas-unresearched, holds "
+            f"derivations checked against nothing -- a sixth kind, "
+            f"UNRESEARCHED, meaning it has an argument and no "
+            f"evidence. It imports from here and nothing here "
+            f"imports from it, across all {n} modules of engine, "
+            f"eval and tools. That direction is the whole point: "
+            f"an UNRESEARCHED number reaching a claim in this "
+            f"repository would defeat the only thing this "
+            f"repository is for, and a workshop the finished work "
+            f"depends on is not a workshop. This check fails the "
+            f"moment one import appears")
 
 
 if __name__ == "__main__":

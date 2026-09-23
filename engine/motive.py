@@ -8,10 +8,14 @@ A heat engine takes heat from hot and dumps it to cold, and no
 arrangement of metal gets past 1 - Tc/Th. That is not an
 engineering limit to be worked at, it is the second law:
 
-    a wood-fired boiler     450 K      33.3%
-    superheated steam       800 K      62.5%
-    a gas flame            2000 K      85.0%
-    inside a cylinder      2500 K      88.0%
+    a wood-fired boiler     450 K      34.9%
+    superheated steam       800 K      63.4%
+    a gas flame            2000 K      85.4%
+    inside a cylinder      2500 K      88.3%
+
+at an ambient of 293 K, which this file originally set to 300
+while engine/industry.py already held 293. eval/agreement.py
+caught it on the next run, which is what that sweep is for.
 
 An electric motor is not a heat engine. There is no hot side
 and no cold side, so there is no Tc/Th to subtract. Its losses
@@ -34,7 +38,11 @@ and the bands have not got one.
 
 import math
 
-AMBIENT_K = 300.0                # MEASURED-ish, a working day
+# One home. This file defined its own 300 K while
+# engine/industry.py already had 293 -- eval/agreement.py caught
+# it immediately, which is what that sweep is for. 293 K is 20 C
+# and is the standard reservoir; industry had it first.
+from engine.industry import AMBIENT_K
 
 SOURCES = {
     "a wood fire under a boiler": (450.0, "heat"),

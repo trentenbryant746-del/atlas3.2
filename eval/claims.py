@@ -1012,7 +1012,7 @@ CLAIMS = [
     ("3.2.26", "an instruction set optima at 128 opcodes; the machine runs",
      _instruction, (4, 128, 7, 10, 9, 32, (5, 4, 3, 2, 1)), CURRENT),
     ("3.2.24", "a heat engine tops out at 88%; a motor is not one",
-     _motive, (33, 62, 88, 93, None, True), CURRENT),
+     _motive, (35, 63, 88, 93, None, True), CURRENT),
     ("3.2.21", "a grammar pays at 6 parts; this world crossed at year 600",
      _syntax, (6, 4.75, 42, 5.39, 600, 1), CURRENT),
     ("3.2.20", "278 headwords, 182 spoken by one band, 657 borrowings",

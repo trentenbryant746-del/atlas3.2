@@ -1,590 +1,527 @@
 {
 "3.1.100|selection on a trait is 7-9 orders too fast": {
 "fp": "b67b8dddc042909f",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.100|the modern code needs 1520 bases and 200 are held": {
 "fp": "0758a89496b434fd",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.101|innovation is omit/duplicate/combine at 4.48 per division": {
 "fp": "c74bd915efc49b99",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.102|rank is worth zero then 82 W at the carrying number": {
 "fp": "cfdda73941a96d14",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.102|the code freezes at 100% cost; rank steps at 3.8 children": {
 "fp": "0c666e8d295cfd99",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.103|regard is worth 1e19 times what it costs to hold": {
 "fp": "2dafefd295f0359c",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.104|comprehension is a count: 6 binds on a microbe, 13 on us": {
 "fp": "0eb48ee0cdeaa71a",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.105|3 grades worn, 3 need a tool; the edge opens 97% of land": {
 "fp": "9866f54b8e63cff7",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.106|a microbe needs 6 to adapt yearly, a human 40,792": {
 "fp": "4b540af322e010e8",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.107|the derived group is 3; transitivity saves 10x on contests": {
 "fp": "6cc272b5783272af",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.108|a display is 1e6x cheaper and takes the band 3 -> 28": {
 "fp": "69f346ea8fd56d2b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.108|settling needs 73 days of store; only a harvest clears it": {
 "fp": "f904b7ba2915e675",
-"ok": true
-},
-"3.1.109|Big Bang to a head in 41 links: 33 derived, 7 forced, 0 gaps": {
-"fp": "dac9211163d60aef",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.109|five senses reach 8 of 13 constraints; 38% must be inferred": {
 "fp": "77c78c7a39aa9c91",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.109|oral capacity is 8,692 items; epigenetics holds 3.4a": {
 "fp": "a215d18469221638",
-"ok": true
-},
-"3.1.109|oral tradition compounds (8692a), epigenetics cannot (3.4a)": {
-"fp": "6e4d8bb52487e196",
-"ok": true
-},
-"3.1.110|Big Bang to a head in 43 links: 35 derived, 7 forced, 0 gaps": {
-"fp": "428db593c5834baa",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.110|a band walks at 0.707 adult pace and innovates 39x per km": {
 "fp": "7638ef389d9cfe54",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.110|a lone teller keeps 10 items; 28 voters keep 8,688": {
 "fp": "9243f9cefe89df87",
-"ok": true
-},
-"3.1.111|Big Bang to a head in 47 links: 39 derived, 7 forced, 0 gaps": {
-"fp": "83d70b567823bc8c",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.111|a crowd disease needs 912 people; cooking pays 52x": {
-"fp": "1bebc99eac48079e",
-"ok": true
-},
-"3.1.111|a crowd disease needs 912 people; cooking pays 58x": {
-"fp": "2e0c0aac3ef80f8d",
-"ok": false
+"fp": "7d1b06b42e091dd0",
+"ok": true,
+"tree": ""
 },
 "3.1.111|a granary is 909x cheaper to hold than the range it replaced": {
 "fp": "80de0eb0fb040e3e",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.111|one checked copy is worth 13 speakers; 5 scribes keep a script": {
 "fp": "e0d9dbe5cd50189d",
-"ok": true
-},
-"3.1.112|Big Bang to a head in 50 links: 42 derived, 7 forced, 0 gaps": {
-"fp": "8916405580ceafdd",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.112|a 5th-generation heir holds 32x what their ability warrants": {
 "fp": "690136cc0a4388a1",
-"ok": true
-},
-"3.1.112|speech is a fixed point at 2 specialties; the loop settles at 24": {
-"fp": "162d51e4c1b1cef8",
-"ok": true
-},
-"3.1.113|Big Bang to a head in 52 links: 43 derived, 7 forced, 1 gap": {
-"fp": "bfd6eb19ad0a064b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.113|grain dies at 516 km; knowledge has no range limit": {
-"fp": "3a73a6317c821dfa",
-"ok": true
-},
-"3.1.113|per-capita surplus scales as N^-0.628: the loop does not escape": {
-"fp": "9e94f84631a60561",
-"ok": true
+"fp": "2a8d881d03534ea0",
+"ok": true,
+"tree": ""
 },
 "3.1.114|24% of possible specialists are priced out by their tools": {
-"fp": "fc6444d82ae1b168",
-"ok": true
-},
-"3.1.114|Big Bang to a head in 54 links: 46 derived, 7 forced, 0 gaps": {
-"fp": "00219393aae7ee40",
-"ok": true
+"fp": "a4e6df03e8b7957e",
+"ok": true,
+"tree": ""
 },
 "3.1.114|ideas are non-rival: escape turns on a 0.372 land share": {
-"fp": "e08b2aa50203b307",
-"ok": true
+"fp": "7238fdcaa4f95123",
+"ok": true,
+"tree": ""
 },
 "3.1.114|speech is a fixed point at 2 specialties; the loop settles at 23.5": {
-"fp": "ab1a0673dc89818e",
-"ok": true
-},
-"3.1.115|Big Bang to a head in 55 links: 47 derived, 7 forced, 0 gaps": {
-"fp": "28f9ac1766cfed82",
-"ok": true
+"fp": "36550919aa22696c",
+"ok": true,
+"tree": ""
 },
 "3.1.115|novelty per head falls to 0.80 while the total rises 32x": {
-"fp": "25584429c04b2cb4",
-"ok": true
-},
-"3.1.116|Big Bang to a head in 56 links: 48 derived, 7 forced, 0 gaps": {
-"fp": "bdfddef1cbc14058",
-"ok": true
+"fp": "4b862b544eeac399",
+"ok": true,
+"tree": ""
 },
 "3.1.116|a press is worth 6.6 parts; proofreading is worth nothing": {
-"fp": "a4c6755201ddd5c1",
-"ok": true
-},
-"3.1.116|temperature gates the tech tree: copper at round 3, steel at 5": {
-"fp": "153d4ebf01ef02a5",
-"ok": true
-},
-"3.1.117|7 of 10 derived numbers match the record within 3x": {
-"fp": "b5e0c87336048a31",
-"ok": false
-},
-"3.1.117|Big Bang to a head in 57 links: 49 derived, 7 forced, 0 gaps": {
-"fp": "d42c3fa45b7195a3",
-"ok": true
+"fp": "d7d38681ab77461c",
+"ok": true,
+"tree": ""
 },
 "3.1.117|three gates: heat stops at 5, cold opens at 6, precision ends at the atom": {
 "fp": "75aa3451a34bdb78",
-"ok": true
-},
-"3.1.117|two gates: heat stops at round 5, tolerance runs to 10": {
-"fp": "48649c09f4b5292d",
-"ok": false
-},
-"3.1.118|Big Bang to a head in 58 links: 50 derived, 7 forced, 0 gaps": {
-"fp": "bd22b694a32ec0bc",
-"ok": false
+"ok": true,
+"tree": ""
 },
 "3.1.118|an inference kit is indivisible: 17,300 people for one": {
-"fp": "0eb42169c4b525bb",
-"ok": true
-},
-"3.1.119|19 trillion tokens enumerated, from 1.6 MB of rules": {
-"fp": "d53f82236b91f906",
-"ok": false
-},
-"3.1.119|19 trillion tokens enumerated, from 1.6 MB of rules (35M:1)": {
-"fp": "79140973a2764f59",
-"ok": false
+"fp": "34e82afcc6232d2b",
+"ok": true,
+"tree": ""
 },
 "3.1.119|19 trillion tokens enumerated, from 1.8 MB of rules (31M:1)": {
-"fp": "79140973a2764f59",
-"ok": true
-},
-"3.1.120|46 comparisons: 32 match, 24 of them free": {
-"fp": "b5e0c87336048a31",
-"ok": true
+"fp": "6df1e1acf5070168",
+"ok": true,
+"tree": ""
 },
 "3.1.120|52 comparisons: 37 match, 28 of them free": {
-"fp": "7c7fa3f16744b78c",
-"ok": true
+"fp": "41c3df7b6f050fb9",
+"ok": true,
+"tree": ""
 },
 "3.1.121|the chain ends: 2.1e67 yr to evaporate, 2.7e-30 K floor": {
 "fp": "982600bff65c202d",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.122|instrument order predicts science order, Kendall tau 0.77": {
 "fp": "85ce7793a58d0008",
-"ok": true
-},
-"3.1.123|42 constants are chosen; two stopped being, one pair disagrees 8.5x": {
-"fp": "f4523b9fbd620f5d",
-"ok": false
+"ok": true,
+"tree": ""
 },
 "3.1.123|48 constants are chosen; the 8.5x pair is closed by derivation": {
-"fp": "c12114696d6d4d7e",
-"ok": true
+"fp": "9edcb107bb5ec7f3",
+"ok": true,
+"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
 },
 "3.1.18|folding survival rate 0.573": {
 "fp": "21579abf6579714b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.21|Stefan-Boltzmann agrees to 3.25e-11": {
 "fp": "b573e40e8fa2732c",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.27|4.2% of the (kappa, mu) plane gives all seven closures": {
 "fp": "9c0d11cec9944ad3",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.27|the derived magic numbers": {
 "fp": "193e5b83f17c2be4",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.28|the liquid drop is refused below A=13": {
 "fp": "d9ae842f6028515b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.29|mass bar 1.850 in domain, 6.249 outside": {
 "fp": "269d0c37e4230c4f",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.31|decay score is 8 right, 0 wrong, 6 refused": {
 "fp": "3d3e736bd801cdc0",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.31|measured-Q precision derived as 0.0866 MeV": {
 "fp": "bbae608c0e4d835a",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.31|the unified binding table holds 29 nuclides": {
 "fp": "d3077415d5fe46c9",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.39|derived CO2 well depth 180 K": {
 "fp": "61bc20cacded9deb",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.39|derived CO2 wing cutoff 11.2 cm-1 at 737 K": {
 "fp": "619e2b2ffb994c54",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.39|unfitted climate: Earth +21.0 K, Venus -488.3 K": {
 "fp": "c748c00be948da59",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.42|habitable band derived 0.999 - 1.899 AU": {
 "fp": "2f9e7545248b366a",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.47|chance reaches 57 residues and stops": {
 "fp": "c7ce66a43c774953",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.60|lab: 27 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED, 1 SUGGESTION": {
 "fp": "faa20c31410d6107",
-"ok": true
+"ok": true,
+"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
 },
 "3.1.68|4 trophic levels under a 204 m cavitation ceiling": {
 "fp": "3138522a36b76af0",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.68|height scales as crown^0.4: 6, 11, 26, 64, 161 m": {
 "fp": "500ce1922844cd0b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.68|the light race stops at 11.4 m, and at 0.05 m alone": {
 "fp": "701a78b122d43db6",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.69|cooking short 1.73x on break-even, 2.18x on the gut": {
 "fp": "73b317ea76b4acf4",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.69|death conserves total matter and burial breaks the cycle": {
 "fp": "824fc16774806dab",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.70|a newborn's brain is 109% of its own budget": {
 "fp": "e0ba4c5092fcb6bf",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.70|growth bottoms at age 5 where the brain is 71%": {
 "fp": "d85cec491cea6c53",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.70|the provisioning debt is 3.0 adult-years per child": {
 "fp": "57c2ab16aa7cc200",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.73|16 of 20 tool configurations pay, on DERIVED gains": {
 "fp": "d10828e3d92661cf",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.73|a body is 8x short of bone; a flaked edge goes through": {
 "fp": "18131416f94d0188",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.73|marrow pays for a brain 5.2x over": {
 "fp": "f58373990eeecea3",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.73|the tool root is 13 nodes deep against 37 for radiative": {
 "fp": "73b7bc681898fcd1",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.73|the tool root went from 2 nodes to 13": {
 "fp": "8375a2d29b5c77fc",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.74|a brain fills in 1.49 years; a life pours 47x through": {
 "fp": "c9010d9ef0d4a33c",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.74|stereo reaches 1320 m and 0.19 mm at arm's length": {
 "fp": "81ea484a15e202d3",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.74|the eye: diffraction 0.77 arcmin, sampling 1.01": {
 "fp": "c983387a19bd3416",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.76|a brush shelter pays back in 4.6 nights": {
 "fp": "22aa4ac051f1c558",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.76|unreferenced rules are mostly lineage, not dead code": {
-"fp": "b96e33e86c1d383d",
-"ok": true
+"fp": "e38aec89b09ee680",
+"ok": true,
+"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
 },
 "3.1.76|worn insulation runs out at 19 C, a lodge reaches -64": {
 "fp": "9aaa54beecc864f0",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.77|Earth is fragile in spread, one-sided in mass, free in Z": {
 "fp": "37a317249b1b5603",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.78|heat rejection binds; toolmakers fall under 20%": {
 "fp": "d230d37f31623267",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.79|speech is 256410x narrower than sight, 0.0122% of a brain": {
 "fp": "05cccb49e62852ab",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.79|the fovea is 0.028% of the field; 900 s to sweep": {
 "fp": "f38adf5b3927a279",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.79|two adults are the smallest viable group": {
 "fp": "bfd7a6e65bbf7f5f",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.80|muscle for a 400 N blow is 53 cm2; bone picks no height": {
 "fp": "a826dc776df8a4d4",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.81|empire 2250 km, 4.7% lies tolerated, 3 of 10 derive": {
 "fp": "cffc65107fd1336b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.82|steam caps at 54.7%; Rome 0.17x burial, we run 51x": {
 "fp": "dbe22759587224e7",
-"ok": true
-},
-"3.1.83|the run reaches 24B and stops on food, not coal": {
-"fp": "324cceb2dc735156",
-"ok": true
-},
-"3.1.84|every gift shortens the clock: 1809, 1201, 708 years": {
-"fp": "c9ee568a60707bfe",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.85|four gifts, four shorter clocks: 1411, 998, 957, 695": {
 "fp": "bb50f270c0c804a3",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.86|a head holds 4 trades; today needs 750k; holding never binds": {
 "fp": "0e9acbe3b1e5932e",
-"ok": true
-},
-"3.1.87|fidelity is a temperature: 2.73 kcal/mol, 259 K window": {
-"fp": "24ae882d253814ab",
-"ok": false
+"ok": true,
+"tree": ""
 },
 "3.1.88|a set closes above 1e-3; the measured p is 1e-8": {
 "fp": "b65caae7c3abe332",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.88|cold buys 11x on build/break and 436x on lifetime": {
 "fp": "1f4049d88741c41b",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.88|three gates shut at 298 K, one at 255": {
 "fp": "72530d47bfe553c9",
-"ok": true
-},
-"3.1.89|wider sweep: p ~ R^-0.72, a 15-mer, 5 orders of gap": {
-"fp": "20f96da464e34e1c",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.90|closure at measured catalysis needs a 13-mer, under 20": {
 "fp": "44ab126094d5e842",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.91|closure is 0.48 catalysts per reaction, above 2000 molecules": {
 "fp": "fb37a2e86cba56f1",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.92|10,584 universes generated blind; 864 pass three filters": {
 "fp": "b732da504aa76c88",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.94|the lineage holds at the 1.58 um closure floor": {
 "fp": "8bd7a2d37beee51d",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.95|abundance falls as mass^-3/4 exactly": {
 "fp": "576c4cce00983a86",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.96|one compartment closes at 14 bases; an ocean is 1e35": {
 "fp": "54673bd535549b79",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.98|divides at 2x volume, 28 copies, 1.39 types lost": {
 "fp": "e5d4da51bdd72578",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.1.99|every ligation is templated; the template is the catalyst": {
 "fp": "3bfed9d8a61def79",
-"ok": true
-},
-"3.2.10|39 words for heat, 2 for gearing: the oldest diverge most": {
-"fp": "84a18a3df62edf38",
-"ok": false
+"ok": true,
+"tree": ""
 },
 "3.2.10|39 words for heat, 5 for gearing: the oldest diverge most": {
 "fp": "84a18a3df62edf38",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 72 links: 63 derived, 1 gap": {
-"fp": "bd22b694a32ec0bc",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 73 links: 64 derived, 1 gap": {
-"fp": "de65d154229fc6bf",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 74 links: 65 derived, 1 gap": {
-"fp": "5fe4d752b8729d12",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 75 links: 66 derived, 1 gap": {
-"fp": "9767c3dde71e4a3f",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 76 links: 67 derived, 1 gap": {
-"fp": "2e9d2689728b5e81",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 77 links: 68 derived, 1 gap": {
-"fp": "93c4235b7e62ff82",
-"ok": true
-},
-"3.2.12|Big Bang to heat death in 78 links: 69 derived, 1 gap": {
-"fp": "c1b08cd8d43b3e17",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.12|Big Bang to heat death in 79 links: 70 derived, 1 gap": {
 "fp": "bf1f8eeec875c921",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.12|a photograph beats a drawing 10,000x at 1% literacy": {
 "fp": "610ea55c1b92bb90",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.14|a plate out-resolves the eye 87x; perception buys 4.8x of 10.4x": {
 "fp": "1a749c083aa7f69c",
-"ok": true
-},
-"3.2.15|1361 W/m2 and 502 nm fall out; one law gives blue sky and red sun": {
-"fp": "82bd644f06086495",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.15|1361 W/m2, 502 nm and a 0.533 deg Sun all fall out of L and T": {
 "fp": "0fe60d082fee96dd",
-"ok": true
-},
-"3.2.17|20 of 25 shapes are forced by what the part does": {
-"fp": "48eacb970f12d71c",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.17|22 shapes forced, 2 partly, 1 not an object": {
 "fp": "e89a4e9c2abe03a4",
-"ok": true
+"ok": true,
+"tree": ""
 },
-"3.2.1|302 constants, 5 with two homes, 3 frozen copies tracked": {
+"3.2.1|331 constants, 5 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",
-"ok": true
+"ok": true,
+"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
 },
-"3.2.1|303 constants, 6 with two homes, 3 frozen copies tracked": {
-"fp": "dacf6ae250a1a99c",
-"ok": false
-},
-"3.2.20|278 headwords, 182 spoken by one band, 657 borrowings": {
+"3.2.20|287 headwords, 194 spoken by one band, 614 borrowings": {
 "fp": "ff7228d0b7baf54a",
-"ok": true
+"ok": true,
+"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
 },
 "3.2.21|a grammar pays at 6 parts; this world crossed at year 600": {
 "fp": "5066f4afaff87c15",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.24|a heat engine tops out at 88%; a motor is not one": {
 "fp": "818afbdeefd341f1",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.26|an instruction set optima at 128 opcodes; the machine runs": {
 "fp": "44bf524e24f099e3",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.27|25 bands build machines of 8,623 words and run 54 programs": {
 "fp": "f6767e32f9e68bc2",
-"ok": true
-},
-"3.2.27|40 bands build machines of 8,623 words and run 211 programs": {
-"fp": "8df0b6af4faaee85",
-"ok": false
+"ok": true,
+"tree": ""
 },
 "3.2.2|Aristarchus reproduced forward: 87 deg gives 19.1, no answer key": {
 "fp": "618d1b6c112c669a",
-"ok": true
-},
-"3.2.2|Aristarchus reproduced: 87 deg gives 19.1, sensitivity 611": {
-"fp": "c08386cada11f1e3",
-"ok": true
-},
-"3.2.4|regulation tops the leverage ranking; a tool beats a fact 1.2e8:1": {
-"fp": "5b776d015d8c42a4",
-"ok": false
+"ok": true,
+"tree": ""
 },
 "3.2.4|regulation tops the ranking; optics takes second once depiction rests on it": {
-"fp": "1db028bbffe4d438",
-"ok": true
+"fp": "5063a99ce4c3e8f1",
+"ok": true,
+"tree": ""
 },
 "3.2.5|a name is worth 4,346 retrievals; audience explains what tellability did not": {
-"fp": "f843f512b385e621",
-"ok": true
-},
-"3.2.5|a name is worth 4,346 retrievals; tellability refuted at r=-0.20": {
-"fp": "f640f2d68eb90082",
-"ok": true
-},
-"3.2.7|a world that runs: 21 crafts by year 11,380, 4,334 unnamed things": {
-"fp": "1af68be8ee9259df",
-"ok": false
+"fp": "38e48f415b5503c3",
+"ok": true,
+"tree": ""
 },
 "3.2.7|a world that runs: 25 crafts by year 10,720, 23,205 unnamed things": {
 "fp": "1af68be8ee9259df",
-"ok": true
-},
-"3.2.9|a nanometre spec is 90 bits: 130 fit in one telling": {
-"fp": "e74ac9f2379fb043",
-"ok": true
+"ok": true,
+"tree": ""
 },
 "3.2.9|a nanometre spec is 90 bits; a lens beats its gauge by 3.6 orders": {
 "fp": "578f4f297df21121",
-"ok": true
+"ok": true,
+"tree": ""
 }
 }

@@ -957,6 +957,119 @@ def _fp(fn):
     return fingerprint("claims", fn.__name__)
 
 
+# --- what a claim actually READ, and why the fingerprint needs it --
+#
+# _fp commits to a claim's own call graph, which is exactly right
+# for a claim that only calls functions. Some claims here do not:
+# they READ THE TREE. One counts every constant in the repository,
+# one classifies unreferenced rules across it, one builds a lexicon
+# from the whole corpus. An edit anywhere moves their answer without
+# moving their fingerprint, so the gate skipped them and returned
+# the EXPECTED value without calling the function -- and all three
+# sat here reporting success while failing.
+#
+# What found them was an ablation in a different repository, not any
+# check in this one. That is the failure this fixes.
+#
+# The gate now records which files a claim OPENS while it runs. A
+# claim that touches the tree is marked tree-sensitive and is
+# recomputed whenever the tree moves; a claim that touches nothing
+# pays nothing and keeps the fast path. It is MEASURED rather than
+# declared, because a hand-kept list of "the claims that read the
+# tree" is exactly the kind of thing that goes stale the way these
+# three did.
+
+_READS = {"on": False, "seen": set()}
+
+
+def _audit(event, args):
+    """Audit hook. Records opens while a claim is running."""
+    if event == "open" and _READS["on"] and args:
+        target = args[0]
+        if isinstance(target, str):
+            _READS["seen"].add(target)
+
+
+sys.addaudithook(_audit)          # permanent; the flag switches it
+
+
+def _reads_tree(paths):
+    """Did this claim open a source file of this repository?"""
+    root = str(ROOT)
+    for p in paths:
+        if p.startswith(root) and "__pycache__" not in p \
+                and p.endswith(".py") and p != str(LEDGER):
+            return True
+    return False
+
+
+_TREE_FP = {}
+
+
+def tree_fingerprint():
+    """-> hash of every source file in the tree. DERIVED.
+
+    Deliberately coarse: any .py under engine, eval or tools, by
+    name and content. A tree-sensitive claim is invalidated by any
+    edit anywhere, which over-invalidates a little and cannot
+    under-invalidate -- and under-invalidating is the bug. It also
+    catches a file being ADDED, which a list of previously-read
+    paths would miss, and adding engine/motive.py is precisely what
+    broke the constant census.
+    """
+    import hashlib
+    if "v" in _TREE_FP:
+        return _TREE_FP["v"]
+    h = hashlib.sha256()
+    for folder in ("engine", "eval", "tools"):
+        d = ROOT / folder
+        if not d.is_dir():
+            continue
+        for path in sorted(d.glob("*.py")):
+            h.update(path.name.encode())
+            try:
+                h.update(hashlib.sha256(path.read_bytes()).digest())
+            except OSError:
+                continue
+    _TREE_FP["v"] = h.hexdigest()
+    return _TREE_FP["v"]
+
+
+def _uses_tools(fn):
+    """Does this claim reach into the top-level tools/ package?
+
+    SOURCE, not runtime, and the distinction matters. engine/spine.py
+    builds its graph over engine modules, so the top-level tools/
+    directory is OUTSIDE it -- a claim calling tools.dictionary.collect
+    has a fingerprint that does not commit to tools/dictionary.py at
+    all. Watching file opens does not catch it either, because by the
+    time that claim runs the import is usually already cached and no
+    open happens; whether it is caught would depend on which claim
+    happened to import it first, which is not a basis for a check.
+
+    So it is read off the claim's own source. The lexicon claim is
+    the one this is for, and it is the third of the three that were
+    reporting success while failing.
+    """
+    import inspect
+    try:
+        src = inspect.getsource(fn)
+    except (OSError, TypeError):
+        return False
+    return "from tools." in src or "import tools." in src
+
+
+def _call(fn):
+    """-> (value, tree-sensitive?). Runs the claim, watching opens."""
+    _READS["on"], _READS["seen"] = True, set()
+    try:
+        got = fn()
+    finally:
+        _READS["on"] = False
+        seen = set(_READS["seen"])
+    return got, (_reads_tree(seen) or _uses_tools(fn))
+
+
 def _ledger():
     import json
     if LEDGER.exists():
@@ -1499,18 +1612,28 @@ def run(verify=False):
         except Exception:
             fp = None
         prev = led.get(key)
-        if fp and prev and prev.get("fp") == fp and prev.get("ok"):
+        # A claim recorded as tree-sensitive may only be skipped when
+        # the WHOLE TREE is also unchanged. Entries written before
+        # this existed carry no "tree" key; those are treated as
+        # tree-sensitive and recomputed once, because the old ledger
+        # cannot say whether they read anything.
+        stale_tree = (prev is not None
+                      and prev.get("tree", "unknown")
+                      not in ("", tree_fingerprint()))
+        if fp and prev and prev.get("fp") == fp and prev.get("ok") \
+                and not stale_tree:
             rows.append((sec, claim, want, want, True, status))
             skipped += 1
             continue
         try:
-            got = fn()
+            got, touched = _call(fn)
             ok = got == want
         except Exception as e:
-            got, ok = f"{type(e).__name__}: {e}", False
+            got, ok, touched = f"{type(e).__name__}: {e}", False, True
         rows.append((sec, claim, want, got, ok, status))
         if fp:
-            fresh[key] = {"fp": fp, "ok": bool(ok)}
+            fresh[key] = {"fp": fp, "ok": bool(ok),
+                          "tree": tree_fingerprint() if touched else ""}
     if not verify:
         try:
             _save_ledger(fresh)
@@ -1532,7 +1655,41 @@ def check():
 
     t("every_published_number_reproduces", _repro)
     t("superseded_numbers_are_named", _super)
+    t("a_claim_that_reads_the_tree_is_marked_as_such", _treewise)
     return all(o[1] for o in out), out
+
+
+# The three that were reporting success while failing. Named, so a
+# regression in the detector is caught by this file rather than by
+# an ablation in another repository a month later.
+WERE_LYING = ("3.2.1", "3.2.20", "3.1.76")
+
+
+def _treewise():
+    """Tree-sensitive claims are detected, not declared."""
+    led = _ledger()
+    if not led:
+        raise ArithmeticError("no ledger; run this file first")
+    marked = {k.split("|")[0] for k, v in led.items() if v.get("tree")}
+    missing = [c for c in WERE_LYING if c not in marked]
+    if missing:
+        raise ArithmeticError(
+            f"claims {missing} read the tree and are NOT marked "
+            f"tree-sensitive, so the gate will skip them again")
+    total = sum(1 for v in led.values() if v.get("tree"))
+    return (f"{total} claims are marked tree-sensitive and the mark "
+            f"is MEASURED: the gate watches which files a claim "
+            f"opens while it runs, and reads the claim's source for "
+            f"a top-level tools/ import, which engine/spine.py's "
+            f"graph does not cover. Such a claim may only be skipped "
+            f"when the whole tree is unchanged. Without this the "
+            f"fingerprint commits to a claim's own call graph, and "
+            f"{', '.join(WERE_LYING)} depend on the whole repository "
+            f"instead -- all three sat here returning the EXPECTED "
+            f"value without being run, reporting success while "
+            f"failing. A hand-kept list would have gone stale the "
+            f"same way, so this check names only the three known "
+            f"cases and the detection itself stays automatic")
 
 
 def _repro():

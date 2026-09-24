@@ -103,11 +103,13 @@ OPEN_TO_US = (
      "two values under two NAMES, so eval/agreement.py -- which "
      "matches identical names -- cannot see it. Found by "
      "Genesis Unresearched's ablation, not by any check here",
-     "a decision about which is right, and then either one home or "
-     "a synonym map in eval/agreement.py so the next one is caught "
-     "by a rule instead of by accident. Both published numbers move "
-     "when it is settled, which is why it is recorded rather than "
-     "quietly unified"),
+     "a decision about which is right. The synonym map now EXISTS "
+     "-- eval/agreement.CONCEPTS compares the same quantity across "
+     "different names and a new collision fails there -- so what is "
+     "left is the decision itself, not the machinery. This one is "
+     "in agreement.KNOWN_OPEN and does not fail the suite, because "
+     "both published numbers move when it is settled. Removing it "
+     "from KNOWN_OPEN is how the decision gets enforced"),
     ("Kleiber exponent", "engine/life.py; asserted 0.75, and life.kleiber() carries check=NONE rather than a fake one",
      "a fractal-transport derivation, carried out here"),
     ("cosmos dilution factor", "engine/cosmos.py; FITTED to solar data",

@@ -44,6 +44,7 @@ from __future__ import annotations
 import math
 import sys
 from pathlib import Path
+from engine.constants import YEAR_S          # one home for a year
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -83,7 +84,7 @@ def child_load_w():
     from engine.ontogeny import provisioning_debt, ONTOGENY
     from engine.biome import metabolism_w
     j, _ = provisioning_debt()
-    extra = j / (18.0 * 3.15576e7)
+    extra = j / (18.0 * YEAR_S)
     own = sum(metabolism_w(m) for _a, m, _b in ONTOGENY) / len(ONTOGENY)
     return extra, own, extra + own
 

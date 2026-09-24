@@ -15,7 +15,7 @@
 "tree": ""
 },
 "3.1.102|rank is worth zero then 82 W at the carrying number": {
-"fp": "cfdda73941a96d14",
+"fp": "d09cb7b079512655",
 "ok": true,
 "tree": ""
 },
@@ -25,7 +25,7 @@
 "tree": ""
 },
 "3.1.103|regard is worth 1e19 times what it costs to hold": {
-"fp": "2dafefd295f0359c",
+"fp": "13906dc59b2b7508",
 "ok": true,
 "tree": ""
 },
@@ -45,12 +45,12 @@
 "tree": ""
 },
 "3.1.107|the derived group is 3; transitivity saves 10x on contests": {
-"fp": "6cc272b5783272af",
+"fp": "1427f04f817df7b3",
 "ok": true,
 "tree": ""
 },
 "3.1.108|a display is 1e6x cheaper and takes the band 3 -> 28": {
-"fp": "69f346ea8fd56d2b",
+"fp": "b70596be9e428e43",
 "ok": true,
 "tree": ""
 },
@@ -140,12 +140,12 @@
 "tree": ""
 },
 "3.1.119|19 trillion tokens enumerated, from 1.8 MB of rules (31M:1)": {
-"fp": "6df1e1acf5070168",
+"fp": "49e4619403a73624",
 "ok": true,
 "tree": ""
 },
 "3.1.120|52 comparisons: 37 match, 28 of them free": {
-"fp": "41c3df7b6f050fb9",
+"fp": "94b7e1737f1947df",
 "ok": true,
 "tree": ""
 },
@@ -162,7 +162,7 @@
 "3.1.123|48 constants are chosen; the 8.5x pair is closed by derivation": {
 "fp": "9edcb107bb5ec7f3",
 "ok": true,
-"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
+"tree": "db014329fe8017f185ea8444e210f7ff8d1ffcb19aad34403b3fe709d8f70a52"
 },
 "3.1.18|folding survival rate 0.573": {
 "fp": "21579abf6579714b",
@@ -237,7 +237,7 @@
 "3.1.60|lab: 27 HOLDS, 0 CLASH, 1 MISSING_RULE, 1 REFUSED, 1 SUGGESTION": {
 "fp": "faa20c31410d6107",
 "ok": true,
-"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
+"tree": "db014329fe8017f185ea8444e210f7ff8d1ffcb19aad34403b3fe709d8f70a52"
 },
 "3.1.68|4 trophic levels under a 204 m cavitation ceiling": {
 "fp": "3138522a36b76af0",
@@ -327,7 +327,7 @@
 "3.1.76|unreferenced rules are mostly lineage, not dead code": {
 "fp": "e38aec89b09ee680",
 "ok": true,
-"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
+"tree": "db014329fe8017f185ea8444e210f7ff8d1ffcb19aad34403b3fe709d8f70a52"
 },
 "3.1.76|worn insulation runs out at 19 C, a lodge reaches -64": {
 "fp": "9aaa54beecc864f0",
@@ -355,7 +355,7 @@
 "tree": ""
 },
 "3.1.79|two adults are the smallest viable group": {
-"fp": "bfd7a6e65bbf7f5f",
+"fp": "925dc45d47c7d93d",
 "ok": true,
 "tree": ""
 },
@@ -365,7 +365,7 @@
 "tree": ""
 },
 "3.1.81|empire 2250 km, 4.7% lies tolerated, 3 of 10 derive": {
-"fp": "cffc65107fd1336b",
+"fp": "fc8700b92b3fb96f",
 "ok": true,
 "tree": ""
 },
@@ -375,7 +375,7 @@
 "tree": ""
 },
 "3.1.85|four gifts, four shorter clocks: 1411, 998, 957, 695": {
-"fp": "bb50f270c0c804a3",
+"fp": "c7da5b125604aa8b",
 "ok": true,
 "tree": ""
 },
@@ -390,12 +390,12 @@
 "tree": ""
 },
 "3.1.88|cold buys 11x on build/break and 436x on lifetime": {
-"fp": "1f4049d88741c41b",
+"fp": "7c0d38b79314162d",
 "ok": true,
 "tree": ""
 },
 "3.1.88|three gates shut at 298 K, one at 255": {
-"fp": "72530d47bfe553c9",
+"fp": "29a01a1d2d6058d6",
 "ok": true,
 "tree": ""
 },
@@ -410,7 +410,7 @@
 "tree": ""
 },
 "3.1.92|10,584 universes generated blind; 864 pass three filters": {
-"fp": "b732da504aa76c88",
+"fp": "61ba95b97dcfb987",
 "ok": true,
 "tree": ""
 },
@@ -445,7 +445,7 @@
 "tree": ""
 },
 "3.2.12|Big Bang to heat death in 79 links: 70 derived, 1 gap": {
-"fp": "bf1f8eeec875c921",
+"fp": "517ae44df2372e10",
 "ok": true,
 "tree": ""
 },
@@ -472,12 +472,12 @@
 "3.2.1|331 constants, 5 with two homes, 3 frozen copies tracked": {
 "fp": "dacf6ae250a1a99c",
 "ok": true,
-"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
+"tree": "db014329fe8017f185ea8444e210f7ff8d1ffcb19aad34403b3fe709d8f70a52"
 },
 "3.2.20|287 headwords, 194 spoken by one band, 614 borrowings": {
 "fp": "ff7228d0b7baf54a",
 "ok": true,
-"tree": "ea1e3060b3cffd215c8c3560a323597eaefb6bd57d474e748b055f21b629da8a"
+"tree": "db014329fe8017f185ea8444e210f7ff8d1ffcb19aad34403b3fe709d8f70a52"
 },
 "3.2.21|a grammar pays at 6 parts; this world crossed at year 600": {
 "fp": "5066f4afaff87c15",

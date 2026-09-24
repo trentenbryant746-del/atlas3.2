@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from engine.constants import YEAR_S          # one home for a year
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -68,7 +69,7 @@ def burial_w():
 
 def stock_j(myr=STOCK_MYR):
     """J sitting underground. DERIVED from the burial rate and time."""
-    return burial_w() * myr * 1e6 * 3.15576e7
+    return burial_w() * myr * 1e6 * YEAR_S
 
 
 def carnot(hot_k, cold_k=AMBIENT_K):
@@ -190,7 +191,7 @@ def _modern():
 
 
 def _finite():
-    years = stock_j() / (MODERN_TW * 1e12) / 3.15576e7
+    years = stock_j() / (MODERN_TW * 1e12) / YEAR_S
     if years <= 0:
         raise ArithmeticError("the stock is empty")
     return (f"{stock_j():.2e} J at {MODERN_TW:.0f} TW lasts "

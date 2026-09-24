@@ -40,6 +40,7 @@ from __future__ import annotations
 import math
 import sys
 from pathlib import Path
+from engine.constants import YEAR_S          # one home for a year
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -121,7 +122,7 @@ def hydrolysis_k(T):
 
 def half_life_years(T):
     """How long a bond lasts. DERIVED."""
-    return math.log(2.0) / hydrolysis_k(T) / 3.15576e7
+    return math.log(2.0) / hydrolysis_k(T) / YEAR_S
 
 
 def build_over_break(T):
@@ -139,7 +140,7 @@ def build_over_break(T):
 
 def persists(T, bases=200, generations=1.0):
     """-> (bool, why). Can it be rebuilt faster than it is cut?"""
-    lost = bases * hydrolysis_k(T) * 3.15576e7 * generations
+    lost = bases * hydrolysis_k(T) * YEAR_S * generations
     return lost < 1.0, (
         f"a {bases}-base strand loses {lost:.3g} bonds a year at "
         f"{T:.0f} K, and building beats breaking "

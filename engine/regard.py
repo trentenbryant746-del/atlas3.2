@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from engine.constants import YEAR_S          # one home for a year
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -72,7 +73,7 @@ def contest_cost(days=0.5, injury_risk=0.10):
     from engine.civ import FORAGER_W
     from engine.biome import metabolism_w
     spent = FORAGER_W * days * 86400.0
-    lost = injury_risk * metabolism_w(70.0) * INJURY_YEARS_LOST * 3.15576e7
+    lost = injury_risk * metabolism_w(70.0) * INJURY_YEARS_LOST * YEAR_S
     return spent, lost
 
 

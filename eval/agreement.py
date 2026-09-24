@@ -163,6 +163,92 @@ def leaks_from_the_workshop():
     return bad
 
 
+# --- the same quantity under two NAMES ------------------------------
+#
+# The one-home rule here matched IDENTICAL NAMES, and enforced "one
+# name, one value". That is weaker than it reads. A human generation
+# is 20 years in engine/adapt.GENERATIONS and 25 in
+# engine/literacy.GENERATION_YEARS -- the same quantity, two values,
+# two names -- and nothing in this file could see it. It was found
+# by an ablation in a separate repository, which is not a system.
+#
+# So a concept may name its members explicitly, with a conversion
+# into one unit, and they are compared. A member is written as a
+# module and an EXPRESSION rather than a bare name, because some of
+# these live inside a dict and a scanner that only reads assignments
+# would miss exactly those.
+
+CONCEPTS = {
+    "how long a human generation is": {
+        "unit": "years",
+        "members": (
+            ("adapt", "GENERATIONS['human'] / 365.0"),
+            ("literacy", "GENERATION_YEARS"),
+        ),
+    },
+    "how many seconds are in a year": {
+        "unit": "seconds",
+        "members": (
+            ("constants", "YEAR_S"),
+            ("cold", "YEAR_S"),
+            ("industry", "YEAR_S"),
+            ("revolution", "YEAR_S"),
+        ),
+    },
+}
+
+# Concepts whose members legitimately differ, with the reason. A
+# reference temperature is not one quantity: 293 K is the standard
+# reservoir a heat engine dumps into, 298 K is where rate constants
+# are tabulated. Naming them here stops a later reader "fixing" a
+# difference that is meant to be there.
+ALLOWED_TO_DIFFER = {
+    "a reference temperature": (
+        ("industry", "AMBIENT_K", "293 K, the reservoir Carnot uses"),
+        ("cold", "REF_T", "298 K, where rate constants are measured"),
+    ),
+}
+
+# Known open, on the record, and NOT failed on. Settling this moves
+# published numbers in both directions, so it is a decision rather
+# than a cleanup -- engine/unsolved.OPEN_TO_US carries it. A NEW
+# collision still fails. Removing an entry here is how a decision
+# gets enforced.
+KNOWN_OPEN = ("how long a human generation is",)
+
+CONCEPT_TOLERANCE = 1e-9
+
+
+def concept_values(name):
+    """-> [(module, expression, value)]. Resolved by import."""
+    import importlib
+    out = []
+    for mod, expr in CONCEPTS[name]["members"]:
+        try:
+            m = importlib.import_module(f"engine.{mod}")
+        except Exception:
+            continue
+        try:
+            out.append((mod, expr, float(eval(expr, vars(m)))))
+        except Exception:
+            continue
+    return out
+
+
+def concept_disagreements():
+    """-> {concept: rows}. Same quantity, different values."""
+    bad = {}
+    for name in CONCEPTS:
+        rows = concept_values(name)
+        if len(rows) < 2:
+            continue
+        lo = min(r[2] for r in rows)
+        hi = max(r[2] for r in rows)
+        if lo == 0 or abs(hi / lo - 1.0) > CONCEPT_TOLERANCE:
+            bad[name] = rows
+    return bad
+
+
 def check():
     res = []
 
@@ -176,7 +262,42 @@ def check():
     t("INVERTED_some_names_still_have_two_homes", _dupes)
     t("a_literal_that_copies_a_computed_value_is_found", _frozen)
     t("nothing_here_imports_from_the_workshop", _oneway)
+    t("the_same_quantity_under_two_names_is_compared", _concepts)
     return all(x for _, x, _ in res), res
+
+
+def _concepts():
+    bad = concept_disagreements()
+    new = {k: v for k, v in bad.items() if k not in KNOWN_OPEN}
+    if new:
+        raise ArithmeticError(
+            "the same quantity has two values under two names: "
+            + "; ".join(
+                f"{k}: " + ", ".join(f"{m}.{e} = {v:g}" for m, e, v in rows)
+                for k, rows in new.items()))
+    n = sum(len(CONCEPTS[k]["members"]) for k in CONCEPTS)
+    open_ = {k: concept_values(k) for k in bad if k in KNOWN_OPEN}
+    return (f"the one-home rule above matches IDENTICAL NAMES, which "
+            f"enforces 'one name, one value' -- weaker than it "
+            f"reads. This compares the same quantity across "
+            f"DIFFERENT names: {len(CONCEPTS)} concepts, {n} members, "
+            f"each a module and an expression rather than a bare "
+            f"name, because some of them live inside a dict where a "
+            f"scanner reading assignments would never look. "
+            + (f"{len(open_)} is known open and does not fail here: "
+               + "; ".join(
+                   f"{k} is " + " against ".join(
+                       f"{v:g} in {m}" for m, _e, v in rows)
+                   for k, rows in open_.items())
+               + f", which is a DECISION and not a cleanup because "
+                 f"published numbers move either way -- "
+                 f"engine/unsolved.OPEN_TO_US carries it, and "
+                 f"removing it from KNOWN_OPEN is how the decision "
+                 f"gets enforced. "
+               if open_ else "")
+            + f"A new collision fails. This file could not see any "
+              f"of this until an ablation in another repository "
+              f"found the generation length, which is not a system")
 
 
 def _disagree():

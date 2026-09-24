@@ -25,6 +25,7 @@ from __future__ import annotations
 import math
 import sys
 from pathlib import Path
+from engine.constants import YEAR_S          # one home for a year
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -126,7 +127,7 @@ def phosphorus_kg_yr(pop):
     from engine.atoms import REDFIELD, WEIGHT
     mass = sum(WEIGHT[e] * n for e, n in REDFIELD.items())
     pfrac = WEIGHT["P"] * REDFIELD["P"] / mass
-    dry_kg = FOOD_W_PER_PERSON * 3.15576e7 / (FOOD_DRY_MJ_KG * 1e6)
+    dry_kg = FOOD_W_PER_PERSON * YEAR_S / (FOOD_DRY_MJ_KG * 1e6)
     return pop * dry_kg * pfrac
 
 
@@ -203,7 +204,7 @@ def step(state):
 
     # what the population can actually pull out of the ground
     want_w = pop * START_W * (1.0 + tax)
-    got_w = min(want_w, stock / 3.15576e7) * eff / START_EFF
+    got_w = min(want_w, stock / YEAR_S) * eff / START_EFF
     got_w = min(got_w, want_w)
 
     # food: the flow feeds people, machines raise how much is reachable
@@ -215,7 +216,7 @@ def step(state):
     growth = BIRTH_AT_SURPLUS * (1.0 - pop / max(food_cap, 1.0))
     pop = max(pop * (1.0 + growth), 1.0)
 
-    stock = max(stock - got_w / max(eff, 1e-9) * 3.15576e7, 0.0)
+    stock = max(stock - got_w / max(eff, 1e-9) * YEAR_S, 0.0)
     p_left = max(state.get("p_left", P_RESERVE_KG)
                  - phosphorus_kg_yr(pop), 0.0)
     return {"year": year + 1, "pop": pop, "eff": eff, "stock": stock,

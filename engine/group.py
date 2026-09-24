@@ -52,6 +52,7 @@ from __future__ import annotations
 import math
 import sys
 from pathlib import Path
+from engine.constants import YEAR_S          # one home for a year
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -78,7 +79,7 @@ def defence_value(n):
     from engine.biome import metabolism_w
     saved = base = BASE_PREDATION
     return ((base - risk_per_head(n)) * metabolism_w(70.0)
-            * EXPOSED_YEARS * 3.15576e7)
+            * EXPOSED_YEARS * YEAR_S)
 
 
 def contests_all_pairs(n):

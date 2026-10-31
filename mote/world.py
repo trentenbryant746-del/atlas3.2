@@ -244,8 +244,7 @@ class Episode:
         frames = [] if trace is not None else None
 
         for t in range(STEPS):
-            pol_mask = np.repeat(self.pol_ts[t] > 0, 1)
-            pol_mask = np.tile(pol_mask, p)
+            pol_mask = np.tile(self.pol_ts[t] > 0, p)
             ox, oy = self.drift_x[t], self.drift_y[t]
             ct, st = _cos32(th), _sin32(th)
 
@@ -299,7 +298,7 @@ class Episode:
                 bi, wi = trace
                 j = bi * w + wi
                 frames.append({
-                    "t": t, "x": float(x[j]) , "y": float(y[j]),
+                    "t": t, "x": float(x[j]), "y": float(y[j]),
                     "th": float(th[j]), "energy": float(energy[j]),
                     "alive": bool(alive[j]), "cue": float(self.cue_ts[t][wi]),
                     "pol": float(self.pol_ts[t][wi]), "ate": bool(act[j]),

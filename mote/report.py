@@ -49,15 +49,18 @@ def analyse(run_dir):
     cfg["gens"] = done
     cfg["completed"] = done >= int(cfg.get("gens_requested") or done)
     first, last = 0, len(gens) - 1
-    best_i = int(np.argmax(fr["overall"]))
-    h2h = bench.head_to_head(foss.take([first]), foss.take([best_i]))
-    h2h_hard = bench.head_to_head(foss.take([first]), foss.take([best_i]), d=1.0)
+    # "best" by the level the lineage actually lives in, not by an average
+    # over levels three quarters of which it never trains near
+    best_i = int(np.argmax(fr[0.0] + fr[0.33]))
+    h2h = [bench.head_to_head(foss.take([first]), foss.take([best_i]), d=d)
+           for d in bench.H2H_LEVELS]
+    le_hard = bench.lesions(foss, d=bench.LESION_LEVEL_HARD)
 
     return {
         "cfg": cfg, "hist": hist, "gens": gens, "years": gens * ypg,
         "fossils": foss, "frozen": fr, "lesions": le, "ceiling": ce,
         "hidden": hid, "conns": conns, "first": first, "last": last,
-        "best_i": best_i, "h2h": h2h, "h2h_hard": h2h_hard,
+        "best_i": best_i, "h2h": h2h, "lesions_hard": le_hard,
         "years_per_gen": ypg,
     }
 
@@ -105,10 +108,9 @@ def text_summary(a) -> str:
     w(f"  memory index           {le['memory_index'][i0]:>12.3f}"
       f"{le['memory_index'][ib]:>14.3f}")
     w("")
-    h, hh = a["h2h"], a["h2h_hard"]
     w("  HEAD TO HEAD -- ancestor vs best fossil, identical worlds")
-    for tag, x in (("d=%.2f" % h["d"], h), ("d=1.00", hh)):
-        w(f"  {tag:<10} descendant won {x['wins_b']}/{x['episodes']} "
+    for x in a["h2h"]:
+        w(f"  d={x['d']:<8.2f} descendant won {x['wins_b']}/{x['episodes']} "
           f"({100*x['win_rate_b']:.0f}%)   "
           f"score {x['score_a']:+.3f} -> {x['score_b']:+.3f}")
     w("")
@@ -253,13 +255,13 @@ padding:16px;overflow-x:auto;font:12.5px/1.5 ui-monospace,monospace}
 def html(a, path):
     cfg, fr, le = a["cfg"], a["frozen"], a["lesions"]
     yrs, i0, ib = a["years"], a["first"], a["best_i"]
-    ov0, ov1 = float(fr["overall"][i0]), float(fr["overall"][ib])
-    h, hh = a["h2h"], a["h2h_hard"]
+    ov0, ov1 = float(fr[0.0][i0]), float(fr[0.0][ib])
+    h = a["h2h"][0]
 
     kpi = [
         (f"{cfg['gens']*a['years_per_gen']:,.0f}", "years simulated"),
         (f"{cfg['gens']:,}", "generations"),
-        (f"{ov0:+.3f} &rarr; {ov1:+.3f}", "frozen-benchmark score"),
+        (f"{ov0:+.3f} &rarr; {ov1:+.3f}", "benchmark score, easiest level"),
         (f"{100*h['win_rate_b']:.0f}%", f"descendant wins, d={h['d']:.2f}"),
         (f"{a['ceiling'][i0]:.1f} &rarr; {a['ceiling'][ib]:.1f}",
          "hardest world survivable"),
@@ -275,8 +277,8 @@ def html(a, path):
                 "frozen benchmark score", "score", hline=0.0)),
         ("The hardest world it can still make a living in",
          "Difficulty is scanned upward and stopped at the first level where "
-         "the mote can no longer clear a score of "
-         f"{bench.CEILING_PASS}. Higher is a wider survivable band.",
+         "the mote can no longer end its life with more energy than it "
+         "spent. Higher is a wider band of worlds it is viable in.",
          _chart(yrs, [("ceiling", a["ceiling"])], "difficulty ceiling",
                 "difficulty d")),
         ("How much of the competence is memory",
@@ -333,10 +335,8 @@ available to selection.</p>
 episodes, meeting the same patch layouts and the same sensor noise.</p>
 <table><thead><tr><th>difficulty</th><th>ancestor</th><th>descendant</th>
 <th>descendant wins</th></tr></thead><tbody>
-<tr><td>d={h['d']:.2f}</td><td>{h['score_a']:+.3f}</td>
-<td>{h['score_b']:+.3f}</td><td>{h['wins_b']}/{h['episodes']}</td></tr>
-<tr><td>d=1.00</td><td>{hh['score_a']:+.3f}</td><td>{hh['score_b']:+.3f}</td>
-<td>{hh['wins_b']}/{hh['episodes']}</td></tr></tbody></table></div>
+{''.join(f"<tr><td>d={x['d']:.2f}</td><td>{x['score_a']:+.3f}</td><td>{x['score_b']:+.3f}</td><td>{x['wins_b']}/{x['episodes']}</td></tr>" for x in a['h2h'])}
+</tbody></table></div>
 <div class="card"><h2>Summary</h2><pre>{_html.escape(text_summary(a))}</pre></div>
 </div></body></html>"""
     Path(path).write_text(doc)

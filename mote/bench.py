@@ -44,9 +44,21 @@ from mote.world import Episode
 # against them, which is the point of writing them down here.
 BENCH_SEEDS = (90001, 90002, 90003, 90004, 90005, 90006, 90007, 90008)
 BENCH_LEVELS = (0.0, 0.33, 0.66, 1.0)
-LESION_LEVEL = 0.66
+# Lesioned and matched at two levels, not one. A single level at 0.66 was
+# testing memory on an animal with no competence there at all, which says
+# nothing; 0.33 is where the cue is short enough to need remembering and
+# the animal is still viable. Both were fixed BEFORE the long run, which is
+# the only time an instrument may be adjusted.
+LESION_LEVEL = 0.33
+LESION_LEVEL_HARD = 0.66
+H2H_LEVELS = (0.0, 0.33, 1.0)
 CEILING_GRID = tuple(round(0.1 * i, 2) for i in range(11))
-CEILING_PASS = 0.15        # a score that counts as "making a living"
+# A positive score means the animal finished its life having taken in more
+# energy than it burnt -- it can sustain itself. Zero is the only threshold
+# here that is not a number somebody picked: 0.15 was picked, and it put
+# every fossil's ceiling at 0.00 because nothing ever cleared it, which
+# made the whole measurement useless rather than strict.
+CEILING_PASS = 0.0
 
 _CACHE: dict = {}
 
@@ -80,8 +92,10 @@ def frozen(brains: Brains) -> dict:
 def ceiling(brains: Brains) -> np.ndarray:
     """The hardest difficulty each genome still makes a living in.
 
-    Scanned bottom-up and stopped at the first failure, so this is the
-    width of the band a mote can survive across, not its single best level.
+    "Makes a living" means a net-positive energy budget over a lifetime:
+    it ate more than it spent. Scanned bottom-up and stopped at the first
+    failure, so this is the width of the band a mote is viable across, not
+    its single best level.
     """
     p = brains.size
     out = np.zeros(p)

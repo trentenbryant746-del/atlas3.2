@@ -7,7 +7,7 @@ hundred elements wide, so every tick is ninety numpy calls each doing a
 microsecond of real work. Rewriting the tick as one scalar loop per animal
 removes all of it and, more importantly, lets the brain exploit its own
 sparsity: a genome with four live neurons does sixteen multiply-adds, not
-the 784 a dense 28x28 matrix would charge it.
+the 1,600 a dense 40x40 matrix would charge it.
 
     reference, numpy        ~19 ms per generation
     this, 4 threads          ~2 ms per generation

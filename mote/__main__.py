@@ -14,7 +14,7 @@ def _run(a):
     out = run(gens=a.gens, pop=a.pop, worlds=a.worlds, seed=a.seed,
               years_per_gen=a.years_per_gen, out=a.out, ratchet=not a.no_ratchet,
               extinct_every=a.extinct_every, d0=a.d0,
-              progress_every=a.progress_every)
+              progress_every=a.progress_every, max_minutes=a.max_minutes)
     if not a.no_report:
         _report(argparse.Namespace(dir=str(out), html=None, watch=True))
 
@@ -78,6 +78,8 @@ def main(argv=None):
     r.add_argument("--extinct-every", type=int, default=0,
                    help="bottleneck the population every N generations")
     r.add_argument("--progress-every", type=int, default=20_000)
+    r.add_argument("--max-minutes", type=float, default=0.0,
+                   help="stop cleanly after this long, keeping the record")
     r.add_argument("--no-report", action="store_true")
     r.set_defaults(fn=_run)
 

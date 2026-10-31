@@ -94,22 +94,23 @@ def test_mutation_keeps_the_genome_legal():
 
 def test_a_bigger_brain_costs_something():
     """A neuron switched on with zero weights is behaviourally silent, so any
-    score difference it makes is the metabolic charge and nothing else.
+    difference it makes is the metabolic charge and nothing else.
+
+    Two traps here, both hit while writing this test.
 
     The weights have to be zeroed explicitly, exactly as Brains.mutate does
     when it grows a neuron: seed_population scatters conn_on across slots
-    that are switched OFF, so simply enabling a slot revives latent random
-    wiring and the comparison stops being about metabolism. The first
-    version of this test did that and failed for that reason.
+    that are switched OFF, so merely enabling a slot revives latent random
+    wiring and the comparison stops being about metabolism.
 
-    It asserts on energy spent rather than on score, because the two come
-    apart and the reason is worth knowing: a weightless neuron leaves the
-    POLICY identical but not the behaviour, since energy is itself a sense
-    channel and running out of it ends the episode. A heavier brain can
-    therefore die sooner, eat less poison on the way, and SCORE BETTER
-    while being strictly more expensive. Spending is the claim this test
-    is making.
+    And TOTAL spend is not monotone in brain size, because a heavier brain
+    drains faster, dies sooner, and can therefore burn less over a shorter
+    life -- and score better for the same reason, having eaten less poison
+    on the way. The invariant is the per-tick charge, and total spend only
+    among animals that lived equally long.
     """
+    from mote.world import brain_cost
+
     rng = np.random.default_rng(5)
     small = Brains.seed_population(1, rng, hidden_on=2)
     big = small.take([0])
@@ -118,10 +119,32 @@ def test_a_bigger_brain_costs_something():
     big.node_on[0, slots] = True
     big.W[0, slots, :] = 0.0                    # silent on arrival
     big.W[0, :, slots] = 0.0
-    pair = Brains.concat([small, big])
-    _s, ex = Episode(seed=31337, n_worlds=4, d=0.3).run(pair)
+
     assert big.n_hidden()[0] == small.n_hidden()[0] + 8
-    assert np.all(ex["spent"][1] > ex["spent"][0]), "extra neurons were free"
+    assert brain_cost(big)[0] > brain_cost(small)[0], "the charge is not levied"
+
+    pair = Brains.concat([small, big])
+    ep = Episode(seed=31337, n_worlds=8, d=0.0)
+    _s, ex = ep.run(pair)
+    survived = [w for w in range(ep.n)
+                if ex["spent"][0, w] > 0 and ex["spent"][1, w] > 0]
+    assert survived, "no world to compare in"
+    full = [w for w in survived
+            if abs(float(ex["spent"][0, w]) - float(ex["spent"][1, w])) > 0]
+    assert full, "the extra neurons changed nothing at all"
+    assert any(ex["spent"][1, w] > ex["spent"][0, w] for w in full), (
+        "extra neurons were never more expensive in any world")
+
+
+def test_brain_cost_is_monotone():
+    from mote.world import brain_cost
+    rng = np.random.default_rng(2)
+    b = Brains.seed_population(6, rng)
+    for i in range(6):
+        b.node_on[i, HID0:HID0 + i + 1] = True
+        b.node_on[i, HID0 + i + 1:] = False
+    c = brain_cost(b)
+    assert np.all(np.diff(c) > 0), f"charge not monotone in neurons: {c}"
 
 
 def test_lesions_do_what_they_say():

@@ -80,18 +80,48 @@ run intact, absent, and **lying**. A mote that navigates by memory is
 wrecked when the cue lies; one that taste-tests never notices. The gap
 between the two is reported as a memory index next to every score.
 
+The ceiling metric asks the hardest difficulty at which a mote still ends
+its life with **more energy than it spent**. Zero is the only threshold
+here that nobody picked; an earlier version used 0.15 and reported a
+ceiling of 0.00 for every fossil ever scored, which is uselessness
+masquerading as strictness.
+
+Lesions and head-to-heads run at difficulties the lineage actually
+inhabits as well as ones it does not. Testing memory only at `d=0.66`, on
+an animal with no competence there at all, measures nothing.
+
 ## What is chosen, and what is measured
 
 Numbers that were picked rather than derived, and what each one does:
 
 | name | value | how it was set |
 |---|---|---|
-| `NEURON_COST` | see `world.py` | calibrated by sweep; see below |
+| `NEURON_COST` | 0.00005 | calibrated by sweep; see below |
 | `RATCHET_UP` / `DOWN` | 0.24 / 0.14 | calibrated against the score a population actually reaches |
 | `FOOD_VALUE`, `MOVE_COST`, grid size, episode length | — | chosen, and not tuned against any result |
 | `p_grow` / `p_shrink` | equal | deliberately symmetric, see below |
 
-Two of these were wrong first, in ways worth recording:
+### Calibrating the price of a neuron
+
+Brain size is whatever its price says it is. Nine thousand generations per
+row, difficulty held at its easiest, equal grow and shrink rates
+throughout — only the per-neuron energy charge differs:
+
+| `NEURON_COST` | hidden neurons reached | live connections |
+|---|---|---|
+| 0 (free) | 7.7 | 121 |
+| 0.00002 | 7.1 | 114 |
+| 0.00005 | 4.6 | 75 |
+| 0.00015 | 2.1 | 46 |
+
+Monotone, and that is the whole argument for charging for a brain at all.
+Free neurons drift: an earlier version with no charge and an upward bias in
+the mutation rates filled all thirty hidden slots and then reported brain
+size equal to the array dimension. Priced too high and the lineage never
+leaves the two neurons it was born with. 0.00005 was taken as the value
+where size is visibly price-sensitive without being pinned at either end.
+
+Two further things were wrong first, in ways worth recording:
 
 - **Structural mutation rates were per connection slot, not per genome.**
   Every brain gained twenty-three connections per generation and the wiring
@@ -121,6 +151,17 @@ float32 expressions through double and rounds on store, and explicit casts
 at every stage and replicating numpy's left-to-right grouping both failed
 to close it. The test asserts identical behaviour and a 1e-6 score
 tolerance rather than equality, and says so.
+
+## Things that were tried and did not work
+
+Kept because a negative result is cheaper to read than to repeat.
+
+- **Self-adapting mutation size collapses, and it does not matter.** The
+  step-size gene falls to its floor (0.0069 against a 0.005 floor) within a
+  few thousand generations, which looks exactly like a search that has
+  stalled. Holding it fixed at 0.05 instead changed the benchmark score
+  from +0.103 to +0.110 over 14,000 generations — i.e. not at all. The
+  collapse is a symptom of noisy fitness, not the cause of the plateau.
 
 ## What this is not
 

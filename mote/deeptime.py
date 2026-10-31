@@ -37,26 +37,60 @@ HISTORY_COLS = ("gen", "years", "d", "best", "mean", "topq", "topq_ema",
                 "median", "hidden", "conns", "sigma", "alive", "bites")
 
 
-def fossil_gens(total, n_log=26, n_even=80):
-    """-> sorted generations at which to keep a champion."""
+GEOM = 1.15                # fossil every 15% increase in generation number
+
+
+def fossil_gens(total, n_even=90, geom=GEOM):
+    """-> sorted generations at which to keep a champion.
+
+    The union of a GEOMETRIC sequence and a uniform one, because a run can
+    stop early and the two schedules fail differently when it does.
+
+    A uniform schedule over the requested total is useless if the run
+    covers a fraction of it: asking for a billion generations and reaching
+    a million put the first uniform fossil 8 million generations past the
+    end of the run, so the record held only the eleven early log-spaced
+    ones. A geometric schedule cannot fail that way -- it is evenly spaced
+    in log(generation), so it samples whatever range the run reaches,
+    densely at the start where nearly all of the change happens.
+
+    The uniform half is kept for runs that do finish, where even spacing
+    across the back half is worth having.
+    """
     if total <= 0:
         return [0]
-    lg = np.log10(max(total, 10))
-    log = {0, 1} | {int(round(10 ** x)) for x in np.linspace(0, lg, n_log)}
-    even = {int(round(i * total / n_even)) for i in range(n_even + 1)}
-    return sorted(g for g in (log | even) if 0 <= g <= total)
+    g = {0, 1}
+    v = 1.0
+    while v <= total:
+        g.add(int(round(v)))
+        v *= geom
+    g |= {int(round(i * total / n_even)) for i in range(n_even + 1)}
+    return sorted(x for x in g if 0 <= x <= total)
 
 
 def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
         out="runs/deep", log_every=0, ratchet=True, extinct_every=0,
-        d0=0.0, progress_every=20_000, quiet=False):
-    """Evolve for `gens` generations, leaving a readable trail. -> Path."""
+        d0=0.0, progress_every=20_000, quiet=False, max_minutes=0.0):
+    """Evolve for `gens` generations, leaving a readable trail. -> Path.
+
+    max_minutes stops the run cleanly on a wall-clock budget, which is the
+    honest way to size a deep run: a generation is not a fixed amount of
+    work. Brains grow, the compiled kernel costs roughly the square of the
+    live node count, and a lineage that doubles its neurons halves its
+    generations per second. Guessing a generation count that fits in an
+    afternoon therefore means guessing how big the brains will get.
+
+    Stopping early loses nothing. History and fossils are written as the
+    run goes, and report.py takes its numbers from the record that exists
+    rather than the one that was requested.
+    """
     out = Path(out)
     (out / "fossils").mkdir(parents=True, exist_ok=True)
     log_every = log_every or max(1, gens // 2000)
     keep = set(fossil_gens(gens))
 
     cfg = {"gens": gens, "pop": pop, "worlds": worlds, "seed": seed,
+           "max_minutes": max_minutes,
            "years_per_gen": years_per_gen, "log_every": log_every,
            "ratchet": ratchet, "extinct_every": extinct_every, "d0": d0,
            "years_total": gens * years_per_gen, "n_fossils": len(keep),
@@ -69,7 +103,18 @@ def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
     hist.write(",".join(HISTORY_COLS) + "\n")
 
     t0 = time.time()
+    budget = max_minutes * 60.0
+    stopped = None
     for g in range(gens + 1):
+        if budget and (time.time() - t0) > budget:
+            stopped = g
+            lin.champion().save(out / "fossils" / f"g{g:09d}.npz")
+            s["years"] = g * years_per_gen
+            hist.write(",".join(f"{s.get(c, '')}" for c in HISTORY_COLS) + "\n")
+            if not quiet:
+                print(f"  wall-clock budget reached at generation {g:,}; "
+                      f"stopping cleanly", flush=True)
+            break
         want = (g % log_every == 0) or (g in keep)
         s = lin.generation(want_sizes=want)
         if g in keep:
@@ -87,12 +132,14 @@ def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
                   f"{rate:6.0f} gen/s  eta {eta/60:5.1f} min", flush=True)
     hist.close()
 
+    cfg["gens_done"] = stopped if stopped is not None else gens
+    cfg["stopped_on_time"] = stopped is not None
     cfg["elapsed_s"] = round(time.time() - t0, 1)
     cfg["finished"] = time.strftime("%Y-%m-%d %H:%M:%S")
     (out / "run.json").write_text(json.dumps(cfg, indent=2))
     if not quiet:
-        print(f"  done: {gens:,} generations in {cfg['elapsed_s']/60:.1f} min "
-              f"-> {out}", flush=True)
+        print(f"  done: {cfg['gens_done']:,} generations in "
+              f"{cfg['elapsed_s']/60:.1f} min -> {out}", flush=True)
     return out
 
 

@@ -66,7 +66,7 @@ FOOD_VALUE = 0.12          # energy in a full cell of the good flavour
 START_ENERGY = 1.0
 MAX_ENERGY = 3.0
 MOVE_COST = 0.004          # per unit speed squared
-NEURON_COST = 0.00015      # CALIBRATED, see mote/README.md
+NEURON_COST = 0.00005      # CALIBRATED by sweep, see mote/README.md
 PATCH_SIGMA = 1.7
 N_PATCH_A = 4
 
@@ -190,8 +190,13 @@ class Episode:
         self.drift_x = np.round(dr * ts * 0.5).astype(np.intp) % GRID
         self.drift_y = np.round(dr * ts * 0.3).astype(np.intp) % GRID
 
+        # the normalising constant: the energy in the food that was there to
+        # be had, under the polarity the episode opened with. Floored because
+        # it is a denominator and a world with no food at all would otherwise
+        # score every animal at infinity.
         good0 = np.where(self.pol0[:, None, None] > 0, self.A0, self.B0)
-        self.available = (FOOD_VALUE * good0.sum((1, 2))).astype(F32)
+        self.available = np.maximum(FOOD_VALUE * good0.sum((1, 2)),
+                                    1e-3).astype(F32)
 
     # -----------------------------------------------------------------
     def run(self, brains: Brains, trace=None, backend="auto"):

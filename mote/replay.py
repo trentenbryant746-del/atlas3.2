@@ -90,6 +90,16 @@ def trail(brain: Brains, ep: Episode, world=0, colour=True):
     return rows, summary
 
 
+def _legend(s, colour):
+    food = "o" if s["flavour_A_is_food"] else "+"
+    bad = "+" if s["flavour_A_is_food"] else "o"
+    txt = (f"  {food} = food this episode, {bad} = poison, "
+           f"* = ate food, X = ate poison, S = start, @ = end")
+    if s["flips"]:
+        txt += f"   (polarity reversed {s['flips']}x mid-life)"
+    return (DIM + txt + OFF) if colour else txt
+
+
 def show(brain: Brains, ep: Episode, world=0, title="", colour=True):
     rows, s = trail(brain, ep, world, colour)
     head = f"{title}  d={ep.dial['d']:.2f}"
@@ -100,6 +110,7 @@ def show(brain: Brains, ep: Episode, world=0, title="", colour=True):
     print(f"  score {s['score']:+.3f}   ate {s['good_bites']} food, "
           f"{s['bad_bites']} poison   visited {s['cells_visited']} cells   "
           f"{died}")
+    print(_legend(s, colour))
     return s
 
 
@@ -118,4 +129,5 @@ def compare(a: Brains, b: Brains, ep: Episode, world=0,
         died = "survived" if s["died_at"] is None else f"died t={s['died_at']}"
         print(f"  {lab:<12} score {s['score']:+.3f}  food {s['good_bites']:>3}  "
               f"poison {s['bad_bites']:>3}  cells {s['cells_visited']:>3}  {died}")
+    print(_legend(sa, colour))
     return sa, sb

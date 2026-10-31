@@ -42,7 +42,7 @@ class Lineage:
 
     def __init__(self, pop=128, worlds=3, seed=0, d0=0.0, ratchet=True,
                  elite=2, tourney=3, p_cross=0.45, extinct_every=0,
-                 extinct_keep=0.10):
+                 extinct_keep=0.10, sigma0=0.08, tau=0.12):
         self.rng = np.random.default_rng(seed)
         self.seed = seed
         self.pop = pop
@@ -55,7 +55,8 @@ class Lineage:
         self.extinct_every = extinct_every
         self.extinct_keep = extinct_keep
         self.gen = 0
-        self.brains = Brains.seed_population(pop, self.rng)
+        self.tau = tau            # 0 holds the mutation step size fixed
+        self.brains = Brains.seed_population(pop, self.rng, sigma=sigma0)
         self.extinctions = 0
         self._fit = None
         # Three worlds is a noisy read on a genome, so the raw top-quartile
@@ -75,7 +76,7 @@ class Lineage:
 
         The next generation is built with ONE copy of the genome arrays.
         The obvious version -- take the elites, take the clones, crossover
-        the rest, concatenate -- copied (pop, 28, 28) four times over and
+        the rest, concatenate -- copied (pop, 40, 40) four times over and
         cost more than simulating the generation did.
         """
         ep = Episode(seed=(self.seed * 1_000_003 + self.gen),
@@ -131,7 +132,7 @@ class Lineage:
                 nxt.b[sl] = np.where(mb, nxt.b[sl], self.brains.b[pb])
                 nxt.sigma[sl] = np.sqrt(nxt.sigma[sl] * self.brains.sigma[pb])
 
-        nxt.mutate(self.rng)
+        nxt.mutate(self.rng, tau=self.tau)
         for arr, src in ((nxt.W, self.brains.W), (nxt.b, self.brains.b),
                          (nxt.node_on, self.brains.node_on),
                          (nxt.conn_on, self.brains.conn_on),

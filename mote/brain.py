@@ -68,7 +68,8 @@ class Brains:
         return self.W.shape[0]
 
     @staticmethod
-    def seed_population(p: int, rng, hidden_on: int = 2, density: float = 0.35):
+    def seed_population(p: int, rng, hidden_on: int = 2, density: float = 0.35,
+                        sigma: float = 0.08):
         """The ancestor: `hidden_on` hidden neurons and a sparse wiring."""
         W = (rng.standard_normal((p, N_MAX, N_MAX)) * 0.5).astype(F32)
         b = (rng.standard_normal((p, N_MAX)) * 0.1).astype(F32)
@@ -79,8 +80,8 @@ class Brains:
 
         conn_on = rng.random((p, N_MAX, N_MAX)) < density
         conn_on[:, :N_IN, :] = False                  # input rows are overwritten
-        sigma = np.full(p, 0.08, dtype=F32)
-        return Brains(W, b, node_on, conn_on, sigma)
+        return Brains(W, b, node_on, conn_on,
+                      np.full(p, sigma, dtype=F32))
 
     def take(self, idx) -> "Brains":
         """A new population made of the genomes at `idx` (copies)."""

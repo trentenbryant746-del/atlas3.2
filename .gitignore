@@ -32,3 +32,9 @@ paper/tools.html
 # macOS noise
 .DS_Store
 **/.DS_Store
+
+# mote runs: a fossil record is ~100 genome files plus a history and a
+# generated report, all reproducible from `python -m mote run`. The code
+# that makes them is tracked; a million years of output is not.
+mote/runs/
+runs/

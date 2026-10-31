@@ -52,6 +52,20 @@ def analyse(run_dir):
     # "best" by the level the lineage actually lives in, not by an average
     # over levels three quarters of which it never trains near
     best_i = int(np.argmax(fr[0.0] + fr[0.33]))
+
+    # AN ARGMAX OVER A HUNDRED NOISY FOSSILS IS NOT A RESULT. Scored on the
+    # frozen worlds, neighbouring fossils differ by about 0.03 at d=0 and by
+    # 0.14 on the memory index, so whichever fossil happens to sit at the top
+    # of that scatter overstates the lineage by roughly one standard
+    # deviation -- and picking the memory index OF THAT FOSSIL turned a
+    # quantity with no trend at all into an apparent +0.39. Every headline
+    # number is therefore the mean over the last quarter of the record, with
+    # its spread, and the best single fossil is reported beside it as the
+    # outlier it is.
+    late = gens > gens[-1] * 0.75
+    if late.sum() < 3:
+        late = np.ones(len(gens), dtype=bool)
+    early = gens <= max(100, gens[-1] * 0.001)
     h2h = [bench.head_to_head(foss.take([first]), foss.take([best_i]), d=d)
            for d in bench.H2H_LEVELS]
     le_hard = bench.lesions(foss, d=bench.LESION_LEVEL_HARD)
@@ -61,7 +75,7 @@ def analyse(run_dir):
         "fossils": foss, "frozen": fr, "lesions": le, "ceiling": ce,
         "hidden": hid, "conns": conns, "first": first, "last": last,
         "best_i": best_i, "h2h": h2h, "lesions_hard": le_hard,
-        "years_per_gen": ypg,
+        "late": late, "early": early, "years_per_gen": ypg,
     }
 
 
@@ -85,28 +99,42 @@ def text_summary(a) -> str:
           f"({cfg['gens']/max(cfg['elapsed_s'],1e-9):,.0f} generations/s)")
     w("=" * 68)
     w("")
+    ear, lt = a["early"], a["late"]
+
+    def band(v):
+        return f"{v[lt].mean():+.3f} +- {v[lt].std():.3f}"
+
     w("  FROZEN BENCHMARK -- fixed worlds, never used for selection")
-    w(f"  {'':<22}{'ancestor':>12}{'best fossil':>14}{'change':>12}")
+    w("  Late = mean over the last quarter of the fossil record, with its")
+    w("  spread. Best = the single highest-scoring fossil, which an argmax")
+    w("  over ~100 noisy fossils overstates by about one deviation.")
+    w(f"  {'':<20}{'start':>10}{'late (mean +- sd)':>22}{'best':>9}")
     rows = [(f"level d={d}", fr[d]) for d in bench.BENCH_LEVELS]
     rows.append(("all levels", fr["overall"]))
     for name, v in rows:
-        d0, d1 = float(v[i0]), float(v[ib])
-        w(f"  {name:<22}{d0:>+12.3f}{d1:>+14.3f}{d1-d0:>+12.3f}")
+        w(f"  {name:<20}{float(v[ear].mean()):>+10.3f}{band(v):>22}"
+          f"{float(v[ib]):>+9.3f}")
     w("")
-    w(f"  difficulty ceiling     {a['ceiling'][i0]:>12.2f}"
-      f"{a['ceiling'][ib]:>14.2f}"
-      f"{a['ceiling'][ib]-a['ceiling'][i0]:>+12.2f}")
-    w(f"  hidden neurons         {a['hidden'][i0]:>12d}{a['hidden'][ib]:>14d}"
-      f"{a['hidden'][ib]-a['hidden'][i0]:>+12d}")
-    w(f"  live connections       {a['conns'][i0]:>12d}{a['conns'][ib]:>14d}"
-      f"{a['conns'][ib]-a['conns'][i0]:>+12d}")
+    w(f"  {'difficulty ceiling':<20}{a['ceiling'][ear].mean():>10.2f}"
+      f"{band(a['ceiling']):>22}{a['ceiling'][ib]:>9.2f}")
+    w(f"  {'hidden neurons':<20}{a['hidden'][ear].mean():>10.1f}"
+      f"{band(a['hidden'].astype(float)):>22}{a['hidden'][ib]:>9d}")
+    w(f"  {'live connections':<20}{a['conns'][ear].mean():>10.1f}"
+      f"{band(a['conns'].astype(float)):>22}{a['conns'][ib]:>9d}")
     w("")
-    w("  WHAT IT LEARNED -- lesions at d=%.2f" % bench.LESION_LEVEL)
+    w("  WHAT IT LEARNED -- cue lesions at d=%.2f" % bench.LESION_LEVEL)
     for k in ("intact", "none", "lying", "noisy"):
-        w(f"  cue {k:<18}{le[k][i0]:>+12.3f}{le[k][ib]:>+14.3f}"
-          f"{le[k][ib]-le[k][i0]:>+12.3f}")
-    w(f"  memory index           {le['memory_index'][i0]:>12.3f}"
-      f"{le['memory_index'][ib]:>14.3f}")
+        w(f"  cue {k:<16}{le[k][ear].mean():>+10.3f}{band(le[k]):>22}"
+          f"{le[k][ib]:>+9.3f}")
+    w(f"  {'memory index':<20}{le['memory_index'][ear].mean():>10.3f}"
+      f"{band(le['memory_index']):>22}{le['memory_index'][ib]:>9.3f}")
+    w("")
+    gap = abs(float(le["intact"][lt].mean() - le["none"][lt].mean()))
+    sd = float(le["intact"][lt].std() + le["none"][lt].std())
+    w("  Breaking the cue costs %.3f against a combined spread of %.3f, so"
+      % (gap, sd))
+    w("  the announcement is worth %s to this lineage."
+      % ("nothing measurable" if gap < sd else "something"))
     w("")
     w("  HEAD TO HEAD -- ancestor vs best fossil, identical worlds")
     for x in a["h2h"]:
@@ -255,17 +283,23 @@ padding:16px;overflow-x:auto;font:12.5px/1.5 ui-monospace,monospace}
 def html(a, path):
     cfg, fr, le = a["cfg"], a["frozen"], a["lesions"]
     yrs, i0, ib = a["years"], a["first"], a["best_i"]
-    ov0, ov1 = float(fr[0.0][i0]), float(fr[0.0][ib])
+    lt, ear = a["late"], a["early"]
+    ov0 = float(fr[0.0][ear].mean())
+    ov1 = float(fr[0.0][lt].mean())
+    mem = float(le["memory_index"][lt].mean())
+    cue_gap = float(le["intact"][lt].mean() - le["none"][lt].mean())
     h = a["h2h"][0]
 
     kpi = [
         (f"{cfg['gens']*a['years_per_gen']:,.0f}", "years simulated"),
         (f"{cfg['gens']:,}", "generations"),
-        (f"{ov0:+.3f} &rarr; {ov1:+.3f}", "benchmark score, easiest level"),
+        (f"{ov0:+.3f} &rarr; {ov1:+.3f}", "benchmark score at d=0 (late mean)"),
         (f"{100*h['win_rate_b']:.0f}%", f"descendant wins, d={h['d']:.2f}"),
-        (f"{a['ceiling'][i0]:.1f} &rarr; {a['ceiling'][ib]:.1f}",
-         "hardest world survivable"),
-        (f"{a['hidden'][i0]} &rarr; {a['hidden'][ib]}", "hidden neurons"),
+        (f"{a['ceiling'][ear].mean():.2f} &rarr; {a['ceiling'][lt].mean():.2f}",
+         "hardest world it stays viable in"),
+        (f"{a['hidden'][ear].mean():.1f} &rarr; {a['hidden'][lt].mean():.1f}",
+         "hidden neurons (it did not grow)"),
+        (f"{cue_gap:+.3f}", "what the cue is worth (i.e. nothing)"),
     ]
     charts = [
         ("Competence on worlds that never change",
@@ -337,6 +371,14 @@ episodes, meeting the same patch layouts and the same sensor noise.</p>
 <th>descendant wins</th></tr></thead><tbody>
 {''.join(f"<tr><td>d={x['d']:.2f}</td><td>{x['score_a']:+.3f}</td><td>{x['score_b']:+.3f}</td><td>{x['wins_b']}/{x['episodes']}</td></tr>" for x in a['h2h'])}
 </tbody></table></div>
+<div class="card"><h2>What it did not learn</h2>
+<p class="note">The world was built so that remembering a one-off
+announcement beats tasting things. It never learned to. Removing the cue
+costs {abs(cue_gap):.3f} and lying with it costs less than that, both
+inside the run-to-run spread, and the memory index has no trend across
+344,471 generations. The single best-scoring fossil happens to read +0.39
+on that index, which is what an argmax does to a quantity with no signal
+in it.</p></div>
 <div class="card"><h2>Summary</h2><pre>{_html.escape(text_summary(a))}</pre></div>
 </div></body></html>"""
     Path(path).write_text(doc)

@@ -90,6 +90,93 @@ Lesions and head-to-heads run at difficulties the lineage actually
 inhabits as well as ones it does not. Testing memory only at `d=0.66`, on
 an animal with no competence there at all, measures nothing.
 
+## What actually happened
+
+344,471 generations, population 128, six worlds per genome, one year per
+generation, 50 minutes of wall clock at 115 generations a second. Scored on
+the frozen benchmark. "Late" is the mean over the last quarter of the
+fossil record with its spread, because an argmax over a hundred noisy
+fossils is not a result.
+
+| | start | late | best single fossil |
+|---|---|---|---|
+| score at d=0.0 | -0.016 | **+0.124 ± 0.006** | +0.173 |
+| score at d=0.33 | -0.080 | -0.065 ± 0.004 | -0.061 |
+| score at d=1.0 | -0.133 | -0.133 ± 0.001 | -0.132 |
+| hardest viable difficulty | 0.01 | **0.100** | 0.20 |
+| hidden neurons | 2.6 | 2.25 ± 0.43 | 4 |
+| live connections | 22.7 | 38.0 ± 2.6 | 71 |
+
+**It learned to make a living.** At the easiest difficulty it went from
+burning more energy than it gathered to a clearly positive budget, and it
+beats its own ancestor in **30 of 32 identical episodes**. The band of
+worlds it is viable in widened from nothing to about `d=0.10`.
+
+**And the picture says what the number cannot.** The same world, the same
+patch layout, the same sensor noise:
+
+```
+gen 0                   gen 35,673
+  ++++++ooo*o*o   .. +    ++++++ooooooo      +
+  +++++oooo**oo  @ .      +++++oooooooo
+  ooooo           oooo    ***oo           oo**
+  oooooo  ++++++   ooo    *o****  ++++++   oo*
+  ooooooooooo++++   oS    *oo*o*ooooo++++   *o
+  ooooooooooooo++  .*o    o**o@**oooooo++   oS
+   +++++ooooooo+X.         +++++ooooooo+
+  gen 0        score +0.059  food 23  poison 2  cells 54  survived
+  gen 35,673   score +0.286  food 47  poison 1  cells 48  survived
+```
+
+The ancestor crosses the map in a thin line and eats what it happens to
+walk over. The descendant **stays in the patch and sweeps it** — twice the
+food from fewer cells visited. That is area-restricted search, and nothing
+asked for it.
+
+### Three things it did not do
+
+**It never learned to remember.** This is the one the world was built
+around, and the lesions are unambiguous:
+
+| cue | late score |
+|---|---|
+| intact | -0.065 ± 0.004 |
+| absent | -0.062 ± 0.007 |
+| **lying** | -0.060 ± 0.008 |
+
+Removing the announcement costs 0.004 against a combined spread of 0.011.
+Lying to it costs nothing at all. The memory index has no trend across the
+whole run (+0.014 at the start, -0.091 ± 0.076 late) and swings between
+-0.33 and +0.39 between neighbouring fossils, which is noise. The one
+fossil that happened to score +0.390 is what an argmax does to a quantity
+with no signal in it, and reporting that number as memory would have been
+the most inviting mistake available here.
+
+So it became a better forager, not a better rememberer — which is also why
+`d=0.33` and above barely move. Those are the worlds where the cue stops
+being optional.
+
+**It did not get bigger.** Two hidden neurons at the start, 2.25 late. All
+of the gain is in the wiring (23 connections to 38). With neurons priced
+cheaply enough to be invisible to selection it instead drifts to the array
+ceiling and gains nothing; see the section on evaluation noise.
+
+**It stopped.** Essentially all of the improvement is over by roughly
+generation 10,000–35,000, and the remaining ~310,000 generations — 90% of
+the run — produce nothing measurable:
+
+| generations | score at d=0.0 |
+|---|---|
+| 0 – 100 | -0.032 ± 0.032 |
+| 100 – 10k | +0.076 ± 0.037 |
+| 10k – 100k | +0.140 ± 0.022 |
+| 100k – 344k | +0.127 ± 0.014 |
+
+A deep-time run of this thing is therefore mostly a demonstration that deep
+time is not the binding constraint. What binds is the resolution of the
+fitness estimate and the size of the thing being selected, and both were
+settled in the first few thousand generations.
+
 ## What is chosen, and what is measured
 
 Numbers that were picked rather than derived, and what each one does:

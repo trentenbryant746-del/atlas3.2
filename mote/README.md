@@ -183,6 +183,38 @@ cause: a fitness estimate too noisy to resolve small improvements. That is
 a property of the measurement, not of the animal, which is the kind of
 mistake that is easy to narrate as a finding about evolution.
 
+### And the same noise means brain size is not really under selection
+
+Running six worlds for 80,000 generations then produced the opposite
+failure, and the arithmetic behind it is worth stating plainly.
+
+One hidden neuron costs `NEURON_COST * 100` energy over a lifetime, which
+at 0.00005 is 0.005 — about **0.0008** in the normalised units the
+benchmark reports. The sampling noise on a genome's fitness, even averaged
+over six worlds, is around **0.04**. A single neuron is therefore a
+fiftieth of the noise it has to be detected against, so selection cannot
+see it at all, and hidden slots fill by drift until the *accumulated*
+charge is finally large enough to notice:
+
+| generation | hidden neurons | top-quartile score |
+|---|---|---|
+| 0 | 2.0 | -0.072 |
+| 20,000 | 4.0 | +0.107 |
+| 40,000 | 10.1 | +0.103 |
+| 60,000 | 18.0 | +0.102 |
+| 80,000 | 28.0 | +0.118 |
+
+Size went up fourteenfold and competence did not move. The run then hit
+the 30-slot array ceiling, at which point **brain size is measuring N_MAX
+and nothing about the animal**, and any plot of it is censored.
+
+The honest conclusion is not "complexity evolved". It is that in this world
+a bigger brain never pays for its metabolism, every real improvement comes
+from rewiring a small one, and the apparent growth is drift against a cost
+too small to be resolved. A per-neuron charge selection could actually see
+would need to be ~0.0003 or more (`--neuron-cost`), which holds brains at a
+handful of neurons instead — the same conclusion from the other side.
+
 ## What this is not
 
 It is not a language model, and it does not get smarter by reading

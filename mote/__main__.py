@@ -15,7 +15,7 @@ def _run(a):
               years_per_gen=a.years_per_gen, out=a.out, ratchet=not a.no_ratchet,
               extinct_every=a.extinct_every, d0=a.d0,
               progress_every=a.progress_every, max_minutes=a.max_minutes,
-              sigma0=a.sigma0, tau=a.tau)
+              sigma0=a.sigma0, tau=a.tau, neuron_cost=a.neuron_cost)
     if not a.no_report:
         _report(argparse.Namespace(dir=str(out), html=None, watch=True))
 
@@ -85,6 +85,11 @@ def main(argv=None):
                    help="initial mutation step size")
     r.add_argument("--tau", type=float, default=0.12,
                    help="self-adaptation rate on the step size; 0 holds it fixed")
+    r.add_argument("--neuron-cost", type=float, default=None,
+                   help="energy per hidden neuron per tick (default 0.00005). "
+                        "Below ~0.0003 selection cannot resolve one neuron "
+                        "against fitness noise and brain size drifts to the "
+                        "array ceiling")
     r.add_argument("--no-report", action="store_true")
     r.set_defaults(fn=_run)
 

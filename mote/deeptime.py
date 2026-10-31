@@ -71,7 +71,7 @@ def fossil_gens(total, n_even=90, geom=GEOM):
 def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
         out="runs/deep", log_every=0, ratchet=True, extinct_every=0,
         d0=0.0, progress_every=20_000, quiet=False, max_minutes=0.0,
-        sigma0=0.08, tau=0.12):
+        sigma0=0.08, tau=0.12, neuron_cost=None):
     """Evolve for `gens` generations, leaving a readable trail. -> Path.
 
     max_minutes stops the run cleanly on a wall-clock budget, which is the
@@ -85,6 +85,9 @@ def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
     run goes, and report.py takes its numbers from the record that exists
     rather than the one that was requested.
     """
+    from mote import world as _w
+    if neuron_cost is not None:
+        _w.NEURON_COST = float(neuron_cost)
     out = Path(out)
     (out / "fossils").mkdir(parents=True, exist_ok=True)
     log_every = log_every or max(1, gens // 2000)
@@ -92,6 +95,7 @@ def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
 
     cfg = {"gens": gens, "pop": pop, "worlds": worlds, "seed": seed,
            "max_minutes": max_minutes, "sigma0": sigma0, "tau": tau,
+           "neuron_cost": _w.NEURON_COST,
            "years_per_gen": years_per_gen, "log_every": log_every,
            "ratchet": ratchet, "extinct_every": extinct_every, "d0": d0,
            "years_total": gens * years_per_gen, "n_fossils": len(keep),

@@ -14,7 +14,8 @@ def _run(a):
     out = run(gens=a.gens, pop=a.pop, worlds=a.worlds, seed=a.seed,
               years_per_gen=a.years_per_gen, out=a.out, ratchet=not a.no_ratchet,
               extinct_every=a.extinct_every, d0=a.d0,
-              progress_every=a.progress_every, max_minutes=a.max_minutes)
+              progress_every=a.progress_every, max_minutes=a.max_minutes,
+              sigma0=a.sigma0, tau=a.tau)
     if not a.no_report:
         _report(argparse.Namespace(dir=str(out), html=None, watch=True))
 
@@ -80,6 +81,10 @@ def main(argv=None):
     r.add_argument("--progress-every", type=int, default=20_000)
     r.add_argument("--max-minutes", type=float, default=0.0,
                    help="stop cleanly after this long, keeping the record")
+    r.add_argument("--sigma0", type=float, default=0.08,
+                   help="initial mutation step size")
+    r.add_argument("--tau", type=float, default=0.12,
+                   help="self-adaptation rate on the step size; 0 holds it fixed")
     r.add_argument("--no-report", action="store_true")
     r.set_defaults(fn=_run)
 

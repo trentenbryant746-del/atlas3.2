@@ -152,16 +152,36 @@ at every stage and replicating numpy's left-to-right grouping both failed
 to close it. The test asserts identical behaviour and a 1e-6 score
 tolerance rather than equality, and says so.
 
-## Things that were tried and did not work
+## Evaluation noise is what limits this thing
 
-Kept because a negative result is cheaper to read than to repeat.
+The clearest experimental result here, and it was not the expected one.
 
-- **Self-adapting mutation size collapses, and it does not matter.** The
-  step-size gene falls to its floor (0.0069 against a 0.005 floor) within a
-  few thousand generations, which looks exactly like a search that has
-  stalled. Holding it fixed at 0.05 instead changed the benchmark score
-  from +0.103 to +0.110 over 14,000 generations — i.e. not at all. The
-  collapse is a symptom of noisy fitness, not the cause of the plateau.
+A lineage was plateauing at roughly +0.11 on the benchmark and carrying
+barely more than the one hidden neuron it needed, with the mutation-step
+gene collapsed to its floor. The collapse looked like the problem. It was
+not. 14,000 generations a row, everything else equal:
+
+| | step size at the end | hidden neurons | benchmark, easiest level |
+|---|---|---|---|
+| self-adapting, 3 worlds | 0.007 | 1.4 | +0.103 |
+| fixed 0.05, 3 worlds | 0.050 | 1.1 | +0.110 |
+| fixed 0.05, **6 worlds** | 0.050 | **6.0** | **+0.137** |
+
+Holding the step size fixed did nothing. Scoring each genome on six worlds
+instead of three raised competence by a quarter and let brain size grow
+fivefold.
+
+The reason is that a genome's fitness here is an average over a handful of
+episodes, so it carries real sampling noise, and **one more neuron
+contributes less to fitness than that noise does**. Selection cannot see
+it, so a newly grown neuron is removed by drift before it can be put to
+use, and the population sits at the smallest brain that does the job. Halve
+the noise and the same neuron becomes visible.
+
+So both the step-size collapse and the tiny brains were symptoms of one
+cause: a fitness estimate too noisy to resolve small improvements. That is
+a property of the measurement, not of the animal, which is the kind of
+mistake that is easy to narrate as a finding about evolution.
 
 ## What this is not
 

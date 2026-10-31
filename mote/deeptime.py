@@ -70,7 +70,8 @@ def fossil_gens(total, n_even=90, geom=GEOM):
 
 def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
         out="runs/deep", log_every=0, ratchet=True, extinct_every=0,
-        d0=0.0, progress_every=20_000, quiet=False, max_minutes=0.0):
+        d0=0.0, progress_every=20_000, quiet=False, max_minutes=0.0,
+        sigma0=0.08, tau=0.12):
     """Evolve for `gens` generations, leaving a readable trail. -> Path.
 
     max_minutes stops the run cleanly on a wall-clock budget, which is the
@@ -90,7 +91,7 @@ def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
     keep = set(fossil_gens(gens))
 
     cfg = {"gens": gens, "pop": pop, "worlds": worlds, "seed": seed,
-           "max_minutes": max_minutes,
+           "max_minutes": max_minutes, "sigma0": sigma0, "tau": tau,
            "years_per_gen": years_per_gen, "log_every": log_every,
            "ratchet": ratchet, "extinct_every": extinct_every, "d0": d0,
            "years_total": gens * years_per_gen, "n_fossils": len(keep),
@@ -98,7 +99,7 @@ def run(gens=100_000, pop=128, worlds=3, seed=1, years_per_gen=1.0,
     (out / "run.json").write_text(json.dumps(cfg, indent=2))
 
     lin = Lineage(pop=pop, worlds=worlds, seed=seed, d0=d0, ratchet=ratchet,
-                  extinct_every=extinct_every)
+                  extinct_every=extinct_every, sigma0=sigma0, tau=tau)
     hist = open(out / "history.csv", "w", buffering=1)
     hist.write(",".join(HISTORY_COLS) + "\n")
 

@@ -21,7 +21,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from rules.arith import RULES                                   # noqa: E402
+from rules.arith import RULES as _ARITH_RULES                  # noqa: E402
+from rules.language import RULES as _LANGUAGE_RULES            # noqa: E402
+
+# One registry, two modules. rules/arith.py holds everything whose operands
+# are numbers; rules/language.py holds the rules that take or produce
+# English. route() treats them identically -- it asks each rule to match,
+# answer and verify, and neither module knows the other exists.
+RULES = _ARITH_RULES + _LANGUAGE_RULES
 
 ANSWERED = "ANSWERED"
 AMBIGUOUS = "AMBIGUOUS"
